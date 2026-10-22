@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estadística: Analítica y Bivariante</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 0.5rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* TARJETAS INFORMATIVAS */
+    .info-card-item {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.3rem;
+    }
+
+    /* CONTROLES SLIDER */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .slider-row label { width: 150px; font-weight: 600; font-family: monospace; }
+    .val-badge { width: 55px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; }
+
+    /* CAJAS DE ALERTA */
+    .warning-box {
+      background: rgba(244, 63, 94, 0.08); border: 1px solid var(--accent-op);
+      border-radius: 8px; padding: 1.1rem; line-height: 1.5; font-size: 0.95rem;
+    }
+
+    /* SVG CANVAS */
+    .svg-canvas {
+      width: 100%; height: 280px; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block;
+    }
+
+    /* MATRICES Y ARRAYS VISUALES */
+    .array-container {
+      display: flex; justify-content: center; gap: 0.4rem; margin: 1.5rem 0; flex-wrap: wrap;
+    }
+    .array-box {
+      width: 40px; height: 40px; display: flex; justify-content: center; align-items: center;
+      background: #0b1120; border: 2px solid var(--border-color); border-radius: 6px;
+      font-family: monospace; font-size: 1.2rem; font-weight: bold; color: #fff;
+      position: relative;
+    }
+    .array-box.q1 { border-color: var(--accent-blue); background: rgba(56, 189, 248, 0.1); }
+    .array-box.q2 { border-color: var(--accent-gold); background: rgba(251, 191, 36, 0.1); }
+    .array-box.q3 { border-color: var(--accent-success); background: rgba(16, 185, 129, 0.1); }
+    .cut-marker {
+      position: absolute; top: -25px; font-size: 0.8rem; font-weight: bold;
+      white-space: nowrap; text-transform: uppercase;
+    }
+    .cut-q1 { color: var(--accent-blue); left: -15px; }
+    .cut-q2 { color: var(--accent-gold); left: -15px; }
+    .cut-q3 { color: var(--accent-success); left: -15px; }
+
+    /* FÓRMULAS ELEGANTES */
+    .math-formula {
+      font-family: 'Courier New', Courier, monospace; font-size: 1.3rem; font-weight: bold;
+      background: #090d16; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
+      text-align: center; display: inline-block; margin: 0.5rem auto;
+    }
+    .fraction-vertical {
+      display: inline-flex; flex-direction: column; vertical-align: middle;
+      text-align: center; margin: 0 0.4rem; line-height: 1.2; font-family: monospace;
+    }
+    .fraction-vertical .num { border-bottom: 2px solid currentColor; padding: 0 0.3rem 2px 0.3rem; }
+    .fraction-vertical .den { padding: 2px 0.3rem 0 0.3rem; }
+
+    /* TABLA ESTADÍSTICA */
+    .stat-table {
+      width: 100%; border-collapse: collapse; font-family: monospace; font-size: 1.1rem; text-align: center; margin: 1rem 0;
+    }
+    .stat-table th, .stat-table td {
+      border: 1px solid var(--border-color); padding: 0.8rem;
+    }
+    .stat-table th { background: rgba(255, 255, 255, 0.04); color: var(--text-muted); }
+    .stat-table tr.total-row { background: rgba(56, 189, 248, 0.1); font-weight: bold; color: #fff; }
+    .col-highlight { color: var(--accent-gold); font-weight: bold; }
+    .col-success { color: var(--accent-success); font-weight: bold; }
+
+    @media (max-width: 800px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Estadística Analítica</h1>
+    <p>Aprende a localizar el centro de los datos, averiguar tu posición, medir la normalidad y descubrir conexiones ocultas entre dos variables.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('centralizacion', this)">🎯 1. Centralización</button>
+      <button class="tab-btn" onclick="switchTab('posicion', this)">📍 2. Posición</button>
+      <button class="tab-btn" onclick="switchTab('dispersion', this)">📏 3. Dispersión</button>
+      <button class="tab-btn" onclick="switchTab('bivariante', this)">📈 4. Bi-Variante <span style="font-size:0.7rem; background:var(--accent-success); color:#000; padding:2px 6px; border-radius:10px; vertical-align:top; margin-left:5px;">Bach</span></button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: CENTRALIZACIÓN ================= -->
+    <div id="centralizacion" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">Buscando el centro de gravedad</div>
+        <div class="content-text">
+          Las medidas de centralización intentan resumir toda una lista de datos en <strong>un solo número</strong> que represente al grupo. Hay tres formas distintas de entender qué significa ser "el centro".
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <!-- LA MEDIA -->
+        <div class="panel-box" style="border-top:4px solid var(--accent-blue);">
+          <div class="panel-title" style="color:var(--accent-blue);">La Media (x̄)</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            El reparto equitativo. Sumamos todo lo que tenemos y lo repartimos a partes iguales entre todos.
+          </p>
+          <div style="text-align:center; font-family:monospace; margin-bottom:1rem;">
+            x̄ = <span class="fraction-vertical"><span class="num">Suma de datos</span><span class="den">Total de datos (N)</span></span>
+          </div>
+          <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem;">
+            <strong>Ejemplo:</strong> Notas [4, 6, 8]<br>
+            x̄ = (4 + 6 + 8) / 3 = 18 / 3 = <strong style="color:var(--accent-blue);">6</strong>
+          </div>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.8rem; border-top:1px solid var(--border-color); padding-top:0.8rem;">
+            ⚠️ <em>Falla si hay números extremos. Si alguien saca un 0, hunde la media de todos.</em>
+          </p>
+        </div>
+
+        <!-- LA MEDIANA -->
+        <div class="panel-box" style="border-top:4px solid var(--accent-gold);">
+          <div class="panel-title" style="color:var(--accent-gold);">La Mediana (Me)</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            El número que queda <strong>exactamente en el medio</strong> de la fila tras ordenar los datos de menor a mayor.
+          </p>
+          <div style="display:flex; flex-direction:column; gap:0.5rem; background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem;">
+            <div style="color:var(--text-muted); font-size:0.85rem;">Si hay cantidad IMPAR (ej: 5 datos):</div>
+            <div style="font-family:monospace; letter-spacing:2px; text-align:center;">1 3 <strong style="color:var(--accent-gold); font-size:1.2rem;">5</strong> 8 9 ➔ Me = 5</div>
+            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1);">
+            <div style="color:var(--text-muted); font-size:0.85rem;">Si hay cantidad PAR (ej: 4 datos):</div>
+            <div style="font-family:monospace; letter-spacing:2px; text-align:center;">2 <strong style="color:var(--accent-gold); font-size:1.2rem;">4 6</strong> 7</div>
+            <div style="font-size:0.85rem; text-align:center;">Se hace la media de los dos centrales:<br>Me = (4+6)/2 = <strong style="color:var(--accent-gold);">5</strong></div>
+          </div>
+        </div>
+
+        <!-- LA MODA -->
+        <div class="panel-box" style="border-top:4px solid var(--accent-success);">
+          <div class="panel-title" style="color:var(--accent-success);">La Moda (Mo)</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Lo que más se lleva. Es el valor que <strong>más veces se repite</strong> en toda la lista (el de mayor frecuencia).
+          </p>
+          <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem;">
+            <strong>Ejemplo:</strong> [3, 4, 4, <span style="color:var(--accent-success); font-weight:bold;">7, 7, 7</span>, 8, 9]<br>
+            El 7 aparece tres veces.<br>
+            Mo = <strong style="color:var(--accent-success);">7</strong>
+          </div>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.8rem; border-top:1px solid var(--border-color); padding-top:0.8rem;">
+            <em>* Puede haber varias modas (bimodal) si empatan dos números.</em>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: POSICIÓN Y CUARTILES ================= -->
+    <div id="posicion" class="tab-content">
+      <div class="explanation-card">
+        <div class="badge">¿En qué lugar de la fila estás?</div>
+        <div class="content-text">
+          Las medidas de posición sirven para saber dónde queda un dato respecto al resto. Para usarlas, <strong>siempre hay que ordenar los datos de menor a mayor</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Cuartiles (Partir en 4 trozos)</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.5rem;">
+            Imagina las notas de 11 alumnos ordenadas. Los cuartiles (<strong style="color:var(--accent-blue);">Q1</strong>, <strong style="color:var(--accent-gold);">Q2</strong>, <strong style="color:var(--accent-success);">Q3</strong>) son las tres "vallas" que dividen la clase en 4 grupos del 25% de alumnos cada uno.
+          </p>
+
+          <div class="array-container">
+            <div class="array-box">2</div>
+            <div class="array-box">3</div>
+            <div class="array-box q1">
+              <span class="cut-marker cut-q1">↓ Q1 (25%)</span>
+              4
+            </div>
+            <div class="array-box">5</div>
+            <div class="array-box">6</div>
+            <div class="array-box q2">
+              <span class="cut-marker cut-q2">↓ Q2 (Mediana)</span>
+              6
+            </div>
+            <div class="array-box">7</div>
+            <div class="array-box">8</div>
+            <div class="array-box q3">
+              <span class="cut-marker cut-q3">↓ Q3 (75%)</span>
+              9
+            </div>
+            <div class="array-box">10</div>
+            <div class="array-box">10</div>
+          </div>
+
+          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem; line-height:1.6;">
+            • <strong style="color:var(--accent-blue);">Q1 = 4</strong>: El 25% sacó un 4 o menos.<br>
+            • <strong style="color:var(--accent-gold);">Q2 = 6 (Mediana)</strong>: La mitad exacta sacó un 6 o menos.<br>
+            • <strong style="color:var(--accent-success);">Q3 = 9</strong>: El 75% sacó un 9 o menos.
+          </div>
+        </div>
+
+        <div class="panel-box" style="border-color:var(--accent-blue);">
+          <div class="panel-title" style="color:var(--accent-blue);">Percentiles y Estudios Grandes</div>
+          <p style="color:var(--text-main); font-size:0.95rem; margin-bottom:1rem;">
+            Los percentiles (P₁ a P₉₉) cortan los datos en 100 partes. Pero cuando hay 500 o 2000 datos, no podemos contar con los dedos. Usamos la <strong>Fórmula de Posición</strong>.
+          </p>
+
+          <div style="text-align:center; margin-bottom:1rem;">
+            <div class="math-formula" style="border-color:var(--accent-blue); color:var(--accent-blue);">
+              Posición = <span class="fraction-vertical"><span class="num">k · N</span><span class="den">100</span></span>
+            </div>
+          </div>
+
+          <div class="info-card-item">
+            <strong>Cómo usar la fórmula:</strong>
+            <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.5;">
+              Queremos calcular el Percentil 85 (P₈₅) en un estudio con 40 personas (N=40).<br>
+              1. Calculamos: Pos = (85 · 40) / 100 = <strong>34</strong>.<br>
+              2. Esto NO significa que el P₈₅ valga 34. Significa que debemos buscar <strong>a la persona que está en el lugar número 34 de la fila ordenada</strong>.
+            </p>
+          </div>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.8rem;">
+            <em>* Si el cálculo da decimal (ej: 34.2), se suele redondear hacia arriba para asegurar que cubres el porcentaje.</em>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: DISPERSIÓN ================= -->
+    <div id="dispersion" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">¿Están los datos pegados o desperdigados?</div>
+        <div class="content-text">
+          La media nos engaña: si tú comes 2 pollos y yo 0, la media dice que ambos hemos comido 1. Las <strong>Medidas de Dispersión</strong> nos chivan si los datos están concentrados o dispersos. Visualmente, una desviación típica alta hace que la "Campana de Gauss" sea ancha y bajita.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Simulador Visual (La Campana)</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Fíjate cómo cambia la montaña de notas cuando aumentamos la Desviación Típica (σ). La media siempre es 5, pero la realidad del aula cambia:
+          </p>
+
+          <div class="slider-row">
+            <label>Nivel de Dispersión:</label>
+            <input type="range" id="sl_disp" min="0" max="4" value="0" oninput="updateDispersion()">
+            <span class="val-badge" id="v_sl_disp">0</span>
+          </div>
+
+          <svg class="svg-canvas" viewBox="0 0 300 150">
+            <!-- Eje X -->
+            <line x1="20" y1="120" x2="280" y2="120" stroke="#475569" stroke-width="2" />
+            <text x="150" y="140" fill="#94a3b8" font-size="12" text-anchor="middle" font-weight="bold">Media (x̄) = 5</text>
+            <line x1="150" y1="115" x2="150" y2="125" stroke="#94a3b8" stroke-width="2" />
+
+            <!-- Campana de Gauss SVG generada matemáticamente -->
+            <path id="bell_curve" d="" fill="rgba(251, 191, 36, 0.2)" stroke="var(--accent-gold)" stroke-width="3" stroke-linejoin="round"/>
+            
+            <!-- Indicador sigma -->
+            <line id="sigma_line" x1="150" y1="80" x2="180" y2="80" stroke="var(--accent-success)" stroke-width="2" marker-end="url(#arrow)" marker-start="url(#arrow)"/>
+            <text id="sigma_text" x="165" y="70" fill="var(--accent-success)" font-size="12" text-anchor="middle" font-weight="bold">σ = 0.5</text>
+            
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-success)" />
+              </marker>
+            </defs>
+          </svg>
+
+          <div id="disp_caption" style="margin-top:1rem; font-size:0.9rem; color:var(--text-main); line-height:1.5;">
+            <!-- Texto interactivo -->
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">El Arsenal Matemático</div>
+          
+          <div style="display:flex; flex-direction:column; gap:1rem;">
+            <div class="info-card-item">
+              <strong style="color:#fff;">1. El Rango (Amplitud)</strong>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+                La resta entre el dato más grande y el más pequeño. (Max - Min).
+              </p>
+            </div>
+
+            <div class="info-card-item" style="border-left:3px solid var(--accent-op);">
+              <strong style="color:var(--accent-op);">2. Varianza (σ² o S²)</strong>
+              <div class="math-formula" style="font-size:1.1rem; border:none; padding:0.5rem 0;">σ² = <span class="fraction-vertical"><span class="num">Σ(x_i² · f_i)</span><span class="den">N</span></span> - x̄²</div>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+                Mide el promedio de las distancias al cuadrado desde cada dato hasta la media. Al estar al cuadrado da "saltos gigantes" y es difícil de interpretar en la vida real.
+              </p>
+            </div>
+
+            <div class="info-card-item" style="border-left:3px solid var(--accent-success);">
+              <strong style="color:var(--accent-success);">3. Desviación Típica (σ o S)</strong>
+              <div class="math-formula" style="font-size:1.1rem; color:var(--accent-success); border:none; padding:0.5rem 0;">σ = √ Varianza</div>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+                ¡La reina de la estadística! Es la raíz cuadrada de la varianza. Nos devuelve la distancia a sus unidades originales y nos indica <strong>cuánto se aleja un dato promedio de la media</strong>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLA DE CÁLCULO PASO A PASO -->
+      <div class="panel-box" style="margin-top:1.5rem; border-color:var(--accent-blue);">
+        <div class="panel-title" style="color:var(--accent-blue);">Cálculo en Tabla Paso a Paso</div>
+        <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:0.5rem;">
+          Para calcular la Varianza y Desviación Típica sin volvernos locos, <strong>añadimos dos columnas extra</strong> a nuestra tabla de frecuencias: una para multiplicar el dato por su cantidad (<span style="font-family:monospace;">x_i · f_i</span>) y otra para el dato al cuadrado (<span style="font-family:monospace;">x_i² · f_i</span>).
+        </p>
+        
+        <table class="stat-table">
+          <thead>
+            <tr>
+              <th>Dato (xᵢ)</th>
+              <th>Frecuencia (fᵢ)</th>
+              <th>Para la Media (xᵢ · fᵢ)</th>
+              <th class="col-highlight">Para la Varianza (xᵢ² · fᵢ)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>4</td>
+              <td>2</td>
+              <td>4 · 2 = 8</td>
+              <td>4² · 2 = 16 · 2 = <strong class="col-highlight">32</strong></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>6</td>
+              <td>5 · 6 = 30</td>
+              <td>5² · 6 = 25 · 6 = <strong class="col-highlight">150</strong></td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>2</td>
+              <td>6 · 2 = 12</td>
+              <td>6² · 2 = 36 · 2 = <strong class="col-highlight">72</strong></td>
+            </tr>
+            <tr class="total-row">
+              <td>Total (Σ)</td>
+              <td>N = 10</td>
+              <td>Σ = 50</td>
+              <td>Σ = 254</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="display:flex; justify-content:space-around; flex-wrap:wrap; gap:1rem; margin-top:1rem; font-family:monospace; font-size:1.15rem;">
+          <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
+            <div style="color:var(--text-muted); font-size:0.85rem;">1. Media (x̄)</div>
+            x̄ = 50 / 10 = <strong>5</strong>
+          </div>
+          <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
+            <div style="color:var(--text-muted); font-size:0.85rem;">2. Varianza (σ²)</div>
+            σ² = (254 / 10) - 5²<br>
+            σ² = 25.4 - 25 = <strong style="color:var(--accent-op);">0.4</strong>
+          </div>
+          <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--accent-success);">
+            <div style="color:var(--text-muted); font-size:0.85rem;">3. Desviación Típica (σ)</div>
+            σ = √0.4 ≈ <strong style="color:var(--accent-success);">0.63</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: BIVARIANTE (BACHILLERATO) ================= -->
+    <div id="bivariante" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">Nivel Bachillerato: Buscando Conexiones Ocultas</div>
+        <div class="content-text">
+          La estadística bidimensional analiza <strong>dos variables a la vez (X e Y)</strong> para descubrir si están conectadas. Por ejemplo: ¿Si estudias más horas (X), sacas mejor nota (Y)? La herramienta que mide la fuerza de esa conexión es el <strong>Coeficiente de Correlación de Pearson (r)</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Simulador de Correlación Lineal (r)</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Desliza el coeficiente 'r' desde -1 (relación inversa perfecta) hasta +1 (relación directa perfecta), pasando por 0 (caos total).
+          </p>
+
+          <div class="slider-row">
+            <label>Correlación (r):</label>
+            <input type="range" id="sl_corr" min="-10" max="10" value="8" oninput="updateScatter()">
+            <span class="val-badge" id="v_sl_corr" style="width:70px; color:var(--accent-success);">0.8</span>
+          </div>
+
+          <svg class="svg-canvas" viewBox="0 0 300 250" id="scatter_svg">
+            <defs>
+              <pattern id="grid_scat" width="25" height="25" patternUnits="userSpaceOnUse">
+                <path d="M 25 0 L 0 0 0 25" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect x="0" y="0" width="300" height="250" fill="url(#grid_scat)" />
+            <line x1="25" y1="225" x2="275" y2="225" stroke="#94a3b8" stroke-width="2" />
+            <line x1="25" y1="25" x2="25" y2="225" stroke="#94a3b8" stroke-width="2" />
+            <text x="280" y="230" fill="#94a3b8" font-size="12" font-weight="bold">X</text>
+            <text x="10" y="20" fill="#94a3b8" font-size="12" font-weight="bold">Y</text>
+
+            <line id="reg_line" x1="25" y1="225" x2="275" y2="25" stroke="var(--accent-success)" stroke-width="2" stroke-dasharray="5" opacity="0.6" />
+
+            <g id="scatter_pts"></g>
+          </svg>
+
+          <div id="corr_caption" style="margin-top:1rem; font-size:0.95rem; font-weight:bold; text-align:center;">
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">El Vocabulario del Futuro Científico</div>
+          
+          <div style="display:flex; flex-direction:column; gap:1.2rem;">
+            <div class="info-card-item" style="border-left:3px solid var(--accent-success);">
+              <strong style="color:var(--accent-success);">Nube de Puntos (Diagrama de dispersión)</strong>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+                Cada punto es un individuo al que le hemos medido dos cosas (coordenada X y coordenada Y). La forma de la "nube" revela el secreto de su relación.
+              </p>
+            </div>
+
+            <div class="info-card-item" style="border-left:3px solid var(--accent-gold);">
+              <strong style="color:var(--accent-gold);">Covarianza (Sxy)</strong>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+                Nos dice la <strong>dirección</strong> de la relación. Si da positiva, X e Y crecen juntas. Si da negativa, cuando X crece, Y baja. No tiene límites fijos, por lo que es difícil medir la "fuerza" solo con ella.
+              </p>
+            </div>
+
+            <div class="info-card-item" style="border-left:3px solid var(--accent-blue);">
+              <strong style="color:var(--accent-blue);">Coeficiente de Pearson (r)</strong>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+                Es la covarianza "domesticada". La fórmula la encierra siempre en un valor entre <strong>-1 y +1</strong>.<br>
+                • <strong>r = 1</strong>: Línea recta perfecta hacia arriba.<br>
+                • <strong>r = -1</strong>: Línea recta perfecta hacia abajo.<br>
+                • <strong>r = 0</strong>: Caos total.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLA BIVARIANTE PASO A PASO -->
+      <div class="panel-box" style="margin-top:1.5rem; border-color:var(--accent-success);">
+        <div class="panel-title" style="color:var(--accent-success);">Cálculo Paso a Paso (Covarianza y Pearson)</div>
+        <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:0.5rem;">
+          Para calcular Pearson, necesitamos una tabla ampliada con 5 columnas. Añadimos el cuadrado de cada variable (<span style="font-family:monospace;">X²</span>, <span style="font-family:monospace;">Y²</span>) para calcular sus desviaciones típicas individuales, y la columna mágica de la multiplicación (<span style="font-family:monospace;">X·Y</span>) para calcular la Covarianza.
+        </p>
+        
+        <table class="stat-table" style="font-size:1rem;">
+          <thead>
+            <tr>
+              <th>X</th>
+              <th>Y</th>
+              <th class="col-success">Para la Covarianza (X · Y)</th>
+              <th class="col-highlight">Desviación X (X²)</th>
+              <th class="col-highlight">Desviación Y (Y²)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>2</td>
+              <td class="col-success">1 · 2 = 2</td>
+              <td class="col-highlight">1</td>
+              <td class="col-highlight">4</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>6</td>
+              <td class="col-success">3 · 6 = 18</td>
+              <td class="col-highlight">9</td>
+              <td class="col-highlight">36</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>4</td>
+              <td class="col-success">5 · 4 = 20</td>
+              <td class="col-highlight">25</td>
+              <td class="col-highlight">16</td>
+            </tr>
+            <tr class="total-row">
+              <td>Σ = 9</td>
+              <td>Σ = 12</td>
+              <td>Σ = 40</td>
+              <td>Σ = 35</td>
+              <td>Σ = 56</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="display:flex; flex-direction:column; gap:1.2rem; margin-top:1rem; font-family:monospace; font-size:1.1rem;">
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;">
+            <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
+              <div style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.5rem;">1. Medias (N = 3)</div>
+              x̄ = 9 / 3 = <strong>3</strong><br>
+              ȳ = 12 / 3 = <strong>4</strong>
+            </div>
+            
+            <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--accent-gold);">
+              <div style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.5rem;">2. Desviaciones Típicas (σx, σy)</div>
+              σx = √[ (35/3) - 3² ] = √2.66 ≈ <strong style="color:var(--accent-gold);">1.63</strong><br>
+              σy = √[ (56/3) - 4² ] = √2.66 ≈ <strong style="color:var(--accent-gold);">1.63</strong>
+            </div>
+            
+            <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--accent-success);">
+              <div style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.5rem;">3. Covarianza (Sxy)</div>
+              Sxy = <span class="fraction-vertical"><span class="num">Σ(X·Y)</span><span class="den">N</span></span> - (x̄ · ȳ)<br><br>
+              Sxy = (40 / 3) - (3 · 4)<br>
+              Sxy = 13.33 - 12 = <strong style="color:var(--accent-success);">1.33</strong>
+            </div>
+          </div>
+
+          <div style="background:rgba(56, 189, 248, 0.05); padding:1.2rem; border-radius:8px; border:1px dashed var(--accent-blue); text-align:center;">
+            <div style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.8rem; text-transform:uppercase;">4. Correlación de Pearson (r)</div>
+            <div class="math-formula" style="border:none; margin:0; padding:0;">
+              r = <span class="fraction-vertical"><span class="num">Sxy</span><span class="den">σx · σy</span></span> 
+              &nbsp;➔&nbsp; r = <span class="fraction-vertical"><span class="num">1.33</span><span class="den">1.63 · 1.63</span></span> 
+              = <span class="fraction-vertical"><span class="num">1.33</span><span class="den">2.66</span></span> 
+              = <strong style="color:var(--accent-success); font-size:1.6rem;">0.5</strong>
+            </div>
+            <div style="margin-top:0.8rem; font-size:0.9rem; color:var(--text-muted);">
+              (Una correlación moderada y positiva. Las variables tienden a crecer juntas).
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓN ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'dispersion') updateDispersion();
+      if (tabId === 'bivariante') updateScatter();
+    }
+
+    // =========================================================================
+    // 3. SIMULACIÓN DE DISPERSIÓN (CAMPANA DE GAUSS MATEMÁTICA)
+    // =========================================================================
+    const dispData = [
+      { sigma: 0.5, visual_sigma: 10, h: 100, cap: "<strong>Todos sacan un 5.</strong> La clase es un clon. Dispersión casi nula, la media (5) es hiper-representativa." },
+      { sigma: 1.2, visual_sigma: 20, h: 80,  cap: "<strong>Notas agrupadas (4 al 6).</strong> La montaña es puntiaguda y concentrada. La media sigue siendo muy fiable." },
+      { sigma: 2.5, visual_sigma: 40, h: 60,  cap: "<strong>Dispersión estándar.</strong> La montaña se achata. Empieza a haber diversidad y notas en todos los rangos." },
+      { sigma: 4.0, visual_sigma: 60, h: 40,  cap: "<strong>Clase polarizada.</strong> La campana se aplasta. Muchos suspensos y muchos notables. La media (5) ya empieza a ser engañosa." },
+      { sigma: 6.0, visual_sigma: 80, h: 25,  cap: "<strong>Caos total.</strong> La curva es plana. Unos tienen un 0 y otros un 10. Decir que la media es 5 es una mentira estadística." }
+    ];
+
+    function updateDispersion() {
+      const step = parseInt(document.getElementById('sl_disp').value);
+      document.getElementById('v_sl_disp').innerText = step;
+      const d = dispData[step];
+
+      document.getElementById('sigma_text').innerText = "σ = " + d.sigma.toFixed(1);
+      
+      const line = document.getElementById('sigma_line');
+      line.setAttribute('x2', 150 + d.visual_sigma);
+
+      const mean = 150;
+      const svgBaseY = 120;
+      let pathStr = `M 20 ${svgBaseY} `;
+      
+      for(let x = 20; x <= 280; x += 2) {
+        const exponent = -Math.pow(x - mean, 2) / (2 * Math.pow(d.visual_sigma, 2));
+        const y = svgBaseY - (d.h * Math.exp(exponent));
+        pathStr += `L ${x} ${y} `;
+      }
+      
+      document.getElementById('bell_curve').setAttribute('d', pathStr);
+      document.getElementById('disp_caption').innerHTML = d.cap;
+    }
+    updateDispersion();
+
+    // =========================================================================
+    // 4. SIMULACIÓN BIVARIANTE (NUBE DE PUNTOS)
+    // =========================================================================
+    const staticNoise = [];
+    for(let i=0; i<30; i++) {
+      staticNoise.push({ x: Math.random(), y: Math.random() });
+    }
+
+    function updateScatter() {
+      const rRaw = parseInt(document.getElementById('sl_corr').value);
+      const r = rRaw / 10;
+      const vBadge = document.getElementById('v_sl_corr');
+      vBadge.innerText = (r > 0 ? "+" : "") + r.toFixed(1);
+
+      let color = "#fff";
+      let caption = "";
+      if(r === 1) { color = "var(--accent-success)"; caption = "Relación Directa Perfecta (r = 1)"; }
+      else if(r > 0.6) { color = "var(--accent-success)"; caption = "Relación Directa Fuerte"; }
+      else if(r > 0.2) { color = "var(--accent-success)"; caption = "Relación Directa Débil"; }
+      else if(r > -0.2 && r < 0.2) { color = "var(--text-muted)"; caption = "Sin Relación Lineal (Caos)"; }
+      else if(r < -0.6) { color = "var(--accent-op)"; caption = "Relación Inversa Fuerte"; }
+      else if(r === -1) { color = "var(--accent-op)"; caption = "Relación Inversa Perfecta (r = -1)"; }
+      else { color = "var(--accent-op)"; caption = "Relación Inversa Débil"; }
+
+      vBadge.style.color = color;
+      document.getElementById('corr_caption').innerHTML = `<span style="color:${color};">${caption}</span>`;
+
+      const regLine = document.getElementById('reg_line');
+      if (Math.abs(r) < 0.2) {
+        regLine.style.display = 'none';
+      } else {
+        regLine.style.display = 'block';
+        regLine.setAttribute('stroke', color);
+        if (r > 0) {
+          regLine.setAttribute('y1', 225); 
+          regLine.setAttribute('y2', 25);  
+        } else {
+          regLine.setAttribute('y1', 25);  
+          regLine.setAttribute('y2', 225); 
+        }
+      }
+
+      const ptsGroup = document.getElementById('scatter_pts');
+      let circlesHTML = "";
+
+      for(let i=0; i<30; i++) {
+        const baseX = (i / 29); 
+        const perfectY = r >= 0 ? baseX : (1 - baseX);
+        const noiseY = staticNoise[i].y;
+        const blendedY = (perfectY * Math.abs(r)) + (noiseY * (1 - Math.abs(r)));
+        const noiseX = staticNoise[i].x;
+        const blendedX = (baseX * Math.abs(r)) + (noiseX * (1 - Math.abs(r)));
+
+        const cx = 25 + (blendedX * 250);
+        const cy = 225 - (blendedY * 200);
+
+        circlesHTML += `<circle cx="${cx}" cy="${cy}" r="4" fill="${color}" opacity="0.8" stroke="#090d16" stroke-width="1" />`;
+      }
+      ptsGroup.innerHTML = circlesHTML;
+    }
+    updateScatter();
+  </script>
+</body>
+</html>

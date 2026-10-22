@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geometría: Vectores en el Plano</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 0.5rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* SUBPESTAÑAS */
+    .subtabs-container {
+      display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;
+      background: var(--bg-card); padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);
+      margin-bottom: 1rem;
+    }
+    .subtab-btn {
+      padding: 0.5rem 1rem; background: var(--bg-primary); border: 1px solid var(--border-color);
+      color: var(--text-muted); border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.9rem;
+    }
+    .subtab-btn:hover { border-color: var(--accent-blue); color: var(--text-main); }
+    .subtab-btn.active { background: var(--accent-blue); color: #042f2e; border-color: var(--accent-blue); font-weight: bold; }
+    .subtab-content { display: none; flex-direction: column; gap: 1.2rem; animation: fadeIn 0.3s forwards; }
+    .subtab-content.active { display: flex; }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* TARJETAS INFORMATIVAS */
+    .info-card-item {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.3rem;
+    }
+    .warning-box {
+      background: rgba(244, 63, 94, 0.08); border: 1px solid var(--accent-op);
+      border-radius: 8px; padding: 1.1rem; line-height: 1.5; font-size: 0.95rem;
+    }
+
+    /* CONTROLES SLIDER */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .slider-row label { width: 140px; font-weight: 600; font-family: monospace; font-size: 0.95rem; }
+    .val-badge { width: 45px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; color: var(--text-main); }
+
+    /* VECTOR FORMATTING */
+    .vec { display: inline-flex; flex-direction: column; align-items: center; line-height: 1; font-family: monospace; font-weight: bold; font-size: 1.2rem; margin: 0 0.2rem; vertical-align: bottom; }
+    .vec-arrow { font-size: 0.6em; margin-bottom: -0.2em; }
+    
+    .c-v { color: var(--accent-blue); }
+    .c-u { color: var(--accent-gold); }
+    .c-w { color: var(--accent-success); }
+    .c-x { color: #f472b6; } 
+    .c-y { color: #34d399; } 
+
+    /* FÓRMULAS ELEGANTES */
+    .math-formula {
+      font-family: 'Courier New', Courier, monospace; font-size: 1.3rem; font-weight: bold;
+      background: #090d16; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
+      text-align: center; display: inline-block; margin: 0.5rem auto; color: #fff; width: 100%;
+    }
+    
+    /* RAÍZ CUADRADA RIGUROSA */
+    .radical-box { display: inline-flex; align-items: flex-start; vertical-align: middle; margin-left: 0.3rem; }
+    .radical-box .rad-symbol { font-family: Arial, sans-serif; font-size: 1.3em; line-height: 0.7; margin-top: 2px; margin-right: -1px; font-weight: normal; }
+    .radical-box .rad-content { border-top: 2px solid currentColor; padding: 3px 4px 0 2px; margin-top: 2px; font-family: monospace; }
+
+    /* SVG CANVAS PARA LOS EJES */
+    .svg-canvas {
+      width: 100%; height: 350px; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block;
+    }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Vectores en el Plano</h1>
+    <p>Aprende a moverte por el espacio bidimensional. Descubre las partes de una flecha, calcula su longitud con Pitágoras y opera con ellas visualmente.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('concepto', this)">🎯 1. ¿Qué es un Vector?</button>
+      <button class="tab-btn" onclick="switchTab('modulo', this)">📏 2. El Módulo</button>
+      <button class="tab-btn" onclick="switchTab('operaciones', this)">⚙️ 3. Operaciones</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: CONCEPTO Y PARTES ================= -->
+    <div id="concepto" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">Un desplazamiento en el espacio</div>
+        <div class="content-text">
+          En matemáticas y física, un <strong>vector</strong> es una flecha que indica un desplazamiento. Nos dice cuánto te mueves en horizontal (Eje X) y cuánto en vertical (Eje Y). Se escribe con sus dos coordenadas: <span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span> = (v<sub>x</sub>, v<sub>y</sub>).
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Laboratorio Vectorial</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Modifica las coordenadas y observa cómo cambia el vector.
+          </p>
+
+          <div class="slider-row">
+            <label class="c-x">Avance Horizontal (X):</label>
+            <input type="range" id="sl_vx" min="-6" max="6" value="4" oninput="updateVector1()">
+            <span class="val-badge c-x" id="v_sl_vx">4</span>
+          </div>
+          <div class="slider-row">
+            <label class="c-y">Avance Vertical (Y):</label>
+            <input type="range" id="sl_vy" min="-6" max="6" value="3" oninput="updateVector1()">
+            <span class="val-badge c-y" id="v_sl_vy">3</span>
+          </div>
+
+          <div class="math-formula" style="border-color:var(--accent-blue);">
+            <span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span> = ( <span class="c-x" id="txt_vx">4</span> , <span class="c-y" id="txt_vy">3</span> )
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:0.8rem; margin-top:1rem;">
+            <div class="info-card-item" style="border-left:3px solid var(--accent-success);">
+              <strong style="color:var(--accent-success);">1. Módulo (Longitud)</strong>
+              <span style="color:var(--text-muted); font-size:0.85rem;">Es lo que mide la flecha de largo. Cuanto mayores sean los números, más largo es el vector.</span>
+            </div>
+            <div class="info-card-item" style="border-left:3px solid var(--accent-gold);">
+              <strong style="color:var(--accent-gold);">2. Dirección (Inclinación)</strong>
+              <span style="color:var(--text-muted); font-size:0.85rem;">Es la recta imaginaria infinita sobre la que descansa la flecha.</span>
+            </div>
+            <div class="info-card-item" style="border-left:3px solid var(--accent-op);">
+              <strong style="color:var(--accent-op);">3. Sentido (La punta)</strong>
+              <span style="color:var(--text-muted); font-size:0.85rem;">Una misma dirección (recta) tiene dos sentidos posibles. La punta de la flecha decide hacia dónde vamos.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-blue);">
+          <svg class="svg-canvas" viewBox="-150 -150 300 300" id="svg_vector1" style="border:none;">
+            <defs>
+              <marker id="arrowhead_v" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-blue)" />
+              </marker>
+            </defs>
+            <g id="grid_v1"></g>
+            <line id="line_v1" x1="0" y1="0" x2="80" y2="-60" stroke="var(--accent-blue)" stroke-width="3" marker-end="url(#arrowhead_v)" />
+            <circle cx="0" cy="0" r="4" fill="#fff" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: EL MÓDULO ================= -->
+    <div id="modulo" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">El Teorema de Pitágoras al rescate</div>
+        <div class="content-text">
+          Si te fijas bien, la flecha de un vector siempre forma un <strong>triángulo rectángulo</strong> con sus componentes X e Y. Por tanto, para averiguar cuánto mide de largo el vector (su <strong>Módulo</strong>), solo tenemos que calcular la hipotenusa.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Calculadora de Módulo</div>
+          
+          <div class="slider-row">
+            <label class="c-x">Cateto X:</label>
+            <input type="range" id="sl_mod_x" min="-6" max="6" value="3" oninput="updateModulo()">
+            <span class="val-badge c-x" id="v_sl_mod_x">3</span>
+          </div>
+          <div class="slider-row">
+            <label class="c-y">Cateto Y:</label>
+            <input type="range" id="sl_mod_y" min="-6" max="6" value="4" oninput="updateModulo()">
+            <span class="val-badge c-y" id="v_sl_mod_y">4</span>
+          </div>
+
+          <div class="math-formula" style="border-color:var(--accent-success); font-size:1.2rem; padding:1.5rem 1rem;">
+            |<span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span>| = 
+            <span class="radical-box">
+              <span class="rad-symbol">√</span>
+              <span class="rad-content">(<span class="c-x">v<sub>x</sub></span>)² + (<span class="c-y">v<sub>y</sub></span>)²</span>
+            </span>
+          </div>
+
+          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.2rem; line-height:1.8; margin-top:1rem;">
+            |<span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span>| = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">(<span class="c-x" id="calc_mx">3</span>)² + (<span class="c-y" id="calc_my">4</span>)²</span></span><br>
+            |<span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span>| = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content"><span id="calc_mx2">9</span> + <span id="calc_my2">16</span></span></span><br>
+            |<span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span>| = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content" id="calc_sum">25</span></span> = <strong style="color:var(--accent-success); font-size:1.4rem;" id="calc_res">5</strong>
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-success);">
+          <svg class="svg-canvas" viewBox="-20 -20 180 180" id="svg_modulo" style="border:none;">
+            <defs>
+              <marker id="arrowhead_mod" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-blue)" />
+              </marker>
+            </defs>
+            <g id="grid_mod"></g>
+            
+            <path id="tri_fill" d="M 0 140 L 60 140 L 60 60 Z" fill="rgba(16, 185, 129, 0.1)" />
+            <line id="line_mod_x" x1="0" y1="140" x2="60" y2="140" stroke="#f472b6" stroke-width="4" stroke-dasharray="6" />
+            <line id="line_mod_y" x1="60" y1="140" x2="60" y2="60" stroke="#34d399" stroke-width="4" stroke-dasharray="6" />
+            
+            <line id="line_mod_v" x1="0" y1="140" x2="60" y2="60" stroke="var(--accent-blue)" stroke-width="3" marker-end="url(#arrowhead_mod)" />
+            <circle cx="0" cy="140" r="4" fill="#fff" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: OPERACIONES ================= -->
+    <div id="operaciones" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">Combinando fuerzas y descubriendo ángulos</div>
+        <div class="content-text">
+          Los vectores se pueden operar algebraicamente coordenada a coordenada, o de forma geométrica sobre el plano. Aquí dominaremos la Suma, la multiplicación por Escalar y el misterioso Producto Escalar.
+        </div>
+      </div>
+
+      <div class="subtabs-container">
+        <button class="subtab-btn active" onclick="switchSubTab('sub_suma', this)">➕ Suma</button>
+        <button class="subtab-btn" onclick="switchSubTab('sub_escalar', this)">✖️ Por un número</button>
+        <button class="subtab-btn" onclick="switchSubTab('sub_dot', this)" style="border-color:var(--accent-success);">⏺️ Producto Escalar</button>
+      </div>
+
+      <!-- 3.1 SUMA -->
+      <div id="sub_suma" class="subtab-content active">
+        <div class="grid-2">
+          <div class="panel-box">
+            <div class="panel-title">Método de la punta y la cola</div>
+            
+            <div class="slider-row">
+              <label class="c-v" style="width:50px;"><span class="vec"><span class="vec-arrow">→</span><span>v</span></span></label>
+              <input type="range" id="sl_sum_vx" min="-5" max="5" value="3" oninput="updateSuma()">
+              <input type="range" id="sl_sum_vy" min="-5" max="5" value="1" oninput="updateSuma()">
+            </div>
+            <div class="slider-row">
+              <label class="c-u" style="width:50px;"><span class="vec"><span class="vec-arrow">→</span><span>u</span></span></label>
+              <input type="range" id="sl_sum_ux" min="-5" max="5" value="1" oninput="updateSuma()">
+              <input type="range" id="sl_sum_uy" min="-5" max="5" value="4" oninput="updateSuma()">
+            </div>
+
+            <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.8; margin-top:1rem;">
+              <span style="color:var(--text-muted); font-size:0.85rem; text-transform:uppercase;">Analíticamente: (X con X, Y con Y)</span><br>
+              <span class="vec c-w"><span class="vec-arrow">→</span><span>w</span></span> = <span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span> + <span class="vec c-u"><span class="vec-arrow">→</span><span>u</span></span><br>
+              <span class="vec c-w"><span class="vec-arrow">→</span><span>w</span></span> = ( <span id="txt_s_vx" class="c-v">3</span> + <span id="txt_s_ux" class="c-u">1</span> , <span id="txt_s_vy" class="c-v">1</span> + <span id="txt_s_uy" class="c-u">4</span> )<br>
+              <span class="vec c-w"><span class="vec-arrow">→</span><span>w</span></span> = ( <strong class="c-w" id="txt_s_rx">4</strong> , <strong class="c-w" id="txt_s_ry">5</strong> )
+            </div>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-top:1rem;">
+              <em>Gráficamente: Colocamos la cola del vector naranja exactamente en la punta del vector azul. El resultado (verde) es el atajo directo desde el inicio hasta el final.</em>
+            </p>
+          </div>
+
+          <div class="panel-box" style="padding:0; border-color:var(--accent-success);">
+            <svg class="svg-canvas" viewBox="-120 -120 240 240" id="svg_suma" style="border:none;">
+              <defs>
+                <marker id="arrow_v" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-blue)" />
+                </marker>
+                <marker id="arrow_u" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-gold)" />
+                </marker>
+                <marker id="arrow_w" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-success)" />
+                </marker>
+              </defs>
+              <g id="grid_suma"></g>
+              
+              <line id="line_sum_v" x1="0" y1="0" x2="60" y2="-20" stroke="var(--accent-blue)" stroke-width="3" marker-end="url(#arrow_v)" />
+              <line id="line_sum_u_ghost" x1="0" y1="0" x2="20" y2="-80" stroke="var(--accent-gold)" stroke-width="2" stroke-dasharray="4" opacity="0.4" />
+              <line id="line_sum_u" x1="60" y1="-20" x2="80" y2="-100" stroke="var(--accent-gold)" stroke-width="3" marker-end="url(#arrow_u)" />
+              
+              <line id="line_sum_w" x1="0" y1="0" x2="80" y2="-100" stroke="var(--accent-success)" stroke-width="4" marker-end="url(#arrow_w)" />
+              <circle cx="0" cy="0" r="4" fill="#fff" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.2 ESCALAR -->
+      <div id="sub_escalar" class="subtab-content">
+        <div class="grid-2">
+          <div class="panel-box">
+            <div class="panel-title">Estirar, encoger e invertir</div>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+              Multiplicar un vector por un número suelto (escalar <em>k</em>) cambia su módulo. Si es negativo, también le da la vuelta (cambia el sentido).
+            </p>
+            
+            <div class="slider-row">
+              <label class="c-v" style="width:50px;"><span class="vec"><span class="vec-arrow">→</span><span>v</span></span></label>
+              <input type="range" id="sl_mul_vx" min="-3" max="3" value="2" oninput="updateEscalar()">
+              <input type="range" id="sl_mul_vy" min="-3" max="3" value="1" oninput="updateEscalar()">
+            </div>
+            <div class="slider-row" style="margin-top:1rem; border-top:1px solid var(--border-color); padding-top:1rem;">
+              <label style="width:120px; color:#c084fc;">Escalar (k):</label>
+              <input type="range" id="sl_mul_k" min="-3" max="3" step="0.5" value="2" oninput="updateEscalar()">
+              <span class="val-badge" id="v_sl_mul_k" style="color:#c084fc;">2</span>
+            </div>
+
+            <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.8; margin-top:1rem;">
+              <span class="vec c-w"><span class="vec-arrow">→</span><span>w</span></span> = <span style="color:#c084fc;" id="txt_m_k">2</span> · <span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span><br>
+              <span class="vec c-w"><span class="vec-arrow">→</span><span>w</span></span> = <span style="color:#c084fc;" id="txt_m_k2">2</span> · ( <span id="txt_m_vx" class="c-v">2</span> , <span id="txt_m_vy" class="c-v">1</span> )<br>
+              <span class="vec c-w"><span class="vec-arrow">→</span><span>w</span></span> = ( <strong class="c-w" id="txt_m_rx">4</strong> , <strong class="c-w" id="txt_m_ry">2</strong> )
+            </div>
+          </div>
+
+          <div class="panel-box" style="padding:0; border-color:#c084fc;">
+            <svg class="svg-canvas" viewBox="-120 -120 240 240" id="svg_escalar" style="border:none;">
+              <defs>
+                <marker id="arrow_k" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#c084fc" />
+                </marker>
+              </defs>
+              <g id="grid_escalar"></g>
+              
+              <line id="line_esc_v" x1="0" y1="0" x2="40" y2="-20" stroke="var(--accent-blue)" stroke-width="2" stroke-dasharray="4" opacity="0.6" marker-end="url(#arrow_v)" />
+              <line id="line_esc_w" x1="0" y1="0" x2="80" y2="-40" stroke="#c084fc" stroke-width="4" marker-end="url(#arrow_k)" />
+              <circle cx="0" cy="0" r="4" fill="#fff" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.3 PRODUCTO ESCALAR -->
+      <div id="sub_dot" class="subtab-content">
+        <div class="grid-2">
+          <div class="panel-box">
+            <div class="panel-title" style="color:var(--accent-success);">El Producto Escalar (u · v)</div>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+              Al multiplicar dos vectores, el resultado <strong>ya no es una flecha, es un solo número</strong>. Se calcula multiplicando sus X, multiplicando sus Y, y sumándolo todo. 
+              <br><br><strong>El truco mágico:</strong> Si el resultado da exactamente 0, los vectores forman un ángulo de 90º (son perpendiculares).
+            </p>
+            
+            <div class="slider-row">
+              <label class="c-v" style="width:50px;"><span class="vec"><span class="vec-arrow">→</span><span>v</span></span></label>
+              <input type="range" id="sl_dot_vx" min="-5" max="5" value="3" oninput="updateDot()">
+              <input type="range" id="sl_dot_vy" min="-5" max="5" value="1" oninput="updateDot()">
+            </div>
+            <div class="slider-row">
+              <label class="c-u" style="width:50px;"><span class="vec"><span class="vec-arrow">→</span><span>u</span></span></label>
+              <input type="range" id="sl_dot_ux" min="-5" max="5" value="-1" oninput="updateDot()">
+              <input type="range" id="sl_dot_uy" min="-5" max="5" value="3" oninput="updateDot()">
+            </div>
+
+            <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.8; margin-top:1rem;">
+              <span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span> · <span class="vec c-u"><span class="vec-arrow">→</span><span>u</span></span> = (v<sub>x</sub> · u<sub>x</sub>) + (v<sub>y</sub> · u<sub>y</sub>)<br><br>
+              <span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span> · <span class="vec c-u"><span class="vec-arrow">→</span><span>u</span></span> = (<span id="txt_d_vx" class="c-v">3</span> · <span id="txt_d_ux" class="c-u">-1</span>) + (<span id="txt_d_vy" class="c-v">1</span> · <span id="txt_d_uy" class="c-u">3</span>)<br>
+              <span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span> · <span class="vec c-u"><span class="vec-arrow">→</span><span>u</span></span> = <span id="txt_d_p1">-3</span> + <span id="txt_d_p2">3</span> = <strong style="font-size:1.5rem; color:#fff;" id="txt_d_res">0</strong>
+            </div>
+
+            <div id="dot_alert" style="margin-top:1rem; padding:0.8rem; border-radius:6px; font-weight:bold; text-align:center; background:rgba(16,185,129,0.1); color:var(--accent-success); border:1px solid var(--accent-success); display:none;">
+              ¡MAGIA! El resultado es 0. <br>Los vectores son PERPENDICULARES (90º).
+            </div>
+          </div>
+
+          <div class="panel-box" style="padding:0; border-color:var(--accent-success);">
+            <svg class="svg-canvas" viewBox="-120 -120 240 240" id="svg_dot" style="border:none;">
+              <g id="grid_dot"></g>
+              
+              <!-- Indicador 90 grados -->
+              <path id="angle_90" d="" fill="rgba(16,185,129,0.2)" stroke="var(--accent-success)" stroke-width="2" style="display:none;" />
+              
+              <line id="line_dot_v" x1="0" y1="0" x2="60" y2="-20" stroke="var(--accent-blue)" stroke-width="3" marker-end="url(#arrow_v)" />
+              <line id="line_dot_u" x1="0" y1="0" x2="-20" y2="-60" stroke="var(--accent-gold)" stroke-width="3" marker-end="url(#arrow_u)" />
+              <circle cx="0" cy="0" r="4" fill="#fff" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓN ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'concepto') updateVector1();
+      if (tabId === 'modulo') updateModulo();
+      if (tabId === 'operaciones') { updateSuma(); updateEscalar(); updateDot(); }
+    }
+
+    function switchSubTab(subtabId, btn) {
+      document.querySelectorAll('.subtab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(subtabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // --- FUNCIONES DE DIBUJO SVG (Cuadrículas) ---
+    function drawGrid(groupId, size, step) {
+      const g = document.getElementById(groupId);
+      let html = "";
+      for(let i = -size; i <= size; i+=step) {
+        html += `<line x1="${-size}" y1="${i}" x2="${size}" y2="${i}" stroke="rgba(255,255,255,0.05)" stroke-width="1" />`;
+        html += `<line x1="${i}" y1="${-size}" x2="${i}" y2="${size}" stroke="rgba(255,255,255,0.05)" stroke-width="1" />`;
+      }
+      html += `<line x1="${-size}" y1="0" x2="${size}" y2="0" stroke="#475569" stroke-width="2" />`;
+      html += `<line x1="0" y1="${-size}" x2="0" y2="${size}" stroke="#475569" stroke-width="2" />`;
+      for(let i = -size; i <= size; i+= (step*2)) {
+        if(i !== 0) {
+          html += `<text x="${i}" y="12" fill="#64748b" font-size="8" text-anchor="middle" font-family="monospace">${i/20}</text>`;
+          html += `<text x="-5" y="${-i+3}" fill="#64748b" font-size="8" text-anchor="end" font-family="monospace">${i/20}</text>`;
+        }
+      }
+      g.innerHTML = html;
+    }
+
+    drawGrid('grid_v1', 150, 20);
+    drawGrid('grid_suma', 120, 20);
+    drawGrid('grid_escalar', 120, 20);
+    drawGrid('grid_dot', 120, 20);
+
+    const gMod = document.getElementById('grid_mod');
+    let modHtml = "";
+    for(let i = -20; i <= 180; i+=20) {
+      modHtml += `<line x1="-20" y1="${i}" x2="180" y2="${i}" stroke="rgba(255,255,255,0.05)" stroke-width="1" />`;
+      modHtml += `<line x1="${i}" y1="-20" x2="${i}" y2="180" stroke="rgba(255,255,255,0.05)" stroke-width="1" />`;
+    }
+    modHtml += `<line x1="-20" y1="140" x2="180" y2="140" stroke="#475569" stroke-width="2" />`;
+    modHtml += `<line x1="0" y1="-20" x2="0" y2="180" stroke="#475569" stroke-width="2" />`;
+    for(let i = 20; i <= 160; i+=20) {
+      modHtml += `<text x="${i}" y="152" fill="#64748b" font-size="8" text-anchor="middle" font-family="monospace">${i/20}</text>`;
+      modHtml += `<text x="-5" y="${140-i+3}" fill="#64748b" font-size="8" text-anchor="end" font-family="monospace">${i/20}</text>`;
+    }
+    gMod.innerHTML = modHtml;
+
+    // =========================================================================
+    // 1. CONCEPTO
+    // =========================================================================
+    function updateVector1() {
+      const vx = parseInt(document.getElementById('sl_vx').value);
+      const vy = parseInt(document.getElementById('sl_vy').value);
+
+      document.getElementById('v_sl_vx').innerText = vx;
+      document.getElementById('v_sl_vy').innerText = vy;
+      document.getElementById('txt_vx').innerText = vx;
+      document.getElementById('txt_vy').innerText = vy;
+
+      document.getElementById('line_v1').setAttribute('x2', vx * 20);
+      document.getElementById('line_v1').setAttribute('y2', -vy * 20);
+    }
+    updateVector1();
+
+    // =========================================================================
+    // 2. MÓDULO
+    // =========================================================================
+    function updateModulo() {
+      const vx = parseInt(document.getElementById('sl_mod_x').value);
+      const vy = parseInt(document.getElementById('sl_mod_y').value);
+
+      document.getElementById('v_sl_mod_x').innerText = vx;
+      document.getElementById('v_sl_mod_y').innerText = vy;
+      
+      document.getElementById('calc_mx').innerText = vx;
+      document.getElementById('calc_my').innerText = vy;
+      
+      const mx2 = vx * vx;
+      const my2 = vy * vy;
+      const sum = mx2 + my2;
+      const res = Math.sqrt(sum);
+
+      document.getElementById('calc_mx2').innerText = mx2;
+      document.getElementById('calc_my2').innerText = my2;
+      document.getElementById('calc_sum').innerText = sum;
+      document.getElementById('calc_res').innerText = Number.isInteger(res) ? res : res.toFixed(2);
+
+      const px = vx * 20;
+      const py = 140 - (vy * 20);
+
+      document.getElementById('line_mod_x').setAttribute('x2', px);
+      document.getElementById('line_mod_y').setAttribute('x1', px);
+      document.getElementById('line_mod_y').setAttribute('x2', px);
+      document.getElementById('line_mod_y').setAttribute('y2', py);
+      document.getElementById('tri_fill').setAttribute('d', `M 0 140 L ${px} 140 L ${px} ${py} Z`);
+      document.getElementById('line_mod_v').setAttribute('x2', px);
+      document.getElementById('line_mod_v').setAttribute('y2', py);
+    }
+    updateModulo();
+
+    // =========================================================================
+    // 3. OPERACIONES
+    // =========================================================================
+    function updateSuma() {
+      const vx = parseInt(document.getElementById('sl_sum_vx').value);
+      const vy = parseInt(document.getElementById('sl_sum_vy').value);
+      const ux = parseInt(document.getElementById('sl_sum_ux').value);
+      const uy = parseInt(document.getElementById('sl_sum_uy').value);
+
+      document.getElementById('txt_s_vx').innerText = vx;
+      document.getElementById('txt_s_vy').innerText = vy;
+      document.getElementById('txt_s_ux').innerText = ux;
+      document.getElementById('txt_s_uy').innerText = uy;
+      document.getElementById('txt_s_rx').innerText = vx + ux;
+      document.getElementById('txt_s_ry').innerText = vy + uy;
+
+      const p_vx = vx * 20; const p_vy = -vy * 20;
+      const p_ux = ux * 20; const p_uy = -uy * 20;
+      const p_rx = (vx+ux)*20; const p_ry = -(vy+uy)*20;
+
+      document.getElementById('line_sum_v').setAttribute('x2', p_vx);
+      document.getElementById('line_sum_v').setAttribute('y2', p_vy);
+      document.getElementById('line_sum_u_ghost').setAttribute('x2', p_ux);
+      document.getElementById('line_sum_u_ghost').setAttribute('y2', p_uy);
+      document.getElementById('line_sum_u').setAttribute('x1', p_vx);
+      document.getElementById('line_sum_u').setAttribute('y1', p_vy);
+      document.getElementById('line_sum_u').setAttribute('x2', p_rx);
+      document.getElementById('line_sum_u').setAttribute('y2', p_ry);
+      document.getElementById('line_sum_w').setAttribute('x2', p_rx);
+      document.getElementById('line_sum_w').setAttribute('y2', p_ry);
+    }
+    
+    function updateEscalar() {
+      const vx = parseInt(document.getElementById('sl_mul_vx').value);
+      const vy = parseInt(document.getElementById('sl_mul_vy').value);
+      const k = parseFloat(document.getElementById('sl_mul_k').value);
+
+      document.getElementById('v_sl_mul_k').innerText = k;
+
+      document.getElementById('txt_m_k').innerText = k;
+      document.getElementById('txt_m_k2').innerText = k;
+      document.getElementById('txt_m_vx').innerText = vx;
+      document.getElementById('txt_m_vy').innerText = vy;
+      document.getElementById('txt_m_rx').innerText = vx * k;
+      document.getElementById('txt_m_ry').innerText = vy * k;
+
+      const p_vx = vx * 20; const p_vy = -vy * 20;
+      const p_rx = (vx*k)*20; const p_ry = -(vy*k)*20;
+
+      document.getElementById('line_esc_v').setAttribute('x2', p_vx);
+      document.getElementById('line_esc_v').setAttribute('y2', p_vy);
+
+      if (k === 0) {
+        document.getElementById('line_esc_w').style.display = "none";
+      } else {
+        document.getElementById('line_esc_w').style.display = "block";
+        document.getElementById('line_esc_w').setAttribute('x2', p_rx);
+        document.getElementById('line_esc_w').setAttribute('y2', p_ry);
+      }
+    }
+
+    function updateDot() {
+      const vx = parseInt(document.getElementById('sl_dot_vx').value);
+      const vy = parseInt(document.getElementById('sl_dot_vy').value);
+      const ux = parseInt(document.getElementById('sl_dot_ux').value);
+      const uy = parseInt(document.getElementById('sl_dot_uy').value);
+
+      const p1 = vx * ux;
+      const p2 = vy * uy;
+      const dot = p1 + p2;
+
+      document.getElementById('txt_d_vx').innerText = vx;
+      document.getElementById('txt_d_vy').innerText = vy;
+      document.getElementById('txt_d_ux').innerText = ux;
+      document.getElementById('txt_d_uy').innerText = uy;
+      
+      document.getElementById('txt_d_p1').innerText = p1;
+      // Handle formatting negative addition
+      document.getElementById('txt_d_p2').innerText = p2 >= 0 ? `+ ${p2}` : `- ${Math.abs(p2)}`;
+      
+      const resEl = document.getElementById('txt_d_res');
+      resEl.innerText = dot;
+
+      // Actualizar SVG
+      const p_vx = vx * 20; const p_vy = -vy * 20;
+      const p_ux = ux * 20; const p_uy = -uy * 20;
+
+      document.getElementById('line_dot_v').setAttribute('x2', p_vx);
+      document.getElementById('line_dot_v').setAttribute('y2', p_vy);
+      document.getElementById('line_dot_u').setAttribute('x2', p_ux);
+      document.getElementById('line_dot_u').setAttribute('y2', p_uy);
+
+      const alertBox = document.getElementById('dot_alert');
+      const angleMarker = document.getElementById('angle_90');
+
+      if (dot === 0 && (vx!==0 || vy!==0) && (ux!==0 || uy!==0)) {
+        resEl.style.color = "var(--accent-success)";
+        alertBox.style.display = "block";
+        
+        // Dibujar el cuadradito de 90 grados en el origen
+        // Normalizamos los vectores a longitud 15px para el marcador
+        const lenV = Math.sqrt(p_vx*p_vx + p_vy*p_vy);
+        const lenU = Math.sqrt(p_ux*p_ux + p_uy*p_uy);
+        const nv_x = (p_vx/lenV)*15; const nv_y = (p_vy/lenV)*15;
+        const nu_x = (p_ux/lenU)*15; const nu_y = (p_uy/lenU)*15;
+        
+        angleMarker.style.display = "block";
+        angleMarker.setAttribute('d', `M ${nv_x} ${nv_y} L ${nv_x + nu_x} ${nv_y + nu_y} L ${nu_x} ${nu_y} L 0 0 Z`);
+      } else {
+        resEl.style.color = "#fff";
+        alertBox.style.display = "none";
+        angleMarker.style.display = "none";
+      }
+    }
+    
+    updateSuma();
+    updateEscalar();
+    updateDot();
+
+  </script>
+</body>
+</html>

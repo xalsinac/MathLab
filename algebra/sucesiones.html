@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Álgebra: Sucesiones y Progresiones</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 0.5rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* TARJETAS INFORMATIVAS */
+    .info-card-item {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.3rem;
+    }
+    .warning-box {
+      background: rgba(244, 63, 94, 0.08); border: 1px solid var(--accent-op);
+      border-radius: 8px; padding: 1.1rem; line-height: 1.5; font-size: 0.95rem;
+    }
+
+    /* COLORES PEDAGÓGICOS */
+    .var-n { color: var(--accent-success); font-weight: bold; } /* Posición */
+    .var-a1 { color: var(--accent-gold); font-weight: bold; } /* Primer término */
+    .var-d { color: var(--accent-blue); font-weight: bold; } /* Diferencia */
+    .var-r { color: #c084fc; font-weight: bold; } /* Razón (morado) */
+
+    /* FÓRMULAS Y SECUENCIAS */
+    .math-formula {
+      font-family: 'Courier New', Courier, monospace; font-size: 1.25rem; font-weight: bold;
+      background: #090d16; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
+      text-align: center; display: inline-flex; align-items: center; justify-content: center; margin: 0.3rem 0; color: #fff; width: 100%;
+    }
+    .fraction-vertical {
+      display: inline-flex; flex-direction: column; vertical-align: middle;
+      text-align: center; margin: 0 0.4rem; line-height: 1.2; font-family: monospace; font-size: 0.9em;
+    }
+    .fraction-vertical .num { border-bottom: 2px solid currentColor; padding: 0 0.3rem 2px 0.3rem; }
+    .fraction-vertical .den { padding: 2px 0.3rem 0 0.3rem; }
+
+    /* RAÍZ CUADRADA RIGUROSA (Para el producto) */
+    .radical-box { display: inline-flex; align-items: flex-start; vertical-align: middle; margin-left: 0.3rem; }
+    .radical-box .rad-symbol { font-family: Arial, sans-serif; font-size: 1.3em; line-height: 0.7; margin-top: 2px; margin-right: -1px; font-weight: normal; }
+    .radical-box .rad-content { border-top: 2px solid currentColor; padding: 3px 4px 0 2px; margin-top: 2px; font-family: monospace; }
+
+    /* CAJAS DE SECUENCIA */
+    .sequence-row { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin: 1rem 0; }
+    .seq-term { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
+    .seq-box {
+      background: #0b1120; border: 2px solid var(--border-color); border-radius: 8px;
+      width: 50px; height: 50px; display: flex; justify-content: center; align-items: center;
+      font-family: monospace; font-size: 1.2rem; font-weight: bold; color: #fff; text-align: center;
+    }
+    .seq-index { font-size: 0.8rem; color: var(--text-muted); font-family: monospace; }
+    .seq-jump {
+      color: var(--accent-blue); font-weight: bold; font-family: monospace; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center; width: 40px;
+    }
+
+    /* CONTROLES SLIDER */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .slider-row label { width: 160px; font-weight: 600; font-family: monospace; font-size: 0.95rem; }
+    .val-badge { width: 45px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; }
+
+    /* SVG CANVAS */
+    .svg-canvas {
+      width: 100%; height: 200px; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block;
+    }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .math-formula { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Sucesiones y Progresiones</h1>
+    <p>Descubre los patrones ocultos en las listas de números, aprende a calcular cualquier posición y a sumar o multiplicar la lista entera de un plumazo.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('concepto', this)">🔍 1. Concepto y Fórmulas</button>
+      <button class="tab-btn" onclick="switchTab('aritmeticas', this)">➕ 2. Prog. Aritméticas</button>
+      <button class="tab-btn" onclick="switchTab('geometricas', this)">✖️ 3. Prog. Geométricas</button>
+      <button class="tab-btn" onclick="switchTab('series', this)">♾️ 4. Series al Infinito</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: CONCEPTO Y TÉRMINO GENERAL ================= -->
+    <div id="concepto" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">Listas con reglas secretas</div>
+        <div class="content-text">
+          Una <strong>sucesión</strong> es una lista de números ordenados que siguen un patrón lógico. Cada número se llama "término" y ocupa una posición exacta indicada por la letra <strong class="var-n">n</strong> (1º, 2º, 3º...). 
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">El Vocabulario Básico</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Analicemos la sucesión de los números impares:
+          </p>
+          
+          <div class="sequence-row">
+            <div class="seq-term">
+              <div class="seq-box">1</div>
+              <div class="seq-index">a₁ <span style="color:var(--text-muted);">(n=1)</span></div>
+            </div>
+            <div class="seq-term">
+              <div class="seq-box">3</div>
+              <div class="seq-index">a₂ <span style="color:var(--text-muted);">(n=2)</span></div>
+            </div>
+            <div class="seq-term">
+              <div class="seq-box">5</div>
+              <div class="seq-index">a₃ <span style="color:var(--text-muted);">(n=3)</span></div>
+            </div>
+            <div class="seq-term">
+              <div class="seq-box">7</div>
+              <div class="seq-index">a₄ <span style="color:var(--text-muted);">(n=4)</span></div>
+            </div>
+            <div class="seq-term">
+              <div class="seq-box" style="border-style:dashed;">?</div>
+              <div class="seq-index">aₙ</div>
+            </div>
+          </div>
+
+          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem; line-height:1.6; margin-top:1rem;">
+            • <strong class="var-a1">a₁</strong>: Es el primer término (aquí vale 1).<br>
+            • <strong class="var-n">n</strong>: Es el "DNI" del número, su posición en la fila.<br>
+            • <strong>Término General (aₙ)</strong>: Es la fórmula mágica. Si sustituimos la <strong class="var-n">n</strong> por 100, nos escupe quién está en la posición número 100 sin calcular los 99 anteriores.
+          </div>
+        </div>
+
+        <div class="panel-box" style="border-color:var(--accent-success);">
+          <div class="panel-title" style="color:var(--accent-success);">Cómo descubrir la fórmula (aₙ) tú mismo</div>
+          
+          <div style="display:flex; flex-direction:column; gap:1rem;">
+            <div class="info-card-item">
+              <strong>Paso 1: Mira los saltos</strong>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+                Si la sucesión salta de 3 en 3 (ej: 2, 5, 8, 11...), significa que es prima hermana de la tabla del 3. Así que tu fórmula <strong>siempre empezará por 3n</strong>.
+              </p>
+            </div>
+
+            <div class="info-card-item">
+              <strong>Paso 2: Haz la prueba con n=1</strong>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+                Sustituye <strong class="var-n">n=1</strong> en tu trozo de fórmula: 3 · (1) = 3.<br>
+                Pero espera, nuestro primer término real es el <strong>2</strong>. Nos hemos pasado.
+              </p>
+            </div>
+
+            <div class="info-card-item" style="border-left:3px solid var(--accent-success);">
+              <strong>Paso 3: Ajusta la fórmula sumando o restando</strong>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+                Si la tabla del 3 nos da "3", pero necesitamos un "2", solo hay que restarle 1 a la fórmula entera. ¡Prueba conseguida!
+              </p>
+              <div class="math-formula" style="font-size:1.2rem; margin:0.5rem 0 0 0; color:var(--accent-success); border-color:var(--accent-success);">aₙ = 3n - 1</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: PROGRESIONES ARITMÉTICAS ================= -->
+    <div id="aritmeticas" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+        <div class="badge" style="color: var(--accent-blue);">El arte de Sumar</div>
+        <div class="content-text">
+          Una <strong>Progresión Aritmética</strong> es una sucesión donde cada término se obtiene <strong>sumando (o restando) siempre la misma cantidad</strong> al anterior. Esa cantidad fija se llama Diferencia (<strong class="var-d">d</strong>).
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- FÓRMULAS ARITMÉTICAS -->
+        <div class="panel-box">
+          <div class="panel-title">El Panel de Fórmulas</div>
+          
+          <div style="display:flex; flex-direction:column; gap:0.5rem;">
+            <div style="color:var(--text-muted); font-size:0.85rem; text-transform:uppercase;">1. Buscar una posición exacta (aₙ)</div>
+            <div class="math-formula" style="border-color:var(--accent-blue);">
+              a<sub style="color:var(--text-muted);">n</sub> = 
+              <span class="var-a1">a₁</span> + 
+              (<span class="var-n">n</span> - 1) · <span class="var-d">d</span>
+            </div>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">
+              <em>¿Por qué (n - 1)? Para llegar al 5º escalón, no das 5 saltos, das 4 saltos desde el inicio. El número de saltos siempre es uno menos que la posición final.</em>
+            </p>
+
+            <div style="color:var(--text-muted); font-size:0.85rem; text-transform:uppercase;">2. Sumar toda la fila de golpe (Sₙ)</div>
+            <div class="math-formula" style="border-color:var(--accent-success);">
+              S<sub style="color:var(--text-muted);">n</sub> = 
+              <span class="fraction-vertical">
+                <span class="num">(<span class="var-a1">a₁</span> + a<sub style="color:var(--text-muted);">n</sub>) · <span class="var-n">n</span></span>
+                <span class="den">2</span>
+              </span>
+            </div>
+            <p style="color:var(--text-muted); font-size:0.85rem;">
+              <em>La trampa de Gauss: Si sumas el 1º con el último da lo mismo que el 2º con el penúltimo. Agrupamos por parejas y multiplicamos.</em>
+            </p>
+          </div>
+        </div>
+
+        <!-- SIMULADOR ARITMÉTICO -->
+        <div class="panel-box">
+          <div class="panel-title">Simulador Total Aritmético</div>
+          
+          <div class="slider-row">
+            <label class="var-a1">Primer término (a₁):</label>
+            <input type="range" id="sl_a1" min="-10" max="20" value="3" oninput="updateArith()">
+            <span class="val-badge var-a1" id="v_sl_a1">3</span>
+          </div>
+          <div class="slider-row">
+            <label class="var-d">Diferencia (d):</label>
+            <input type="range" id="sl_d" min="-5" max="10" value="4" oninput="updateArith()">
+            <span class="val-badge var-d" id="v_sl_d">4</span>
+          </div>
+          <div class="slider-row" style="border-bottom:1px solid var(--border-color); padding-bottom:1rem;">
+            <label class="var-n">Términos a calcular (n):</label>
+            <input type="range" id="sl_n" min="2" max="50" value="10" oninput="updateArith()">
+            <span class="val-badge var-n" id="v_sl_n">10</span>
+          </div>
+
+          <div id="arith_seq_view" class="sequence-row" style="margin-top:0.5rem;">
+            <!-- Generado por JS -->
+          </div>
+
+          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.6; margin-top:0.5rem;">
+            <div style="color:var(--accent-blue);">➔ Posición a<sub id="calc_n_idx" style="font-size:0.7em;"></sub>:</div>
+            <div id="arith_calc_an" style="font-weight:bold; font-size:1.3rem; margin-bottom:0.8rem; color:#fff;"></div>
+            
+            <div style="color:var(--accent-success);">➔ Suma total (S<sub id="calc_n_idx2" style="font-size:0.7em;"></sub>):</div>
+            <div id="arith_calc_sn" style="font-weight:bold; font-size:1.3rem; color:#fff;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: PROGRESIONES GEOMÉTRICAS ================= -->
+    <div id="geometricas" class="tab-content">
+      <div class="explanation-card" style="border-left-color: #c084fc;">
+        <div class="badge" style="color: #c084fc;">El arte de Multiplicar (Crecimiento Explosivo)</div>
+        <div class="content-text">
+          Una <strong>Progresión Geométrica</strong> es aquella donde cada término se obtiene <strong>multiplicando</strong> el anterior por un número fijo llamado Razón (<strong class="var-r">r</strong>). Aquí los números crecen o encogen a una velocidad exponencial.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- FÓRMULAS GEOMÉTRICAS -->
+        <div class="panel-box">
+          <div class="panel-title">El Panel de Fórmulas</div>
+          
+          <div style="display:flex; flex-direction:column; gap:0.5rem;">
+            <div style="color:var(--text-muted); font-size:0.85rem; text-transform:uppercase;">1. Buscar una posición (aₙ)</div>
+            <div class="math-formula" style="border-color:#c084fc;">
+              a<sub style="color:var(--text-muted);">n</sub> = 
+              <span class="var-a1">a₁</span> · <span class="var-r">r</span><sup style="color:var(--text-muted);"><span class="var-n">n</span>-1</sup>
+            </div>
+
+            <div style="color:var(--text-muted); font-size:0.85rem; text-transform:uppercase; margin-top:0.5rem;">2. Sumar toda la fila (Sₙ)</div>
+            <div class="math-formula" style="border-color:var(--accent-success);">
+              S<sub style="color:var(--text-muted);">n</sub> = 
+              <span class="fraction-vertical">
+                <span class="num">a<sub style="color:var(--text-muted);">n</sub> · <span class="var-r">r</span> - <span class="var-a1">a₁</span></span>
+                <span class="den"><span class="var-r">r</span> - 1</span>
+              </span>
+            </div>
+
+            <div style="color:var(--text-muted); font-size:0.85rem; text-transform:uppercase; margin-top:0.5rem;">3. Multiplicar toda la fila (Pₙ)</div>
+            <div class="math-formula" style="border-color:var(--accent-gold);">
+              P<sub style="color:var(--text-muted);">n</sub> = 
+              <span class="radical-box">
+                <span class="rad-symbol">√</span>
+                <span class="rad-content">(<span class="var-a1">a₁</span> · a<sub style="color:var(--text-muted);">n</sub>)<sup style="color:var(--text-muted);"><span class="var-n">n</span></sup></span>
+              </span>
+            </div>
+            <p style="color:var(--text-muted); font-size:0.8rem; margin-top:0.2rem; line-height:1.4;">
+              <em>Al igual que en la suma de Gauss, si multiplicamos el 1º por el último da lo mismo que el 2º por el penúltimo.</em>
+            </p>
+          </div>
+        </div>
+
+        <!-- SIMULADOR GEOMÉTRICO -->
+        <div class="panel-box">
+          <div class="panel-title">Simulador Total Geométrico</div>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">
+            Ojo: al multiplicar continuamente, los resultados y el producto se hacen gigantescos enseguida.
+          </p>
+
+          <div class="slider-row">
+            <label class="var-a1">Primer término (a₁):</label>
+            <input type="range" id="sl_g_a1" min="1" max="5" value="2" oninput="updateGeom()">
+            <span class="val-badge var-a1" id="v_sl_g_a1">2</span>
+          </div>
+          <div class="slider-row">
+            <label class="var-r">Razón (r):</label>
+            <input type="range" id="sl_g_r" min="-3" max="4" value="3" oninput="updateGeom()">
+            <span class="val-badge var-r" id="v_sl_g_r">3</span>
+          </div>
+          <div class="slider-row" style="border-bottom:1px solid var(--border-color); padding-bottom:1rem;">
+            <label class="var-n">Términos a calcular (n):</label>
+            <input type="range" id="sl_g_n" min="2" max="12" value="6" oninput="updateGeom()">
+            <span class="val-badge var-n" id="v_sl_g_n">6</span>
+          </div>
+
+          <div id="geom_seq_view" class="sequence-row" style="margin-top:0.5rem;">
+            <!-- Generado por JS -->
+          </div>
+
+          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.6; margin-top:0.5rem; overflow-x:auto;">
+            <div style="color:#c084fc;">➔ Posición a<sub id="calc_g_idx" style="font-size:0.7em;"></sub>:</div>
+            <div id="geom_calc_an" style="font-weight:bold; font-size:1.3rem; margin-bottom:0.8rem; color:#fff;"></div>
+            
+            <div style="color:var(--accent-success);">➔ Suma total (S<sub id="calc_g_idx2" style="font-size:0.7em;"></sub>):</div>
+            <div id="geom_calc_sn" style="font-weight:bold; font-size:1.3rem; margin-bottom:0.8rem; color:#fff;"></div>
+
+            <div style="color:var(--accent-gold);">➔ Producto total (P<sub id="calc_g_idx3" style="font-size:0.7em;"></sub>):</div>
+            <div id="geom_calc_pn" style="font-weight:bold; font-size:1.3rem; color:#fff;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: SERIES FINITAS E INFINITO ================= -->
+    <div id="series" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">Sumando hasta el final de los tiempos</div>
+        <div class="content-text">
+          ¿Se pueden sumar infinitos números y que el resultado no sea infinito? <strong>Sí, siempre y cuando los números encojan lo suficientemente rápido.</strong> Esto ocurre en las series geométricas donde la razón es una fracción pequeña (entre -1 y 1).
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Fórmula de la Suma Infinita (S<sub style="font-size:0.7em;">∞</sub>)</div>
+          
+          <div style="text-align:center; margin-bottom:1rem;">
+            <div class="math-formula" style="border-color:var(--accent-success); font-size:1.6rem; padding:1.5rem;">
+              S<sub style="color:var(--text-muted); font-size:0.6em;">∞</sub> = 
+              <span class="fraction-vertical">
+                <span class="num"><span class="var-a1">a₁</span></span>
+                <span class="den">1 - <span class="var-r">r</span></span>
+              </span>
+            </div>
+            <div style="color:var(--text-muted); font-size:0.9rem; margin-top:0.5rem;">Condición obligatoria: <strong>-1 < r < 1</strong></div>
+          </div>
+
+          <div class="info-card-item">
+            <strong>Ejemplo de examen:</strong>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-top:0.2rem;">
+              Suma todos los infinitos términos de la sucesión: 8, 4, 2, 1, 0.5...<br>
+              • Primer término (a₁) = 8<br>
+              • Razón (r) = 1/2 (o 0.5) porque cada uno es la mitad del anterior.
+            </p>
+            <div style="font-family:monospace; margin-top:0.4rem; color:#fff; font-size:1.1rem; text-align:center;">
+              S<sub style="font-size:0.6em;">∞</sub> = 8 / (1 - 0.5) = 8 / 0.5 = <strong style="color:var(--accent-success);">16</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="border-color:var(--accent-op);">
+          <div class="panel-title" style="color:var(--accent-op);">La Paradoja de Zenón</div>
+          <p style="color:var(--text-main); font-size:0.95rem; margin-bottom:1rem;">
+            Si caminas hacia una pared dando pasos que son siempre la mitad del paso anterior (1/2 metro, luego 1/4, luego 1/8...), darás <strong>infinitos pasos</strong>, pero nunca te estrellarás, porque en total habrás avanzado exactamente <strong>1 metro</strong>.
+          </p>
+
+          <svg class="svg-canvas" viewBox="0 0 300 80" style="height:120px; background:#0b1120;">
+            <!-- Barra completa = 1 -->
+            <rect x="10" y="30" width="280" height="30" fill="none" stroke="#475569" stroke-width="2" />
+            
+            <!-- Mitades -->
+            <rect x="10" y="30" width="140" height="30" fill="var(--accent-success)" />
+            <text x="70" y="50" fill="#000" font-weight="bold" font-size="14" text-anchor="middle">1/2</text>
+            
+            <rect x="150" y="30" width="70" height="30" fill="var(--accent-blue)" />
+            <text x="185" y="50" fill="#000" font-weight="bold" font-size="14" text-anchor="middle">1/4</text>
+            
+            <rect x="220" y="30" width="35" height="30" fill="var(--accent-gold)" />
+            <text x="237" y="50" fill="#000" font-weight="bold" font-size="12" text-anchor="middle">1/8</text>
+
+            <rect x="255" y="30" width="17.5" height="30" fill="#c084fc" />
+            <rect x="272.5" y="30" width="8.75" height="30" fill="var(--text-main)" />
+          </svg>
+
+          <div style="font-family:monospace; margin-top:1rem; color:var(--text-muted); font-size:0.95rem; text-align:center;">
+            1/2 + 1/4 + 1/8 + 1/16 + ... = <strong style="color:var(--accent-success); font-size:1.2rem;">1</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // Formateador para números gigantes (Geométricas)
+    function formatBigNumber(num) {
+      if (Math.abs(num) >= 1e9) {
+        return num.toExponential(2).replace('e+', ' · 10^');
+      }
+      return num.toLocaleString('es-ES');
+    }
+
+    // --- NAVEGACIÓN ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'aritmeticas') updateArith();
+      if (tabId === 'geometricas') updateGeom();
+    }
+
+    // =========================================================================
+    // 2. SIMULACIÓN PROG. ARITMÉTICAS
+    // =========================================================================
+    function updateArith() {
+      const a1 = parseInt(document.getElementById('sl_a1').value);
+      const d = parseInt(document.getElementById('sl_d').value);
+      const n = parseInt(document.getElementById('sl_n').value);
+
+      document.getElementById('v_sl_a1').innerText = a1;
+      document.getElementById('v_sl_d').innerText = d;
+      document.getElementById('v_sl_n').innerText = n;
+      document.getElementById('calc_n_idx').innerText = n;
+      document.getElementById('calc_n_idx2').innerText = n;
+
+      // Generar secuencia visual (primeros 3 términos y el último)
+      let seqHTML = "";
+      for (let i = 1; i <= Math.min(3, n); i++) {
+        const val = a1 + (i - 1) * d;
+        seqHTML += `
+          <div class="seq-term">
+            <div class="seq-box" style="border-color:var(--accent-blue);">${val}</div>
+            <div class="seq-index">a<sub style="font-size:0.6rem;">${i}</sub></div>
+          </div>
+        `;
+        if (i < n && i < 3) {
+          seqHTML += `<div class="seq-jump">${d >= 0 ? '+' : ''}${d}</div>`;
+        }
+      }
+      if (n > 3) {
+        seqHTML += `<div class="seq-jump">...</div>`;
+        const valN = a1 + (n - 1) * d;
+        seqHTML += `
+          <div class="seq-term">
+            <div class="seq-box" style="border-style:dashed; border-color:var(--accent-blue);">${valN}</div>
+            <div class="seq-index">a<sub style="font-size:0.6rem;">${n}</sub></div>
+          </div>
+        `;
+      }
+      document.getElementById('arith_seq_view').innerHTML = seqHTML;
+
+      // Cálculos Matemáticos Reales
+      const an = a1 + (n - 1) * d;
+      const sn = ((a1 + an) * n) / 2;
+      
+      document.getElementById('arith_calc_an').innerText = an.toLocaleString('es-ES');
+      document.getElementById('arith_calc_sn').innerText = sn.toLocaleString('es-ES');
+    }
+    updateArith();
+
+    // =========================================================================
+    // 3. SIMULACIÓN PROG. GEOMÉTRICAS
+    // =========================================================================
+    function updateGeom() {
+      const a1 = parseInt(document.getElementById('sl_g_a1').value);
+      const r = parseInt(document.getElementById('sl_g_r').value);
+      const n = parseInt(document.getElementById('sl_g_n').value);
+
+      document.getElementById('v_sl_g_a1').innerText = a1;
+      document.getElementById('v_sl_g_r').innerText = r;
+      document.getElementById('v_sl_g_n').innerText = n;
+      document.getElementById('calc_g_idx').innerText = n;
+      document.getElementById('calc_g_idx2').innerText = n;
+      document.getElementById('calc_g_idx3').innerText = n;
+
+      // Generar secuencia visual
+      let seqHTML = "";
+      for (let i = 1; i <= Math.min(3, n); i++) {
+        const val = a1 * Math.pow(r, i - 1);
+        seqHTML += `
+          <div class="seq-term">
+            <div class="seq-box" style="border-color:#c084fc; font-size:${Math.abs(val)>999?'0.9rem':'1.2rem'}">${val}</div>
+            <div class="seq-index">a<sub style="font-size:0.6rem;">${i}</sub></div>
+          </div>
+        `;
+        if (i < n && i < 3) {
+          seqHTML += `<div class="seq-jump" style="color:#c084fc;">·${r}</div>`;
+        }
+      }
+      if (n > 3) {
+        seqHTML += `<div class="seq-jump" style="color:#c084fc;">...</div>`;
+        const valN = a1 * Math.pow(r, n - 1);
+        seqHTML += `
+          <div class="seq-term">
+            <div class="seq-box" style="border-style:dashed; border-color:#c084fc; font-size:${Math.abs(valN)>999?'0.8rem':'1.2rem'}">${formatBigNumber(valN)}</div>
+            <div class="seq-index">a<sub style="font-size:0.6rem;">${n}</sub></div>
+          </div>
+        `;
+      }
+      document.getElementById('geom_seq_view').innerHTML = seqHTML;
+
+      // Cálculos Matemáticos Reales
+      const an = a1 * Math.pow(r, n - 1);
+      
+      let sn = 0;
+      if (r === 1) {
+        sn = a1 * n;
+      } else {
+        sn = (an * r - a1) / (r - 1);
+      }
+
+      // El producto requiere cuidado con números negativos elevados a n y la raíz cuadrada
+      // Pn = sqrt((a1 * an)^n) -> Esto puede dar NaN si (a1*an)^n es negativo
+      // Usamos la fórmula equivalente: Pn = a1^n * r^(n*(n-1)/2)
+      const powerR = (n * (n - 1)) / 2;
+      let pn = Math.pow(a1, n) * Math.pow(r, powerR);
+
+      document.getElementById('geom_calc_an').innerText = formatBigNumber(an);
+      document.getElementById('geom_calc_sn').innerText = formatBigNumber(sn);
+      
+      const pnDisplay = document.getElementById('geom_calc_pn');
+      if (isNaN(pn)) {
+        pnDisplay.innerText = "No real (Raíz negativa)";
+      } else {
+        pnDisplay.innerText = formatBigNumber(pn);
+      }
+    }
+    updateGeom();
+
+  </script>
+</body>
+</html>

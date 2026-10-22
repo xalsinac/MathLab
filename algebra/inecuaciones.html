@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Álgebra: Inecuaciones y Sistemas</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 0.5rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* TARJETAS INFORMATIVAS Y CAJAS */
+    .info-card-item {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.3rem;
+    }
+    .warning-box {
+      background: rgba(244, 63, 94, 0.08); border: 1px solid var(--accent-op);
+      border-radius: 8px; padding: 1.1rem; line-height: 1.5; font-size: 0.95rem;
+    }
+
+    /* CONTROLES SLIDER */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .slider-row label { width: 140px; font-weight: 600; font-family: monospace; font-size: 0.95rem; }
+    .val-badge { width: 45px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; color: var(--text-main); }
+
+    /* FÓRMULAS */
+    .math-formula {
+      font-family: 'Courier New', Courier, monospace; font-size: 1.4rem; font-weight: bold;
+      background: #090d16; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
+      text-align: center; display: inline-block; margin: 0.5rem auto; color: #fff; width: 100%;
+    }
+
+    /* SVG CANVAS */
+    .svg-canvas {
+      width: 100%; height: 250px; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block;
+    }
+
+    /* BADGES SIMBOLOS */
+    .sym-badge {
+      display: inline-block; background: var(--accent-blue); color: #000; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-family: monospace; margin: 0 4px;
+    }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Inecuaciones y Regiones Factibles</h1>
+    <p>Aprende a resolver desigualdades, representa sus soluciones en la recta real mediante intervalos y descubre cómo pintar regiones de solución en el plano cartesiano.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('concepto', this)">⚖️ 1. La Regla de Oro</button>
+      <button class="tab-btn" onclick="switchTab('intervalos', this)">📏 2. Intervalos (1º Grado)</button>
+      <button class="tab-btn" onclick="switchTab('segundogrado', this)">🎢 3. Segundo Grado</button>
+      <button class="tab-btn" onclick="switchTab('sistemas', this)">🗺️ 4. Regiones (Sistemas)</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: CONCEPTO Y REGLA DE ORO ================= -->
+    <div id="concepto" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">Una balanza desequilibrada</div>
+        <div class="content-text">
+          Una ecuación (<span class="sym-badge" style="background:var(--text-muted);">=</span>) busca un único número exacto. Una <strong>inecuación</strong> busca <strong>infinitos números</strong> que cumplan una condición: ser mayores (<span class="sym-badge">></span>), menores (<span class="sym-badge"><</span>), mayores o iguales (<span class="sym-badge" style="background:var(--accent-gold);">≥</span>) o menores o iguales (<span class="sym-badge" style="background:var(--accent-gold);">≤</span>) que algo.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Se resuelve (casi) igual que una ecuación</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Las letras van a un lado y los números al otro. Sumar, restar, multiplicar y dividir funciona exactamente igual... <strong>hasta que topamos con los números negativos.</strong>
+          </p>
+
+          <div style="font-family:monospace; font-size:1.15rem; color:#fff; background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); line-height:2;">
+            <div style="color:var(--text-muted); font-size:0.85rem; text-transform:uppercase;">Un ejemplo normal:</div>
+            3x - 5 > 10<br>
+            3x > 10 + 5<br>
+            3x > 15<br>
+            x > 15 / 3 ➔ <strong style="color:var(--accent-success);">x > 5</strong>
+          </div>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.8rem;">
+            <em>Cualquier número mayor que 5 (el 6, el 10, el 1000...) hace que la inecuación sea verdad.</em>
+          </p>
+        </div>
+
+        <div class="panel-box" style="border-color:var(--accent-op);">
+          <div class="panel-title" style="color:var(--accent-op);">🚨 El Delito Matemático: El Cambio de Signo</div>
+          
+          <div class="warning-box">
+            <strong>La Regla de Oro:</strong> Si pasas un número <strong>NEGATIVO multiplicando o dividiendo</strong> al otro lado, la flecha de la inecuación <strong>SE DA LA VUELTA OBLIGATORIAMENTE</strong>.
+          </div>
+
+          <div style="font-family:monospace; font-size:1.15rem; color:#fff; background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--accent-op); margin-top:1rem; line-height:2;">
+            <div style="color:var(--accent-op); font-size:0.85rem; font-weight:bold; text-transform:uppercase;">El Peligro:</div>
+            -2x ≥ 8<br>
+            <span style="color:var(--text-muted); font-size:0.9rem;">(El -2 pasa dividiendo... ¡Alerta! 🚨)</span><br>
+            x <strong style="color:var(--accent-gold); font-size:1.5rem;">≤</strong> 8 / -2<br>
+            <strong style="color:var(--accent-success);">x ≤ -4</strong>
+          </div>
+
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.8rem;">
+            <em>¿Por qué? Piensa lógicamente: Si sabes que 3 < 5 es verdad. Si multiplicas todo por -1, te queda -3 y -5. ¿Quién es mayor ahora? El -3. Por tanto: -3 > -5. ¡La flecha se giró!</em>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: INTERVALOS (RECTA REAL) ================= -->
+    <div id="intervalos" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">Traduciendo el resultado</div>
+        <div class="content-text">
+          Decir <span style="font-family:monospace;">x > 2</span> está bien, pero en matemáticas preferimos dibujar la respuesta en la <strong>Recta Real</strong> y escribirla en forma de <strong>Intervalo</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Simulador de Intervalos</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Cambia el símbolo y el número para ver cómo se dibuja la solución. Fíjate en los detalles: ¿El punto está pintado o vacío? ¿Usa paréntesis o corchete?
+          </p>
+
+          <div class="slider-row" style="margin-bottom:0.5rem;">
+            <label>Condición:</label>
+            <select id="sl_signo" onchange="updateInterval()" style="background:#090d16; color:#fff; border:1px solid var(--border-color); padding:0.5rem; border-radius:6px; font-family:monospace; font-size:1.1rem; width:100px;">
+              <option value=">"> > (Mayor)</option>
+              <option value="<"> < (Menor)</option>
+              <option value=">="> ≥ (Mayor/Igual)</option>
+              <option value="<="> ≤ (Menor/Igual)</option>
+            </select>
+          </div>
+          <div class="slider-row">
+            <label>Número (a):</label>
+            <input type="range" id="sl_num" min="-5" max="5" value="2" oninput="updateInterval()">
+            <span class="val-badge" id="v_sl_num">2</span>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); margin-top:1rem;">
+            <div style="font-family:monospace; font-size:1.4rem; font-weight:bold; color:#fff;">
+              x <span id="int_sign" style="color:var(--accent-gold);">></span> <span id="int_num">2</span>
+            </div>
+            <div style="font-size:1.5rem; color:var(--text-muted);">➔</div>
+            <div style="font-family:monospace; font-size:1.4rem; font-weight:bold; color:var(--accent-success);" id="int_result">
+              (2, +∞)
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-gold);">
+          <div class="panel-title" style="margin: 1.5rem 1.5rem 0 1.5rem;">La Recta Real</div>
+          
+          <svg class="svg-canvas" viewBox="-60 -40 120 80" id="svg_interval" style="border:none; height:180px;">
+            <!-- Eje principal -->
+            <line x1="-55" y1="0" x2="55" y2="0" stroke="#64748b" stroke-width="2" />
+            <!-- Ticks -->
+            <g id="int_ticks"></g>
+            
+            <!-- Zona pintada -->
+            <line id="int_shade" x1="20" y1="0" x2="60" y2="0" stroke="var(--accent-success)" stroke-width="6" opacity="0.6" />
+            <!-- Punto principal -->
+            <circle id="int_point" cx="20" cy="0" r="4" fill="#090d16" stroke="var(--accent-success)" stroke-width="2" />
+          </svg>
+
+          <div style="padding: 1rem 1.5rem; font-size:0.85rem; color:var(--text-muted); background:rgba(255,255,255,0.02); border-top:1px solid var(--border-color); border-bottom-left-radius:10px; border-bottom-right-radius:10px;">
+            <strong>El Truco:</strong><br>
+            • Si no tiene el "Igual", el número no entra. Usamos <strong>Paréntesis ( )</strong> y punto abierto (⚪).<br>
+            • Si tiene el "Igual", el número entra. Usamos <strong>Corchete [ ]</strong> y punto cerrado (⚫).
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- ================= PESTAÑA 3: SEGUNDO GRADO ================= -->
+    <div id="segundogrado" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">La Parábola del Bien y del Mal</div>
+        <div class="content-text">
+          Cuando la "x" está al cuadrado (x²), ya no podemos despejarla normal. Tenemos que transformarla temporalmente en una ecuación = 0 para encontrar sus raíces (donde corta el suelo) y luego dibujar la parábola para ver dónde está "volando" (positiva) y dónde está "sumergida" (negativa).
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Resolución Paso a Paso</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Ejemplo: Resolver <strong style="color:#fff; font-family:monospace; font-size:1.1rem;">x² - x - 6 ≥ 0</strong>
+          </p>
+
+          <div style="display:flex; flex-direction:column; gap:0.8rem;">
+            <div class="info-card-item">
+              <strong style="color:var(--accent-gold);">1. Encontrar los cortes (Raíces)</strong>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+                La resolvemos como una ecuación de 2º grado normal: x² - x - 6 = 0.<br>
+                Nos da dos soluciones: <strong>x = 3</strong> y <strong>x = -2</strong>.
+              </p>
+            </div>
+            
+            <div class="info-card-item">
+              <strong style="color:var(--accent-blue);">2. Dibujar la Parábola</strong>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+                Como la x² es positiva (+1), la parábola tiene forma de "U" (sonríe). Corta el eje en -2 y en 3.
+              </p>
+            </div>
+
+            <div class="info-card-item" style="border-left:3px solid var(--accent-success);">
+              <strong style="color:var(--accent-success);">3. Leer el gráfico y responder</strong>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">
+                La inecuación nos pedía dónde la fórmula era <strong>≥ 0</strong> (positiva, volando por encima del suelo). Viendo el dibujo, vuela antes del -2 y después del 3.
+              </p>
+              <div style="font-family:monospace; font-size:1.15rem; color:#fff; text-align:center; margin-top:0.5rem;">
+                Sol: <strong style="color:var(--accent-success);">(-∞, -2] ∪ [3, +∞)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-success);">
+          <svg class="svg-canvas" viewBox="-50 -50 100 100" style="border:none; height:100%;">
+            <!-- Ejes -->
+            <line x1="-45" y1="10" x2="45" y2="10" stroke="#64748b" stroke-width="1.5" />
+            <line x1="5" y1="-45" x2="5" y2="45" stroke="#475569" stroke-width="1" />
+            
+            <!-- Zona de vuelo (Positiva) -->
+            <rect x="-45" y="-45" width="25" height="55" fill="rgba(16, 185, 129, 0.15)" />
+            <rect x="35" y="-45" width="10" height="55" fill="rgba(16, 185, 129, 0.15)" />
+            <text x="-30" y="-10" fill="var(--accent-success)" font-size="8" font-weight="bold">+</text>
+            <text x="40" y="-10" fill="var(--accent-success)" font-size="8" font-weight="bold">+</text>
+
+            <!-- Zona sumergida (Negativa) -->
+            <rect x="-20" y="10" width="55" height="35" fill="rgba(244, 63, 94, 0.1)" />
+            <text x="7.5" y="30" fill="var(--accent-op)" font-size="8" font-weight="bold">-</text>
+
+            <!-- Ticks en -2 (-20px) y 3 (30px). -->
+            <path d="M -30 -35 Q 5 70 40 -35" fill="none" stroke="var(--accent-gold)" stroke-width="2" />
+            
+            <!-- Puntos de corte -->
+            <circle cx="-20" cy="10" r="3" fill="var(--accent-success)" />
+            <text x="-20" y="22" fill="#fff" font-size="7" font-family="monospace" text-anchor="middle">-2</text>
+            
+            <circle cx="30" cy="10" r="3" fill="var(--accent-success)" />
+            <text x="30" y="22" fill="#fff" font-size="7" font-family="monospace" text-anchor="middle">3</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ================= PESTAÑA 4: SISTEMAS (2 VARIABLES) ================= -->
+    <div id="sistemas" class="tab-content">
+      <div class="explanation-card" style="border-left-color: #c084fc;">
+        <div class="badge" style="color: #c084fc;">Pintando Regiones Factibles</div>
+        <div class="content-text">
+          Cuando tenemos inecuaciones con "x" e "y" a la vez, la solución deja de ser una línea recta y se convierte en un <strong>plano pintado entero</strong>. Si tenemos un <em>sistema</em> (varias a la vez), la solución es el trozo de mapa donde <strong>todas las pinturas se cruzan</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Pintando el mapa paso a paso</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Avanza en el slider para resolver este sistema de dos inecuaciones:<br>
+            <strong style="color:var(--accent-blue);">1) x + y ≤ 5</strong><br>
+            <strong style="color:var(--accent-gold);">2) y ≥ 1</strong>
+          </p>
+
+          <div class="slider-row">
+            <label>Paso a paso:</label>
+            <input type="range" id="sl_sys" min="0" max="4" value="0" oninput="updateSystem()">
+            <span class="val-badge" id="v_sl_sys" style="color:#c084fc;">0</span>
+          </div>
+
+          <div class="info-card-item">
+            <div id="sys_text" style="font-family:monospace; font-size:0.95rem; color:#fff; line-height:1.6; min-height: 120px;">
+              <!-- Texto dinámico -->
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:#c084fc;">
+          <svg class="svg-canvas" viewBox="-10 -10 90 90" id="svg_sys" style="border:none; height:100%;">
+            <defs>
+              <pattern id="grid_sys" width="10" height="10" patternUnits="userSpaceOnUse">
+                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+              </pattern>
+            </defs>
+            <!-- Canvas base de 0 a 8 en X e Y (escala x10) -->
+            <rect x="-10" y="-10" width="90" height="90" fill="url(#grid_sys)" />
+            
+            <!-- Ejes (Origen en 0,80) Y invertido -->
+            <line x1="-10" y1="80" x2="80" y2="80" stroke="#64748b" stroke-width="1" />
+            <line x1="0" y1="-10" x2="0" y2="90" stroke="#64748b" stroke-width="1" />
+            <text x="75" y="75" fill="#64748b" font-size="4">X</text>
+            <text x="2" y="-2" fill="#64748b" font-size="4">Y</text>
+
+            <!-- Capas (ocultas por defecto) -->
+            <!-- Inec 1: x+y <= 5 -->
+            <polygon id="sys_shade1" points="-10,80 50,80 -10,20" fill="rgba(56, 189, 248, 0.2)" style="display:none;" />
+            <line id="sys_line1" x1="-10" y1="20" x2="60" y2="90" stroke="var(--accent-blue)" stroke-width="1" style="display:none;" />
+            
+            <!-- Inec 2: y >= 1 -->
+            <rect id="sys_shade2" x="-10" y="-10" width="90" height="80" fill="rgba(251, 191, 36, 0.2)" style="display:none;" />
+            <line id="sys_line2" x1="-10" y1="70" x2="80" y2="70" stroke="var(--accent-gold)" stroke-width="1" style="display:none;" />
+
+            <!-- Intersección (Región Factible) -->
+            <polygon id="sys_intersect" points="-10,70 40,70 -10,20" fill="rgba(192, 132, 252, 0.5)" stroke="#c084fc" stroke-width="1.5" style="display:none;" />
+            
+            <text id="sys_label" x="5" y="55" fill="#fff" font-size="5" font-weight="bold" style="display:none;">Región Factible</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓN ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      
+      if(tabId === 'intervalos') initIntervals();
+      if(tabId === 'sistemas') updateSystem();
+    }
+
+    // =========================================================================
+    // 2. INTERVALOS (RECTA REAL)
+    // =========================================================================
+    function initIntervals() {
+      const ticks = document.getElementById('int_ticks');
+      if(ticks.innerHTML.trim() !== "") return;
+      
+      let html = "";
+      for(let i = -5; i <= 5; i++) {
+        const x = i * 10;
+        html += `<line x1="${x}" y1="-3" x2="${x}" y2="3" stroke="#64748b" stroke-width="1" />`;
+        if (i !== 0) {
+          html += `<text x="${x}" y="15" fill="#64748b" font-size="6" font-family="monospace" text-anchor="middle">${i}</text>`;
+        } else {
+          html += `<text x="${x}" y="15" fill="#fff" font-size="6" font-family="monospace" text-anchor="middle" font-weight="bold">0</text>`;
+        }
+      }
+      ticks.innerHTML = html;
+      updateInterval();
+    }
+
+    function updateInterval() {
+      const num = parseInt(document.getElementById('sl_num').value);
+      const sign = document.getElementById('sl_signo').value;
+      
+      document.getElementById('v_sl_num').innerText = num;
+      document.getElementById('int_num').innerText = num;
+      document.getElementById('int_sign').innerText = sign;
+
+      const px = num * 10;
+      const shade = document.getElementById('int_shade');
+      const point = document.getElementById('int_point');
+      const result = document.getElementById('int_result');
+
+      // Actualizar gráficos SVG
+      if (sign.includes('>')) {
+        shade.setAttribute('x1', px);
+        shade.setAttribute('x2', 60); // Hacia +infinito
+      } else {
+        shade.setAttribute('x1', -60); // Desde -infinito
+        shade.setAttribute('x2', px);
+      }
+
+      point.setAttribute('cx', px);
+      
+      if (sign.includes('=')) {
+        point.setAttribute('fill', 'var(--accent-success)');
+      } else {
+        point.setAttribute('fill', '#090d16');
+      }
+
+      // Generar texto del intervalo
+      let str = "";
+      if (sign === '>') str = `(${num}, +∞)`;
+      else if (sign === '>=') str = `[${num}, +∞)`;
+      else if (sign === '<') str = `(-∞, ${num})`;
+      else if (sign === '<=') str = `(-∞, ${num}]`;
+      
+      result.innerText = str;
+    }
+
+    // =========================================================================
+    // 4. SISTEMAS Y REGIONES FACTIBLES
+    // =========================================================================
+    const sysSteps = [
+      "<strong>Paso 0: El Plano Vacío</strong><br>Tenemos nuestro eje de coordenadas listo. Vamos a dibujar las fronteras una a una.",
+      "<strong>Paso 1: Inecuación 1 (x + y ≤ 5)</strong><br>Dibujamos la recta frontera <span style='color:var(--accent-blue);'>x + y = 5</span> (en azul). Como nos pide 'Menor o Igual', sombreamos toda la región que queda por debajo hacia el origen.",
+      "<strong>Paso 2: Inecuación 2 (y ≥ 1)</strong><br>Dibujamos la recta horizontal frontera <span style='color:var(--accent-gold);'>y = 1</span> (en amarillo). Como nos pide 'Mayor o Igual', sombreamos todo el cielo por encima de ella.",
+      "<strong>Paso 3: La Intersección</strong><br>Buscamos el trozo del mapa que está pintado de azul Y TAMBIÉN de amarillo al mismo tiempo.",
+      "<strong>Paso 4: Región Factible</strong><br>Ese polígono morado cerrado es nuestra <strong style='color:#c084fc;'>Región Solución</strong>. Cualquier coordenada (x,y) que escojas dentro de ese triángulo cumplirá mágicamente las dos inecuaciones a la vez."
+    ];
+
+    function updateSystem() {
+      const step = parseInt(document.getElementById('sl_sys').value);
+      document.getElementById('v_sl_sys').innerText = step;
+      document.getElementById('sys_text').innerHTML = sysSteps[step];
+
+      const l1 = document.getElementById('sys_line1');
+      const s1 = document.getElementById('sys_shade1');
+      const l2 = document.getElementById('sys_line2');
+      const s2 = document.getElementById('sys_shade2');
+      const int = document.getElementById('sys_intersect');
+      const lbl = document.getElementById('sys_label');
+
+      // Reset
+      l1.style.display = s1.style.display = "none";
+      l2.style.display = s2.style.display = "none";
+      int.style.display = lbl.style.display = "none";
+
+      if (step >= 1) { l1.style.display = "block"; s1.style.display = "block"; }
+      if (step >= 2) { l2.style.display = "block"; s2.style.display = "block"; }
+      
+      if (step >= 3) {
+        // Highlight logic. Hide raw shades, show intersection polygon
+        s1.style.display = "none";
+        s2.style.display = "none";
+        int.style.display = "block";
+      }
+      if (step === 4) {
+        lbl.style.display = "block";
+      }
+    }
+
+    // Init
+    setTimeout(() => {
+      initIntervals();
+      updateSystem();
+    }, 100);
+
+  </script>
+</body>
+</html>

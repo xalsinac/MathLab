@@ -28,6 +28,21 @@
     
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+    /* SUBPESTAÑAS */
+    .subtabs-container {
+      display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;
+      background: var(--bg-card); padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);
+      margin-bottom: 1rem;
+    }
+    .subtab-btn {
+      padding: 0.5rem 1.2rem; background: var(--bg-primary); border: 1px solid var(--border-color);
+      color: var(--text-muted); border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    }
+    .subtab-btn:hover { border-color: var(--accent-blue); color: var(--text-main); }
+    .subtab-btn.active { background: var(--accent-blue); color: #042f2e; border-color: var(--accent-blue); font-weight: bold; }
+    .subtab-content { display: none; flex-direction: column; gap: 1.2rem; animation: fadeIn 0.3s forwards; }
+    .subtab-content.active { display: flex; }
+
     /* PANELES Y ESTRUCTURA */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
     .panel-box {
@@ -41,7 +56,7 @@
     .c-b { color: var(--accent-gold); font-weight: bold; }
     .c-c { color: var(--accent-op); font-weight: bold; }
 
-    /* FÓRMULA CUADRÁTICA FORMATO MATEMÁTICO */
+    /* FÓRMULA CUADRÁTICA Y FRACCIONES VERTICALES */
     .quad-formula-box {
       display: inline-flex; align-items: center; justify-content: center;
       font-family: 'Courier New', Courier, monospace; font-size: 1.6rem; font-weight: bold;
@@ -49,10 +64,42 @@
       margin: 1rem 0;
     }
     .fraction-vertical {
-      display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 0.5rem;
+      display: inline-flex; flex-direction: column; vertical-align: middle;
+      text-align: center; margin: 0 0.4rem; line-height: 1.2; font-family: monospace;
     }
-    .fraction-vertical .num { border-bottom: 2px solid var(--text-main); padding: 0 0.4rem; }
-    .fraction-vertical .den { padding: 0 0.4rem; margin-top: 3px; }
+    .fraction-vertical .num {
+      border-bottom: 2px solid currentColor; padding: 0 0.3rem 2px 0.3rem;
+    }
+    .fraction-vertical .den {
+      padding: 2px 0.3rem 0 0.3rem;
+    }
+
+    /* RAÍZ CUADRADA RIGUROSA ALINEADA CON FLEXBOX */
+    .radical-box {
+      display: inline-flex;
+      align-items: flex-start;
+      vertical-align: middle;
+    }
+    .radical-box .rad-symbol {
+      font-family: Arial, sans-serif; /* Fuente estable para el símbolo */
+      font-size: 1.3em;
+      line-height: 0.7; /* Ajusta la caja del carácter */
+      margin-top: 2px; /* Baja el pico para conectar con el borde */
+      margin-right: -1px;
+      font-weight: normal;
+    }
+    .radical-box .rad-content {
+      border-top: 2px solid currentColor; /* Grosor de la línea superior */
+      padding: 3px 4px 0 2px;
+      margin-top: 2px; /* Alinea con la punta del símbolo */
+      font-family: monospace; /* Mantiene la fuente del texto interior */
+    }
+
+    /* TARJETAS INFORMATIVAS */
+    .info-card-item {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.3rem;
+    }
 
     /* TARJETAS DE CASOS DEL DISCRIMINANTE */
     .disc-card {
@@ -91,60 +138,106 @@
 
   <header class="app-header">
     <h1>Ecuaciones de 2º Grado</h1>
-    <p>Aprende a identificar la forma canónica, aplicar la fórmula de Bhaskara paso a paso y entender gráficamente sus soluciones mediante parábolas.</p>
+    <p>Aprende a identificar la forma canónica, resolver ecuaciones incompletas, aplicar la fórmula de Bhaskara y entender gráficamente sus soluciones.</p>
   </header>
 
   <main class="app-container">
     
     <nav class="tabs-container">
-      <button class="tab-btn active" onclick="switchTab('forma', this)">📦 1. Forma General</button>
+      <button class="tab-btn active" onclick="switchTab('forma', this)">📦 1. Tipos de Ecuación</button>
       <button class="tab-btn" onclick="switchTab('formula', this)">🧮 2. Fórmula Paso a Paso</button>
       <button class="tab-btn" onclick="switchTab('discriminante', this)">🔍 3. El Discriminante</button>
       <button class="tab-btn" onclick="switchTab('grafica', this)">📈 4. Demostración Gráfica</button>
     </nav>
 
-    <!-- ================= PESTAÑA 1: FORMA GENERAL ================= -->
+    <!-- ================= PESTAÑA 1: TIPOS DE ECUACIÓN ================= -->
     <div id="forma" class="tab-content active">
       <div class="explanation-card">
         <div class="badge">¿Qué es una ecuación de 2º grado?</div>
         <div class="content-text">
-          Es una igualdad algebraica donde la incógnita <em>x</em> está elevada como máximo al cuadrado ($x^2$). Su forma reducida u ordenada siempre debe igualarse a cero: 
-          <strong><span class="c-a">a</span>x² + <span class="c-b">b</span>x + <span class="c-c">c</span> = 0</strong> (con <span class="c-a">a ≠ 0</span>).
+          Es una igualdad donde la incógnita <em>x</em> está elevada como máximo al cuadrado (x²). Para resolverla, el primer paso siempre es ordenarla e igualarla a cero.
         </div>
       </div>
 
-      <div class="grid-2">
-        <div class="panel-box">
-          <div class="panel-title">Anatomía de los Coeficientes</div>
-          <div style="font-family: monospace; font-size: 2.2rem; text-align: center; margin: 1rem 0; font-weight: bold;">
-            <span class="c-a">a</span>x² + <span class="c-b">b</span>x + <span class="c-c">c</span> = 0
-          </div>
-          <ul style="color: var(--text-main); line-height: 1.8; margin-left: 1.2rem;">
-            <li><strong class="c-a">a (Término cuadrático):</strong> El número que multiplica a $x^2$. ¡Nunca puede ser 0! (Si fuera 0, sería de 1er grado). Si no lleva número escrito (ej: $x^2$), vale <strong>1</strong>.</li>
-            <li><strong class="c-b">b (Término lineal):</strong> El número que multiplica a $x$. Recuerda que su signo forma parte del coeficiente.</li>
-            <li><strong class="c-c">c (Término independiente):</strong> El número suelto sin ninguna letra.</li>
-          </ul>
-        </div>
+      <div class="subtabs-container">
+        <button class="subtab-btn active" onclick="switchSubTab('sub_completa', this)">Ecuación Completa</button>
+        <button class="subtab-btn" onclick="switchSubTab('sub_incompleta', this)">Ecuaciones Incompletas (Trucos)</button>
+      </div>
 
-        <div class="panel-box">
-          <div class="panel-title">¡Cuidado con el orden y los signos!</div>
-          <p style="color: var(--text-muted); margin-bottom: 1rem;">
-            Antes de aplicar cualquier fórmula, <strong>todos los términos deben estar en el mismo lado igualados a 0</strong> y ordenados de mayor a menor exponente.
-          </p>
-
-          <div style="display:flex; flex-direction:column; gap:0.8rem;">
-            <div style="background:#090d16; padding:0.8rem 1rem; border-radius:8px; border:1px solid var(--border-color);">
-              <span style="color:var(--text-muted); font-size:0.85rem;">Desordenada:</span>
-              <div style="font-family:monospace; font-size:1.15rem; font-weight:bold;">3x - 5 + 2x² = 0</div>
-              <span style="color:var(--accent-success); font-size:0.85rem;">Ordenada canónica:</span>
-              <div style="font-family:monospace; font-size:1.15rem; font-weight:bold;"><span class="c-a">2</span>x² + <span class="c-b">3</span>x <span class="c-c">- 5</span> = 0 &nbsp;➔ <span class="c-a">a=2</span>, <span class="c-b">b=3</span>, <span class="c-c">c=-5</span></div>
+      <!-- 1.1 ECUACIÓN COMPLETA -->
+      <div id="sub_completa" class="subtab-content active">
+        <div class="grid-2">
+          <div class="panel-box">
+            <div class="panel-title">Anatomía de los Coeficientes</div>
+            <div style="font-family: monospace; font-size: 2.2rem; text-align: center; margin: 1rem 0; font-weight: bold;">
+              <span class="c-a">a</span>x² + <span class="c-b">b</span>x + <span class="c-c">c</span> = 0
             </div>
+            <ul style="color: var(--text-main); line-height: 1.8; margin-left: 1.2rem;">
+              <li><strong class="c-a">a (Término cuadrático):</strong> El número que multiplica a x². ¡Nunca puede ser 0! Si no lleva número escrito (ej: x²), vale <strong>1</strong>.</li>
+              <li><strong class="c-b">b (Término lineal):</strong> El número que multiplica a x. Recuerda que su signo forma parte del coeficiente.</li>
+              <li><strong class="c-c">c (Término independiente):</strong> El número suelto sin ninguna letra.</li>
+            </ul>
+          </div>
 
-            <div style="background:#090d16; padding:0.8rem 1rem; border-radius:8px; border:1px solid var(--border-color);">
-              <span style="color:var(--text-muted); font-size:0.85rem;">Con términos a ambos lados:</span>
-              <div style="font-family:monospace; font-size:1.15rem; font-weight:bold;">x² = 7x - 10</div>
-              <span style="color:var(--accent-success); font-size:0.85rem;">Pasamos todo a la izquierda cambiando signos:</span>
-              <div style="font-family:monospace; font-size:1.15rem; font-weight:bold;"><span class="c-a">1</span>x² <span class="c-b">- 7</span>x + <span class="c-c">10</span> = 0 &nbsp;➔ <span class="c-a">a=1</span>, <span class="c-b">b=-7</span>, <span class="c-c">c=10</span></div>
+          <div class="panel-box">
+            <div class="panel-title">¡Cuidado con el orden y los signos!</div>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">
+              Antes de aplicar cualquier fórmula, <strong>todos los términos deben estar a un lado igualados a 0</strong>.
+            </p>
+
+            <div style="display:flex; flex-direction:column; gap:0.8rem;">
+              <div style="background:#090d16; padding:0.8rem 1rem; border-radius:8px; border:1px solid var(--border-color);">
+                <span style="color:var(--text-muted); font-size:0.85rem;">Desordenada:</span>
+                <div style="font-family:monospace; font-size:1.15rem; font-weight:bold;">3x - 5 + 2x² = 0</div>
+                <span style="color:var(--accent-success); font-size:0.85rem;">Ordenada canónica:</span>
+                <div style="font-family:monospace; font-size:1.15rem; font-weight:bold;"><span class="c-a">2</span>x² + <span class="c-b">3</span>x - <span class="c-c">5</span> = 0 &nbsp;➔ <span class="c-a">a=2</span>, <span class="c-b">b=3</span>, <span class="c-c">c=-5</span></div>
+              </div>
+
+              <div style="background:#090d16; padding:0.8rem 1rem; border-radius:8px; border:1px solid var(--border-color);">
+                <span style="color:var(--text-muted); font-size:0.85rem;">Con términos a ambos lados:</span>
+                <div style="font-family:monospace; font-size:1.15rem; font-weight:bold;">x² = 7x - 10</div>
+                <span style="color:var(--accent-success); font-size:0.85rem;">Pasamos todo a la izquierda cambiando signos:</span>
+                <div style="font-family:monospace; font-size:1.15rem; font-weight:bold;"><span class="c-a">1</span>x² - <span class="c-b">7</span>x + <span class="c-c">10</span> = 0 &nbsp;➔ <span class="c-a">a=1</span>, <span class="c-b">b=-7</span>, <span class="c-c">c=10</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.2 ECUACIONES INCOMPLETAS -->
+      <div id="sub_incompleta" class="subtab-content">
+        <div class="grid-2">
+          <div class="panel-box" style="border-top: 4px solid var(--accent-op);">
+            <div class="panel-title">Falta la 'b' (ax² + c = 0)</div>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+              No hay término con x sola. Se resuelve despejando directamente la x² como si fuera una ecuación normal y aplicando la raíz cuadrada al final.
+            </p>
+            <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.9;">
+              <div style="color:var(--accent-op); font-weight:bold; font-size:1.2rem;">2x² - 18 = 0</div>
+              <div>1. Pasamos el número: 2x² = 18</div>
+              <div>2. Pasamos dividiendo: x² = 18 / 2 = 9</div>
+              <div>3. Raíz cuadrada: x = ± <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">9</span></span></div>
+              <hr style="border:0; border-top:1px solid var(--border-color); margin:0.5rem 0;">
+              <div style="color:var(--accent-success); font-weight:bold;">Soluciones: x₁ = 3 , x₂ = -3</div>
+            </div>
+            <div style="margin-top:0.8rem; font-size:0.85rem; color:var(--text-muted);">
+              * Nota: Si al despejar queda x² = (número negativo), la ecuación no tiene solución.
+            </div>
+          </div>
+
+          <div class="panel-box" style="border-top: 4px solid var(--accent-gold);">
+            <div class="panel-title">Falta la 'c' (ax² + bx = 0)</div>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+              No hay número suelto. Se resuelve <strong>sacando factor común la x</strong>. Este tipo de ecuación siempre tendrá x=0 como una de sus soluciones.
+            </p>
+            <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.9;">
+              <div style="color:var(--accent-gold); font-weight:bold; font-size:1.2rem;">3x² - 12x = 0</div>
+              <div>1. Sacamos factor común x:</div>
+              <div style="color:var(--accent-blue); font-weight:bold;">x · (3x - 12) = 0</div>
+              <div>2. Para que multiplique cero, uno de los trozos es cero:</div>
+              <hr style="border:0; border-top:1px solid var(--border-color); margin:0.5rem 0;">
+              <div style="color:var(--accent-success); font-weight:bold;">• Trozo 1: x₁ = 0</div>
+              <div style="color:var(--accent-success); font-weight:bold;">• Trozo 2: 3x - 12 = 0 ➔ 3x = 12 ➔ x₂ = 4</div>
             </div>
           </div>
         </div>
@@ -156,7 +249,7 @@
       <div class="explanation-card" style="border-left-color: var(--accent-gold);">
         <div class="badge" style="color: var(--accent-gold);">La Fórmula Cuadrática (Bhaskara)</div>
         <div class="content-text">
-          Esta fórmula milenaria resuelve cualquier ecuación completa de 2º grado. Observa bien dónde entra cada letra con su color correspondiente:
+          Esta fórmula milenaria resuelve cualquier ecuación de 2º grado (completa o incompleta). Observa bien dónde entra cada letra con su color correspondiente y cómo la raíz abarca toda la operación.
         </div>
       </div>
 
@@ -164,7 +257,13 @@
         <div class="quad-formula-box">
           x = 
           <div class="fraction-vertical">
-            <span class="num">-<span class="c-b">b</span> ± √[ (<span class="c-b">b</span>)² - 4<span class="c-a">a</span><span class="c-c">c</span> ]</span>
+            <span class="num">
+              -<span class="c-b">b</span> ± 
+              <span class="radical-box">
+                <span class="rad-symbol">√</span>
+                <span class="rad-content"><span class="c-b">b</span>² - 4<span class="c-a">a</span><span class="c-c">c</span></span>
+              </span>
+            </span>
             <span class="den">2<span class="c-a">a</span></span>
           </div>
         </div>
@@ -174,7 +273,7 @@
         <div class="panel-box">
           <div class="panel-title">Calculadora Paso a Paso</div>
           <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
-            Ajusta los coeficientes para ver la sustitución y resolución al detalle:
+            Ajusta los coeficientes para ver la sustitución y resolución al detalle con fracciones reales:
           </p>
 
           <div class="slider-row">
@@ -201,7 +300,7 @@
 
         <div class="panel-box">
           <div class="panel-title">Desarrollo Matemático Riguroso</div>
-          <div id="f_steps_container" style="display: flex; flex-direction: column; gap: 0.8rem; font-family: monospace; font-size: 1.15rem;">
+          <div id="f_steps_container" style="display: flex; flex-direction: column; gap: 1.2rem; font-family: monospace; font-size: 1.15rem; line-height: 1.5;">
             <!-- Rellenado por JS -->
           </div>
         </div>
@@ -235,8 +334,8 @@
           <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
             La raíz de un número positivo tiene dos resultados posibles (+ y -). Al sumar y restar esa raíz en el numerador, obtenemos dos valores diferentes: <em>x₁</em> y <em>x₂</em>.
           </p>
-          <div style="margin-top: 0.8rem; font-family: monospace; font-size: 0.9rem; background: #090d16; padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color);">
-            Ej: √16 = ±4 ➔ x₁ ≠ x₂
+          <div style="margin-top: 0.8rem; font-family: monospace; font-size: 1rem; background: #090d16; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border-color);">
+            Ej: ±<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">16</span></span> = ±4 ➔ x₁ ≠ x₂
           </div>
         </div>
 
@@ -247,24 +346,28 @@
             <strong>1 solución real única (doble)</strong>.
           </p>
           <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
-            La raíz de 0 es 0. Sumar cero o restar cero da exactamente lo mismo, por lo que las dos soluciones coinciden en el mismo valor: <em>x = -b / (2a)</em>.
+            La raíz de 0 es 0. Sumar cero o restar cero da exactamente lo mismo, por lo que las dos soluciones coinciden en el mismo valor:
+            <br>
+            <span style="display:inline-block; margin-top:0.4rem;">
+              x = <span class="fraction-vertical" style="font-size:0.9em;"><span class="num">-b</span><span class="den">2a</span></span>
+            </span>
           </p>
-          <div style="margin-top: 0.8rem; font-family: monospace; font-size: 0.9rem; background: #090d16; padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color);">
-            Ej: ±√0 = 0 ➔ x₁ = x₂
+          <div style="margin-top: 0.8rem; font-family: monospace; font-size: 1rem; background: #090d16; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border-color);">
+            Ej: ±<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">0</span></span> = 0 ➔ x₁ = x₂
           </div>
         </div>
 
         <!-- CASO 3: NEGATIVO -->
         <div class="disc-card c-neg" id="card_d_neg">
-          <h4 style="color: var(--accent-op); margin-bottom: 0.5rem;">3. Si Δ < 0 (Negativo)</h4>
+          <h4 style="color: var(--accent-op); margin-bottom: 0.5rem;">3. Si Δ &lt; 0 (Negativo)</h4>
           <p style="font-size: 0.95rem; color: var(--text-main); margin-bottom: 0.5rem;">
             <strong>0 soluciones reales (No tiene solución)</strong>.
           </p>
           <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
             No existe ningún número real que al elevarlo al cuadrado dé un número negativo. La raíz no se puede calcular en los números reales y el proceso se detiene ahí.
           </p>
-          <div style="margin-top: 0.8rem; font-family: monospace; font-size: 0.9rem; background: #090d16; padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color);">
-            Ej: √(-25) = No existe en ℝ
+          <div style="margin-top: 0.8rem; font-family: monospace; font-size: 1rem; background: #090d16; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border-color);">
+            Ej: <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">-25</span></span> = No existe en ℝ
           </div>
         </div>
 
@@ -276,7 +379,7 @@
       <div class="explanation-card" style="border-left-color: var(--accent-success);">
         <div class="badge" style="color: var(--accent-success);">El Significado Visual: Puntos de Corte con y = 0</div>
         <div class="content-text">
-          Una ecuación de 2º grado $ax^2 + bx + c = 0$ equivale a representar la función parábola $y = ax^2 + bx + c$ y buscar <strong>dónde corta al eje horizontal X (donde y = 0)</strong>. Las soluciones de la ecuación son simplemente las coordenadas $X$ de esos puntos de corte.
+          Una ecuación de 2º grado ax² + bx + c = 0 equivale a representar la función parábola y = ax² + bx + c y buscar <strong>dónde corta al eje horizontal X (donde y = 0)</strong>. Las soluciones de la ecuación son simplemente las coordenadas X de esos puntos de corte.
         </div>
       </div>
 
@@ -299,7 +402,6 @@
             <span class="val-badge c-c" id="vg_c">-3</span>
           </div>
 
-          <!-- Información en tiempo real -->
           <div style="background: #090d16; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 1rem;">
             <div style="font-family: monospace; font-size: 1.15rem; font-weight: bold;" id="g_eq_text"></div>
             <div style="margin-top: 0.5rem; font-size: 1rem; font-family: monospace;" id="g_disc_text"></div>
@@ -311,7 +413,6 @@
           <div class="panel-title">Representación en el Plano Cartesiano</div>
           
           <svg class="svg-canvas" viewBox="-160 -140 320 280" id="parabola_svg">
-            <!-- Cuadrícula tenue -->
             <defs>
               <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
                 <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
@@ -319,16 +420,13 @@
             </defs>
             <rect x="-160" y="-140" width="320" height="280" fill="url(#grid)" />
 
-            <!-- Ejes cartesianos -->
             <line x1="-150" y1="0" x2="150" y2="0" stroke="#94a3b8" stroke-width="2" />
             <line x1="0" y1="-130" x2="0" y2="130" stroke="#94a3b8" stroke-width="2" />
             <text x="140" y="-8" fill="#94a3b8" font-size="11" font-weight="bold">X (y=0)</text>
             <text x="8" y="-120" fill="#94a3b8" font-size="11" font-weight="bold">Y</text>
 
-            <!-- Curva de la Parábola -->
             <path id="parabola_path" d="" fill="none" stroke="var(--accent-blue)" stroke-width="3" />
 
-            <!-- Puntos de corte en X -->
             <circle id="root_pt1" cx="0" cy="0" r="5" fill="var(--accent-success)" stroke="#fff" stroke-width="1.5" style="display:none;" />
             <circle id="root_pt2" cx="0" cy="0" r="5" fill="var(--accent-success)" stroke="#fff" stroke-width="1.5" style="display:none;" />
             <text id="root_lbl1" x="0" y="0" fill="var(--accent-success)" font-size="11" font-weight="bold" style="display:none;"></text>
@@ -341,7 +439,6 @@
   </main>
 
   <script>
-    // --- NAVEGACIÓN ENTRE PESTAÑAS ---
     function switchTab(tabId, btn) {
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -349,6 +446,13 @@
       btn.classList.add('active');
       if (tabId === 'formula') updateFormula();
       if (tabId === 'grafica') setTimeout(updateGrafica, 20);
+    }
+
+    function switchSubTab(subtabId, btn) {
+      document.querySelectorAll('.subtab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(subtabId).classList.add('active');
+      btn.classList.add('active');
     }
 
     // =========================================================================
@@ -364,7 +468,6 @@
       document.getElementById('vf_b').innerText = b;
       document.getElementById('vf_c').innerText = c;
 
-      // Render ecuación: ax² + bx + c = 0
       let eqStr = "";
       if (a === 1) eqStr += `<span class="c-a">x²</span>`;
       else if (a === -1) eqStr += `<span class="c-a">-x²</span>`;
@@ -379,7 +482,6 @@
       eqStr += ` = 0`;
       document.getElementById('f_eq_display').innerHTML = eqStr;
 
-      // Cálculos matemáticos
       const minusB = -b;
       const bCuadrado = b * b;
       const fourAC = 4 * a * c;
@@ -389,31 +491,49 @@
       const container = document.getElementById('f_steps_container');
       container.innerHTML = "";
 
-      // Paso 1: Sustitución
       const bParen = b < 0 ? `(${b})` : b;
       const cParen = c < 0 ? `(${c})` : c;
+      const sign4AC = -fourAC >= 0 ? '+' : '';
+
+      // Paso 1: Sustitución
       const step1 = document.createElement('div');
       step1.innerHTML = `<strong>1. Sustituir coeficientes:</strong><br>` +
-        `x = [ -(${bParen}) ± √(${bParen}² - 4·${a}·${cParen}) ] / (2·${a})`;
+        `<div style="margin-top:0.5rem;">x = ` +
+        `<span class="fraction-vertical">` +
+          `<span class="num">-(${bParen}) ± <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">(${bParen})² - 4·${a}·${cParen}</span></span></span>` +
+          `<span class="den">2·${a}</span>` +
+        `</span></div>`;
       container.appendChild(step1);
 
-      // Paso 2: Operar dentro de la raíz y denominador
+      // Paso 2: Calcular interior de la raíz
       const step2 = document.createElement('div');
       step2.innerHTML = `<strong>2. Calcular interior de la raíz:</strong><br>` +
-        `b² = ${bCuadrado} , &nbsp; -4ac = ${-fourAC >= 0 ? '+' + (-fourAC) : -fourAC}<br>` +
-        `x = [ ${minusB} ± √(${bCuadrado} ${-fourAC >= 0 ? '+' : ''}${-fourAC}) ] / ${dosA}<br>` +
-        `x = [ ${minusB} ± √<span style="color:var(--accent-gold);">${disc}</span> ] / ${dosA}`;
+        `<span style="color:var(--text-muted); font-size:0.95rem;">b² = ${bCuadrado} , &nbsp; -4ac = ${sign4AC}${-fourAC}</span><br>` +
+        `<div style="margin-top:0.5rem;">x = ` +
+        `<span class="fraction-vertical">` +
+          `<span class="num">${minusB} ± <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">${bCuadrado} ${sign4AC} ${-fourAC}</span></span></span>` +
+          `<span class="den">${dosA}</span>` +
+        `</span></div>` +
+        `<div style="margin-top:0.6rem;">x = ` +
+        `<span class="fraction-vertical">` +
+          `<span class="num">${minusB} ± <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content" style="color:var(--accent-gold);">${disc}</span></span></span>` +
+          `<span class="den">${dosA}</span>` +
+        `</span></div>`;
       container.appendChild(step2);
 
-      // Paso 3: Resolución según el discriminante
+      // Paso 3: Resolución final con fracciones rigurosas
       const step3 = document.createElement('div');
       if (disc < 0) {
         step3.innerHTML = `<strong>3. Resultado:</strong><br>` +
-          `<span style="color:var(--accent-op); font-weight:bold;">¡No tiene solución en números reales!</span> Como el discriminante (${disc}) es negativo, no existe la raíz cuadrada de un número negativo.`;
+          `<span style="color:var(--accent-op); font-weight:bold;">¡No tiene solución en números reales!</span><br>Como el discriminante (${disc}) es negativo, la raíz cuadrada no existe.`;
       } else if (disc === 0) {
         const sol = (minusB / dosA).toFixed(2);
         step3.innerHTML = `<strong>3. Raíz de cero (Solución única doble):</strong><br>` +
-          `x = [ ${minusB} ± 0 ] / ${dosA} = <span style="color:var(--accent-success); font-weight:bold;">${sol}</span>`;
+          `<div style="margin-top:0.5rem;">x = ` +
+          `<span class="fraction-vertical">` +
+            `<span class="num">${minusB} ± 0</span>` +
+            `<span class="den">${dosA}</span>` +
+          `</span> = <span style="color:var(--accent-success); font-weight:bold;">${sol}</span></div>`;
       } else {
         const raiz = Math.sqrt(disc);
         const raizTxt = Number.isInteger(raiz) ? raiz : raiz.toFixed(2);
@@ -421,8 +541,16 @@
         const x2 = ((minusB - raiz) / dosA).toFixed(2);
 
         step3.innerHTML = `<strong>3. Desdoblar en dos soluciones (±):</strong><br>` +
-          `• x₁ = (${minusB} + ${raizTxt}) / ${dosA} = <span style="color:var(--accent-success); font-weight:bold;">${x1}</span><br>` +
-          `• x₂ = (${minusB} - ${raizTxt}) / ${dosA} = <span style="color:var(--accent-success); font-weight:bold;">${x2}</span>`;
+          `<div style="margin-top:0.5rem; margin-bottom:0.8rem;">• x₁ = ` +
+          `<span class="fraction-vertical">` +
+            `<span class="num">${minusB} + ${raizTxt}</span>` +
+            `<span class="den">${dosA}</span>` +
+          `</span> = <span style="color:var(--accent-success); font-weight:bold;">${x1}</span></div>` +
+          `<div>• x₂ = ` +
+          `<span class="fraction-vertical">` +
+            `<span class="num">${minusB} - ${raizTxt}</span>` +
+            `<span class="den">${dosA}</span>` +
+          `</span> = <span style="color:var(--accent-success); font-weight:bold;">${x2}</span></div>`;
       }
       container.appendChild(step3);
     }
@@ -433,7 +561,7 @@
     // =========================================================================
     function updateGrafica() {
       let a = parseFloat(document.getElementById('g_a').value);
-      if (a === 0) a = 0.5; // evitar a = 0
+      if (a === 0) a = 0.5;
       const b = parseFloat(document.getElementById('g_b').value);
       const c = parseFloat(document.getElementById('g_c').value);
 
@@ -441,32 +569,27 @@
       document.getElementById('vg_b').innerText = b;
       document.getElementById('vg_c').innerText = c;
 
-      // Mostrar ecuación
       let eq = `y = ${a}x²`;
       if (b >= 0) eq += ` + ${b}x`; else eq += ` - ${Math.abs(b)}x`;
       if (c >= 0) eq += ` + ${c}`; else eq += ` - ${Math.abs(c)}`;
       document.getElementById('g_eq_text').innerText = eq;
 
-      // Calcular discriminante
       const disc = (b * b) - (4 * a * c);
       document.getElementById('g_disc_text').innerHTML = `Discriminante: Δ = (${b})² - 4·(${a})·(${c}) = <strong style="color:${disc>0?'var(--accent-success)':disc===0?'var(--accent-gold)':'var(--accent-op)'}">${disc.toFixed(1)}</strong>`;
 
-      // Escala: 1 unidad matemática = 20 px SVG
       const scale = 20;
 
-      // Trazar curva y = a*x^2 + b*x + c
       let dStr = "";
       for (let px = -150; px <= 150; px += 2) {
         const xMath = px / scale;
         const yMath = (a * xMath * xMath) + (b * xMath) + c;
-        const py = -yMath * scale; // En SVG el eje Y positivo va hacia abajo
+        const py = -yMath * scale;
 
         if (px === -150) dStr += `M ${px} ${Math.max(-130, Math.min(130, py))}`;
         else dStr += ` L ${px} ${Math.max(-130, Math.min(130, py))}`;
       }
       document.getElementById('parabola_path').setAttribute('d', dStr);
 
-      // Puntos de corte
       const p1 = document.getElementById('root_pt1');
       const p2 = document.getElementById('root_pt2');
       const l1 = document.getElementById('root_lbl1');

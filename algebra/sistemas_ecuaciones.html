@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Álgebra: Sistemas de Ecuaciones Lineales</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 1rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* SUBPESTAÑAS */
+    .subtabs-container {
+      display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;
+      background: var(--bg-card); padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);
+      margin-bottom: 1rem;
+    }
+    .subtab-btn {
+      padding: 0.5rem 1.2rem; background: var(--bg-primary); border: 1px solid var(--border-color);
+      color: var(--text-muted); border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    }
+    .subtab-btn:hover { border-color: var(--accent-blue); color: var(--text-main); }
+    .subtab-btn.active { background: var(--accent-blue); color: #042f2e; border-color: var(--accent-blue); font-weight: bold; }
+    .subtab-content { display: none; flex-direction: column; gap: 1.2rem; animation: fadeIn 0.3s forwards; }
+    .subtab-content.active { display: flex; }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* COLORES DE VARIABLES */
+    .var-x { color: var(--accent-blue); font-weight: bold; }
+    .var-y { color: var(--accent-gold); font-weight: bold; }
+    .val-c { color: var(--accent-success); font-weight: bold; }
+
+    /* LLAVE DE SISTEMA */
+    .system-box {
+      display: inline-flex; align-items: center; font-family: monospace; font-size: 1.4rem;
+      background: #090d16; padding: 1.2rem; border-radius: 8px; border: 1px solid var(--border-color);
+    }
+    .system-brace {
+      font-size: 3.5rem; font-weight: 100; color: var(--text-muted); margin-right: 0.5rem; line-height: 1; display: flex; align-items: center;
+    }
+    .system-eqs {
+      display: flex; flex-direction: column; gap: 0.4rem;
+    }
+
+    /* TARJETAS INFORMATIVAS */
+    .info-card-item {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.4rem;
+    }
+
+    /* CAJAS DE ALERTA */
+    .warning-box {
+      background: rgba(244, 63, 94, 0.08); border: 1px solid var(--accent-op);
+      border-radius: 8px; padding: 1.1rem; line-height: 1.5; font-size: 0.95rem;
+    }
+
+    /* SLIDER Y SVG */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .slider-row label { width: 140px; font-weight: 600; font-family: monospace; }
+    .val-badge { width: 45px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; }
+    .svg-canvas {
+      width: 100%; height: 320px; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block;
+    }
+
+    @media (max-width: 800px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Sistemas de Ecuaciones</h1>
+    <p>Aprende a resolver problemas encontrando dos incógnitas a la vez mediante lógica visual, los tres métodos analíticos y el método gráfico.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('concepto', this)">🧩 1. Concepto y Tipos</button>
+      <button class="tab-btn" onclick="switchTab('problema', this)">🍔 2. Problema Visual</button>
+      <button class="tab-btn" onclick="switchTab('metodos', this)">🛠️ 3. Métodos Algebraicos</button>
+      <button class="tab-btn" onclick="switchTab('grafica', this)">📈 4. Método Gráfico</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: CONCEPTO Y TIPOS ================= -->
+    <div id="concepto" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">Un equipo de ecuaciones</div>
+        <div class="content-text">
+          Un <strong>sistema de ecuaciones</strong> es un conjunto de dos o más ecuaciones que comparten las mismas incógnitas. El objetivo es encontrar una solución (un valor para <em>x</em> y otro para <em>y</em>) que <strong>haga que ambas ecuaciones sean ciertas al mismo tiempo</strong>.
+        </div>
+      </div>
+
+      <div class="panel-box" style="margin-bottom: 0;">
+        <div class="panel-title">Los Tres Finales Posibles (Tipos de Sistemas)</div>
+        <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:1.5rem;">
+          Cuando intentamos resolver un sistema, la historia puede acabar de tres maneras distintas. Matemáticamente, se clasifican así:
+        </p>
+
+        <div class="grid-3">
+          <!-- TIPO 1 -->
+          <div class="info-card-item" style="border-top:4px solid var(--accent-success);">
+            <strong style="color:var(--accent-success); font-size:1.1rem;">1. Compatible Determinado (S.C.D.)</strong>
+            <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.5;">
+              <strong>El final feliz:</strong> Hay una <strong>única solución exacta</strong>. Encontramos un valor perfecto para 'x' y otro para 'y'. Gráficamente, son dos rectas que se cruzan en un solo punto.
+            </p>
+            <div style="font-family:monospace; margin-top:0.5rem; text-align:center;">Ej: x = 3, y = 2</div>
+          </div>
+
+          <!-- TIPO 2 -->
+          <div class="info-card-item" style="border-top:4px solid var(--accent-op);">
+            <strong style="color:var(--accent-op); font-size:1.1rem;">2. Incompatible (S.I.)</strong>
+            <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.5;">
+              <strong>El final imposible:</strong> <strong>No tiene solución</strong>. Las dos ecuaciones se contradicen (ej: te dicen que x+y=5 y también que x+y=10). Gráficamente, son rectas paralelas que nunca se tocan.
+            </p>
+            <div style="font-family:monospace; margin-top:0.5rem; text-align:center;">Ej: 0 = 5 (Falso)</div>
+          </div>
+
+          <!-- TIPO 3 -->
+          <div class="info-card-item" style="border-top:4px solid var(--accent-gold);">
+            <strong style="color:var(--accent-gold); font-size:1.1rem;">3. Compatible Indeterminado (S.C.I.)</strong>
+            <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.5;">
+              <strong>El final tramposo:</strong> Hay <strong>infinitas soluciones</strong>. Una ecuación es el doble o el triple de la otra, aportando la misma información. Gráficamente, es una recta dibujada exactamente encima de la otra.
+            </p>
+            <div style="font-family:monospace; margin-top:0.5rem; text-align:center;">Ej: 0 = 0 (Obvio)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: PROBLEMA VISUAL (HAMBURGUESAS) ================= -->
+    <div id="problema" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">Lógica Pura: El Método de Reducción en la Vida Real</div>
+        <div class="content-text">
+          Antes de usar reglas matemáticas de despeje, tu cerebro ya sabe resolver sistemas usando la lógica. Veamos el caso de las bandejas del restaurante de comida rápida.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">El Enigma del Restaurante</div>
+          
+          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); margin-bottom:1rem;">
+            <div style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.5rem;">Ticket 1:</div>
+            <div style="font-size:1.8rem;">🍔🍔 + 🍦 = <span class="val-c">7€</span></div>
+          </div>
+
+          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color);">
+            <div style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.5rem;">Ticket 2:</div>
+            <div style="font-size:1.8rem;">🍔 + 🍦 = <span class="val-c">4€</span></div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="border-color:var(--accent-blue);">
+          <div class="panel-title" style="color:var(--accent-blue);">La deducción lógica</div>
+          
+          <div style="display:flex; flex-direction:column; gap:1rem;">
+            <div class="info-card-item">
+              <strong>Paso 1: Comparamos las bandejas (Restamos)</strong>
+              <p style="color:var(--text-muted); font-size:0.9rem;">
+                Si miramos bien, la Bandeja 1 tiene exactamente <strong>una hamburguesa más</strong> que la Bandeja 2. El helado es el mismo.
+              </p>
+            </div>
+
+            <div class="info-card-item">
+              <strong>Paso 2: Diferencia de precio</strong>
+              <p style="color:var(--text-muted); font-size:0.9rem;">
+                La Bandeja 1 cuesta 7€ y la Bandeja 2 cuesta 4€. La diferencia de dinero es <strong>3€</strong>. Por tanto, esa hamburguesa extra cuesta obligatoriamente 3€.
+                <br><br><span style="font-size:1.2rem;">➔ 🍔 = <strong>3€</strong></span>
+              </p>
+            </div>
+
+            <div class="info-card-item" style="border-left:3px solid var(--accent-success);">
+              <strong>Paso 3: Descubrir el helado</strong>
+              <p style="color:var(--text-muted); font-size:0.9rem;">
+                Ahora miramos el Ticket 2 (🍔 + 🍦 = 4€). Si sabemos que la hamburguesa vale 3€, el helado tiene que valer lo que falta para llegar a 4€.
+                <br><br><span style="font-size:1.2rem;">➔ 🍦 = <strong>1€</strong></span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:rgba(56, 189, 248, 0.05); padding:1.5rem; border-radius:8px; border:1px dashed var(--accent-blue); text-align:center; font-family:monospace; font-size:1.15rem; line-height:1.8;">
+        <span style="color:var(--text-muted); font-size:0.95rem;">En el lenguaje del álgebra, acabas de resolver esto:</span><br>
+        2<span class="var-x">x</span> + 1<span class="var-y">y</span> = 7<br>
+        1<span class="var-x">x</span> + 1<span class="var-y">y</span> = 4<br>
+        <strong style="color:var(--accent-success);">x = 3 , y = 1</strong>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: MÉTODOS ALGEBRAICOS ================= -->
+    <div id="metodos" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+        <div class="badge" style="color: var(--accent-blue);">Los 3 Caminos al Mismo Destino</div>
+        <div class="content-text">
+          No importa qué método elijas: Sustitución, Igualación o Reducción. Si haces los pasos correctamente, el resultado será exactamente el mismo. Vamos a resolver este sistema con los tres:
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-bottom: 0.5rem;">
+        <div class="system-box">
+          <div class="system-brace">{</div>
+          <div class="system-eqs">
+            <div><span class="var-x">x</span> + <span class="var-y">y</span> = 5</div>
+            <div>2<span class="var-x">x</span> - <span class="var-y">y</span> = 4</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subtabs-container">
+        <button class="subtab-btn active" onclick="switchSubTab('sub_sustitucion', this)">1. Sustitución</button>
+        <button class="subtab-btn" onclick="switchSubTab('sub_igualacion', this)">2. Igualación</button>
+        <button class="subtab-btn" onclick="switchSubTab('sub_reduccion', this)">3. Reducción</button>
+      </div>
+
+      <!-- 3.1 SUSTITUCIÓN -->
+      <div id="sub_sustitucion" class="subtab-content active">
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-blue);">Método de Sustitución</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Consiste en <strong>despejar una letra</strong> en una ecuación y <strong>meterla (sustituirla)</strong> dentro de la otra. Es ideal cuando hay una letra sola sin números delante.
+          </p>
+
+          <div style="display:flex; flex-direction:column; gap:0.6rem; font-family:monospace; font-size:1.1rem; background:#090d16; padding:1.5rem; border-radius:8px; border:1px solid var(--border-color); line-height:1.8;">
+            <div>
+              <span style="color:var(--text-muted); font-size:0.85rem;">Paso 1: Despejamos la <span class="var-x">x</span> en la primera ecuación (es la más fácil).</span><br>
+              <span class="var-x">x</span> + <span class="var-y">y</span> = 5 ➔ <strong style="color:var(--accent-blue);">x = 5 - y</strong>
+            </div>
+            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:0.5rem 0;">
+            <div>
+              <span style="color:var(--text-muted); font-size:0.85rem;">Paso 2: Sustituimos ese paquete en la <span class="var-x">x</span> de la segunda ecuación.</span><br>
+              2<strong style="color:var(--accent-blue);">(5 - y)</strong> - <span class="var-y">y</span> = 4
+            </div>
+            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:0.5rem 0;">
+            <div>
+              <span style="color:var(--text-muted); font-size:0.85rem;">Paso 3: Resolvemos la ecuación (ya solo tiene 'y').</span><br>
+              10 - 2<span class="var-y">y</span> - <span class="var-y">y</span> = 4<br>
+              -3<span class="var-y">y</span> = 4 - 10<br>
+              -3<span class="var-y">y</span> = -6 ➔ <strong style="color:var(--accent-gold);">y = 2</strong>
+            </div>
+            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:0.5rem 0;">
+            <div>
+              <span style="color:var(--text-muted); font-size:0.85rem;">Paso 4: Volvemos al Paso 1 para calcular la <span class="var-x">x</span>.</span><br>
+              <span class="var-x">x</span> = 5 - <span class="var-y">y</span> ➔ <span class="var-x">x</span> = 5 - 2 ➔ <strong style="color:var(--accent-blue);">x = 3</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.2 IGUALACIÓN -->
+      <div id="sub_igualacion" class="subtab-content">
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-gold);">Método de Igualación</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Consiste en <strong>despejar la MISMA letra en las dos ecuaciones</strong> y luego igualar los dos resultados (si A = B y A = C, entonces B = C).
+          </p>
+
+          <div style="display:flex; flex-direction:column; gap:0.6rem; font-family:monospace; font-size:1.1rem; background:#090d16; padding:1.5rem; border-radius:8px; border:1px solid var(--border-color); line-height:1.8;">
+            <div>
+              <span style="color:var(--text-muted); font-size:0.85rem;">Paso 1: Despejamos la <span class="var-x">x</span> en AMBAS ecuaciones.</span><br>
+              Eq 1: <span class="var-x">x</span> + <span class="var-y">y</span> = 5 ➔ <strong style="color:var(--accent-blue);">x = 5 - y</strong><br>
+              Eq 2: 2<span class="var-x">x</span> - <span class="var-y">y</span> = 4 ➔ <strong style="color:var(--accent-blue);">x = (4 + y) / 2</strong>
+            </div>
+            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:0.5rem 0;">
+            <div>
+              <span style="color:var(--text-muted); font-size:0.85rem;">Paso 2: Igualamos los dos paquetes y resolvemos en cruz.</span><br>
+              <strong style="color:var(--accent-blue);">5 - y = (4 + y) / 2</strong><br>
+              2 · (5 - y) = 4 + y<br>
+              10 - 2<span class="var-y">y</span> = 4 + <span class="var-y">y</span><br>
+              10 - 4 = <span class="var-y">y</span> + 2<span class="var-y">y</span><br>
+              6 = 3<span class="var-y">y</span> ➔ <strong style="color:var(--accent-gold);">y = 2</strong>
+            </div>
+            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:0.5rem 0;">
+            <div>
+              <span style="color:var(--text-muted); font-size:0.85rem;">Paso 3: Sustituimos la 'y' en cualquiera de los despejes del paso 1.</span><br>
+              <span class="var-x">x</span> = 5 - <span class="var-y">y</span> ➔ <span class="var-x">x</span> = 5 - 2 ➔ <strong style="color:var(--accent-blue);">x = 3</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3.3 REDUCCIÓN -->
+      <div id="sub_reduccion" class="subtab-content">
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-success);">Método de Reducción</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Es el más rápido y profesional. Consiste en <strong>sumar en vertical las dos ecuaciones</strong> para que una de las letras se aniquile (como hicimos restando las bandejas de hamburguesas).
+          </p>
+
+          <div style="display:flex; flex-direction:column; gap:0.6rem; font-family:monospace; font-size:1.1rem; background:#090d16; padding:1.5rem; border-radius:8px; border:1px solid var(--border-color); line-height:1.8;">
+            <div>
+              <span style="color:var(--text-muted); font-size:0.85rem;">Paso 1: Nos fijamos en la <span class="var-y">y</span>. En la primera suma (+y) y en la segunda resta (-y). Ya están listas para aniquilarse sin multiplicar nada. Sumamos en vertical:</span><br>
+              <br>
+              &nbsp;&nbsp;<span class="var-x">x</span> + <strong style="color:var(--accent-op);">y</strong> = 5<br>
+              &nbsp;2<span class="var-x">x</span> - <strong style="color:var(--accent-op);">y</strong> = 4<br>
+              ---------<br>
+              &nbsp;3<span class="var-x">x</span> &nbsp; &nbsp; = 9
+            </div>
+            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:0.5rem 0;">
+            <div>
+              <span style="color:var(--text-muted); font-size:0.85rem;">Paso 2: Despejamos directamente la x.</span><br>
+              3<span class="var-x">x</span> = 9 ➔ <strong style="color:var(--accent-blue);">x = 3</strong>
+            </div>
+            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:0.5rem 0;">
+            <div>
+              <span style="color:var(--text-muted); font-size:0.85rem;">Paso 3: Sustituimos x=3 en cualquier ecuación inicial.</span><br>
+              <span class="var-x">3</span> + <span class="var-y">y</span> = 5 ➔ <strong style="color:var(--accent-gold);">y = 2</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: MÉTODO GRÁFICO ================= -->
+    <div id="grafica" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">El Significado Geométrico</div>
+        <div class="content-text">
+          Cada ecuación con <em>x</em> e <em>y</em> de grado 1 representa <strong>una línea recta infinita</strong> en el espacio.
+          Resolver el sistema significa dibujar las dos rectas y buscar <strong>la coordenada exacta (x, y) donde chocan</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Trazado interactivo de las rectas</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Sistema: <br>
+            • Recta A: <strong style="color:var(--accent-blue);">x + y = 5</strong><br>
+            • Recta B: <strong style="color:var(--accent-gold);">2x - y = 4</strong>
+          </p>
+
+          <div class="slider-row">
+            <label>Dibujo paso a paso:</label>
+            <input type="range" id="step_graf" min="0" max="3" value="0" oninput="updateSysGrafica()">
+            <span class="val-badge" id="v_step_graf">0</span>
+          </div>
+
+          <div class="info-card-item" id="sys_graf_text" style="min-height:100px; font-size:0.95rem; line-height:1.5;">
+            <!-- Explicación gráfica -->
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Plano Cartesiano</div>
+          
+          <svg class="svg-canvas" viewBox="-50 -50 250 250" id="sys_svg">
+            <defs>
+              <pattern id="grid_sys" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <!-- Cuadrícula 10x10. Centro en (0,0) abajo a la izquierda -->
+            <!-- Offset para que el 0,0 quede visible. Rango: X [-2 a 8], Y [-2 a 8] -->
+            <!-- 1 unidad = 20px. Origen visual: (40, 200) -->
+            <rect x="-50" y="-50" width="250" height="250" fill="url(#grid_sys)" />
+
+            <!-- Ejes -->
+            <!-- Eje X en Y=200 -->
+            <line x1="-50" y1="150" x2="200" y2="150" stroke="#94a3b8" stroke-width="2" />
+            <!-- Eje Y en X=0 -->
+            <line x1="0" y1="-50" x2="0" y2="250" stroke="#94a3b8" stroke-width="2" />
+            
+            <text x="180" y="140" fill="#94a3b8" font-size="12" font-weight="bold">X</text>
+            <text x="8" y="-40" fill="#94a3b8" font-size="12" font-weight="bold">Y</text>
+
+            <!-- Recta A: x+y=5 -> y = -x + 5. Pasa por (0,5)= (0, 50) y (5,0)= (100, 150) -->
+            <!-- Función Y_svg = 150 - (y_math * 20) ; Función X_svg = x_math * 20 -->
+            <line id="line_A" x1="-40" y1="230" x2="160" y2="-10" stroke="var(--accent-blue)" stroke-width="3" style="display:none;" />
+            <text id="lbl_A" x="120" y="20" fill="var(--accent-blue)" font-size="12" font-weight="bold" style="display:none;">Recta A</text>
+
+            <!-- Recta B: 2x-y=4 -> y = 2x - 4. Pasa por (0,-4)= (0, 230) y (4,4)= (80, 70) -->
+            <line id="line_B" x1="-10" y1="250" x2="90" y2="50" stroke="var(--accent-gold)" stroke-width="3" style="display:none;" />
+            <text id="lbl_B" x="80" y="40" fill="var(--accent-gold)" font-size="12" font-weight="bold" style="display:none;">Recta B</text>
+
+            <!-- Intersección: (3, 2) -> SVG(60, 110) -->
+            <circle id="pt_intersect" cx="60" cy="110" r="5" fill="var(--accent-success)" stroke="#fff" stroke-width="2" style="display:none;" />
+            <text id="lbl_intersect" x="70" y="105" fill="var(--accent-success)" font-size="13" font-weight="bold" style="display:none;">(3, 2)</text>
+
+          </svg>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓN ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'grafica') updateSysGrafica();
+    }
+
+    function switchSubTab(subtabId, btn) {
+      document.querySelectorAll('.subtab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(subtabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // =========================================================================
+    // 4. SIMULACIÓN MÉTODO GRÁFICO
+    // =========================================================================
+    const sysGrafSteps = [
+      {
+        text: "<strong>Paso 0: El Plano Cartesiano</strong><br>Tenemos nuestro papel cuadriculado. El eje horizontal es la 'x' y el vertical es la 'y'."
+      },
+      {
+        text: "<strong>Paso 1: Dibujar la primera ecuación</strong><br>Trazamos todos los puntos posibles que cumplen <span style='color:var(--accent-blue); font-weight:bold;'>x + y = 5</span>. Por ejemplo, el punto (0,5), el (5,0), el (1,4)... Forman una línea recta azul infinita."
+      },
+      {
+        text: "<strong>Paso 2: Dibujar la segunda ecuación</strong><br>Trazamos sobre el mismo mapa los puntos que cumplen <span style='color:var(--accent-gold); font-weight:bold;'>2x - y = 4</span>. Por ejemplo, el (2,0), el (3,2)... Forman una línea recta amarilla."
+      },
+      {
+        text: "<strong>Paso 3: ¡El Choque! (La Solución)</strong><br>Buscamos visualmente dónde se cruzan. El único punto del universo que vive en la recta azul Y TAMBIÉN en la recta amarilla es la coordenada <span style='color:var(--accent-success); font-weight:bold;'>(3, 2)</span>.<br>➔ <strong>x = 3, y = 2</strong>."
+      }
+    ];
+
+    function updateSysGrafica() {
+      const step = parseInt(document.getElementById('step_graf').value);
+      document.getElementById('v_step_graf').innerText = step;
+      document.getElementById('sys_graf_text').innerHTML = sysGrafSteps[step].text;
+      
+      const lineA = document.getElementById('line_A');
+      const lblA = document.getElementById('lbl_A');
+      const lineB = document.getElementById('line_B');
+      const lblB = document.getElementById('lbl_B');
+      const ptInt = document.getElementById('pt_intersect');
+      const lblInt = document.getElementById('lbl_intersect');
+
+      // Reset
+      lineA.style.display = 'none'; lblA.style.display = 'none';
+      lineB.style.display = 'none'; lblB.style.display = 'none';
+      ptInt.style.display = 'none'; lblInt.style.display = 'none';
+
+      if (step >= 1) {
+        lineA.style.display = 'block'; lblA.style.display = 'block';
+      }
+      if (step >= 2) {
+        lineB.style.display = 'block'; lblB.style.display = 'block';
+      }
+      if (step === 3) {
+        ptInt.style.display = 'block'; lblInt.style.display = 'block';
+      }
+    }
+    // Inicializar
+    updateSysGrafica();
+
+  </script>
+</body>
+</html>

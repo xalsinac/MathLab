@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Álgebra: Polinomios Avanzados</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 1rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* FÓRMULA Y FRACCIONES VERTICALES */
+    .fraction-vertical {
+      display: inline-flex; flex-direction: column; vertical-align: middle;
+      text-align: center; margin: 0 0.4rem; line-height: 1.2; font-family: monospace;
+    }
+    .fraction-vertical .num {
+      border-bottom: 2px solid currentColor; padding: 0 0.3rem 2px 0.3rem;
+    }
+    .fraction-vertical .den {
+      padding: 2px 0.3rem 0 0.3rem;
+    }
+
+    /* COLORES PEDAGÓGICOS */
+    .c-poly { color: var(--accent-blue); font-weight: bold; }
+    .c-term { color: var(--accent-gold); font-weight: bold; }
+    .c-err { color: var(--accent-op); font-weight: bold; }
+
+    /* LA CAJA DE DIVISIÓN Y PIZARRA */
+    .pizarra-board {
+      background: #090d16; border: 1px solid var(--border-color); border-radius: 8px;
+      padding: 1.5rem; color: #fff; overflow-x: auto; display: flex; justify-content: center; align-items: center; min-height: 180px;
+    }
+    
+    /* COLORES PARA LA DIVISIÓN */
+    .col-r { color: var(--accent-op); font-weight: bold; } /* Descontar/restar */
+    .col-g { color: var(--accent-success); font-weight: bold; } /* Resultados */
+
+    /* CONTROLES */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .slider-row label { width: 180px; font-weight: 600; font-family: monospace; }
+    .val-badge { width: 45px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; }
+
+    /* CAJAS DE ALERTA */
+    .warning-box {
+      background: rgba(244, 63, 94, 0.08); border: 1px solid var(--accent-op);
+      border-radius: 8px; padding: 1.1rem; line-height: 1.5; font-size: 0.95rem;
+    }
+
+    /* INFO CARDS */
+    .info-card-item {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.3rem;
+    }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Polinomios Avanzados</h1>
+    <p>Domina las fracciones algebraicas, la división tradicional por caja, el arte de sacar factor común y la simplificación mediante identidades notables.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('fracciones_concepto', this)">⚠️ 1. Fracciones Algebraicas</button>
+      <button class="tab-btn" onclick="switchTab('division', this)">➗ 2. División por Caja</button>
+      <button class="tab-btn" onclick="switchTab('factor_comun', this)">🧱 3. Sacar Factor Común</button>
+      <button class="tab-btn" onclick="switchTab('simplificar', this)">✂️ 4. Simplificación</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: FRACCIONES ALGEBRAICAS ================= -->
+    <div id="fracciones_concepto" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">¿Por qué NO son polinomios?</div>
+        <div class="content-text">
+          Un <strong>polinomio</strong> solo permite sumar, restar y multiplicar variables con exponentes enteros y positivos. Cuando una variable (como la <em>x</em>) aparece en el <strong>denominador</strong> o dentro de una <strong>raíz</strong>, el objeto cambia de nombre: es una <strong>Fracción Algebraica</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Polinomios Permitidos (✓)</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Aquí la variable <em>x</em> solo está arriba, multiplicándose o elevándose a números naturales:
+          </p>
+
+          <div style="display:flex; flex-direction:column; gap:0.8rem;">
+            <div class="info-card-item" style="border-left:3px solid var(--accent-success);">
+              <span style="font-family:monospace; font-size:1.4rem; color:#fff;">3x² - 5x + 1</span>
+              <span style="color:var(--text-muted); font-size:0.85rem; margin-top:0.3rem;">✓ El exponente es 2 (natural), no hay divisiones por x.</span>
+            </div>
+
+            <div class="info-card-item" style="border-left:3px solid var(--accent-success);">
+              <span style="font-family:monospace; font-size:1.4rem; color:#fff;">
+                <span class="fraction-vertical"><span class="num">x³ - 4</span><span class="den">5</span></span> + 2x
+              </span>
+              <span style="color:var(--text-muted); font-size:0.85rem; margin-top:0.3rem;">✓ Ojo: que esté dividido por 5 (un número) es legal. No hay 'x' en el denominador.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="border-color:var(--accent-op);">
+          <div class="panel-title" style="color:var(--accent-op);">Fracciones Algebraicas (✖ NO son Polinomios)</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            En cuanto hay una división por la variable <em>x</em>, todo se altera porque el denominador podría valer 0:
+          </p>
+
+          <div style="display:flex; flex-direction:column; gap:0.8rem;">
+            <div class="info-card-item" style="border-color:var(--accent-op);">
+              <span style="font-family:monospace; font-size:1.4rem; color:var(--accent-op);">
+                <span class="fraction-vertical"><span class="num">2x + 1</span><span class="den">x - 3</span></span>
+              </span>
+              <span style="color:var(--text-muted); font-size:0.85rem; margin-top:0.3rem;">✖ La 'x' está en el denominador. Si x = 3, estaríamos dividiendo entre cero (imposible matemáticamente).</span>
+            </div>
+
+            <div class="warning-box">
+              🚨 <strong>La Gran Diferencia:</strong> Un polinomio se puede evaluar para cualquier número. Una fracción algebraica <strong>tiene "zonas prohibidas"</strong> (los números que hacen 0 el denominador).
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: DIVISIÓN POR CAJA ================= -->
+    <div id="division" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">El algoritmo de toda la vida</div>
+        <div class="content-text">
+          Dividir polinomios es calcado a la división de números naturales con caja que hacías en primaria, pero respetando las columnas de cada grado: x³, x², x y término independiente.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Pasos interactivos</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Vamos a dividir <span class="c-poly">P(x) = 3x³ + 2x² - 5x + 4</span> entre <span class="c-term">D(x) = x² + 2</span>. Desliza para ver cada etapa de la caja:
+          </p>
+
+          <div class="slider-row">
+            <label>Paso de la división:</label>
+            <input type="range" id="step_div" min="0" max="4" value="0" oninput="updateDivision()">
+            <span class="val-badge" id="v_step_div">0</span>
+          </div>
+
+          <div class="info-card-item" id="div_explanation_text" style="min-height:120px; font-size:0.95rem; line-height:1.5;">
+            <!-- Explicación dinámica -->
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">La Pizarra de la galera</div>
+          
+          <div class="pizarra-board" id="board_view">
+            <!-- Representación por JS mediante Tabla HTML y <pre> para no perder espacios -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: SACAR FACTOR COMÚN ================= -->
+    <div id="factor_comun" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+        <div class="badge" style="color: var(--accent-blue);">La Propiedad Distributiva al revés</div>
+        <div class="content-text">
+          Sacar factor común consiste en buscar qué tienen <strong>exactamente igual</strong> todos los términos de una suma (tanto números como letras) y extraerlos fuera multiplicando a un paréntesis.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Laboratorio Paso a Paso</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Desliza para ver cómo se extrae el factor común del binomio: <strong style="color:#fff;">6x³ + 15x²</strong>.
+          </p>
+
+          <div class="slider-row">
+            <label>Paso del factor:</label>
+            <input type="range" id="step_factor" min="0" max="3" value="0" oninput="updateFactor()">
+            <span class="val-badge" id="v_step_factor">0</span>
+          </div>
+
+          <div class="info-card-item" id="factor_explanation_text" style="min-height:110px; font-size:0.95rem; line-height:1.5;">
+            <!-- Explicación dinámica -->
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Pizarra de Transformación</div>
+          
+          <div class="pizarra-board" id="factor_board_view" style="font-size:1.8rem; font-family:monospace; font-weight:bold; letter-spacing: 2px;">
+            <!-- Visualización dinámica -->
+          </div>
+
+          <div class="warning-box" style="margin-top: 1.5rem;">
+            💡 <strong>¡Aviso de examen!:</strong>
+            Si tienes <strong style="color:#fff;">x² + x</strong> y sacas factor común la <span class="c-term">x</span>, ¡el segundo término NO se convierte en 0! Al dividir x / x queda 1:
+            <div style="font-family:monospace; font-size:1.15rem; color:var(--accent-success); margin-top:0.4rem; text-align:center;">
+              x² + x = <strong>x · (x + 1)</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: SIMPLIFICACIÓN ================= -->
+    <div id="simplificar" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">"Cortar" lo que sea idéntico arriba y abajo</div>
+        <div class="content-text">
+          Para simplificar una fracción algebraica, <strong>está terminantemente prohibido tachar términos sueltos que estén sumando</strong>. Primero debemos <strong>FACTORIZAR</strong> (usando factor común o identidades notables) para conseguir multiplicaciones, y luego cancelar los paréntesis idénticos.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">El Ejemplo Paso a Paso</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Simplifiquemos la fracción:
+          </p>
+
+          <div style="font-family:monospace; font-size:1.4rem; text-align:center; margin-bottom:1rem;">
+            <span class="fraction-vertical">
+              <span class="num">x² - 4x</span>
+              <span class="den">x² - 16</span>
+            </span>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:0.8rem;">
+            <div class="info-card-item">
+              <strong>Paso 1: Factorizar el Numerador (Arriba)</strong>
+              <p style="color:var(--text-muted); font-size:0.88rem;">
+                Vemos que x² y 4x comparten x. Sacamos factor común:<br>
+                ➔ <strong>x · (x - 4)</strong>
+              </p>
+            </div>
+
+            <div class="info-card-item">
+              <strong>Paso 2: Factorizar el Denominador (Abajo)</strong>
+              <p style="color:var(--text-muted); font-size:0.88rem;">
+                Reconocemos una identidad notable (Diferencia de cuadrados, a² - b²):<br>
+                x² - 16 = x² - 4² ➔ <strong>(x + 4) · (x - 4)</strong>
+              </p>
+            </div>
+
+            <div class="info-card-item" style="border-left:3px solid var(--accent-success);">
+              <strong>Paso 3: Cancelar factores idénticos</strong>
+              <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:0.4rem;">
+                Sustituimos y cancelamos el paquete (x - 4) que se multiplica en ambos lados:
+              </p>
+              <div style="font-family:monospace; font-size:1.15rem; color:#fff;">
+                <span class="fraction-vertical">
+                  <span class="num">x · <del style="color:var(--accent-op); font-weight:bold;">(x - 4)</del></span>
+                  <span class="den">(x + 4) · <del style="color:var(--accent-op); font-weight:bold;">(x - 4)</del></span>
+                </span> 
+                = 
+                <span class="fraction-vertical" style="color:var(--accent-success); font-weight:bold;">
+                  <span class="num">x</span>
+                  <span class="den">x + 4</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="border-color:var(--accent-op);">
+          <div class="panel-title" style="color:var(--accent-op);">🚨 ¡El delito matemático número uno!</div>
+          
+          <div class="warning-box">
+            ¿Por qué NO se puede hacer esto?
+            <br><br>
+            <div style="font-family:monospace; font-size:1.4rem; text-align:center; color:var(--accent-op); margin-bottom:0.5rem;">
+              <span class="fraction-vertical">
+                <span class="num"><del>x</del> + 2</span>
+                <span class="den"><del>x</del> + 4</span>
+              </span> 
+              ≠
+              <span class="fraction-vertical">
+                <span class="num">2</span>
+                <span class="den">4</span>
+              </span>
+            </div>
+            Las sumas actúan como bloques de cemento. <strong>No puedes romper una suma</strong>. <br><br>
+            Comprobación numérica rápida: Si x = 10, la izquierda da 12/14, pero la derecha da 2/4. ¡No tiene nada que ver! Solo se cancela cuando está todo multiplicando.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓN ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'division') updateDivision();
+      if (tabId === 'factor_comun') updateFactor();
+    }
+
+    // =========================================================================
+    // 2. SIMULACIÓN DE LA DIVISIÓN TRADICIONAL POR CAJA (GALERA FIJA)
+    // =========================================================================
+    const divisionSteps = [
+      {
+        text: "<strong>Paso 0: Preparar la Galera</strong><br>Colocamos el dividendo P(x) y el divisor D(x) en su sitio. Dejamos huecos si falta algún grado del polinomio. Aquí está todo completo: grado 3, 2, 1 y 0.",
+        divi: " 3x³ + 2x² -  5x + 4\n\n\n\n\n",
+        divis: "x² + 2",
+        coci: ""
+      },
+      {
+        text: "<strong>Paso 1: Primer término del cociente</strong><br>Dividimos el primer término del dividendo entre el primero del divisor: <br><strong>3x³ / x² = 3x</strong>.<br>Colocamos este término en el cociente (debajo de la caja).",
+        divi: " 3x³ + 2x² -  5x + 4\n\n\n\n\n",
+        divis: "x² + 2",
+        coci: "<span class='col-g'>3x</span>"
+      },
+      {
+        text: "<strong>Paso 2: Restar al dividendo</strong><br>Multiplicamos 3x por el divisor (x² + 2) = 3x³ + 6x. Al pasarlo a la izquierda para restar, <strong>le cambiamos el signo</strong> (-3x³ - 6x) y lo colocamos en su columna correspondiente. Hacemos la suma vertical.",
+        divi: " 3x³ + 2x² -  5x + 4\n<span class='col-r'>-3x³       -  6x</span>\n--------------------\n   0 + 2x² - 11x + 4\n\n",
+        divis: "x² + 2",
+        coci: "<span class='col-g'>3x</span>"
+      },
+      {
+        text: "<strong>Paso 3: Segundo término del cociente</strong><br>Repetimos con el primer término que nos queda: 2x² dividido entre x²: <br><strong>2x² / x² = +2</strong>.<br>Colocamos el +2 en el cociente.",
+        divi: " 3x³ + 2x² -  5x + 4\n<span class='col-r'>-3x³       -  6x</span>\n--------------------\n   0 + 2x² - 11x + 4\n\n",
+        divis: "x² + 2",
+        coci: "3x <span class='col-g'>+ 2</span>"
+      },
+      {
+        text: "<strong>Paso 4: Restar y fin</strong><br>Multiplicamos +2 por el divisor (x² + 2) = 2x² + 4. Cambiamos de signo al pasarlo a la izquierda (-2x² - 4). Sumamos: queda <strong>-11x</strong>. Como -11x tiene menor grado que x², se termina la división.",
+        divi: " 3x³ + 2x² -  5x + 4\n<span class='col-r'>-3x³       -  6x</span>\n--------------------\n   0 + 2x² - 11x + 4\n<span class='col-r'>     - 2x²       - 4</span>\n     ---------------\n         0 - 11x + 0",
+        divis: "x² + 2",
+        coci: "3x + 2"
+      }
+    ];
+
+    function updateDivision() {
+      const step = parseInt(document.getElementById('step_div').value);
+      document.getElementById('v_step_div').innerText = step;
+      document.getElementById('div_explanation_text').innerHTML = divisionSteps[step].text;
+      
+      const boardHTML = `
+        <table style="border-collapse: collapse; font-family: monospace; font-size: 1.25rem;">
+          <tr>
+            <td style="vertical-align: top; padding-right: 15px;">
+              <pre style="margin:0; font-family: monospace;">${divisionSteps[step].divi}</pre>
+            </td>
+            <td style="vertical-align: top; border-left: 2px solid white;">
+              <pre style="margin:0; font-family: monospace; border-bottom: 2px solid white; padding: 0 15px 5px 15px;">${divisionSteps[step].divis}</pre>
+              <pre style="margin:0; font-family: monospace; padding: 5px 15px 0 15px; color: var(--accent-success);">${divisionSteps[step].coci}</pre>
+            </td>
+          </tr>
+        </table>
+      `;
+      document.getElementById('board_view').innerHTML = boardHTML;
+    }
+    updateDivision();
+
+    // =========================================================================
+    // 3. SIMULACIÓN DE SACAR FACTOR COMÚN
+    // =========================================================================
+    const factorSteps = [
+      {
+        text: "<strong>Paso 0: Analizar el polinomio</strong><br>Tenemos el binomio <strong>6x³ + 15x²</strong>. Queremos sacar factor común, es decir, encontrar el \"paquete\" más grande que esté multiplicando escondido en ambos términos.",
+        math: `6x³ + 15x²`
+      },
+      {
+        text: "<strong>Paso 1: El factor numérico (MCD)</strong><br>Descomponemos los números. El 6 es 3·2 y el 15 es 3·5. El número más grande que divide a ambos es el <span style='color:var(--accent-gold); font-weight:bold;'>3</span>.",
+        math: `<span style="color:var(--accent-gold);">3</span>·2·x³ + <span style="color:var(--accent-gold);">3</span>·5·x²`
+      },
+      {
+        text: "<strong>Paso 2: El factor literal (Letras)</strong><br>Miramos las letras. Tenemos x³ (que es x·x·x) y x² (que es x·x). El bloque más grande que ambos comparten es <span style='color:var(--accent-blue); font-weight:bold;'>x²</span>.",
+        math: `<span style="color:var(--accent-gold);">3</span>·2·<span style="color:var(--accent-blue);">x²</span>·x + <span style="color:var(--accent-gold);">3</span>·5·<span style="color:var(--accent-blue);">x²</span>`
+      },
+      {
+        text: "<strong>Paso 3: Extraer y abrir paréntesis</strong><br>Sacamos el bloque común <span style='color:var(--accent-success); font-weight:bold;'>3x²</span> fuera. Dentro del paréntesis dejamos exactamente lo que <em>sobra</em> de cada término original tras dividirlos por el factor común.",
+        math: `<span style="color:var(--accent-success);">3x²</span> · (2x + 5)`
+      }
+    ];
+
+    function updateFactor() {
+      const step = parseInt(document.getElementById('step_factor').value);
+      document.getElementById('v_step_factor').innerText = step;
+      document.getElementById('factor_explanation_text').innerHTML = factorSteps[step].text;
+      document.getElementById('factor_board_view').innerHTML = factorSteps[step].math;
+    }
+    updateFactor();
+
+  </script>
+</body>
+</html>

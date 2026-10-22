@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aritmética: Notación Científica</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 1rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* CONTROLES DESLIZANTES */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem; }
+    .slider-row label { width: 160px; font-weight: 600; font-family: monospace; font-size: 1.05rem; }
+    .val-badge { width: 45px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; }
+
+    /* SVG CANVAS */
+    .svg-canvas {
+      width: 100%; height: 200px; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block;
+    }
+
+    /* FÓRMULA HERO CORREGIDA (sin flex para no aplastar el sup) */
+    .formula-hero {
+      display: inline-block; text-align: center;
+      background: #090d16; border: 2px solid var(--accent-blue); border-radius: 10px;
+      padding: 1.2rem 2.5rem; font-family: monospace; font-size: 2.2rem;
+      font-weight: bold; color: #fff; margin: 0.5rem auto;
+    }
+
+    /* TARJETAS INFORMATIVAS */
+    .info-card-item {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 1.2rem; display: flex; flex-direction: column; gap: 0.4rem;
+    }
+
+    /* VISUALIZADOR DE LA COMA MÓVIL */
+    .comma-display {
+      font-family: monospace; font-size: 2.2rem; font-weight: bold; color: #fff;
+      letter-spacing: 4px; text-align: center; margin: 1.5rem 0;
+      background: #0b1120; padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border-color);
+    }
+    .digit { color: #fff; }
+    .comma-active { color: var(--accent-gold); font-size: 2.8rem; position: relative; top: 4px; }
+    .multiplier { color: var(--accent-blue); font-size: 1.8rem; margin-left: 15px; }
+
+    /* TABLA RESUMEN DE LA COMA */
+    .comma-table {
+      width: 100%; border-collapse: collapse; font-family: monospace; text-align: center; font-size: 0.95rem; margin-top: 1rem;
+    }
+    .comma-table th, .comma-table td {
+      border: 1px solid var(--border-color); padding: 0.6rem 0.4rem;
+    }
+    .comma-table th { background: rgba(255, 255, 255, 0.04); color: var(--text-muted); }
+    .comma-table tr.row-up td { background: rgba(16, 185, 129, 0.05); }
+    .comma-table tr.row-down td { background: rgba(244, 63, 94, 0.05); }
+
+    /* CAJAS DE PROBLEMAS */
+    .problem-box {
+      background: rgba(56, 189, 248, 0.05); border: 1px solid var(--accent-blue);
+      border-radius: 8px; padding: 1.2rem; margin-bottom: 1rem;
+    }
+    .problem-statement { font-weight: bold; color: var(--text-main); margin-bottom: 0.8rem; font-size: 1.05rem; }
+    .problem-solution { font-family: monospace; color: var(--text-muted); font-size: 1rem; line-height: 1.8; }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Notación Científica</h1>
+    <p>El lenguaje del universo. Aprende a escribir, leer y operar con números gigantescos como galaxias o minúsculos como bacterias.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('concepto', this)">🔭 1. ¿Qué es? y Escalas</button>
+      <button class="tab-btn" onclick="switchTab('conversion', this)">⏪ 2. Convertir Números</button>
+      <button class="tab-btn" onclick="switchTab('operaciones', this)">🧮 3. Operaciones</button>
+      <button class="tab-btn" onclick="switchTab('problemas', this)">🧠 4. Problemas Resueltos</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: CONCEPTO Y ESCALAS ================= -->
+    <div id="concepto" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">Escribir sin Ceros de Más</div>
+        <div class="content-text">
+          La <strong>notación científica</strong> sirve para escribir números muy grandes (como el peso de la Tierra) o muy pequeños (como el tamaño de un virus) de forma corta y manejable usando potencias de 10.
+        </div>
+      </div>
+
+      <div style="text-align:center;">
+        <div class="formula-hero">
+          <span style="color:var(--accent-gold);">a</span> · 10<sup style="color:var(--accent-blue);">n</sup>
+        </div>
+        <p style="color:var(--text-muted); font-size:0.95rem; margin-top:0.5rem;">
+          Donde <strong style="color:var(--accent-gold);">a</strong> es un número entre 1 y 9,99... (solo un dígito delante de la coma)<br>
+          y <strong style="color:var(--accent-blue);">n</strong> es un exponente entero (positivo o negativo).
+        </p>
+      </div>
+
+      <div class="grid-2" style="margin-top:1rem;">
+        <!-- MACRO -->
+        <div class="panel-box" style="border-top:4px solid var(--accent-blue);">
+          <div class="panel-title" style="color:var(--accent-blue);">Exponente Positivo (+n)</div>
+          <p style="color:var(--text-main); font-size:0.95rem; margin-bottom:1rem;">
+            Se usa para representar cosas <strong>gigantescas (macroscópicas)</strong>. El exponente positivo indica cuántos ceros hay (o cuántos saltos a la derecha ha dado la coma originalmente).
+          </p>
+
+          <svg class="svg-canvas" viewBox="0 0 300 200">
+            <circle cx="150" cy="100" r="40" fill="rgba(56, 189, 248, 0.2)" stroke="var(--accent-blue)" stroke-width="2" />
+            <ellipse cx="150" cy="100" rx="70" ry="15" fill="none" stroke="var(--accent-blue)" stroke-width="2" transform="rotate(-15 150 100)" />
+            <ellipse cx="150" cy="100" rx="70" ry="15" fill="none" stroke="var(--accent-blue)" stroke-width="2" transform="rotate(15 150 100)" />
+          </svg>
+
+          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1rem; margin-top:1rem; font-family:monospace; line-height:1.6;">
+            <div>Velocidad de la luz:</div>
+            <div>300.000.000 m/s</div>
+            <div style="color:var(--accent-blue); font-size:1.2rem; font-weight:bold; margin-top:0.3rem;">= 3 · 10⁸ m/s</div>
+          </div>
+        </div>
+
+        <!-- MICRO -->
+        <div class="panel-box" style="border-top:4px solid var(--accent-gold);">
+          <div class="panel-title" style="color:var(--accent-gold);">Exponente Negativo (-n)</div>
+          <p style="color:var(--text-main); font-size:0.95rem; margin-bottom:1rem;">
+            Se usa para cosas <strong>diminutas (microscópicas)</strong>. El exponente negativo indica cuántos lugares salta la coma hacia la izquierda.
+          </p>
+
+          <svg class="svg-canvas" viewBox="0 0 300 200">
+            <circle cx="150" cy="100" r="10" fill="rgba(251, 191, 36, 0.8)" />
+            <ellipse cx="150" cy="100" rx="40" ry="15" fill="none" stroke="var(--accent-gold)" stroke-width="1.5" stroke-dasharray="3" transform="rotate(0 150 100)" />
+            <ellipse cx="150" cy="100" rx="40" ry="15" fill="none" stroke="var(--accent-gold)" stroke-width="1.5" stroke-dasharray="3" transform="rotate(60 150 100)" />
+            <ellipse cx="150" cy="100" rx="40" ry="15" fill="none" stroke="var(--accent-gold)" stroke-width="1.5" stroke-dasharray="3" transform="rotate(120 150 100)" />
+            <circle cx="110" cy="100" r="3" fill="var(--accent-gold)" />
+            <circle cx="170" cy="65" r="3" fill="var(--accent-gold)" />
+          </svg>
+
+          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1rem; margin-top:1rem; font-family:monospace; line-height:1.6;">
+            <div>Tamaño de un glóbulo rojo:</div>
+            <div>0,000007 metros</div>
+            <div style="color:var(--accent-gold); font-size:1.2rem; font-weight:bold; margin-top:0.3rem;">= 7 · 10⁻⁶ m</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: CONVERTIR NÚMEROS ================= -->
+    <div id="conversion" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">El Baile de la Coma</div>
+        <div class="content-text">
+          Para pasar a notación científica, debemos mover la coma hasta que quede <strong>un solo número distinto de cero a su izquierda</strong>.
+          <br>• Si movemos la coma hacia la izquierda, ganamos exponente (+).
+          <br>• Si la movemos hacia la derecha, perdemos exponente (-).
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-blue);">Números Gigantes (Coma a la izquierda)</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
+            Número inicial: <strong>28.500.000</strong>. Desliza para mover la coma hacia la izquierda:
+          </p>
+
+          <div class="slider-row">
+            <label>Mover coma:</label>
+            <input type="range" id="slide_macro" min="0" max="7" value="0" oninput="updateMacro()">
+            <span class="val-badge" id="v_macro">0</span>
+          </div>
+
+          <div class="comma-display" id="disp_macro"></div>
+          <div id="msg_macro" style="text-align:center; font-weight:bold; font-size:1.1rem; height:24px; color:var(--accent-success);"></div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-gold);">Números Diminutos (Coma a la derecha)</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
+            Número inicial: <strong>0,00047</strong>. Desliza para mover la coma hacia la derecha:
+          </p>
+
+          <div class="slider-row">
+            <label>Mover coma:</label>
+            <input type="range" id="slide_micro" min="0" max="5" value="0" oninput="updateMicro()">
+            <span class="val-badge" id="v_micro">0</span>
+          </div>
+
+          <div class="comma-display" id="disp_micro"></div>
+          <div id="msg_micro" style="text-align:center; font-weight:bold; font-size:1.1rem; height:24px; color:var(--accent-success);"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: OPERACIONES ================= -->
+    <div id="operaciones" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+        <div class="badge" style="color: var(--accent-blue);">Sumar peras con peras</div>
+        <div class="content-text">
+          Operar con notación científica ahorra escribir ceros. La multiplicación y división son fáciles, pero en la suma y resta <strong>necesitas igualar los exponentes primero</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- MULTIPLICACIÓN Y DIVISIÓN -->
+        <div class="panel-box" style="border-top:4px solid var(--accent-success);">
+          <div class="panel-title" style="color:var(--accent-success);">✖️ Multiplicación y División (La Vía Fácil)</div>
+          
+          <div class="info-card-item">
+            <strong style="color:var(--accent-success);">Regla:</strong>
+            <p style="color:var(--text-muted); font-size:0.9rem;">
+              1. Multiplica o divide los números por un lado.<br>
+              2. Suma o resta los exponentes (propiedades de las potencias).
+            </p>
+          </div>
+
+          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:1.9; margin-top:1rem; font-size:1.05rem;">
+            <div style="color:var(--text-muted); font-size:0.9rem;">Ejemplo Multiplicación:</div>
+            <div>(3 · 10⁴) · (2 · 10⁵)</div>
+            <div>= (3 · 2) · 10⁴⁺⁵</div>
+            <div style="color:var(--accent-success); font-weight:bold; font-size:1.2rem; margin-top:0.3rem;">= 6 · 10⁹</div>
+
+            <hr style="border:0; border-top:1px solid var(--border-color); margin:1rem 0;">
+
+            <div style="color:var(--text-muted); font-size:0.9rem;">Ejemplo División:</div>
+            <div>(8 · 10⁶) / (4 · 10²)</div>
+            <div>= (8 / 4) · 10⁶⁻²</div>
+            <div style="color:var(--accent-success); font-weight:bold; font-size:1.2rem; margin-top:0.3rem;">= 2 · 10⁴</div>
+          </div>
+        </div>
+
+        <!-- SUMA Y RESTA -->
+        <div class="panel-box" style="border-top:4px solid var(--accent-op);">
+          <div class="panel-title" style="color:var(--accent-op);">➕ Suma y Resta (Cuidado ⚠️)</div>
+          
+          <div class="info-card-item" style="border-color:var(--accent-op);">
+            <strong style="color:var(--accent-op);">Regla Estricta:</strong>
+            <p style="color:var(--text-muted); font-size:0.9rem;">
+              Solo se pueden sumar si tienen <strong>exactamente la misma potencia de 10</strong>. Si no, hay que transformar el menor para igualarlo al mayor desplazando la coma.
+            </p>
+          </div>
+
+          <!-- LA CHULETA DE LOS 4 MOVIMIENTOS -->
+          <table class="comma-table">
+            <thead>
+              <tr>
+                <th style="width:25%;">Tipo</th>
+                <th style="width:25%;">Quiero...</th>
+                <th style="width:25%;">Salto Coma</th>
+                <th style="width:25%;">Ejemplo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="row-up">
+                <td style="color:var(--accent-blue); font-weight:bold;">Positivo (+)</td>
+                <td>Aumentar<br>(ej: 10⁴ a 10⁵)</td>
+                <td>⬅️ Izquierda</td>
+                <td>4 · 10⁴<br><strong>0,4 · 10⁵</strong></td>
+              </tr>
+              <tr class="row-down">
+                <td style="color:var(--accent-blue); font-weight:bold;">Positivo (+)</td>
+                <td>Disminuir<br>(ej: 10⁵ a 10⁴)</td>
+                <td>➡️ Derecha</td>
+                <td>3,2 · 10⁵<br><strong>32 · 10⁴</strong></td>
+              </tr>
+              <tr class="row-up">
+                <td style="color:var(--accent-gold); font-weight:bold;">Negativo (-)</td>
+                <td>Aumentar<br>(ej: 10⁻⁴ a 10⁻³)</td>
+                <td>⬅️ Izquierda</td>
+                <td>7 · 10⁻⁴<br><strong>0,7 · 10⁻³</strong></td>
+              </tr>
+              <tr class="row-down">
+                <td style="color:var(--accent-gold); font-weight:bold;">Negativo (-)</td>
+                <td>Disminuir<br>(ej: 10⁻³ a 10⁻⁴)</td>
+                <td>➡️ Derecha</td>
+                <td>5,1 · 10⁻³<br><strong>51 · 10⁻⁴</strong></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:1.9; margin-top:1rem; font-size:1.05rem;">
+            <div style="color:var(--text-muted); font-size:0.9rem;">Ejemplo de Suma:</div>
+            <div>3,2 · 10⁵ + 4 · 10⁴</div>
+            <div style="color:var(--accent-success); font-size:0.85rem; margin:0.3rem 0;">* Aumentamos el 10⁴ a 10⁵ (coma a la izquierda):</div>
+            <div>= 3,2 · 10⁵ + 0,4 · 10⁵</div>
+            <div>= (3,2 + 0,4) · 10⁵</div>
+            <div style="color:var(--accent-op); font-weight:bold; font-size:1.2rem; margin-top:0.3rem;">= 3,6 · 10⁵</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: PROBLEMAS RESUELTOS ================= -->
+    <div id="problemas" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">Aplicaciones Reales</div>
+        <div class="content-text">
+          La física, la astronomía y la química utilizan la notación científica a diario. Veamos cómo se resuelven los problemas clásicos de examen.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="problem-box">
+          <div class="problem-statement">🪐 1. El viaje de la luz del Sol</div>
+          <div class="problem-solution">
+            <span style="color:var(--text-main);">La distancia de la Tierra al Sol es de 150.000.000 km. Escríbela en notación científica. Si la luz viaja a 3 · 10⁵ km/s, ¿cuánto tarda en llegar?</span>
+            <hr style="border:0; border-top:1px solid rgba(56,189,248,0.2); margin:0.8rem 0;">
+            1. Distancia en N. Científica:<br>
+            Movemos la coma 8 lugares a la izquierda: <strong style="color:var(--accent-blue);">d = 1,5 · 10⁸ km</strong>.
+            <br><br>
+            2. Fórmula del Tiempo (t = d / v):<br>
+            t = (1,5 · 10⁸) / (3 · 10⁵)<br>
+            t = (1,5 / 3) · 10⁸⁻⁵<br>
+            t = 0,5 · 10³ segundos
+            <br><br>
+            3. Ajustamos a N. Científica válida (la coma un salto a la derecha):<br>
+            t = <strong style="color:var(--accent-success);">5 · 10² segundos</strong> (es decir, 500 s, que son unos 8,3 min).
+          </div>
+        </div>
+
+        <div class="problem-box" style="background:rgba(251, 191, 36, 0.05); border-color:var(--accent-gold);">
+          <div class="problem-statement">🩸 2. Sangre microscópica</div>
+          <div class="problem-solution">
+            <span style="color:var(--text-main);">Un glóbulo rojo mide 0,000007 metros. Expresa su tamaño en notación científica. Si pusiéramos 3 millones de ellos en fila, ¿qué longitud ocuparían?</span>
+            <hr style="border:0; border-top:1px solid rgba(251,191,36,0.2); margin:0.8rem 0;">
+            1. Tamaño de uno en N. Científica:<br>
+            Movemos la coma 6 lugares a la derecha: <strong style="color:var(--accent-gold);">L = 7 · 10⁻⁶ m</strong>.
+            <br><br>
+            2. Cantidad en N. Científica:<br>
+            3 millones = 3.000.000 = <strong style="color:var(--accent-gold);">3 · 10⁶</strong>.
+            <br><br>
+            3. Longitud total (Multiplicación):<br>
+            Total = (7 · 10⁻⁶) · (3 · 10⁶)<br>
+            Total = (7 · 3) · 10⁻⁶⁺⁶<br>
+            Total = 21 · 10⁰<br>
+            (Como 10⁰ = 1) ➔ Total = <strong style="color:var(--accent-success);">21 metros</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'conversion') {
+        updateMacro();
+        updateMicro();
+      }
+    }
+
+    const macroStr = "28500000";
+
+    function updateMacro() {
+      const shifts = parseInt(document.getElementById('slide_macro').value);
+      document.getElementById('v_macro').innerText = shifts;
+
+      const len = macroStr.length;
+      const commaPos = len - shifts;
+
+      let html = "";
+      for (let i = 0; i < len; i++) {
+        if (i === commaPos) {
+          html += `<span class="comma-active">,</span>`;
+        }
+        html += `<span class="digit">${macroStr[i]}</span>`;
+      }
+      if (commaPos === len) {
+        html += `<span class="comma-active">,</span><span class="digit">0</span>`;
+      }
+
+      html += `<span class="multiplier">· 10<sup style="color:#fff;">${shifts}</sup></span>`;
+      document.getElementById('disp_macro').innerHTML = html;
+
+      const msgBox = document.getElementById('msg_macro');
+      if (shifts === 7) {
+        msgBox.innerHTML = "¡Correcto! 2,85 · 10⁷ (Un solo dígito a la izquierda)";
+      } else {
+        msgBox.innerHTML = "";
+      }
+    }
+
+    function updateMicro() {
+      const shifts = parseInt(document.getElementById('slide_micro').value);
+      document.getElementById('v_micro').innerText = shifts;
+
+      let displayStr = "";
+      
+      if (shifts === 0) displayStr = "0<span class='comma-active'>,</span>00047";
+      else if (shifts === 1) displayStr = "0<span class='comma-active'>,</span>0047";
+      else if (shifts === 2) displayStr = "0<span class='comma-active'>,</span>047";
+      else if (shifts === 3) displayStr = "0<span class='comma-active'>,</span>47";
+      else if (shifts === 4) displayStr = "4<span class='comma-active'>,</span>7";
+      else if (shifts === 5) displayStr = "47<span class='comma-active'>,</span>0";
+
+      const html = `${displayStr}<span class="multiplier">· 10<sup style="color:#fff;">-${shifts}</sup></span>`;
+      document.getElementById('disp_micro').innerHTML = html;
+
+      const msgBox = document.getElementById('msg_micro');
+      if (shifts === 4) {
+        msgBox.innerHTML = "¡Correcto! 4,7 · 10⁻⁴ (Un solo dígito del 1 al 9 a la izquierda)";
+      } else if (shifts === 5) {
+        msgBox.innerHTML = "<span style='color:var(--accent-op);'>Te pasaste. '47' es mayor que 9.</span>";
+      } else {
+        msgBox.innerHTML = "";
+      }
+    }
+
+    updateMacro();
+    updateMicro();
+  </script>
+</body>
+</html>

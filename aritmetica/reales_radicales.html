@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Números Reales y Radicales</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 0.5rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* TARJETAS INFORMATIVAS */
+    .info-card-item {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.3rem;
+    }
+    .warning-box {
+      background: rgba(244, 63, 94, 0.08); border: 1px solid var(--accent-op);
+      border-radius: 8px; padding: 1.1rem; line-height: 1.5; font-size: 0.95rem;
+    }
+
+    /* CONTROLES SLIDER */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .slider-row label { width: 140px; font-weight: 600; font-family: monospace; font-size: 0.95rem; }
+    .val-badge { width: 45px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; color: var(--text-main); }
+
+    /* FÓRMULAS */
+    .math-formula {
+      font-family: 'Courier New', Courier, monospace; font-size: 1.3rem; font-weight: bold;
+      background: #090d16; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
+      text-align: center; display: inline-block; margin: 0.5rem auto; color: #fff; width: 100%;
+    }
+    
+    .fraction-vertical {
+      display: inline-flex; flex-direction: column; vertical-align: middle;
+      text-align: center; margin: 0 0.4rem; line-height: 1.2; font-family: monospace; font-size: 0.9em;
+    }
+    .fraction-vertical .num { border-bottom: 2px solid currentColor; padding: 0 0.3rem 2px 0.3rem; }
+    .fraction-vertical .den { padding: 2px 0.3rem 0 0.3rem; }
+
+    .radical-box { display: inline-flex; align-items: flex-start; vertical-align: middle; margin-left: 0.1rem; }
+    .radical-box .rad-index { font-size: 0.6em; margin-right: -0.1em; margin-top: -0.2em; color: var(--accent-gold); font-weight: bold; }
+    .radical-box .rad-symbol { font-family: Arial, sans-serif; font-size: 1.3em; line-height: 0.7; margin-top: 2px; margin-right: -1px; font-weight: normal; }
+    .radical-box .rad-content { border-top: 2px solid currentColor; padding: 3px 4px 0 2px; margin-top: 2px; font-family: monospace; }
+
+    /* CONJUNTOS NUMÉRICOS (BOLSAS ANIDADAS CORREGIDAS) */
+    .set-container {
+      display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; padding-top: 1rem;
+    }
+    .bag {
+      border-radius: 12px; border: 2px solid; padding: 1.8rem 1rem 1rem 1rem; position: relative; width: 100%; transition: all 0.3s ease; margin-top: 1.2rem;
+    }
+    .bag-label {
+      position: absolute; top: -14px; left: 15px; background: #090d16; padding: 0 10px; font-weight: bold; font-family: monospace; font-size: 1.05rem; z-index: 2;
+    }
+    .bag-content { font-family: monospace; font-size: 1.1rem; color: #fff; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
+    
+    .bag-n { border-color: var(--accent-gold); background: rgba(251, 191, 36, 0.03); }
+    .bag-n .bag-label { color: var(--accent-gold); }
+    .bag-z { border-color: var(--accent-blue); background: rgba(56, 189, 248, 0.03); }
+    .bag-z .bag-label { color: var(--accent-blue); }
+    .bag-q { border-color: var(--accent-success); background: rgba(16, 185, 129, 0.03); }
+    .bag-q .bag-label { color: var(--accent-success); }
+    .bag-i { border-color: #f472b6; background: rgba(244, 114, 182, 0.03); height: 100%; }
+    .bag-i .bag-label { color: #f472b6; }
+    .bag-r { border-color: #c084fc; border-width: 3px; border-style: dashed; padding: 2rem 1.5rem 1.5rem 1.5rem; background: #090d16; margin-top:0;}
+    .bag-r .bag-label { color: #c084fc; font-size: 1.2rem; background: var(--bg-primary); }
+
+    .bag.highlight { background: rgba(255,255,255,0.08); box-shadow: 0 0 15px currentColor; border-width: 3px; }
+
+    /* RECTA REAL SVG */
+    .svg-canvas {
+      width: 100%; height: 120px; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block; margin-top: 1rem;
+    }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Números Reales y Radicales</h1>
+    <p>Descubre cómo se clasifican los números en bolsas anidadas, domina a los irracionales, aprende a operar con raíces y elimina los radicales del denominador.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('universo', this)">🌌 1. Universo Numérico</button>
+      <button class="tab-btn" onclick="switchTab('irracionales', this)">😵‍💫 2. Irracionales</button>
+      <button class="tab-btn" onclick="switchTab('radicales', this)">√ 3. Radicales</button>
+      <button class="tab-btn" onclick="switchTab('operaciones', this)">🛠️ 4. Operando</button>
+      <button class="tab-btn" onclick="switchTab('racionalizar', this)">🧹 5. Racionalizar</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: UNIVERSO NUMÉRICO ================= -->
+    <div id="universo" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">Bolsas dentro de bolsas</div>
+        <div class="content-text">
+          Los números se inventaron por necesidades históricas. Primero para contar ovejas, luego para medir deudas, después para trocear pizzas y finalmente para medir diagonales perfectas. <strong>Todo número de una bolsa pequeña pertenece automáticamente a todas las bolsas grandes que lo envuelven.</strong>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">El Clasificador Interactivo</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Pulsa un número para ver a qué conjuntos pertenece y dónde cae exactamente en la Recta Real. Fíjate cómo el número "2" no es solo Natural, ¡es un pack completo!
+          </p>
+
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;">
+            <button onclick="highlightSet(2, 'n')" style="padding:0.5rem 1rem; border-radius:6px; border:none; font-weight:bold; cursor:pointer; background:var(--accent-gold);">2</button>
+            <button onclick="highlightSet(-5, 'z')" style="padding:0.5rem 1rem; border-radius:6px; border:none; font-weight:bold; cursor:pointer; background:var(--accent-blue); color:#fff;">-5</button>
+            <button onclick="highlightSet('3/4', 'q', 0.75)" style="padding:0.5rem 1rem; border-radius:6px; border:none; font-weight:bold; cursor:pointer; background:var(--accent-success);">3/4</button>
+            <button onclick="highlightSet('π', 'i', 3.14)" style="padding:0.5rem 1rem; border-radius:6px; border:none; font-weight:bold; cursor:pointer; background:#f472b6; color:#fff;">π</button>
+            <button onclick="highlightSet('√2', 'i', 1.41)" style="padding:0.5rem 1rem; border-radius:6px; border:none; font-weight:bold; cursor:pointer; background:#f472b6; color:#fff;">√2</button>
+          </div>
+
+          <div id="set_explanation" style="min-height: 80px; background:#090d16; padding:1rem; border-radius:8px; border:1px dashed var(--border-color); font-size:0.9rem; color:var(--text-muted); line-height:1.5;">
+            Selecciona un número arriba para analizar su ADN matemático.
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">El Esquema Real (ℝ)</div>
+          
+          <div class="set-container">
+            <!-- BOLSA REALES -->
+            <div class="bag bag-r" id="bag_r">
+              <span class="bag-label">ℝ Reales (Toda la Recta)</span>
+              
+              <div style="display:flex; gap:1rem; width:100%;">
+                <!-- BOLSA RACIONALES -->
+                <div class="bag bag-q" id="bag_q" style="flex:2; margin-top:0;">
+                  <span class="bag-label">ℚ Racionales (Fracciones)</span>
+                  <div class="bag-content">1/2, -0.3, 0.777...</div>
+                  
+                  <!-- BOLSA ENTEROS -->
+                  <div class="bag bag-z" id="bag_z">
+                    <span class="bag-label">ℤ Enteros (Deudas)</span>
+                    <div class="bag-content">0, -1, -5</div>
+                    
+                    <!-- BOLSA NATURALES -->
+                    <div class="bag bag-n" id="bag_n">
+                      <span class="bag-label">ℕ Naturales (Contar)</span>
+                      <div class="bag-content" style="justify-content:center;">1, 2, 3...</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- BOLSA IRRACIONALES -->
+                <div class="bag bag-i" id="bag_i" style="flex:1; margin-top:0;">
+                  <span class="bag-label">𝕀 Irracionales</span>
+                  <div class="bag-content" style="flex-direction:column; align-items:center; margin-top:1rem;">
+                    <span>π</span>
+                    <span>√2</span>
+                    <span>Φ</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-box" style="margin-top:0;">
+        <div class="panel-title">La Recta Real</div>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0;">Todo número real, sea de la bolsa que sea, tiene un único punto exacto asignado en esta línea infinita.</p>
+        
+        <svg class="svg-canvas" viewBox="-60 -30 120 60" id="svg_real_line">
+          <!-- Eje principal -->
+          <line x1="-55" y1="0" x2="55" y2="0" stroke="#64748b" stroke-width="1" />
+          <!-- Ticks -5 a 5 -->
+          <g id="line_ticks">
+            <!-- Generado por JS -->
+          </g>
+          <!-- Marcador Dinámico -->
+          <circle id="line_point" cx="0" cy="0" r="2.5" fill="var(--accent-gold)" style="opacity:0; transition: all 0.4s ease;" />
+          <text id="line_label" x="0" y="-8" fill="var(--accent-gold)" font-size="6" font-family="monospace" font-weight="bold" text-anchor="middle" style="opacity:0; transition: all 0.4s ease;"></text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: IRRACIONALES ================= -->
+    <div id="irracionales" class="tab-content">
+      <div class="explanation-card" style="border-left-color: #f472b6;">
+        <div class="badge" style="color: #f472b6;">Los Rebeldes del Universo</div>
+        <div class="content-text">
+          Los números <strong>Irracionales (𝕀)</strong> son aquellos que tienen <strong>infinitos decimales que nunca siguen un patrón</strong> (no son periódicos). Como no tienen un patrón que se repita, es matemáticamente imposible escribirlos como una fracción exacta con un numerador y un denominador.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Los Famosos</div>
+          <div style="display:flex; flex-direction:column; gap:1rem;">
+            <div class="info-card-item" style="border-left:3px solid #f472b6;">
+              <strong style="color:#f472b6; font-size:1.2rem;">π (Pi) ≈ 3.14159...</strong>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">Nace de dividir el perímetro de cualquier círculo entre su diámetro.</p>
+            </div>
+            <div class="info-card-item" style="border-left:3px solid #f472b6;">
+              <strong style="color:#f472b6; font-size:1.2rem;">√2 ≈ 1.41421...</strong>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">La primera crisis matemática de la historia. Es lo que mide la diagonal de un cuadrado de lado 1.</p>
+            </div>
+            <div class="info-card-item" style="border-left:3px solid #f472b6;">
+              <strong style="color:#f472b6; font-size:1.2rem;">Φ (Phi) ≈ 1.61803...</strong>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">El Número de Oro. Representa la proporción de la belleza en la naturaleza y el arte.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="border-color:var(--accent-op);">
+          <div class="panel-title" style="color:var(--accent-op);">¿Cómo operamos con ellos?</div>
+          
+          <div class="warning-box">
+            🚨 <strong>Prohibido redondear a lo loco.</strong><br>
+            Si cortas el número π a 3.14 y calculas la trayectoria de un cohete espacial, fallarás la órbita del planeta por miles de kilómetros. 
+          </div>
+
+          <p style="color:var(--text-main); font-size:0.95rem; margin-top:1rem;">
+            Para no perder precisión en los ejercicios, <strong>dejamos el símbolo intacto y lo tratamos como si fuera la letra 'x' del álgebra</strong>.
+          </p>
+
+          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.15rem; line-height:1.8; margin-top:1rem;">
+            <div style="color:var(--text-muted); font-size:0.85rem; text-transform:uppercase;">Sumas: Solo si son idénticos</div>
+            3π + 2π = <strong style="color:#f472b6;">5π</strong><br>
+            7√2 - 3√2 = <strong style="color:#f472b6;">4√2</strong><br>
+            <span style="color:var(--accent-op);">π + √2 ➔ ¡No se puede juntar! Se deja así.</span>
+            
+            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:1rem 0;">
+            
+            <div style="color:var(--text-muted); font-size:0.85rem; text-transform:uppercase;">Multiplicaciones</div>
+            π · π = <strong style="color:#f472b6;">π²</strong><br>
+            3 · 2π = <strong style="color:#f472b6;">6π</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: RADICALES Y PROPIEDADES ================= -->
+    <div id="radicales" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">Fracciones disfrazadas</div>
+        <div class="content-text">
+          Un radical (√) no es más que una potencia que tiene <strong>una fracción en el exponente</strong>. Entender este secreto te permitirá aplicar todas las propiedades de las potencias a las raíces, ya que en el fondo son la misma cosa.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Estructura y Secreto</div>
+          
+          <div class="math-formula" style="font-size:1.8rem; border-color:var(--accent-success); color:var(--accent-success); display:flex; justify-content:center; align-items:center; gap:0.5rem; padding: 2rem 1rem;">
+            <span class="radical-box">
+              <span class="rad-index" style="color:var(--text-main);">n</span>
+              <span class="rad-symbol">√</span>
+              <span class="rad-content">a<sup style="color:var(--accent-gold);">m</sup></span>
+            </span>
+            <span style="color:#fff; margin: 0 0.5rem;">=</span>
+            <span style="display:inline-flex; align-items:flex-start;">
+              <span style="color:#fff; font-size:1em; margin-top:0.4em;">a</span>
+              <span class="fraction-vertical" style="font-size:0.55em; margin-left:2px;">
+                <span class="num" style="color:var(--accent-gold);">m</span>
+                <span class="den" style="color:var(--text-main);">n</span>
+              </span>
+            </span>
+          </div>
+          
+          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem; line-height:1.6; margin-top:1rem;">
+            • <strong style="color:var(--text-main);">n (Índice):</strong> Va al denominador (abajo). Si no pone nada, es un 2 (raíz cuadrada).<br>
+            • <strong style="color:var(--accent-gold);">m (Exponente):</strong> Va al numerador (arriba). Si no pone nada, es un 1.<br><br>
+            <div style="display:flex; align-items:center;">
+              <em>Ejemplo:</em> &nbsp;&nbsp;&nbsp;<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">5</span></span> &nbsp;=&nbsp; 
+              <span style="display:inline-flex; align-items:flex-start;">
+                <span style="color:#fff; font-size:1.2em; margin-top:0.3em;">5</span>
+                <span class="fraction-vertical" style="font-size:0.65em; margin-left:2px;">
+                  <span class="num" style="color:var(--accent-gold);">1</span>
+                  <span class="den" style="color:var(--text-main);">2</span>
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Propiedades de Fusión</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            Las raíces solo pueden fusionarse si están <strong>multiplicando o dividiendo</strong>. Nunca sumando.
+          </p>
+          
+          <div style="display:flex; flex-direction:column; gap:0.8rem;">
+            <div class="info-card-item">
+              <strong style="color:#fff;">Producto y Cociente (Mismo Índice)</strong>
+              <div class="math-formula" style="font-size:1.1rem; border:none; padding:0.5rem 0;">
+                <span class="radical-box"><span class="rad-index">n</span><span class="rad-symbol">√</span><span class="rad-content">a</span></span> · 
+                <span class="radical-box"><span class="rad-index">n</span><span class="rad-symbol">√</span><span class="rad-content">b</span></span> = 
+                <span class="radical-box"><span class="rad-index">n</span><span class="rad-symbol">√</span><span class="rad-content">a · b</span></span>
+              </div>
+            </div>
+
+            <div class="info-card-item">
+              <strong style="color:#fff;">Raíz de una raíz</strong>
+              <div style="color:var(--text-muted); font-size:0.85rem;">Se multiplican los índices.</div>
+              <div class="math-formula" style="font-size:1.1rem; border:none; padding:0.5rem 0;">
+                <span class="radical-box"><span class="rad-index">m</span><span class="rad-symbol">√</span><span class="rad-content"><span class="radical-box" style="margin-left:0;"><span class="rad-index">n</span><span class="rad-symbol">√</span><span class="rad-content">a</span></span></span></span> = 
+                <span class="radical-box"><span class="rad-index">m·n</span><span class="rad-symbol">√</span><span class="rad-content">a</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: OPERACIONES ================= -->
+    <div id="operaciones" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">Trabajando en el taller de raíces</div>
+        <div class="content-text">
+          Operar con radicales tiene 3 reglas de oro. Vamos a ver los tres tipos de ejercicios que te encontrarás en los exámenes y cómo sobrevivir a ellos sin cometer delitos matemáticos.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- TIPO 1 Y 2 -->
+        <div style="display:flex; flex-direction:column; gap:1.5rem;">
+          <div class="panel-box">
+            <div class="panel-title" style="color:var(--accent-blue);">Tipo 1: Suma y Resta</div>
+            <div class="warning-box" style="margin-bottom:1rem; font-size:0.85rem; padding:0.8rem;">
+              ⚠️ <strong>NUNCA SUMES LO DE DENTRO.</strong> <br>
+              <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">9</span></span> + <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">16</span></span> ≠ <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">25</span></span> (Da 3+4=7, no 5).
+            </div>
+            <p style="color:var(--text-muted); font-size:0.9rem;">
+              Solo puedes juntar raíces si son <strong>exactamente idénticas</strong> (mismo índice y mismo radicando). Actúan como "manzanas".
+            </p>
+            <div style="font-family:monospace; font-size:1.15rem; color:#fff; background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
+              <span style="color:var(--accent-blue);">3</span><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">2</span></span> + <span style="color:var(--accent-blue);">5</span><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">2</span></span> = <strong style="color:var(--accent-blue);">8</strong><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">2</span></span>
+            </div>
+          </div>
+
+          <div class="panel-box">
+            <div class="panel-title" style="color:var(--accent-gold);">Tipo 2: Multiplicar / Dividir</div>
+            <p style="color:var(--text-muted); font-size:0.9rem;">
+              Para multiplicar, la única regla es que el <strong>Índice sea el mismo</strong>.
+            </p>
+            <div style="font-family:monospace; font-size:1.15rem; color:#fff; background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
+              <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">2</span></span> · <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">3</span></span> = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">6</span></span>
+            </div>
+            <div style="font-size:0.85rem; color:var(--accent-gold); margin-top:0.8rem; font-weight:bold;">
+              ¿Y si tienen distinto índice? (ej: √2 · ³√3)
+            </div>
+            <p style="color:var(--text-muted); font-size:0.85rem;">
+              Debes calcular el m.c.m. de los índices (2 y 3 -> 6) para que todos compartan el mismo. Lo que le multipliques al índice, se lo multiplicas también al exponente de dentro.
+            </p>
+          </div>
+        </div>
+
+        <!-- TIPO 3: EXTRACCIÓN (INTERACTIVO) -->
+        <div class="panel-box" style="border-color:var(--accent-success);">
+          <div class="panel-title" style="color:var(--accent-success);">Tipo 3: Sacar factores (Simulador)</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            A veces, la raíz parece distinta pero tiene números "atrapados" que pueden salir de la cárcel. El índice de la raíz te dice cuántos elementos idénticos se necesitan para formar un grupo y poder salir fuera.
+          </p>
+
+          <div class="slider-row">
+            <label>Exponente de 'x':</label>
+            <input type="range" id="sl_ext" min="1" max="8" value="7" oninput="updateExtract()">
+            <span class="val-badge" id="v_sl_ext">7</span>
+          </div>
+
+          <div style="background:#090d16; padding:1.5rem; border-radius:8px; border:1px dashed var(--accent-success); min-height:180px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:1rem;">
+            
+            <div style="font-size:2rem; color:#fff; font-family:monospace;">
+              <span class="radical-box">
+                <span class="rad-index">3</span>
+                <span class="rad-symbol">√</span>
+                <span class="rad-content">x<sup id="ext_start">7</sup></span>
+              </span>
+            </div>
+            
+            <div style="color:var(--text-muted); font-size:0.9rem; text-align:center; min-height:60px;" id="ext_text">
+              Para salir de una raíz cúbica, necesitamos grupos de 3. Dividimos 7 entre 3.
+            </div>
+
+            <div style="font-size:2rem; color:var(--accent-success); font-family:monospace; font-weight:bold;">
+              <span id="ext_out"></span>
+              <span class="radical-box" id="ext_rad_box">
+                <span class="rad-index" style="color:var(--accent-success);">3</span>
+                <span class="rad-symbol">√</span>
+                <span class="rad-content" id="ext_in"></span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 5: RACIONALIZACIÓN ================= -->
+    <div id="racionalizar" class="tab-content">
+      <div class="explanation-card" style="border-left-color: #c084fc;">
+        <div class="badge" style="color: #c084fc;">Limpiando el sótano</div>
+        <div class="content-text">
+          En matemáticas existe una norma estética no escrita: <strong>"Prohibido dejar raíces en el denominador de una fracción"</strong>. El proceso para eliminarlas se llama Racionalización y consiste en multiplicar arriba y abajo por el mismo elemento para forzar que la raíz de abajo desaparezca. Hay 3 casos.
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <!-- CASO 1 -->
+        <div class="panel-box">
+          <div class="panel-title">Caso 1: Raíz Cuadrada Simple</div>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">
+            Si hay una raíz cuadrada solitaria abajo, multiplicamos numerador y denominador exactamente por esa misma raíz.
+          </p>
+
+          <div style="font-family:monospace; font-size:1.1rem; color:#fff; background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); text-align:center; line-height:2;">
+            <span class="fraction-vertical"><span class="num">3</span><span class="den"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">5</span></span></span></span> 
+            <br>↓<br>
+            <span class="fraction-vertical"><span class="num">3 · <strong style="color:var(--accent-gold);"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">5</span></span></strong></span><span class="den"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">5</span></span> · <strong style="color:var(--accent-gold);"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">5</span></span></strong></span></span>
+            <br>↓<br>
+            <span class="fraction-vertical"><span class="num">3<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">5</span></span></span><span class="den"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">5²</span></span></span></span> 
+            &nbsp;=&nbsp; 
+            <strong style="color:var(--accent-success); font-size:1.2rem;"><span class="fraction-vertical"><span class="num">3<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">5</span></span></span><span class="den">5</span></span></strong>
+          </div>
+        </div>
+
+        <!-- CASO 2 -->
+        <div class="panel-box">
+          <div class="panel-title">Caso 2: Raíz de Índice Mayor</div>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">
+            Si el índice no es 2, no basta con copiarla. Debemos multiplicar por una raíz que tenga los <strong>exponentes que faltan</strong> para llegar al índice y poder escapar.
+          </p>
+
+          <div style="font-family:monospace; font-size:1.1rem; color:#fff; background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); text-align:center; line-height:2;">
+            <span class="fraction-vertical"><span class="num">2</span><span class="den"><span class="radical-box"><span class="rad-index">5</span><span class="rad-symbol">√</span><span class="rad-content">x²</span></span></span></span> 
+            <br><span style="color:var(--text-muted); font-size:0.8rem;">(Faltan 3 para llegar a 5)</span><br>
+            <span class="fraction-vertical"><span class="num">2 · <strong style="color:var(--accent-blue);"><span class="radical-box"><span class="rad-index">5</span><span class="rad-symbol">√</span><span class="rad-content">x³</span></span></strong></span><span class="den"><span class="radical-box"><span class="rad-index">5</span><span class="rad-symbol">√</span><span class="rad-content">x²</span></span> · <strong style="color:var(--accent-blue);"><span class="radical-box"><span class="rad-index">5</span><span class="rad-symbol">√</span><span class="rad-content">x³</span></span></strong></span></span>
+            <br>↓<br>
+            <span class="fraction-vertical"><span class="num">2<span class="radical-box"><span class="rad-index">5</span><span class="rad-symbol">√</span><span class="rad-content">x³</span></span></span><span class="den"><span class="radical-box"><span class="rad-index">5</span><span class="rad-symbol">√</span><span class="rad-content">x⁵</span></span></span></span> 
+            &nbsp;=&nbsp; 
+            <strong style="color:var(--accent-success); font-size:1.2rem;"><span class="fraction-vertical"><span class="num">2<span class="radical-box"><span class="rad-index">5</span><span class="rad-symbol">√</span><span class="rad-content">x³</span></span></span><span class="den">x</span></span></strong>
+          </div>
+        </div>
+
+        <!-- CASO 3 -->
+        <div class="panel-box">
+          <div class="panel-title">Caso 3: Binomio (El Conjugado)</div>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">
+            Si hay una suma o resta con raíces en el sótano, multiplicamos por su <strong>conjugado</strong> (lo mismo pero con el signo central cambiado). Usamos la identidad: <span style="font-family:monospace;">(A+B)(A-B) = A² - B²</span>.
+          </p>
+
+          <div style="font-family:monospace; font-size:1.1rem; color:#fff; background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); text-align:center; line-height:2;">
+            <span class="fraction-vertical"><span class="num">4</span><span class="den"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">7</span></span> - <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">3</span></span></span></span> 
+            <br>↓<br>
+            <span class="fraction-vertical"><span class="num">4 · <strong style="color:#f472b6;">(<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">7</span></span> + <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">3</span></span>)</strong></span><span class="den">(<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">7</span></span> - <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">3</span></span>) · <strong style="color:#f472b6;">(<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">7</span></span> + <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">3</span></span>)</strong></span></span>
+            <br>↓<br>
+            <span class="fraction-vertical"><span class="num">4(<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">7</span></span> + <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">3</span></span>)</span><span class="den">(<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">7</span></span>)² - (<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">3</span></span>)²</span></span> 
+            &nbsp;=&nbsp; 
+            <strong style="color:var(--accent-success); font-size:1.2rem;"><span class="fraction-vertical"><span class="num">4(<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">7</span></span> + <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">3</span></span>)</span><span class="den">4</span></span></strong>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓN ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      
+      if(tabId === 'universo') initRealLine();
+      if(tabId === 'operaciones') updateExtract();
+    }
+
+    // =========================================================================
+    // 1. UNIVERSO NUMÉRICO (BOLSAS Y RECTA SVG)
+    // =========================================================================
+    function highlightSet(numVal, baseSet, exactPos = numVal) {
+      // Limpiar highlights
+      document.querySelectorAll('.bag').forEach(b => b.classList.remove('highlight'));
+      
+      const bagsToHighlight = [];
+      let explanation = "";
+
+      // Jerarquía de herencia
+      if (baseSet === 'n') {
+        bagsToHighlight.push('bag_n', 'bag_z', 'bag_q', 'bag_r');
+        explanation = `El número <strong>${numVal}</strong> es Natural (sirve para contar ovejas). Al ser natural, también es Entero, se puede escribir como fracción (2/1) siendo Racional, y por supuesto es Real.`;
+      } else if (baseSet === 'z') {
+        bagsToHighlight.push('bag_z', 'bag_q', 'bag_r');
+        explanation = `El número <strong>${numVal}</strong> es Entero (sirve para medir deudas o temperaturas bajo cero). No es Natural porque es negativo. Sí es Racional (-5/1) y Real.`;
+      } else if (baseSet === 'q') {
+        bagsToHighlight.push('bag_q', 'bag_r');
+        explanation = `El número <strong>${numVal}</strong> es Racional puro porque no da un salto exacto en la recta. No sirve para contar (No ℕ) ni es entero (No ℤ), pero es Real.`;
+      } else if (baseSet === 'i') {
+        bagsToHighlight.push('bag_i', 'bag_r');
+        explanation = `El número <strong>${numVal}</strong> es un rebelde Irracional. Tiene infinitos decimales impredecibles. No puede meterse en la bolsa de las fracciones (ℚ), pero sigue siendo un número Real.`;
+      }
+
+      bagsToHighlight.forEach(id => document.getElementById(id).classList.add('highlight'));
+      document.getElementById('set_explanation').innerHTML = explanation;
+      
+      movePointOnLine(exactPos, numVal, baseSet);
+    }
+
+    function initRealLine() {
+      const lineTicks = document.getElementById('line_ticks');
+      if(lineTicks.innerHTML.trim() !== "") return; // Ya generado
+      
+      let html = "";
+      // Rango matemático: -5 a +5. El viewBox del SVG va de X=-60 a X=+60.
+      // Escala: 1 unidad matemática = 10 unidades SVG.
+      for(let i = -5; i <= 5; i++) {
+        const x = i * 10;
+        html += `<line x1="${x}" y1="-2" x2="${x}" y2="2" stroke="#64748b" stroke-width="1" />`;
+        if (i !== 0) {
+          html += `<text x="${x}" y="12" fill="#64748b" font-size="5" font-family="monospace" text-anchor="middle">${i}</text>`;
+        } else {
+          html += `<text x="${x}" y="12" fill="#fff" font-size="5" font-family="monospace" text-anchor="middle" font-weight="bold">0</text>`;
+        }
+      }
+      
+      // Añadir marcadores de Pi y Raíz de 2 estáticos como referencia visual
+      html += `<line x1="${1.41*10}" y1="-1" x2="${1.41*10}" y2="1" stroke="#f472b6" stroke-width="0.5" />`;
+      html += `<text x="${1.41*10}" y="-4" fill="#f472b6" font-size="4" font-family="monospace" text-anchor="middle">√2</text>`;
+      
+      html += `<line x1="${3.14*10}" y1="-1" x2="${3.14*10}" y2="1" stroke="#f472b6" stroke-width="0.5" />`;
+      html += `<text x="${3.14*10}" y="-4" fill="#f472b6" font-size="4" font-family="monospace" text-anchor="middle">π</text>`;
+
+      lineTicks.innerHTML = html;
+    }
+
+    function movePointOnLine(mathVal, label, baseSet) {
+      const pt = document.getElementById('line_point');
+      const lbl = document.getElementById('line_label');
+      if(!pt) return;
+      
+      // Escala: x = mathVal * 10
+      const xPos = mathVal * 10;
+      
+      pt.style.opacity = "1";
+      lbl.style.opacity = "1";
+      pt.setAttribute('cx', xPos);
+      lbl.setAttribute('x', xPos);
+      lbl.textContent = label;
+      
+      // Color
+      let color = "var(--accent-gold)";
+      if (baseSet === 'z') color = "var(--accent-blue)";
+      if (baseSet === 'q') color = "var(--accent-success)";
+      if (baseSet === 'i') color = "#f472b6";
+      
+      pt.setAttribute('fill', color);
+      lbl.setAttribute('fill', color);
+    }
+
+    // =========================================================================
+    // 4. SIMULADOR EXTRACCIÓN RADICALES
+    // =========================================================================
+    function updateExtract() {
+      const exp = parseInt(document.getElementById('sl_ext').value);
+      const index = 3; // Raíz cúbica fija para el ejemplo
+      
+      document.getElementById('v_sl_ext').innerText = exp;
+      document.getElementById('ext_start').innerText = exp;
+      
+      const outCount = Math.floor(exp / index);
+      const inCount = exp % index;
+      
+      let text = `Para salir de una raíz cúbica (índice 3), la "x" necesita formar grupos de 3.<br>`;
+      text += `Dividimos el exponente ${exp} entre 3:<br>`;
+      text += `Cociente = <strong style="color:var(--accent-success);">${outCount}</strong> (Salen libres). Resto = <strong style="color:var(--text-main);">${inCount}</strong> (Se quedan encerradas).`;
+      
+      document.getElementById('ext_text').innerHTML = text;
+      
+      // Formatear salida externa
+      let outStr = "";
+      if (outCount === 1) outStr = "x";
+      else if (outCount > 1) outStr = `x<sup style="color:var(--accent-success);">${outCount}</sup>`;
+      
+      document.getElementById('ext_out').innerHTML = outStr;
+      
+      // Formatear salida interna
+      const radBox = document.getElementById('ext_rad_box');
+      if (inCount === 0) {
+        radBox.style.display = "none";
+      } else {
+        radBox.style.display = "inline-flex";
+        let inStr = "x";
+        if (inCount > 1) inStr = `x<sup style="color:var(--text-main);">${inCount}</sup>`;
+        document.getElementById('ext_in').innerHTML = inStr;
+      }
+    }
+
+    // Inicializar visuales al cargar
+    setTimeout(() => {
+      initRealLine();
+      updateExtract();
+    }, 100);
+
+  </script>
+</body>
+</html>

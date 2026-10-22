@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aritmética: Las Potencias y sus Propiedades</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 1rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* SUBPESTAÑAS */
+    .subtabs-container {
+      display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;
+      background: var(--bg-card); padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);
+      margin-bottom: 1rem;
+    }
+    .subtab-btn {
+      padding: 0.5rem 1.2rem; background: var(--bg-primary); border: 1px solid var(--border-color);
+      color: var(--text-muted); border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    }
+    .subtab-btn:hover { border-color: var(--accent-blue); color: var(--text-main); }
+    .subtab-btn.active { background: var(--accent-blue); color: #042f2e; border-color: var(--accent-blue); font-weight: bold; }
+    .subtab-content { display: none; flex-direction: column; gap: 1.2rem; animation: fadeIn 0.3s forwards; }
+    .subtab-content.active { display: flex; }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* CONTROLES DESLIZANTES */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem; }
+    .slider-row label { width: 150px; font-weight: 600; font-family: monospace; font-size: 1.05rem; }
+    .val-badge { width: 50px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; }
+
+    /* VISUALIZADOR DE POTENCIA GIGANTE */
+    .power-hero {
+      display: inline-flex; align-items: flex-start; justify-content: center;
+      font-family: monospace; font-weight: 800; line-height: 1; padding: 1rem 2rem;
+      background: #090d16; border: 2px solid var(--border-color); border-radius: 12px; margin: 1rem auto;
+    }
+    .base-large { font-size: 4rem; color: var(--accent-blue); }
+    .exp-large { font-size: 2.2rem; color: var(--accent-gold); margin-top: -0.5rem; margin-left: 2px; }
+
+    /* FRACCIÓN MATEMÁTICA VERTICAL */
+    .fraction-vertical {
+      display: inline-flex; flex-direction: column; vertical-align: middle;
+      text-align: center; margin: 0 0.35rem; font-family: monospace; font-weight: bold;
+    }
+    .fraction-vertical .num {
+      border-bottom: 2px solid currentColor; padding: 0 0.3rem 2px 0.3rem;
+    }
+    .fraction-vertical .den {
+      padding: 2px 0.3rem 0 0.3rem;
+    }
+
+    /* BOTONES DE PROPIEDADES EN COLUMNA */
+    .props-list {
+      display: flex; flex-direction: column; gap: 0.45rem; max-height: 480px; overflow-y: auto; padding-right: 0.3rem;
+    }
+    .prop-btn {
+      padding: 0.65rem 0.9rem; background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-main); border-radius: 8px; font-weight: bold; cursor: pointer; text-align: left;
+      transition: all 0.2s; font-family: monospace; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;
+    }
+    .prop-btn:hover { border-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .prop-btn.active { border-color: var(--accent-blue); background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); }
+
+    /* CATEGORÍAS EN LISTA DE PROPIEDADES */
+    .prop-category-label {
+      font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);
+      margin: 0.6rem 0 0.2rem; font-weight: bold;
+    }
+
+    /* TABLA DE LA ESCALERA DESCENDENTE */
+    .ladder-table {
+      width: 100%; border-collapse: collapse; font-family: monospace; text-align: center; font-size: 1.05rem;
+    }
+    .ladder-table th, .ladder-table td {
+      border: 1px solid var(--border-color); padding: 0.65rem 0.5rem;
+    }
+    .ladder-table th { background: rgba(255, 255, 255, 0.04); color: var(--text-muted); }
+    .ladder-table tr.highlight-zero { background: rgba(251, 191, 36, 0.15); font-weight: bold; }
+    .ladder-table tr.highlight-neg { background: rgba(244, 63, 94, 0.12); }
+
+    /* SVG CANVAS */
+    .svg-canvas {
+      width: 100%; height: 260px; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block;
+    }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Las Potencias y sus Propiedades</h1>
+    <p>Comprende la multiplicación repetida, descubre por qué se suman los exponentes, y aprende la lógica de a⁰ = 1 y las potencias negativas.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('concepto', this)">⚡ 1. ¿Qué es una Potencia?</button>
+      <button class="tab-btn" onclick="switchTab('propiedades', this)">📜 2. Tabla Completa de Propiedades</button>
+      <button class="tab-btn" onclick="switchTab('escalera', this)">🪜 3. a⁰ = 1 y Exponentes Negativos</button>
+      <button class="tab-btn" onclick="switchTab('operaciones', this)">🧮 4. Operaciones con Potencias</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: CONCEPTO Y PROBLEMA VISUAL ================= -->
+    <div id="concepto" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">Multiplicar el Mismo Número Muchas Veces</div>
+        <div class="content-text">
+          Una <strong>potencia</strong> es una forma abreviada de escribir una multiplicación repetida del mismo factor.
+          <br>
+          • <strong style="color:var(--accent-blue);">Base (a):</strong> El número que se multiplica por sí mismo.
+          <br>
+          • <strong style="color:var(--accent-gold);">Exponente (n):</strong> El número de veces que se repite la base.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Simulador de Potencia</div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-blue);">Base (a):</label>
+            <input type="range" id="pot_base" min="2" max="6" value="3" oninput="updatePowerSim()">
+            <span class="val-badge" id="v_pot_base" style="color:var(--accent-blue);">3</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-gold);">Exponente (n):</label>
+            <input type="range" id="pot_exp" min="1" max="6" value="4" oninput="updatePowerSim()">
+            <span class="val-badge" id="v_pot_exp" style="color:var(--accent-gold);">4</span>
+          </div>
+
+          <div style="text-align:center;">
+            <div class="power-hero">
+              <span class="base-large" id="lbl_hero_base">3</span>
+              <span class="exp-large" id="lbl_hero_exp">4</span>
+            </div>
+          </div>
+
+          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; font-family:monospace; line-height:1.9; margin-top:0.5rem; text-align:center;">
+            <div style="color:var(--text-muted); font-size:0.9rem;">Desarrollo como multiplicación:</div>
+            <div style="font-size:1.3rem; color:var(--text-main); margin:0.4rem 0;" id="txt_power_expanded">
+              3 · 3 · 3 · 3
+            </div>
+            <div style="font-size:1.5rem; color:var(--accent-success); font-weight:bold;">
+              = <span id="txt_power_result">81</span>
+            </div>
+          </div>
+
+          <div style="background:rgba(244,63,94,0.08); border:1px solid var(--accent-op); border-radius:8px; padding:0.8rem; margin-top:0.8rem; font-size:0.88rem; line-height:1.5;">
+            ⚠️ <strong>¡El error fatal de secundaria!:</strong> 3⁴ <strong>NO es 3 · 4 = 12</strong>. Es 3 multiplicado consigo mismo cuatro veces: 3 · 3 · 3 · 3 = 81.
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Problema Visual: El Crecimiento Exponencial</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
+            Una bacteria se duplica en dos cada minuto. ¿Cuántas bacterias habrá al cabo de 3 minutos?
+          </p>
+
+          <svg class="svg-canvas" viewBox="0 0 320 220">
+            <circle cx="35" cy="110" r="10" fill="var(--accent-op)" />
+            <text x="35" y="140" fill="var(--accent-op)" font-size="11" font-weight="bold" text-anchor="middle">2⁰ = 1</text>
+            <text x="35" y="30" fill="#64748b" font-size="10" text-anchor="middle">Min 0</text>
+
+            <line x1="45" y1="110" x2="100" y2="75" stroke="#475569" stroke-width="1.5" />
+            <line x1="45" y1="110" x2="100" y2="145" stroke="#475569" stroke-width="1.5" />
+
+            <circle cx="105" cy="75" r="8" fill="var(--accent-gold)" />
+            <circle cx="105" cy="145" r="8" fill="var(--accent-gold)" />
+            <text x="105" y="175" fill="var(--accent-gold)" font-size="11" font-weight="bold" text-anchor="middle">2¹ = 2</text>
+            <text x="105" y="30" fill="#64748b" font-size="10" text-anchor="middle">Min 1</text>
+
+            <line x1="113" y1="75" x2="175" y2="55" stroke="#475569" stroke-width="1.2" />
+            <line x1="113" y1="75" x2="175" y2="95" stroke="#475569" stroke-width="1.2" />
+            <line x1="113" y1="145" x2="175" y2="125" stroke="#475569" stroke-width="1.2" />
+            <line x1="113" y1="145" x2="175" y2="165" stroke="#475569" stroke-width="1.2" />
+
+            <circle cx="180" cy="55" r="7" fill="var(--accent-blue)" />
+            <circle cx="180" cy="95" r="7" fill="var(--accent-blue)" />
+            <circle cx="180" cy="125" r="7" fill="var(--accent-blue)" />
+            <circle cx="180" cy="165" r="7" fill="var(--accent-blue)" />
+            <text x="180" y="195" fill="var(--accent-blue)" font-size="11" font-weight="bold" text-anchor="middle">2² = 4</text>
+            <text x="180" y="30" fill="#64748b" font-size="10" text-anchor="middle">Min 2</text>
+
+            <text x="255" y="115" fill="var(--accent-success)" font-size="13" font-weight="bold" text-anchor="middle">2³ = 8</text>
+            <text x="255" y="140" fill="var(--accent-success)" font-size="11" text-anchor="middle">(8 bacterias)</text>
+            <text x="255" y="30" fill="#64748b" font-size="10" text-anchor="middle">Min 3</text>
+          </svg>
+
+          <p style="color:var(--text-muted); font-size:0.85rem; text-align:center; margin-top:0.4rem;">
+            En solo 10 minutos habría <strong>2¹⁰ = 1.024 bacterias</strong>. Las potencias crecen a un ritmo vertiginoso.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: TABLA COMPLETA DE PROPIEDADES ================= -->
+    <div id="propiedades" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">Todas las Propiedades en un Solo Lugar</div>
+        <div class="content-text">
+          No memorices fórmulas a ciegas. Haz clic en cualquiera de las propiedades para ver su <strong>explicación lógica, demostración y ejemplo numérico</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Selector de Propiedad</div>
+
+          <div class="props-list">
+            <div class="prop-category-label">Propiedades Elementales</div>
+
+            <button class="prop-btn active" onclick="showProperty('exp_one', this)">
+              <span>Exponente uno</span>
+              <strong>a¹ = a</strong>
+            </button>
+
+            <button class="prop-btn" onclick="showProperty('exp_zero', this)">
+              <span>Exponente cero</span>
+              <strong>a⁰ = 1</strong>
+            </button>
+
+            <button class="prop-btn" onclick="showProperty('exp_negative', this)">
+              <span>Exponente negativo</span>
+              <strong>a⁻ⁿ = 1 / aⁿ</strong>
+            </button>
+
+            <button class="prop-btn" onclick="showProperty('frac_negative', this)">
+              <span>Fracción negativa</span>
+              <strong>(a/b)⁻ⁿ = (b/a)ⁿ</strong>
+            </button>
+
+            <div class="prop-category-label">Propiedades Operativas</div>
+
+            <button class="prop-btn" onclick="showProperty('prod_same_base', this)">
+              <span>Misma base (Producto)</span>
+              <strong>aᵐ · aⁿ = aᵐ⁺ⁿ</strong>
+            </button>
+
+            <button class="prop-btn" onclick="showProperty('div_same_base', this)">
+              <span>Misma base (Cociente)</span>
+              <strong>aᵐ / aⁿ = aᵐ⁻ⁿ</strong>
+            </button>
+
+            <button class="prop-btn" onclick="showProperty('pow_of_pow', this)">
+              <span>Potencia de potencia</span>
+              <strong>(aᵐ)ⁿ = aᵐ·ⁿ</strong>
+            </button>
+
+            <button class="prop-btn" onclick="showProperty('prod_same_exp', this)">
+              <span>Mismo exponente (×)</span>
+              <strong>aⁿ · bⁿ = (a · b)ⁿ</strong>
+            </button>
+
+            <button class="prop-btn" onclick="showProperty('div_same_exp', this)">
+              <span>Mismo exponente (÷)</span>
+              <strong>aⁿ / bⁿ = (a / b)ⁿ</strong>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Demostración Paso a Paso</div>
+          
+          <div id="prop_demo_container" style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; min-height:360px; font-family:monospace; line-height:1.9;">
+            <!-- Rellenado por JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: LA ESCALERA DESCENDENTE (a^0 = 1) ================= -->
+    <div id="escalera" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">¿Por qué todo número elevado a cero da 1?</div>
+        <div class="content-text">
+          Muchos alumnos creen que $a^0 = 0$. ¡Falso! Para entender por qué da 1 y por qué los exponentes negativos se convierten en fracciones, basta con mirar la <strong>escalera de divisiones sucesivas</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Elige la Base de la Escalera</div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-blue);">Base de la tabla:</label>
+            <input type="range" id="ladder_base" min="2" max="5" value="2" oninput="updateLadderTable()">
+            <span class="val-badge" id="v_ladder_base" style="color:var(--accent-blue);">2</span>
+          </div>
+
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.8rem;">
+            Cada vez que bajas un escalón (restas 1 al exponente), el resultado <strong>se divide exactamente entre la base</strong>:
+          </p>
+
+          <table class="ladder-table">
+            <thead>
+              <tr>
+                <th>Potencia</th>
+                <th>Operación lógica</th>
+                <th>Resultado</th>
+              </tr>
+            </thead>
+            <tbody id="ladder_tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Las Dos Reglas de Oro</div>
+          
+          <div style="display:flex; flex-direction:column; gap:0.9rem;">
+            <div class="info-card-item" style="border-left:3px solid var(--accent-gold);">
+              <strong style="color:var(--accent-gold); font-size:1.1rem;">Cualquier número elevado a 0 es 1 (a⁰ = 1):</strong>
+              <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.5;">
+                Demostración por división de potencias iguales:
+                <br>
+                <span style="font-family:monospace; font-size:1rem; color:#fff;">
+                  aⁿ / aⁿ = aⁿ⁻ⁿ = <strong>a⁰</strong>
+                </span>
+                <br>
+                Pero cualquier cantidad dividida entre sí misma da 1: 
+                <span style="font-family:monospace; color:var(--accent-gold); font-weight:bold;">aⁿ / aⁿ = 1</span>.
+                Por tanto, ¡<strong>a⁰ = 1</strong> obligatoriamente!
+              </p>
+            </div>
+
+            <div class="info-card-item" style="border-left:3px solid var(--accent-op);">
+              <strong style="color:var(--accent-op); font-size:1.1rem;">Exponentes Negativos (a⁻ⁿ = 1 / aⁿ):</strong>
+              <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.5;">
+                Un exponente negativo <strong>no hace que el número sea negativo</strong>: simplemente le da la vuelta como una fracción (el inverso multiplicativo):
+                <br>
+                <span style="font-family:monospace; font-size:1.1rem; color:var(--accent-op); font-weight:bold;">
+                  3⁻² = 1 / 3² = 1 / 9
+                </span>
+              </p>
+            </div>
+
+            <div class="info-card-item" style="border-left:3px solid var(--accent-blue);">
+              <strong style="color:var(--accent-blue); font-size:1.05rem;">⚠️ Cuidado con el Paréntesis y el Signo Menos:</strong>
+              <p style="color:var(--text-muted); font-size:0.88rem; line-height:1.5;">
+                • <strong>(-3)² = (-3) · (-3) = +9</strong> (el cuadrado afecta a todo el paréntesis).<br>
+                • <strong>-3² = -(3 · 3) = -9</strong> (el cuadrado solo afecta al 3, el menos se queda fuera).
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: OPERACIONES CON POTENCIAS ================= -->
+    <div id="operaciones" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+        <div class="badge" style="color: var(--accent-blue);">Cómo Resolver Operaciones</div>
+        <div class="content-text">
+          Aprende cuándo se pueden aplicar propiedades y cuándo está terminantemente prohibido. Selecciona la subpestaña para ver ejemplos resueltos.
+        </div>
+      </div>
+
+      <div class="subtabs-container">
+        <button class="subtab-btn active" onclick="switchSubTab('sub_mult', this)">✖️ Multiplicación y División</button>
+        <button class="subtab-btn" onclick="switchSubTab('sub_suma', this)">➕ Suma y Resta (¡Peligro!)</button>
+      </div>
+
+      <!-- 4.1 MULTIPLICACIÓN Y DIVISIÓN -->
+      <div id="sub_mult" class="subtab-content active">
+        <div class="grid-2">
+          <div class="panel-box">
+            <div class="panel-title" style="color:var(--accent-blue);">Simplificación Combinada de Expresiones</div>
+            <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1rem;">
+              Ejemplo típico de examen: Simplifica dejando una sola potencia:
+            </p>
+
+            <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; font-size:1.15rem; line-height:2.1;">
+              <div>Operación inicial:</div>
+              <div style="color:var(--accent-gold); font-size:1.3rem;">
+                <span class="fraction-vertical">
+                  <span class="num">(2³ · 2⁴) · 2⁵</span>
+                  <span class="den">(2²)³</span>
+                </span>
+              </div>
+              <hr style="border:0; border-top:1px solid var(--border-color); margin:0.6rem 0;">
+              <div>1. Arriba sumamos exponentes: 3 + 4 + 5 = <strong>12</strong> ➔ 2¹²</div>
+              <div>2. Abajo multiplicamos potencias: 2 · 3 = <strong>6</strong> ➔ 2⁶</div>
+              <div style="margin-top:0.4rem;">
+                Fracción simplificada: 
+                <span class="fraction-vertical">
+                  <span class="num">2¹²</span>
+                  <span class="den">2⁶</span>
+                </span>
+              </div>
+              <div>3. Restamos exponentes del cociente: 12 - 6 = <strong>6</strong></div>
+              <div style="color:var(--accent-success); font-weight:bold; font-size:1.35rem; margin-top:0.5rem;">
+                ➔ Resultado final = 2⁶ = 64
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-box">
+            <div class="panel-title">¿Qué hacer si tienen distinta base?</div>
+            <div style="display:flex; flex-direction:column; gap:0.9rem;">
+              <div class="info-card-item">
+                <strong style="color:var(--accent-gold);">Caso 1: Tienen el mismo exponente</strong>
+                <p style="color:var(--text-muted); font-size:0.9rem;">
+                  Se multiplican o dividen las bases y se deja el mismo exponente:<br>
+                  • 2³ · 5³ = (2 · 5)³ = <strong>10³ = 1.000</strong><br>
+                  • 12⁴ / 3⁴ = (12 / 3)⁴ = <strong>4⁴ = 256</strong>
+                </p>
+              </div>
+
+              <div class="info-card-item">
+                <strong style="color:var(--accent-blue);">Caso 2: Bases factorizables (números compuestos)</strong>
+                <p style="color:var(--text-muted); font-size:0.9rem;">
+                  Descomponemos en factores primos para conseguir bases iguales:<br>
+                  • 4³ · 2⁵ = (2²)³ · 2⁵ = 2⁶ · 2⁵ = <strong>2¹¹</strong><br>
+                  • 9² / 3³ = (3²)² / 3³ = 3⁴ / 3³ = <strong>3¹ = 3</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4.2 SUMA Y RESTA (¡PELIGRO!) -->
+      <div id="sub_suma" class="subtab-content">
+        <div class="grid-2">
+          <div class="panel-box" style="border-color:var(--accent-op);">
+            <div class="panel-title" style="color:var(--accent-op);">¡NO Existe Propiedad para Sumar o Restar Potencias!</div>
+            
+            <div style="background:rgba(244,63,94,0.1); border:1px solid var(--accent-op); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:1.9;">
+              <div style="color:var(--accent-op); font-weight:bold; font-size:1.25rem;">
+                2³ + 2² ≠ 2⁵ (¡ERROR GRAVE!)
+              </div>
+              <p style="color:var(--text-muted); font-size:0.9rem; margin:0.5rem 0;">
+                Vamos a comprobarlo numéricamente:
+              </p>
+              <div>• 2³ + 2² = 8 + 4 = <strong>12</strong></div>
+              <div>• 2⁵ = 2 · 2 · 2 · 2 · 2 = <strong>32</strong></div>
+              <div style="color:var(--accent-op); font-weight:bold; margin-top:0.3rem;">
+                ¡12 no es igual a 32!
+              </div>
+            </div>
+
+            <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.6; margin-top:1rem;">
+              Las propiedades de sumar exponentes <strong>SOLO sirven para multiplicar</strong>.
+            </p>
+          </div>
+
+          <div class="panel-box">
+            <div class="panel-title" style="color:var(--accent-success);">¿Cómo se resuelve una suma o resta de potencias?</div>
+            
+            <div style="display:flex; flex-direction:column; gap:0.9rem;">
+              <div class="info-card-item" style="border-left:3px solid var(--accent-success);">
+                <strong style="color:var(--accent-success);">Método 1: Calcular cada una y operar</strong>
+                <p style="color:var(--text-muted); font-size:0.9rem;">
+                  Si los números son pequeños, simplemente calcula cada potencia:<br>
+                  • 3³ - 2⁴ = 27 - 16 = <strong>11</strong><br>
+                  • 5² + 4² = 25 + 16 = <strong>41</strong>
+                </p>
+              </div>
+
+              <div class="info-card-item" style="border-left:3px solid var(--accent-gold);">
+                <strong style="color:var(--accent-gold);">Método 2: Sacar Factor Común (Nivel 2º ESO)</strong>
+                <p style="color:var(--text-muted); font-size:0.9rem;">
+                  Si las potencias tienen la misma base y exponentes grandes, extraemos la potencia menor como factor común:<br>
+                  • 2¹⁰ + 2⁸ = 2⁸ · (2² + 1) = 2⁸ · (4 + 1) = <strong>5 · 2⁸</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓN ENTRE PESTAÑAS PRINCIPALES ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'concepto') updatePowerSim();
+      if (tabId === 'escalera') updateLadderTable();
+    }
+
+    // --- NAVEGACIÓN ENTRE SUBPESTAÑAS ---
+    function switchSubTab(subtabId, btn) {
+      document.querySelectorAll('.subtab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(subtabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // =========================================================================
+    // 1. SIMULADOR DE POTENCIAS
+    // =========================================================================
+    function updatePowerSim() {
+      const a = parseInt(document.getElementById('pot_base').value);
+      const n = parseInt(document.getElementById('pot_exp').value);
+
+      document.getElementById('v_pot_base').innerText = a;
+      document.getElementById('v_pot_exp').innerText = n;
+
+      document.getElementById('lbl_hero_base').innerText = a;
+      document.getElementById('lbl_hero_exp').innerText = n;
+
+      const factors = Array(n).fill(a).join(' · ');
+      document.getElementById('txt_power_expanded').innerText = factors;
+
+      const res = Math.pow(a, n);
+      document.getElementById('txt_power_result').innerText = res.toLocaleString('es-ES');
+    }
+    updatePowerSim();
+
+    // =========================================================================
+    // 2. DEMOSTRADOR DE PROPIEDADES (AMPLIADO Y COMPLETO)
+    // =========================================================================
+    const propDemos = {
+      exp_one: `
+        <div style="color:var(--accent-blue); font-weight:bold; font-size:1.2rem; margin-bottom:0.6rem;">
+          Exponente Uno: a¹ = a
+        </div>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
+          Cualquier número elevado a 1 es el propio número. ¡Todo número sin exponente visible tiene un 1 oculto!
+        </p>
+        <div style="background:#0b1120; padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
+          • Con números: <strong>7¹ = 7</strong> &nbsp;|&nbsp; <strong>125¹ = 125</strong>
+          <br><br>
+          • <strong>¡Clave de examen!:</strong> Si ves una operación como <span style="color:var(--accent-gold);">2³ · 2</span>, recuerda que el segundo 2 tiene exponente 1:
+          <br>
+          <span style="color:var(--accent-success); font-weight:bold;">2³ · 2 = 2³ · 2¹ = 2³⁺¹ = 2⁴ = 16</span> (no 2³).
+        </div>
+      `,
+      exp_zero: `
+        <div style="color:var(--accent-gold); font-weight:bold; font-size:1.2rem; margin-bottom:0.6rem;">
+          Exponente Cero: a⁰ = 1  (con a ≠ 0)
+        </div>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
+          ¿Por qué no da cero? Demostración por cociente de potencias iguales:
+        </p>
+        <div style="background:#0b1120; padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
+          1. Aplicando la propiedad de la división: 
+          <br>
+          <span style="color:var(--accent-blue);">aⁿ / aⁿ = aⁿ⁻ⁿ = a⁰</span>
+          <br><br>
+          2. Pero cualquier número dividido entre sí mismo es siempre 1:
+          <br>
+          <span style="color:var(--accent-gold);">aⁿ / aⁿ = 1</span>
+          <br><br>
+          ➔ Por tanto: <strong style="color:var(--accent-success); font-size:1.25rem;">a⁰ = 1</strong>
+          <br>
+          • Ejemplos: <strong>5⁰ = 1</strong> &nbsp;|&nbsp; <strong>(-8)⁰ = 1</strong> &nbsp;|&nbsp; <strong>(3/4)⁰ = 1</strong>
+        </div>
+      `,
+      exp_negative: `
+        <div style="color:var(--accent-op); font-weight:bold; font-size:1.2rem; margin-bottom:0.6rem;">
+          Exponente Negativo: a⁻ⁿ = 1 / aⁿ
+        </div>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
+          El signo menos en el exponente NO significa que el número sea negativo: indica el <strong>inverso multiplicativo</strong> (le da la vuelta como fracción).
+        </p>
+        <div style="background:#0b1120; padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
+          • Demostración: 
+          <br>
+          2⁰ / 2³ = 2⁰⁻³ = <strong>2⁻³</strong>
+          <br>
+          Como 2⁰ = 1 ➔ 2⁰ / 2³ = <strong>1 / 2³ = 1 / 8</strong>
+          <br><br>
+          • Ejemplos:
+          <br>
+          • <strong>3⁻² = 1 / 3² = 1 / 9</strong>
+          <br>
+          • <strong>10⁻³ = 1 / 10³ = 1 / 1.000 = 0,001</strong>
+        </div>
+      `,
+      frac_negative: `
+        <div style="color:var(--accent-success); font-weight:bold; font-size:1.2rem; margin-bottom:0.6rem;">
+          Fracción con Exponente Negativo: (a / b)⁻ⁿ = (b / a)ⁿ
+        </div>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
+          La propiedad "darle la vuelta a la tortilla". Para quitar el signo menos del exponente, simplemente se invierten numerador y denominador:
+        </p>
+        <div style="background:#0b1120; padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
+          • Ejemplo 1:
+          <br>
+          (2 / 3)⁻¹ = <strong>3 / 2</strong>
+          <br><br>
+          • Ejemplo 2:
+          <br>
+          (3 / 5)⁻² = (5 / 3)² = 5² / 3² = <strong>25 / 9</strong>
+        </div>
+      `,
+      prod_same_base: `
+        <div style="color:var(--accent-blue); font-weight:bold; font-size:1.2rem; margin-bottom:0.6rem;">
+          Producto con Misma Base: aᵐ · aⁿ = aᵐ⁺ⁿ
+        </div>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
+          ¿Por qué se suman los exponentes? Simplemente abre los factores y cuéntalos:
+        </p>
+        <div style="background:#0b1120; padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
+          • Con letras: a³ · a² = (a · a · a) · (a · a) = a · a · a · a · a = <strong>a⁵</strong> (3 + 2 = 5 factores)
+          <br><br>
+          • Con números: 2³ · 2⁴ = (2 · 2 · 2) · (2 · 2 · 2 · 2) = 2⁷ = <strong>128</strong>
+        </div>
+      `,
+      div_same_base: `
+        <div style="color:var(--accent-gold); font-weight:bold; font-size:1.2rem; margin-bottom:0.6rem;">
+          Cociente con Misma Base: aᵐ / aⁿ = aᵐ⁻ⁿ
+        </div>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
+          ¿Por qué se restan? Al ponerlos como fracción, los factores repetidos se cancelan:
+        </p>
+        <div style="background:#0b1120; padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
+          • Con letras: a⁵ / a² = (a · a · a · a · a) / (a · a)
+          <br>
+          Cancelamos dos 'a' arriba y abajo ➔ queda a · a · a = <strong>a³</strong> (5 - 2 = 3)
+          <br><br>
+          • Con números: 5⁴ / 5² = (5 · 5 · 5 · 5) / (5 · 5) = 5² = <strong>25</strong>
+        </div>
+      `,
+      pow_of_pow: `
+        <div style="color:var(--accent-op); font-weight:bold; font-size:1.2rem; margin-bottom:0.6rem;">
+          Potencia de una Potencia: (aᵐ)ⁿ = aᵐ·ⁿ
+        </div>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
+          ¿Por qué se multiplican? Es un paquete repetido varias veces:
+        </p>
+        <div style="background:#0b1120; padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
+          • (a²)³ significa repetir el paquete (a²) tres veces:
+          <br>
+          (a²)³ = (a²) · (a²) · (a²) = (a · a) · (a · a) · (a · a) = <strong>a⁶</strong> (2 · 3 = 6)
+          <br><br>
+          • Con números: (3²)² = 3⁴ = <strong>81</strong>
+        </div>
+      `,
+      prod_same_exp: `
+        <div style="color:var(--accent-success); font-weight:bold; font-size:1.2rem; margin-bottom:0.6rem;">
+          Mismo Exponente (Producto): aⁿ · bⁿ = (a · b)ⁿ
+        </div>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
+          Podemos emparejar las bases distintas gracias a la propiedad conmutativa:
+        </p>
+        <div style="background:#0b1120; padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
+          • Ejemplo: 2³ · 5³ = (2 · 2 · 2) · (5 · 5 · 5)
+          <br>
+          Emparejamos: (2 · 5) · (2 · 5) · (2 · 5) = 10 · 10 · 10 = <strong>10³ = 1.000</strong>
+        </div>
+      `,
+      div_same_exp: `
+        <div style="color:#c084fc; font-weight:bold; font-size:1.2rem; margin-bottom:0.6rem;">
+          Mismo Exponente (Cociente): aⁿ / bⁿ = (a / b)ⁿ
+        </div>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
+          Agrupamos la división en una sola fracción elevada al exponente común:
+        </p>
+        <div style="background:#0b1120; padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
+          • Ejemplo: 6³ / 2³ = (6 · 6 · 6) / (2 · 2 · 2)
+          <br>
+          Separamos: (6/2) · (6/2) · (6/2) = 3 · 3 · 3 = <strong>3³ = 27</strong>
+        </div>
+      `
+    };
+
+    function showProperty(key, btn) {
+      document.querySelectorAll('.prop-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('prop_demo_container').innerHTML = propDemos[key];
+    }
+    document.getElementById('prop_demo_container').innerHTML = propDemos.exp_one;
+
+    // =========================================================================
+    // 3. LA ESCALERA DESCENDENTE (a^0 = 1 Y EXPONENTES NEGATIVOS)
+    // =========================================================================
+    function updateLadderTable() {
+      const b = parseInt(document.getElementById('ladder_base').value);
+      document.getElementById('v_ladder_base').innerText = b;
+
+      const tbody = document.getElementById('ladder_tbody');
+      tbody.innerHTML = `
+        <tr>
+          <td>${b}⁴</td>
+          <td style="color:var(--text-muted);">${b} · ${b} · ${b} · ${b}</td>
+          <td style="color:var(--accent-blue); font-weight:bold;">${Math.pow(b, 4)}</td>
+        </tr>
+        <tr>
+          <td>${b}³</td>
+          <td style="color:var(--text-muted);">${Math.pow(b, 4)} ÷ ${b}</td>
+          <td style="color:var(--accent-blue); font-weight:bold;">${Math.pow(b, 3)}</td>
+        </tr>
+        <tr>
+          <td>${b}²</td>
+          <td style="color:var(--text-muted);">${Math.pow(b, 3)} ÷ ${b}</td>
+          <td style="color:var(--accent-blue); font-weight:bold;">${Math.pow(b, 2)}</td>
+        </tr>
+        <tr>
+          <td>${b}¹</td>
+          <td style="color:var(--text-muted);">${Math.pow(b, 2)} ÷ ${b}</td>
+          <td style="color:var(--accent-blue); font-weight:bold;">${b}</td>
+        </tr>
+        <tr class="highlight-zero">
+          <td style="color:var(--accent-gold); font-size:1.2rem;">${b}⁰</td>
+          <td style="color:var(--accent-gold);">${b} ÷ ${b}</td>
+          <td style="color:var(--accent-gold); font-size:1.3rem;">1</td>
+        </tr>
+        <tr class="highlight-neg">
+          <td style="color:var(--accent-op);">${b}⁻¹</td>
+          <td style="color:var(--accent-op);">1 ÷ ${b}</td>
+          <td style="color:var(--accent-op);">1 / ${b}</td>
+        </tr>
+        <tr class="highlight-neg">
+          <td style="color:var(--accent-op);">${b}⁻²</td>
+          <td style="color:var(--accent-op);">(1/${b}) ÷ ${b}</td>
+          <td style="color:var(--accent-op);">1 / ${b}² = 1 / ${b * b}</td>
+        </tr>
+      `;
+    }
+    updateLadderTable();
+  </script>
+</body>
+</html>

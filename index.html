@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MatesLab ESO | Plataforma Visual e Interactiva de Matemáticas</title>
   
+  <!-- PWA Y APP NATIVA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b1120">
+  
+  <!-- Configuración especial para iPhones (iOS) -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="MatesLab">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="stylesheet" href="estilos.css">
 
   <style>
@@ -207,6 +216,7 @@
     .tag-algebra { background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); }
     .tag-geometria { background: rgba(16, 185, 129, 0.15); color: var(--accent-success); }
     .tag-estadistica { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+    .tag-funciones { background: rgba(5, 150, 105, 0.15); color: #34d399; }
 
     .topic-name {
       font-size: 1.15rem;
@@ -278,6 +288,7 @@
       <button class="filter-chip" onclick="setFilter('algebra', this)">Álgebra y Ecuaciones</button>
       <button class="filter-chip" onclick="setFilter('geometria', this)">Geometría 2D y 3D</button>
       <button class="filter-chip" onclick="setFilter('estadistica', this)">Estadística y Azar</button>
+      <button class="filter-chip" onclick="setFilter('funciones', this)">Funciones y Análisis</button>
     </div>
   </div>
 
@@ -301,7 +312,6 @@
         <div class="branch-subheading">🔢 Aritmética y Sistema Numérico</div>
         <div class="topics-grid">
                     
-          <!-- TEMA 1: OPERACIONES BÁSICAS CON NATURALES (PRIMERO DE TODOS) -->
           <a href="aritmetica/operaciones.html" class="topic-card" data-title="naturales operaciones basicas suma resta multiplicacion division algoritmo">
             <div class="card-top">
               <span class="branch-tag tag-aritmetica">Aritmética</span>
@@ -386,10 +396,21 @@
             </div>
           </a>
 
+          <a href="aritmetica/notacion_cientifica.html" class="topic-card" data-title="notacion cientifica exponentes coma operaciones">
+            <div class="card-top">
+              <span class="branch-tag tag-aritmetica">Aritmética</span>
+              <span style="font-size:1.3rem;">🔬</span>
+            </div>
+            <div class="topic-name">Notación Científica</div>
+            <div class="topic-desc">Maneja números astronómicos o microscópicos y aprende a sumar, restar y multiplicar con potencias de 10.</div>
+            <div class="mini-preview">
+              <span>3·10⁴ + 2·10⁴ = <strong>5·10⁴</strong></span>
+            </div>
+          </a>
+
         </div>
       </div>
           
-       
       <!-- ÁLGEBRA 1r CICLO -->
       <div class="branch-group" data-branch="algebra">
         <div class="branch-subheading">🔤 Álgebra Básica y Ecuaciones</div>
@@ -580,48 +601,199 @@
           <span>🚀 2º Ciclo de la ESO</span>
           <span class="cycle-badge" style="background:rgba(251,191,36,0.15); color:var(--accent-gold); border-color:var(--accent-gold);">3º y 4º ESO</span>
         </div>
-        <span style="font-size:0.9rem; color:var(--text-muted);">Álgebra avanzada y teoremas de semejanza</span>
+        <span style="font-size:0.9rem; color:var(--text-muted);">Álgebra avanzada, geometría analítica y análisis</span>
       </div>
 
-      <div class="topics-grid">
-        
-        <a href="algebra/notables.html" class="topic-card" data-branch="algebra" data-title="identidades notables binomio cuadrado suma diferencia">
-          <div class="card-top">
-            <span class="branch-tag tag-algebra">Álgebra</span>
-            <span style="font-size:1.3rem;">🔲</span>
-          </div>
-          <div class="topic-name">Identidades Notables</div>
-          <div class="topic-desc">Demostración geométrica con áreas de colores: cuadrado de una suma, cuadrado de una diferencia y suma por diferencia.</div>
-          <div class="mini-preview">
-            <span>(a + b)² = <strong>a² + 2ab + b²</strong></span>
-          </div>
-        </a>
-
-        <a href="algebra/segundo_grado.html" class="topic-card" data-branch="algebra" data-title="segundo grado ecuaciones formula parabola discriminante">
-          <div class="card-top">
-            <span class="branch-tag tag-algebra">Álgebra</span>
-            <span style="font-size:1.3rem;">🎯</span>
-          </div>
-          <div class="topic-name">Ecuaciones de 2º Grado</div>
-          <div class="topic-desc">La fórmula cuadrática general, el discriminante (Δ) y su relación visual con los cortes de la parábola.</div>
-          <div class="mini-preview">
-            <span>x = (-b ± <strong>√Δ</strong>) / 2a</span>
-          </div>
-        </a>
-
-        <a href="geometria/tales.html" class="topic-card" data-branch="geometria" data-title="tales teorema semejanza sombras proporciones">
-          <div class="card-top">
-            <span class="branch-tag tag-geometria">Geometría</span>
-            <span style="font-size:1.3rem;">☀️</span>
-          </div>
-          <div class="topic-name">Teorema de Tales</div>
-          <div class="topic-desc">Rectas paralelas que cortan secantes, semejanza geométrica y cómo Tales midió la Gran Pirámide con su sombra.</div>
-          <div class="mini-preview">
-            <span>A / B = <strong>A' / B'</strong></span>
-          </div>
-        </a>
-
+      <!-- ARITMÉTICA 2º CICLO -->
+      <div class="branch-group" data-branch="aritmetica">
+        <div class="branch-subheading">🔢 Aritmética Avanzada</div>
+        <div class="topics-grid">
+          <a href="aritmetica/reales_radicales.html" class="topic-card" data-title="numeros reales irracionales radicales extraccion raiz propiedades pi racionalizacion">
+            <div class="card-top">
+              <span class="branch-tag tag-aritmetica">Aritmética</span>
+              <span style="font-size:1.3rem;">🌌</span>
+            </div>
+            <div class="topic-name">Números Reales y Radicales</div>
+            <div class="topic-desc">Clasifica números en bolsas infinitas, asimila a los irracionales, opera con raíces y racionaliza denominadores.</div>
+            <div class="mini-preview">
+              <span>ℕ ⊂ ℤ ⊂ ℚ ⊂ <strong>ℝ</strong> &nbsp;|&nbsp; √x³ = <strong>x√x</strong></span>
+            </div>
+          </a>
+        </div>
       </div>
+
+      <!-- ÁLGEBRA 2º CICLO -->
+      <div class="branch-group" data-branch="algebra">
+        <div class="branch-subheading">🔤 Álgebra Avanzada y Polinomios</div>
+        <div class="topics-grid">
+          
+          <a href="algebra/notables.html" class="topic-card" data-title="identidades notables binomio cuadrado suma diferencia">
+            <div class="card-top">
+              <span class="branch-tag tag-algebra">Álgebra</span>
+              <span style="font-size:1.3rem;">🔲</span>
+            </div>
+            <div class="topic-name">Identidades Notables</div>
+            <div class="topic-desc">Demostración geométrica con áreas de colores: cuadrado de una suma, cuadrado de una diferencia y suma por diferencia.</div>
+            <div class="mini-preview">
+              <span>(a + b)² = <strong>a² + 2ab + b²</strong></span>
+            </div>
+          </a>
+
+          <a href="algebra/segundo_grado.html" class="topic-card" data-title="segundo grado ecuaciones formula parabola discriminante">
+            <div class="card-top">
+              <span class="branch-tag tag-algebra">Álgebra</span>
+              <span style="font-size:1.3rem;">🎯</span>
+            </div>
+            <div class="topic-name">Ecuaciones de 2º Grado</div>
+            <div class="topic-desc">La fórmula cuadrática general, el discriminante (Δ) y su relación visual con los cortes de la parábola.</div>
+            <div class="mini-preview">
+              <span>x = (-b ± <strong>√Δ</strong>) / 2a</span>
+            </div>
+          </a>
+
+          <a href="algebra/polinomios_avanzados.html" class="topic-card" data-title="polinomios avanzados fracciones algebraicas division caja factor comun simplificar">
+            <div class="card-top">
+              <span class="branch-tag tag-algebra">Álgebra</span>
+              <span style="font-size:1.3rem;">➗</span>
+            </div>
+            <div class="topic-name">Polinomios Avanzados</div>
+            <div class="topic-desc">Fracciones algebraicas, división tradicional por caja ("galera"), sacar factor común paso a paso y simplificación.</div>
+            <div class="mini-preview">
+              <span>P(x) / D(x) = C(x) + R(x)</span>
+            </div>
+          </a>
+
+          <a href="algebra/ruffini_raices.html" class="topic-card" data-title="ruffini raices factorizar ecuaciones polinomicas producto cero">
+            <div class="card-top">
+              <span class="branch-tag tag-algebra">Álgebra</span>
+              <span style="font-size:1.3rem;">🎯</span>
+            </div>
+            <div class="topic-name">Regla de Ruffini y Raíces</div>
+            <div class="topic-desc">Entiende qué es una raíz, aplica la regla de Ruffini paso a paso en su tablero y resuelve ecuaciones factorizadas.</div>
+            <div class="mini-preview">
+              <span>(x - 2)(x + 3) = 0 ➔ <strong>x = 2</strong></span>
+            </div>
+          </a>
+
+          <a href="algebra/sistemas_ecuaciones.html" class="topic-card" data-title="sistemas de ecuaciones reduccion sustitucion igualacion grafico lineal">
+            <div class="card-top">
+              <span class="branch-tag tag-algebra">Álgebra</span>
+              <span style="font-size:1.3rem;">⚔️</span>
+            </div>
+            <div class="topic-name">Sistemas de Ecuaciones</div>
+            <div class="topic-desc">Resuelve sistemas de dos incógnitas aplicando la deducción visual, los tres métodos analíticos y su cruce gráfico.</div>
+            <div class="mini-preview">
+              <span>x + y = 5 | 2x - y = 4 ➔ <strong>(3, 2)</strong></span>
+            </div>
+          </a>
+
+          <a href="algebra/sucesiones.html" class="topic-card" data-title="sucesiones progresiones aritmeticas geometricas termino general series infinito gauss">
+            <div class="card-top">
+              <span class="branch-tag tag-algebra">Álgebra</span>
+              <span style="font-size:1.3rem;">🚀</span>
+            </div>
+            <div class="topic-name">Sucesiones y Progresiones</div>
+            <div class="topic-desc">Descubre el término general, domina las progresiones aritméticas y geométricas, y asómate al concepto de infinito sumando series.</div>
+            <div class="mini-preview">
+              <span>aₙ = a₁ + (n-1)·d</span>
+            </div>
+          </a>
+
+          <a href="algebra/fibonacci.html" class="topic-card" data-title="fibonacci sucesion proporcion aurea numero phi espiral naturaleza">
+            <div class="card-top">
+              <span class="branch-tag tag-algebra">Álgebra</span>
+              <span style="font-size:1.3rem;">🐚</span>
+            </div>
+            <div class="topic-name">Fibonacci y el Número de Oro</div>
+            <div class="topic-desc">Descubre cómo una simple suma esconde el código de la belleza (Φ = 1.618), construye la Espiral Áurea y búscalo en la naturaleza.</div>
+            <div class="mini-preview">
+              <span>1, 1, 2, 3, 5, 8, 13...</span>
+            </div>
+          </a>
+
+          <a href="algebra/inecuaciones.html" class="topic-card" data-title="inecuaciones sistemas intervalos regiones factibles plano">
+            <div class="card-top">
+              <span class="branch-tag tag-algebra">Álgebra</span>
+              <span style="font-size:1.3rem;">🗺️</span>
+            </div>
+            <div class="topic-name">Inecuaciones y Regiones</div>
+            <div class="topic-desc">Domina la recta real con intervalos, la regla del cambio de signo, y pinta regiones factibles en sistemas bidimensionales.</div>
+            <div class="mini-preview">
+              <span>x < 2 ➔ <strong>(-∞, 2)</strong></span>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- GEOMETRÍA 2º CICLO -->
+      <div class="branch-group" data-branch="geometria">
+        <div class="branch-subheading">📐 Geometría y Vectores</div>
+        <div class="topics-grid">
+          
+          <a href="geometria/tales.html" class="topic-card" data-title="tales teorema semejanza sombras proporciones">
+            <div class="card-top">
+              <span class="branch-tag tag-geometria">Geometría</span>
+              <span style="font-size:1.3rem;">☀️</span>
+            </div>
+            <div class="topic-name">Teorema de Tales</div>
+            <div class="topic-desc">Rectas paralelas que cortan secantes, semejanza geométrica y cómo Tales midió la Gran Pirámide con su sombra.</div>
+            <div class="mini-preview">
+              <span>A / B = <strong>A' / B'</strong></span>
+            </div>
+          </a>
+
+          <a href="geometria/vectores.html" class="topic-card" data-title="vectores modulo pitagoras suma escalar producto escalar">
+            <div class="card-top">
+              <span class="branch-tag tag-geometria">Geometría</span>
+              <span style="font-size:1.3rem;">↗️</span>
+            </div>
+            <div class="topic-name">Vectores en el Plano</div>
+            <div class="topic-desc">Aprende las partes de una flecha, calcula su módulo con Pitágoras, súmalas visualmente y descubre el producto escalar.</div>
+            <div class="mini-preview">
+              <span>|v| = √(vx² + vy²)</span>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ESTADÍSTICA 2º CICLO -->
+      <div class="branch-group" data-branch="estadistica">
+        <div class="branch-subheading">📊 Estadística Avanzada</div>
+        <div class="topics-grid">
+          <a href="estadistica/estadistica_avanzada.html" class="topic-card" data-title="estadistica analitica dispersion cuartiles varianza desviacion pearson bivariante">
+            <div class="card-top">
+              <span class="branch-tag tag-estadistica">Estadística</span>
+              <span style="font-size:1.3rem;">📉</span>
+            </div>
+            <div class="topic-name">Estadística Analítica</div>
+            <div class="topic-desc">Medidas de Posición (Cuartiles), Dispersión visual (Desviación Típica) y un avance a Bachillerato con la Correlación Bidimensional (r).</div>
+            <div class="mini-preview">
+              <span>σ = √Varianza &nbsp;|&nbsp; <strong>r = ±1</strong></span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- FUNCIONES 2º CICLO -->
+      <div class="branch-group" data-branch="funciones">
+        <div class="branch-subheading">📈 Funciones y Análisis</div>
+        <div class="topics-grid">
+          <a href="funciones/analisis_funciones.html" class="topic-card" data-title="funciones dominio recorrido crecimiento maximos minimos continuidad simetria limites">
+            <div class="card-top">
+              <span class="branch-tag tag-funciones">Funciones</span>
+              <span style="font-size:1.3rem;">📈</span>
+            </div>
+            <div class="topic-name">Análisis de Funciones</div>
+            <div class="topic-desc">Aprende a leer gráficas explorando el dominio, recorrido, crecimiento, extremos, continuidad y el concepto visual de límite.</div>
+            <div class="mini-preview">
+              <span>Dominio &nbsp;|&nbsp; <strong>lim x→2 f(x)</strong></span>
+            </div>
+          </a>
+        </div>
+      </div>
+
     </section>
 
   </main>
@@ -689,6 +861,16 @@
         } else {
           card.style.display = 'none';
         }
+      });
+    }
+  </script>
+  <script>
+    // Registro del Service Worker para convertir en PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('App instalable lista'))
+          .catch(err => console.log('Error en PWA: ', err));
       });
     }
   </script>

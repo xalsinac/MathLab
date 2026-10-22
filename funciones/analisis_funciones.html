@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Análisis de funciones | 4.º de ESO</title>
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS: conserva la paleta y el estilo de la web */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 0.4rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 0.9rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn:focus-visible, .quiz-btn:focus-visible, input[type="range"]:focus-visible {
+      outline: 2px solid var(--accent-blue); outline-offset: 3px;
+    }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+      min-width: 0;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* TARJETAS INFORMATIVAS */
+    .info-card-item {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.3rem;
+    }
+    .warning-box {
+      background: rgba(244, 63, 94, 0.08); border: 1px solid var(--accent-op);
+      border-radius: 8px; padding: 1.1rem; line-height: 1.5; font-size: 0.95rem;
+    }
+
+    /* COMPROBACIONES INTERACTIVAS */
+    .quiz-box { gap: 0.75rem; }
+    .quiz-options { display: flex; flex-wrap: wrap; gap: 0.65rem; }
+    .quiz-btn {
+      border: 1px solid var(--border-color); border-radius: 7px; padding: 0.7rem 1rem;
+      background: rgba(255, 255, 255, 0.03); color: var(--text-main); cursor: pointer;
+      font: inherit; transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .quiz-btn:hover { border-color: var(--accent-blue); background: rgba(56, 189, 248, 0.06); }
+    .quiz-feedback { min-height: 1.4rem; margin: 0; font-size: 0.92rem; }
+    .quiz-feedback.good { color: var(--accent-success); }
+    .quiz-feedback.bad { color: var(--accent-op); }
+    .small-note { color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; }
+
+    /* CONTROLES SLIDER */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .slider-row label { width: 150px; flex-shrink: 0; font-weight: 600; font-family: monospace; font-size: 0.95rem; }
+    .slider-row input[type="range"] { min-width: 0; flex: 1; accent-color: #c084fc; }
+    .val-badge { width: 45px; flex-shrink: 0; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; color: var(--text-main); }
+
+    /* SVG CANVAS */
+    .svg-canvas {
+      width: 100%; height: 320px; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block;
+    }
+    .svg-canvas.compact { height: 250px; }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .tab-content { padding: 1rem; }
+    }
+    @media (max-width: 480px) {
+      .slider-row { align-items: flex-start; flex-wrap: wrap; gap: 0.6rem; }
+      .slider-row label { width: auto; }
+      .slider-row input[type="range"] { flex-basis: 70%; }
+      .val-badge { margin-left: auto; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .tab-content.active { animation: none; }
+      .tab-btn, .quiz-btn { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span aria-hidden="true">&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Análisis gráfico de funciones</h1>
+    <p>Aprende a leer una función como si fuera un mapa: dominio, recorrido, cortes con los ejes, signo, crecimiento, extremos, continuidad y simetría.</p>
+  </header>
+
+  <main class="app-container">
+    <nav class="tabs-container" role="tablist" aria-label="Apartados del análisis de funciones">
+      <button type="button" class="tab-btn active" id="tab-dom_rec" role="tab" aria-selected="true" aria-controls="dom_rec" tabindex="0" onclick="switchTab('dom_rec', this)">🌐 1. Dominio y recorrido</button>
+      <button type="button" class="tab-btn" id="tab-cortes" role="tab" aria-selected="false" aria-controls="cortes" tabindex="-1" onclick="switchTab('cortes', this)">✂️ 2. Cortes y signo</button>
+      <button type="button" class="tab-btn" id="tab-creCrec" role="tab" aria-selected="false" aria-controls="creCrec" tabindex="-1" onclick="switchTab('creCrec', this)">📈 3. Crecimiento y extremos</button>
+      <button type="button" class="tab-btn" id="tab-cont_sim" role="tab" aria-selected="false" aria-controls="cont_sim" tabindex="-1" onclick="switchTab('cont_sim', this)">🧩 4. Continuidad y simetría</button>
+      <button type="button" class="tab-btn" id="tab-limites" role="tab" aria-selected="false" aria-controls="limites" tabindex="-1" onclick="switchTab('limites', this)">🔭 Ampliación: límites</button>
+    </nav>
+
+    <!-- PESTAÑA 1: DOMINIO Y RECORRIDO -->
+    <section id="dom_rec" class="tab-content active" role="tabpanel" aria-labelledby="tab-dom_rec" aria-hidden="false" tabindex="0">
+      <div class="explanation-card">
+        <div class="badge">El radar horizontal y vertical</div>
+        <div class="content-text">
+          <p><strong>Dominio, D(f):</strong> son todos los valores de <strong>x</strong> para los que hay un punto en la gráfica.</p>
+          <p><strong>Recorrido o imagen, Im(f):</strong> son todos los valores de <strong>y</strong> que alcanza la función.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Lectura visual en el plano</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            La sombra sobre el eje X ayuda a encontrar el dominio; la sombra sobre el eje Y ayuda a encontrar el recorrido. En este ejemplo, la función es f(x) = 4 − x²/4 y solo dibujamos el tramo entre x = −4 y x = 4.
+          </p>
+          <div style="display:flex; flex-direction:column; gap:0.8rem;">
+            <div class="info-card-item" style="border-left:3px solid var(--accent-blue);">
+              <strong style="color:var(--accent-blue);">Dominio = [−4, 4]</strong>
+              <span style="color:var(--text-muted); font-size:0.85rem;">La gráfica empieza en x = −4 y termina en x = 4. Los dos extremos están incluidos.</span>
+            </div>
+            <div class="info-card-item" style="border-left:3px solid var(--accent-gold);">
+              <strong style="color:var(--accent-gold);">Recorrido = [0, 4]</strong>
+              <span style="color:var(--text-muted); font-size:0.85rem;">La altura mínima es y = 0 y la máxima es y = 4.</span>
+            </div>
+          </div>
+          <p class="small-note" style="margin-top:1rem;">Recuerda: un corchete [ ] indica que el extremo se incluye; un paréntesis ( ) indica que no se incluye. Con +∞ o −∞ siempre se usan paréntesis.</p>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-blue);">
+          <svg class="svg-canvas" viewBox="-100 -100 200 200" role="img" aria-labelledby="dom-svg-title dom-svg-desc">
+            <title id="dom-svg-title">Gráfica para leer dominio y recorrido</title>
+            <desc id="dom-svg-desc">Una parábola invertida que empieza en el punto menos cuatro, cero, alcanza un máximo en cero, cuatro y termina en cuatro, cero.</desc>
+            <path d="M -100 0 L 100 0 M 0 -100 L 0 100" stroke="#475569" stroke-width="1.5" fill="none" />
+            <path d="M -80 5 L 80 5" stroke="var(--accent-blue)" stroke-width="6" stroke-linecap="round" />
+            <text x="0" y="20" fill="var(--accent-blue)" font-size="9" text-anchor="middle" font-weight="bold">Dominio en X</text>
+            <path d="M -80 0 Q 0 -160 80 0" fill="none" stroke="#fff" stroke-width="3" />
+            <circle cx="-80" cy="0" r="4" fill="var(--accent-blue)" />
+            <circle cx="80" cy="0" r="4" fill="var(--accent-blue)" />
+            <circle cx="0" cy="-80" r="4" fill="var(--accent-gold)" />
+            <text x="-80" y="14" fill="#fff" font-size="9" text-anchor="middle">−4</text>
+            <text x="80" y="14" fill="#fff" font-size="9" text-anchor="middle">4</text>
+            <text x="8" y="-84" fill="var(--accent-gold)" font-size="9">Máx. y = 4</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="panel-box quiz-box">
+        <div class="panel-title">Comprueba lo que has entendido</div>
+        <p>Si la gráfica ocupa valores de x desde −4 hasta 4, incluidos ambos extremos, ¿cuál es su dominio?</p>
+        <div class="quiz-options">
+          <button type="button" class="quiz-btn" onclick="checkAnswer('quiz_dom', false)">(−∞, +∞)</button>
+          <button type="button" class="quiz-btn" onclick="checkAnswer('quiz_dom', true)">[−4, 4]</button>
+          <button type="button" class="quiz-btn" onclick="checkAnswer('quiz_dom', false)">[0, 4]</button>
+        </div>
+        <p id="quiz_dom_feedback" class="quiz-feedback" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 2: CORTES CON LOS EJES Y SIGNO -->
+    <section id="cortes" class="tab-content" role="tabpanel" aria-labelledby="tab-cortes" aria-hidden="true" tabindex="0">
+      <div class="explanation-card" style="border-left-color:var(--accent-gold);">
+        <div class="badge" style="color:var(--accent-gold);">Dónde corta y dónde queda</div>
+        <div class="content-text">
+          <p><strong>Ceros o raíces:</strong> son los valores de x para los que f(x) = 0; se ven donde la gráfica corta o toca el eje X.</p>
+          <p><strong>Signo:</strong> la función es positiva donde la gráfica está por encima del eje X y negativa donde está por debajo.</p>
+          <p><strong>Corte con el eje Y:</strong> se obtiene poniendo x = 0; el punto de corte es (0, f(0)).</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Ejemplo: f(x) = x² − 4</div>
+          <div style="display:flex; flex-direction:column; gap:0.8rem;">
+            <div class="info-card-item" style="border-left:3px solid var(--accent-blue);">
+              <strong style="color:var(--accent-blue);">Ceros: x = −2 y x = 2</strong>
+              <span style="color:var(--text-muted); font-size:0.85rem;">Los puntos de corte con X son (−2, 0) y (2, 0).</span>
+            </div>
+            <div class="info-card-item" style="border-left:3px solid var(--accent-success);">
+              <strong style="color:var(--accent-success);">Positiva: (−∞, −2) ∪ (2, +∞)</strong>
+              <span style="color:var(--text-muted); font-size:0.85rem;">La gráfica queda por encima del eje X.</span>
+            </div>
+            <div class="info-card-item" style="border-left:3px solid var(--accent-op);">
+              <strong style="color:var(--accent-op);">Negativa: (−2, 2)</strong>
+              <span style="color:var(--text-muted); font-size:0.85rem;">La gráfica queda por debajo del eje X.</span>
+            </div>
+            <div class="info-card-item">
+              <strong>Corte con Y: (0, −4)</strong>
+              <span style="color:var(--text-muted); font-size:0.85rem;">En x = 0, f(0) = 0² − 4 = −4.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-gold);">
+          <svg class="svg-canvas" viewBox="-110 -80 220 160" role="img" aria-labelledby="cortes-svg-title cortes-svg-desc">
+            <title id="cortes-svg-title">Gráfica de x al cuadrado menos cuatro</title>
+            <desc id="cortes-svg-desc">Parábola que abre hacia arriba, corta el eje X en menos dos y dos, y el eje Y en menos cuatro.</desc>
+            <path d="M -100 0 L 100 0 M 0 -70 L 0 70" stroke="#475569" stroke-width="1.5" fill="none" />
+            <path d="M -90 -60 Q 0 156 90 -60" fill="none" stroke="#fff" stroke-width="3" />
+            <circle cx="-60" cy="0" r="4.5" fill="var(--accent-blue)" />
+            <circle cx="60" cy="0" r="4.5" fill="var(--accent-blue)" />
+            <circle cx="0" cy="48" r="4.5" fill="var(--accent-gold)" />
+            <text x="-60" y="-8" fill="var(--accent-blue)" font-size="10" text-anchor="middle">−2</text>
+            <text x="60" y="-8" fill="var(--accent-blue)" font-size="10" text-anchor="middle">2</text>
+            <text x="7" y="61" fill="var(--accent-gold)" font-size="10">(0, −4)</text>
+            <text x="88" y="-7" fill="#fff" font-size="10">x</text>
+            <text x="7" y="-62" fill="#fff" font-size="10">y</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="panel-box quiz-box">
+        <div class="panel-title">Mini reto: interpreta el signo</div>
+        <p>Para f(x) = x² − 4, ¿en qué intervalo la función es negativa?</p>
+        <div class="quiz-options">
+          <button type="button" class="quiz-btn" onclick="checkAnswer('quiz_signo', false)">(−∞, −2) ∪ (2, +∞)</button>
+          <button type="button" class="quiz-btn" onclick="checkAnswer('quiz_signo', true)">(−2, 2)</button>
+          <button type="button" class="quiz-btn" onclick="checkAnswer('quiz_signo', false)">Solo en x = 0</button>
+        </div>
+        <p id="quiz_signo_feedback" class="quiz-feedback" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 3: CRECIMIENTO Y EXTREMOS -->
+    <section id="creCrec" class="tab-content" role="tabpanel" aria-labelledby="tab-creCrec" aria-hidden="true" tabindex="0">
+      <div class="explanation-card" style="border-left-color:var(--accent-gold);">
+        <div class="badge" style="color:var(--accent-gold);">Subir, bajar y encontrar picos</div>
+        <div class="content-text">
+          <p><strong>Creciente:</strong> al avanzar de izquierda a derecha, los valores de y aumentan.</p>
+          <p><strong>Decreciente:</strong> al avanzar de izquierda a derecha, los valores de y disminuyen.</p>
+          <p><strong>Máximo y mínimo relativos:</strong> son, respectivamente, una cima y un valle locales. No tienen por qué ser los mayores o menores valores de toda la función.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Lectura de la gráfica</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">Recorre la curva de izquierda a derecha. En este ejemplo, el tramo dibujado corresponde a una función con máximo relativo en (−2, 4) y mínimo relativo en (2, −4).</p>
+          <div style="display:flex; flex-direction:column; gap:0.8rem;">
+            <div class="info-card-item" style="border-left:3px solid var(--accent-success);">
+              <strong style="color:var(--accent-success);">Creciente</strong>
+              <span>(−∞, −2) ∪ (2, +∞)</span>
+            </div>
+            <div class="info-card-item" style="border-left:3px solid var(--accent-op);">
+              <strong style="color:var(--accent-op);">Decreciente</strong>
+              <span>(−2, 2)</span>
+            </div>
+            <div class="info-card-item" style="border-left:3px solid var(--accent-gold);">
+              <strong style="color:var(--accent-gold);">Máximo relativo</strong>
+              <span>En x = −2, con altura y = 4.</span>
+            </div>
+            <div class="info-card-item" style="border-left:3px solid var(--accent-blue);">
+              <strong style="color:var(--accent-blue);">Mínimo relativo</strong>
+              <span>En x = 2, con altura y = −4.</span>
+            </div>
+          </div>
+          <p class="small-note" style="margin-top:1rem;">Se suelen separar los intervalos en los puntos donde la función cambia de crecer a decrecer o al revés.</p>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-gold);">
+          <svg class="svg-canvas" viewBox="-120 -120 240 240" role="img" aria-labelledby="crec-svg-title crec-svg-desc">
+            <title id="crec-svg-title">Curva con un máximo y un mínimo relativos</title>
+            <desc id="crec-svg-desc">La curva crece hasta el máximo en menos dos, cuatro; después decrece hasta el mínimo en dos, menos cuatro y vuelve a crecer.</desc>
+            <path d="M -120 0 L 120 0 M 0 -120 L 0 120" stroke="#475569" stroke-width="1.5" fill="none" />
+            <path d="M -80 80 L -75 38.67 L -70 4.38 L -65 -23.36 L -60 -45 L -55 -61.02 L -50 -71.88 L -45 -78.05 L -40 -80 L -35 -78.2 L -30 -73.12 L -25 -65.23 L -20 -55 L -15 -42.89 L -10 -29.38 L -5 -14.92 L 0 0 L 5 14.92 L 10 29.38 L 15 42.89 L 20 55 L 25 65.23 L 30 73.12 L 35 78.2 L 40 80 L 45 78.05 L 50 71.88 L 55 61.02 L 60 45 L 65 23.36 L 70 -4.38 L 75 -38.67 L 80 -80" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" />
+            <circle cx="-40" cy="-80" r="5" fill="var(--accent-gold)" />
+            <text x="-40" y="-91" fill="var(--accent-gold)" font-size="10" text-anchor="middle" font-weight="bold">Máximo (−2, 4)</text>
+            <circle cx="40" cy="80" r="5" fill="var(--accent-blue)" />
+            <text x="40" y="96" fill="var(--accent-blue)" font-size="10" text-anchor="middle" font-weight="bold">Mínimo (2, −4)</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 4: CONTINUIDAD Y SIMETRÍA -->
+    <section id="cont_sim" class="tab-content" role="tabpanel" aria-labelledby="tab-cont_sim" aria-hidden="true" tabindex="0">
+      <div class="explanation-card" style="border-left-color:var(--accent-success);">
+        <div class="badge" style="color:var(--accent-success);">Saltos y espejos</div>
+        <div class="content-text">
+          <p><strong>Continuidad:</strong> de forma visual, una gráfica continua se puede recorrer sin saltos ni agujeros. Si hay una ruptura, existe una discontinuidad.</p>
+          <p><strong>Función par:</strong> cumple f(−x) = f(x) y su gráfica es simétrica respecto al eje Y.</p>
+          <p><strong>Función impar:</strong> cumple f(−x) = −f(x) y su gráfica tiene simetría respecto al origen (un giro de 180°).</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Cómo reconocerlas</div>
+          <div style="display:flex; flex-direction:column; gap:0.8rem;">
+            <div class="info-card-item" style="border-left:3px solid var(--accent-op);">
+              <strong style="color:var(--accent-op);">Discontinuidad de salto</strong>
+              <span style="color:var(--text-muted); font-size:0.85rem;">Al llegar a una misma x, los dos tramos quedan a distintas alturas. En el dibujo, el círculo vacío señala un punto no incluido en ese tramo.</span>
+            </div>
+            <div class="info-card-item" style="border-left:3px solid var(--accent-blue);">
+              <strong style="color:var(--accent-blue);">Simetría par: f(−x) = f(x)</strong>
+              <span style="color:var(--text-muted); font-size:0.85rem;">Ejemplo: f(x) = x². La parte izquierda es el reflejo de la derecha respecto al eje Y.</span>
+            </div>
+            <div class="info-card-item" style="border-left:3px solid var(--accent-gold);">
+              <strong style="color:var(--accent-gold);">Simetría impar: f(−x) = −f(x)</strong>
+              <span style="color:var(--text-muted); font-size:0.85rem;">Ejemplo: f(x) = x³. La gráfica se mantiene al girarla 180° alrededor del origen.</span>
+            </div>
+          </div>
+          <div class="warning-box" style="margin-top:1rem;">Para que una función pueda ser par o impar, su dominio debe ser simétrico respecto a 0: si x pertenece al dominio, también debe pertenecer −x.</div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-success);">
+          <svg class="svg-canvas" viewBox="-120 -120 240 240" role="img" aria-labelledby="cont-svg-title cont-svg-desc">
+            <title id="cont-svg-title">Ejemplo de discontinuidad de salto</title>
+            <desc id="cont-svg-desc">Dos tramos se acercan al mismo valor de x pero a distintas alturas: uno termina en un círculo vacío y el otro empieza en un punto lleno.</desc>
+            <path d="M -120 0 L 120 0 M 0 -120 L 0 120" stroke="#475569" stroke-width="1.5" fill="none" />
+            <path d="M -80 -40 L 0 0" fill="none" stroke="var(--accent-op)" stroke-width="3" />
+            <circle cx="0" cy="0" r="5" fill="#090d16" stroke="var(--accent-op)" stroke-width="2.5" />
+            <path d="M 0 60 L 80 20" fill="none" stroke="var(--accent-op)" stroke-width="3" />
+            <circle cx="0" cy="60" r="5" fill="var(--accent-op)" />
+            <text x="8" y="-12" fill="var(--accent-op)" font-size="10" font-weight="bold">Punto no incluido</text>
+            <text x="8" y="76" fill="var(--accent-op)" font-size="10" font-weight="bold">Punto definido</text>
+            <text x="0" y="-91" fill="var(--accent-op)" font-size="11" text-anchor="middle" font-weight="bold">Discontinuidad de salto</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="panel-box quiz-box">
+        <div class="panel-title">Mini reto: simetría</div>
+        <p>Si una función cumple f(−x) = f(x), ¿qué tipo de simetría tiene?</p>
+        <div class="quiz-options">
+          <button type="button" class="quiz-btn" onclick="checkAnswer('quiz_sim', true)">Es par; simétrica respecto al eje Y</button>
+          <button type="button" class="quiz-btn" onclick="checkAnswer('quiz_sim', false)">Es impar; simétrica respecto al origen</button>
+        </div>
+        <p id="quiz_sim_feedback" class="quiz-feedback" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 5: AMPLIACIÓN DE LÍMITES -->
+    <section id="limites" class="tab-content" role="tabpanel" aria-labelledby="tab-limites" aria-hidden="true" tabindex="0">
+      <div class="explanation-card" style="border-left-color:#c084fc;">
+        <div class="badge" style="color:#c084fc;">Ampliación: acercarse a un valor</div>
+        <div class="content-text">
+          <p>La idea de <strong>límite</strong> se estudia con más detalle en Bachillerato; aquí aparece como una ampliación visual.</p>
+          <p>El límite describe a qué valor se acerca f(x) cuando x se aproxima a un número. Ese valor no tiene por qué coincidir con f(x) en el punto, e incluso puede que la función no esté definida allí.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Simulador de aproximación</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">Mueve el deslizador para acercarte a x = 2 desde la izquierda o desde la derecha. La gráfica tiene un agujero en (2, 3), pero la altura a la que se acerca es 3.</p>
+
+          <div class="slider-row">
+            <label for="sl_lim">Posición (x):</label>
+            <input type="range" id="sl_lim" min="0" max="35" step="1" value="19" oninput="updateLimit()" aria-describedby="limit-help">
+            <output class="val-badge" id="v_sl_lim" for="sl_lim" style="color:#c084fc;">1.9</output>
+          </div>
+          <p id="limit-help" class="small-note">Puedes probar x = 1,9, 2,0 y 2,1 para comparar qué ocurre.</p>
+
+          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1rem; line-height:1.7;">
+            <div>La función del ejemplo es f(x) = x + 1, salvo en x = 2.</div>
+            <div style="font-size:1.25rem; color:#c084fc; margin-top:0.4rem;">
+              lim<sub>x→2</sub> f(x) = <strong>3</strong>
+            </div>
+            <div style="font-size:0.95rem; margin-top:0.6rem;">Valor de f(x) en la posición elegida: <strong id="lim_res" aria-live="polite">2.9</strong></div>
+            <div id="lim_note" class="small-note" aria-live="polite">f(1,9) = 2,9; está cerca de 3.</div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:#c084fc;">
+          <svg class="svg-canvas" viewBox="-20 -20 200 200" id="svg_lim" role="img" aria-labelledby="lim-svg-title lim-svg-desc">
+            <title id="lim-svg-title">Aproximación al límite cuando x tiende a dos</title>
+            <desc id="lim-svg-desc">Una recta y igual a x más uno tiene un agujero en el punto dos, tres. Un punto móvil permite ver cómo la altura se aproxima a tres.</desc>
+            <path d="M 0 160 L 180 -20" fill="none" stroke="#fff" stroke-width="3" />
+            <path d="M 0 160 L 180 160 M 40 -20 L 40 180" stroke="#475569" stroke-width="1.5" fill="none" />
+            <text x="173" y="151" fill="#fff" font-size="9">x</text>
+            <text x="47" y="-10" fill="#fff" font-size="9">y</text>
+            <circle cx="120" cy="40" r="6" fill="#090d16" stroke="#c084fc" stroke-width="2.5" />
+            <text x="126" y="34" fill="#c084fc" font-size="10">(2, 3): agujero</text>
+            <circle id="lim_cursor" cx="116" cy="44" r="5" fill="#c084fc" />
+          </svg>
+        </div>
+      </div>
+      <p class="small-note">Idea clave: el límite depende de lo que pasa cerca del punto, no solo del valor de la función en el propio punto.</p>
+    </section>
+  </main>
+
+  <script>
+    // Navegación por pestañas, incluidos teclado y lectores de pantalla.
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(panel => {
+        const active = panel.id === tabId;
+        panel.classList.toggle('active', active);
+        panel.setAttribute('aria-hidden', String(!active));
+      });
+      document.querySelectorAll('.tab-btn').forEach(tab => {
+        const active = tab === btn;
+        tab.classList.toggle('active', active);
+        tab.setAttribute('aria-selected', String(active));
+        tab.tabIndex = active ? 0 : -1;
+      });
+      if (tabId === 'limites') updateLimit();
+    }
+
+    document.querySelector('.tabs-container').addEventListener('keydown', event => {
+      const tabs = Array.from(document.querySelectorAll('.tab-btn'));
+      const current = tabs.indexOf(document.activeElement);
+      if (current < 0) return;
+      let next = current;
+      if (event.key === 'ArrowRight') next = (current + 1) % tabs.length;
+      else if (event.key === 'ArrowLeft') next = (current - 1 + tabs.length) % tabs.length;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = tabs.length - 1;
+      else return;
+      event.preventDefault();
+      tabs[next].focus();
+      switchTab(tabs[next].getAttribute('aria-controls'), tabs[next]);
+    });
+
+    // Comprobaciones rápidas: la explicación aparece debajo de las respuestas.
+    function checkAnswer(quizId, isCorrect) {
+      const feedback = document.getElementById(quizId + '_feedback');
+      if (!feedback) return;
+      feedback.textContent = isCorrect
+        ? '¡Correcto! Has identificado bien la característica de la función.'
+        : 'Todavía no. Vuelve a mirar la gráfica y fíjate en los ejes; inténtalo otra vez.';
+      feedback.classList.toggle('good', isCorrect);
+      feedback.classList.toggle('bad', !isCorrect);
+    }
+
+    // Simulador de límite para f(x) = x + 1, excepto en x = 2.
+    function updateLimit() {
+      const slider = document.getElementById('sl_lim');
+      if (!slider) return;
+      const xVal = Number(slider.value) / 10;
+      const nearHole = Math.abs(xVal - 2) < 0.001;
+      const yVal = xVal + 1;
+
+      document.getElementById('v_sl_lim').textContent = xVal.toFixed(1);
+      document.getElementById('lim_res').textContent = nearHole ? 'No definida' : yVal.toFixed(1).replace('.', ',');
+      document.getElementById('lim_note').textContent = nearHole
+        ? 'En x = 2 hay un agujero: f(2) no está definida, aunque el límite vale 3.'
+        : `f(${xVal.toFixed(1).replace('.', ',')}) = ${yVal.toFixed(1).replace('.', ',')}; ${xVal < 2 ? 'se aproxima a 3 por la izquierda.' : 'se aproxima a 3 por la derecha.'}`;
+
+      // El sistema de coordenadas SVG usa el origen en (40, 160) y 40 px por unidad.
+      const cursor = document.getElementById('lim_cursor');
+      cursor.setAttribute('cx', 40 + xVal * 40);
+      cursor.setAttribute('cy', 160 - yVal * 40);
+      cursor.style.display = nearHole ? 'none' : 'block';
+    }
+
+    updateLimit();
+  </script>
+</body>
+</html>

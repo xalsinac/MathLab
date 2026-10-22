@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Probabilidad Básica: Experimentos, Laplace y Ley de los Grandes Números</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 1rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* SUBPESTAÑAS */
+    .subtabs-container {
+      display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;
+      background: var(--bg-card); padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);
+      margin-bottom: 1rem;
+    }
+    .subtab-btn {
+      padding: 0.5rem 1.2rem; background: var(--bg-primary); border: 1px solid var(--border-color);
+      color: var(--text-muted); border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    }
+    .subtab-btn:hover { border-color: var(--accent-blue); color: var(--text-main); }
+    .subtab-btn.active { background: var(--accent-blue); color: #042f2e; border-color: var(--accent-blue); font-weight: bold; }
+    .subtab-content { display: none; flex-direction: column; gap: 1.2rem; animation: fadeIn 0.3s forwards; }
+    .subtab-content.active { display: flex; }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* SVG CANVAS */
+    .svg-canvas {
+      width: 100%; height: 260px; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block;
+    }
+
+    /* CONTROLES DESLIZANTES */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem; }
+    .slider-row label { width: 140px; font-weight: 600; font-family: monospace; font-size: 1.05rem; }
+    .val-badge { width: 45px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; }
+
+    /* TABLA DE FRECUENCIAS DINÁMICA */
+    .freq-table-mini {
+      width: 100%; border-collapse: collapse; font-family: monospace; text-align: center; font-size: 0.9rem;
+    }
+    .freq-table-mini th, .freq-table-mini td {
+      border: 1px solid var(--border-color); padding: 0.45rem 0.3rem;
+    }
+    .freq-table-mini th { background: rgba(255, 255, 255, 0.04); color: var(--text-muted); }
+    .freq-table-mini tr:hover { background: rgba(56, 189, 248, 0.05); }
+
+    /* FRACCIÓN MATEMÁTICA VERTICAL */
+    .fraction-vertical {
+      display: inline-flex; flex-direction: column; vertical-align: middle;
+      text-align: center; margin: 0 0.4rem; font-family: monospace; font-weight: bold;
+    }
+    .fraction-vertical .num {
+      border-bottom: 2px solid currentColor; padding: 0 0.4rem 2px 0.4rem;
+    }
+    .fraction-vertical .den {
+      padding: 2px 0.4rem 0 0.4rem;
+    }
+
+    /* TARJETAS INFORMATIVAS */
+    .info-card-item {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.3rem;
+    }
+
+    /* URNA DE BOLAS */
+    .urn-box {
+      background: #090d16; border: 2px dashed var(--border-color); border-radius: 12px;
+      padding: 1.2rem; min-height: 120px; display: flex; flex-wrap: wrap; gap: 0.6rem;
+      align-items: center; justify-content: center; margin: 1rem 0;
+    }
+    .ball {
+      width: 32px; height: 32px; border-radius: 50%; display: inline-flex;
+      align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold;
+      color: #fff; box-shadow: inset -2px -2px 6px rgba(0,0,0,0.6);
+    }
+    .ball-red { background: var(--accent-op); }
+    .ball-blue { background: var(--accent-blue); }
+    .ball-green { background: var(--accent-success); }
+
+    /* BOTONES DE EXPERIMENTACIÓN */
+    .btn-sim {
+      padding: 0.55rem 0.85rem; background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-main); border-radius: 6px; font-weight: bold; cursor: pointer;
+      transition: all 0.2s; font-family: monospace; font-size: 0.9rem;
+    }
+    .btn-sim:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Probabilidad Básica y Azar</h1>
+    <p>Aprende a medir la incertidumbre: sucesos, regla de Laplace, diagramas de árbol y la Ley de los Grandes Números con dados.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('experimentos', this)">🎲 1. Azar y Sucesos</button>
+      <button class="tab-btn" onclick="switchTab('laplace', this)">⚖️ 2. Regla de Laplace</button>
+      <button class="tab-btn" onclick="switchTab('arbol', this)">🌳 3. Diagramas de Árbol</button>
+      <button class="tab-btn" onclick="switchTab('laboratorio', this)">🧪 4. Ley Grandes Números (Dados)</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: AZAR Y SUCESOS ================= -->
+    <div id="experimentos" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">¿Podemos predecir el futuro?</div>
+        <div class="content-text">
+          En ciencias distinguimos dos tipos de fenómenos:
+          <br>
+          • <strong>Experimento Determinista:</strong> Conocemos con absoluta certeza el resultado antes de que ocurra (ejemplo: soltar un bolígrafo en el aire sabiendo que caerá al suelo por gravedad).
+          <br>
+          • <strong>Experimento Aleatorio:</strong> El resultado depende del azar; es imposible predecir con seguridad qué saldrá antes de realizarlo (ejemplo: tirar un dado o lanzar una moneda).
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">El Espacio Muestral (E)</div>
+          <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1rem;">
+            Es el conjunto de <strong>todos los resultados posibles</strong> de un experimento aleatorio. Se denota con la letra <strong>E</strong> y se escribe entre llaves:
+          </p>
+
+          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; font-size:1.15rem; line-height:1.9;">
+            <div>• Tirar una moneda: <strong style="color:var(--accent-gold);">E = {Cara, Cruz}</strong></div>
+            <div>• Tirar un dado tradicional: <strong style="color:var(--accent-blue);">E = {1, 2, 3, 4, 5, 6}</strong></div>
+            <div>• Semáforo al llegar: <strong style="color:var(--accent-success);">E = {Verde, Ámbar, Rojo}</strong></div>
+          </div>
+
+          <div style="background:rgba(56,189,248,0.08); border:1px solid var(--accent-blue); border-radius:8px; padding:0.9rem; margin-top:1rem; font-size:0.9rem;">
+            💡 <strong>Suceso Elemental:</strong> Cada uno de los resultados simples que forman el espacio muestral (ejemplo: sacar un 5).
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Tipos de Sucesos Notables</div>
+          <div style="display:flex; flex-direction:column; gap:0.9rem;">
+            <div class="info-card-item" style="border-left:3px solid var(--accent-success);">
+              <strong style="color:var(--accent-success);">Suceso Seguro (P = 1 ó 100%):</strong>
+              <p>Ocurre siempre, sin ninguna duda.<br>
+              <em>Ejemplo: Al tirar un dado de 6 caras, sacar un número menor que 7.</em></p>
+            </div>
+
+            <div class="info-card-item" style="border-left:3px solid var(--accent-op);">
+              <strong style="color:var(--accent-op);">Suceso Imposible (P = 0):</strong>
+              <p>No puede ocurrir bajo ningún concepto.<br>
+              <em>Ejemplo: Al tirar un dado tradicional, obtener un 9.</em></p>
+            </div>
+
+            <div class="info-card-item" style="border-left:3px solid var(--accent-gold);">
+              <strong style="color:var(--accent-gold);">Suceso Contrario o Complementario (Ā):</strong>
+              <p>Ocurre cuando NO ocurre el suceso A. Cumple estrictamente que <strong>P(A) + P(Ā) = 1</strong>.<br>
+              <em>Ejemplo: Si A es sacar Par {2, 4, 6}, su contrario Ā es sacar Impar {1, 3, 5}.</em></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: REGLA DE LAPLACE ================= -->
+    <div id="laplace" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">La Regla de Pierre-Simon Laplace</div>
+        <div class="content-text">
+          Cuando todos los resultados elementales tienen exactamente la misma probabilidad de salir (sucesos equiprobables), la probabilidad de cualquier suceso A se calcula dividiendo:
+        </div>
+      </div>
+
+      <div style="text-align:center; margin:0.5rem 0;">
+        <div style="display:inline-block; background:#090d16; border:1px solid var(--border-color); border-radius:10px; padding:1.2rem 2rem; font-size:1.35rem;">
+          P(A) = 
+          <span class="fraction-vertical" style="color:var(--accent-gold);">
+            <span class="num">Nº de Casos Favorables a A</span>
+            <span class="den">Nº de Casos Posibles (Totales)</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Simulador de Urna Configurable</div>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.8rem;">
+            Ajusta con los deslizadores las bolas de cada color que hay en la bolsa:
+          </p>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-op);">Bolas Rojas:</label>
+            <input type="range" id="b_red" min="0" max="8" value="3" oninput="updateUrnSim()">
+            <span class="val-badge" id="vb_red" style="color:var(--accent-op);">3</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-blue);">Bolas Azules:</label>
+            <input type="range" id="b_blue" min="0" max="8" value="5" oninput="updateUrnSim()">
+            <span class="val-badge" id="vb_blue" style="color:var(--accent-blue);">5</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-success);">Bolas Verdes:</label>
+            <input type="range" id="b_green" min="0" max="8" value="2" oninput="updateUrnSim()">
+            <span class="val-badge" id="vb_green" style="color:var(--accent-success);">2</span>
+          </div>
+
+          <div class="urn-box" id="urn_container"></div>
+        </div>
+
+        <div class="panel-box" style="justify-content:center;">
+          <div class="panel-title">Cálculo de Probabilidades (Laplace)</div>
+
+          <div style="display:flex; flex-direction:column; gap:0.9rem;">
+            <div class="info-card-item" style="border-left:3px solid var(--accent-op);" id="calc_card_red"></div>
+            <div class="info-card-item" style="border-left:3px solid var(--accent-blue);" id="calc_card_blue"></div>
+            <div class="info-card-item" style="border-left:3px solid var(--accent-success);" id="calc_card_green"></div>
+          </div>
+
+          <div style="background:rgba(251,191,36,0.08); border:1px solid var(--accent-gold); border-radius:8px; padding:0.8rem; margin-top:1rem; text-align:center; font-size:0.9rem;">
+            La probabilidad es siempre un valor entre <strong>0 y 1</strong> (o entre <strong>0% y 100%</strong>).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: DIAGRAMAS DE ÁRBOL ================= -->
+    <div id="arbol" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+        <div class="badge" style="color: var(--accent-blue);">Experimentos Compuestos (Varios Pasos)</div>
+        <div class="content-text">
+          Cuando realizamos dos o más experimentos seguidos (por ejemplo, lanzar una moneda y luego otra), el <strong>diagrama de árbol</strong> ramifica de manera ordenada todas las combinaciones posibles sin olvidar ningún camino.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Ejemplo: Lanzar 2 Monedas Seguidas</div>
+          <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1rem;">
+            En cada lanzamiento hay dos opciones: <strong>Cara (C)</strong> o <strong>Cruz (+)</strong>. La probabilidad de cada rama es 1/2.
+          </p>
+
+          <svg class="svg-canvas" viewBox="0 0 320 220">
+            <circle cx="25" cy="110" r="5" fill="#fff" />
+            <text x="15" y="95" fill="#94a3b8" font-size="11">Inicio</text>
+
+            <!-- Nivel 1 -->
+            <line x1="25" y1="110" x2="110" y2="60" stroke="var(--accent-blue)" stroke-width="2.5" />
+            <circle cx="110" cy="60" r="14" fill="rgba(56, 189, 248, 0.2)" stroke="var(--accent-blue)" stroke-width="2" />
+            <text x="110" y="65" fill="var(--accent-blue)" font-size="12" font-weight="bold" text-anchor="middle">C</text>
+            <text x="60" y="75" fill="var(--text-muted)" font-size="11">1/2</text>
+
+            <line x1="25" y1="110" x2="110" y2="160" stroke="var(--accent-gold)" stroke-width="2.5" />
+            <circle cx="110" cy="160" r="14" fill="rgba(251, 191, 36, 0.2)" stroke="var(--accent-gold)" stroke-width="2" />
+            <text x="110" y="165" fill="var(--accent-gold)" font-size="14" font-weight="bold" text-anchor="middle">+</text>
+            <text x="60" y="150" fill="var(--text-muted)" font-size="11">1/2</text>
+
+            <!-- Nivel 2 -->
+            <line x1="124" y1="60" x2="200" y2="35" stroke="var(--accent-blue)" stroke-width="1.5" />
+            <circle cx="200" cy="35" r="12" fill="rgba(56, 189, 248, 0.2)" stroke="var(--accent-blue)" />
+            <text x="200" y="39" fill="var(--accent-blue)" font-size="11" text-anchor="middle">C</text>
+
+            <line x1="124" y1="60" x2="200" y2="85" stroke="var(--accent-gold)" stroke-width="1.5" />
+            <circle cx="200" cy="85" r="12" fill="rgba(251, 191, 36, 0.2)" stroke="var(--accent-gold)" />
+            <text x="200" y="89" fill="var(--accent-gold)" font-size="12" text-anchor="middle">+</text>
+
+            <line x1="124" y1="160" x2="200" y2="135" stroke="var(--accent-blue)" stroke-width="1.5" />
+            <circle cx="200" cy="135" r="12" fill="rgba(56, 189, 248, 0.2)" stroke="var(--accent-blue)" />
+            <text x="200" y="139" fill="var(--accent-blue)" font-size="11" text-anchor="middle">C</text>
+
+            <line x1="124" y1="160" x2="200" y2="185" stroke="var(--accent-gold)" stroke-width="1.5" />
+            <circle cx="200" cy="185" r="12" fill="rgba(251, 191, 36, 0.2)" stroke="var(--accent-gold)" />
+            <text x="200" y="189" fill="var(--accent-gold)" font-size="12" text-anchor="middle">+</text>
+
+            <!-- Resultados -->
+            <text x="230" y="40" fill="#fff" font-family="monospace" font-weight="bold">CC (1/4 = 25%)</text>
+            <text x="230" y="90" fill="#fff" font-family="monospace" font-weight="bold">C+ (1/4 = 25%)</text>
+            <text x="230" y="140" fill="#fff" font-family="monospace" font-weight="bold">+C (1/4 = 25%)</text>
+            <text x="230" y="190" fill="#fff" font-family="monospace" font-weight="bold">++ (1/4 = 25%)</text>
+          </svg>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">La Regla de Multiplicación de Ramas</div>
+          <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1rem;">
+            Para calcular la probabilidad de un camino completo a lo largo del árbol, <strong>multiplicamos las probabilidades de cada una de sus ramas sucesivas</strong>:
+          </p>
+
+          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; font-size:1.15rem; line-height:2;">
+            <div>P(Sacar 2 Caras, CC) = 
+              <span class="fraction-vertical"><span class="num">1</span><span class="den">2</span></span> · 
+              <span class="fraction-vertical"><span class="num">1</span><span class="den">2</span></span> = 
+              <span class="fraction-vertical" style="color:var(--accent-success);"><span class="num">1</span><span class="den">4</span></span> = <strong>25%</strong>
+            </div>
+            <hr style="border:0; border-top:1px solid var(--border-color); margin:0.6rem 0;">
+            <div>P(Sacar al menos 1 Cara) = 
+              <span style="color:var(--accent-gold);">CC + C+ + +C (3 caminos)</span> = 
+              <span class="fraction-vertical" style="color:var(--accent-success);"><span class="num">3</span><span class="den">4</span></span> = <strong>75%</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: LEY DE LOS GRANDES NÚMEROS ================= -->
+    <div id="laboratorio" class="tab-content">
+      
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">Teorema Fundamental: La Ley de los Grandes Números</div>
+        <div class="content-text">
+          La <strong>Ley de los Grandes Números</strong> (demostrada por Jakob Bernoulli) establece un principio matemático riguroso: 
+          <strong>a medida que el número de repeticiones de un experimento aleatorio crece (N tiende a infinito), la frecuencia relativa observada de un suceso (hᵢ = fᵢ / N) converge de forma continua hacia su probabilidad teórica calculada (P)</strong>.
+          <br><br>
+          En 5 o 10 tiradas domina el desorden del azar; pero al acumular cientos o miles de lanzamientos, el azar revela su orden matemático exacto.
+        </div>
+      </div>
+
+      <div class="subtabs-container">
+        <button class="subtab-btn active" onclick="switchSubTab('sub_dado1', this)">🎲 1 Dado (Distribución Uniforme)</button>
+        <button class="subtab-btn" onclick="switchSubTab('sub_dado2', this)">🎲🎲 2 Dados: Suma (Campana de Gauss)</button>
+      </div>
+
+      <!-- 4.1 LABORATORIO: 1 DADO -->
+      <div id="sub_dado1" class="subtab-content active">
+        <div class="grid-2">
+          <div class="panel-box">
+            <div class="panel-title">Simulador de Tiradas (1 Dado)</div>
+            
+            <div style="display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;">
+              <button class="btn-sim" onclick="rollDice1(1)">+1 Tirada</button>
+              <button class="btn-sim" onclick="rollDice1(10)">+10 Tiradas</button>
+              <button class="btn-sim" onclick="rollDice1(100)">+100 Tiradas</button>
+              <button class="btn-sim" style="border-color:var(--accent-op); color:var(--accent-op);" onclick="resetDice1()">Reiniciar</button>
+            </div>
+
+            <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:0.9rem; font-family:monospace; margin-bottom:1rem;">
+              Tiradas acumuladas (N): <strong id="lbl_d1_total" style="color:var(--accent-gold); font-size:1.2rem;">0</strong> &nbsp;|&nbsp; 
+              Último número: <strong id="lbl_d1_last" style="color:var(--accent-blue); font-size:1.4rem;">---</strong>
+            </div>
+
+            <!-- Gráfico SVG 1 Dado con escala calibrada 0% - 30% -->
+            <svg class="svg-canvas" viewBox="0 0 320 220" id="svg_dado1">
+              <!-- Suelo y Eje vertical -->
+              <line x1="45" y1="180" x2="305" y2="180" stroke="#64748b" stroke-width="2" />
+              <line x1="45" y1="180" x2="45" y2="20" stroke="#64748b" stroke-width="2" />
+              <text x="290" y="198" fill="#64748b" font-size="11">Cara</text>
+
+              <!-- Escala vertical fija: Rango 0% a 30% en 150px de altura (5px por cada 1%) -->
+              <!-- Marca 30% (y = 30) -->
+              <line x1="41" y1="30" x2="45" y2="30" stroke="#64748b" stroke-width="1.5" />
+              <text x="35" y="34" fill="#94a3b8" font-size="9" text-anchor="end">30%</text>
+
+              <!-- Marca 20% (y = 80) -->
+              <line x1="41" y1="80" x2="45" y2="80" stroke="#64748b" stroke-width="1.5" />
+              <text x="35" y="84" fill="#94a3b8" font-size="9" text-anchor="end">20%</text>
+
+              <!-- Línea teórica 16,67% (y = 180 - (16.67 * 5) = 96.65) -->
+              <line x1="45" y1="96.65" x2="305" y2="96.65" stroke="var(--accent-op)" stroke-width="2" stroke-dasharray="4" />
+              <text x="245" y="92" fill="var(--accent-op)" font-size="10" font-weight="bold">16,67% (1/6)</text>
+
+              <!-- Marca 10% (y = 130) -->
+              <line x1="41" y1="130" x2="45" y2="130" stroke="#64748b" stroke-width="1.5" />
+              <text x="35" y="134" fill="#94a3b8" font-size="9" text-anchor="end">10%</text>
+
+              <!-- Marca 0% (y = 180) -->
+              <text x="35" y="184" fill="#94a3b8" font-size="9" text-anchor="end">0%</text>
+
+              <!-- Barras dinámicas -->
+              <g id="d1_bars_group"></g>
+            </svg>
+          </div>
+
+          <!-- TABLA DE FRECUENCIAS 1 DADO -->
+          <div class="panel-box">
+            <div class="panel-title">Tabla de Frecuencias y Convergencia</div>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.8rem;">
+              Observa cómo al aumentar N, el porcentaje empírico converge hacia el 16,67%:
+            </p>
+
+            <table class="freq-table-mini">
+              <thead>
+                <tr>
+                  <th>Cara (xᵢ)</th>
+                  <th>fᵢ (veces)</th>
+                  <th>Frec. Relativa (hᵢ = fᵢ / N)</th>
+                  <th>% Empírico</th>
+                  <th>P Teórica</th>
+                </tr>
+              </thead>
+              <tbody id="tbody_dado1"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4.2 LABORATORIO: 2 DADOS (SUMA Y CAMPANA) -->
+      <div id="sub_dado2" class="subtab-content">
+        <div class="grid-2">
+          <div class="panel-box">
+            <div class="panel-title">Suma de 2 Dados: La Campana de Probabilidad</div>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.8rem;">
+              Al sumar 2 dados, los resultados van del <strong>2 al 12</strong>. El 7 es el más probable con 6 formas de 36 (16,67%), mientras que el 2 y el 12 solo tienen 1 forma de 36 (2,78%).
+            </p>
+
+            <div style="display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap;">
+              <button class="btn-sim" onclick="rollDice2(1)">+1 Tirada</button>
+              <button class="btn-sim" onclick="rollDice2(20)">+20 Tiradas</button>
+              <button class="btn-sim" onclick="rollDice2(200)">+200 Tiradas</button>
+              <button class="btn-sim" style="border-color:var(--accent-op); color:var(--accent-op);" onclick="resetDice2()">Reiniciar</button>
+            </div>
+
+            <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:0.8rem; font-family:monospace; margin-bottom:0.8rem;">
+              Lanzamientos totales (N): <strong id="lbl_d2_total" style="color:var(--accent-gold); font-size:1.2rem;">0</strong> &nbsp;|&nbsp; 
+              Última suma: <strong id="lbl_d2_last" style="color:var(--accent-success); font-size:1.3rem;">---</strong>
+            </div>
+
+            <!-- Gráfico SVG 2 Dados con escala fija 0% a 20% perfectamente calibrada -->
+            <svg class="svg-canvas" viewBox="0 0 340 220" id="svg_dado2">
+              <!-- Suelo y Eje vertical -->
+              <line x1="45" y1="180" x2="325" y2="180" stroke="#64748b" stroke-width="2" />
+              <line x1="45" y1="180" x2="45" y2="20" stroke="#64748b" stroke-width="2" />
+              <text x="310" y="196" fill="#64748b" font-size="11">Suma</text>
+
+              <!-- Escala vertical fija: 0% a 20% en 150px de altura (7.5px por cada 1%) -->
+              <!-- Marca 20% (y = 30) -->
+              <line x1="41" y1="30" x2="45" y2="30" stroke="#64748b" stroke-width="1.5" />
+              <text x="36" y="34" fill="#94a3b8" font-size="9" text-anchor="end">20%</text>
+
+              <!-- Marca 15% (y = 67.5) -->
+              <line x1="41" y1="67.5" x2="45" y2="67.5" stroke="#64748b" stroke-width="1.5" />
+              <text x="36" y="71" fill="#94a3b8" font-size="9" text-anchor="end">15%</text>
+
+              <!-- Marca 10% (y = 105) -->
+              <line x1="41" y1="105" x2="45" y2="105" stroke="#64748b" stroke-width="1.5" />
+              <text x="36" y="109" fill="#94a3b8" font-size="9" text-anchor="end">10%</text>
+
+              <!-- Marca 5% (y = 142.5) -->
+              <line x1="41" y1="142.5" x2="45" y2="142.5" stroke="#64748b" stroke-width="1.5" />
+              <text x="36" y="146" fill="#94a3b8" font-size="9" text-anchor="end">5%</text>
+
+              <!-- Marca 0% (y = 180) -->
+              <text x="36" y="184" fill="#94a3b8" font-size="9" text-anchor="end">0%</text>
+
+              <!-- Perfil teórico exacto de la Campana de Gauss (línea dorada continua) -->
+              <!-- Se dibuja dinámicamente por JS sobre las barras para asegurar alineación idéntica -->
+              <polyline id="d2_theoretical_poly" points="" fill="none" stroke="var(--accent-gold)" stroke-width="2.5" stroke-dasharray="3" />
+              <text x="180" y="44" fill="var(--accent-gold)" font-size="10" font-weight="bold" text-anchor="middle">Campana Teórica (7 = 16,7%)</text>
+
+              <!-- Barras dinámicas -->
+              <g id="d2_bars_group"></g>
+            </svg>
+          </div>
+
+          <!-- TABLA DE FRECUENCIAS 2 DADOS -->
+          <div class="panel-box">
+            <div class="panel-title">Tabla de la Suma (2 al 12)</div>
+
+            <table class="freq-table-mini">
+              <thead>
+                <tr>
+                  <th>Suma</th>
+                  <th>Casos / 36</th>
+                  <th>fᵢ</th>
+                  <th>Frec. Relativa</th>
+                  <th>% Real</th>
+                  <th>% Teórico</th>
+                </tr>
+              </thead>
+              <tbody id="tbody_dado2"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓN ENTRE PESTAÑAS PRINCIPALES ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'laplace') updateUrnSim();
+      if (tabId === 'laboratorio') {
+        renderDado1();
+        renderDado2();
+      }
+    }
+
+    // --- NAVEGACIÓN ENTRE SUBPESTAÑAS ---
+    function switchSubTab(subtabId, btn) {
+      document.querySelectorAll('.subtab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(subtabId).classList.add('active');
+      btn.classList.add('active');
+      if (subtabId === 'sub_dado1') renderDado1();
+      if (subtabId === 'sub_dado2') renderDado2();
+    }
+
+    // =========================================================================
+    // 2. SIMULADOR DE URNA DE BOLAS (REGLA DE LAPLACE)
+    // =========================================================================
+    function updateUrnSim() {
+      const nRed = parseInt(document.getElementById('b_red').value);
+      const nBlue = parseInt(document.getElementById('b_blue').value);
+      const nGreen = parseInt(document.getElementById('b_green').value);
+
+      document.getElementById('vb_red').innerText = nRed;
+      document.getElementById('vb_blue').innerText = nBlue;
+      document.getElementById('vb_green').innerText = nGreen;
+
+      const total = nRed + nBlue + nGreen;
+      const urn = document.getElementById('urn_container');
+      urn.innerHTML = "";
+
+      for (let i = 0; i < nRed; i++) {
+        const b = document.createElement('div');
+        b.className = 'ball ball-red';
+        b.innerText = 'R';
+        urn.appendChild(b);
+      }
+      for (let i = 0; i < nBlue; i++) {
+        const b = document.createElement('div');
+        b.className = 'ball ball-blue';
+        b.innerText = 'A';
+        urn.appendChild(b);
+      }
+      for (let i = 0; i < nGreen; i++) {
+        const b = document.createElement('div');
+        b.className = 'ball ball-green';
+        b.innerText = 'V';
+        urn.appendChild(b);
+      }
+
+      if (total === 0) {
+        urn.innerHTML = `<span style="color:var(--text-muted);">La bolsa está vacía. Añade bolas con los deslizadores.</span>`;
+        return;
+      }
+
+      renderLaplaceCard('calc_card_red', 'Bola Roja', nRed, total, 'var(--accent-op)');
+      renderLaplaceCard('calc_card_blue', 'Bola Azul', nBlue, total, 'var(--accent-blue)');
+      renderLaplaceCard('calc_card_green', 'Bola Verde', nGreen, total, 'var(--accent-success)');
+    }
+
+    function renderLaplaceCard(containerId, label, favorable, total, color) {
+      const pct = ((favorable / total) * 100).toFixed(1);
+      const dec = (favorable / total).toFixed(2);
+      document.getElementById(containerId).innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong style="color:${color}; font-size:1.05rem;">P(${label}):</strong>
+          <span style="font-family:monospace; font-weight:bold; font-size:1.15rem; color:${color};">${pct}%</span>
+        </div>
+        <div style="font-family:monospace; font-size:1.1rem; margin-top:0.4rem; color:var(--text-main);">
+          P = 
+          <span class="fraction-vertical">
+            <span class="num">${favorable}</span>
+            <span class="den">${total}</span>
+          </span>
+          = ${dec}
+        </div>
+      `;
+    }
+    updateUrnSim();
+
+    // =========================================================================
+    // 4.1 LABORATORIO: 1 DADO (TABLA + SVG CON ESCALA 0% - 30%)
+    // =========================================================================
+    let d1Counts = [0, 0, 0, 0, 0, 0];
+    let d1Total = 0;
+
+    function rollDice1(times) {
+      let last = 1;
+      for (let i = 0; i < times; i++) {
+        const roll = Math.floor(Math.random() * 6) + 1;
+        d1Counts[roll - 1]++;
+        d1Total++;
+        last = roll;
+      }
+      document.getElementById('lbl_d1_total').innerText = d1Total;
+      document.getElementById('lbl_d1_last').innerText = last;
+      renderDado1();
+    }
+
+    function resetDice1() {
+      d1Counts = [0, 0, 0, 0, 0, 0];
+      d1Total = 0;
+      document.getElementById('lbl_d1_total').innerText = 0;
+      document.getElementById('lbl_d1_last').innerText = "---";
+      renderDado1();
+    }
+
+    function renderDado1() {
+      const g = document.getElementById('d1_bars_group');
+      const tbody = document.getElementById('tbody_dado1');
+      g.innerHTML = "";
+      tbody.innerHTML = "";
+
+      const startX = 60;
+      const barW = 26;
+      const gap = 13;
+      const groundY = 180;
+      // Escala fija: 30% = 150px (5px por cada 1%)
+      const pxPerPct = 150 / 0.30;
+
+      for (let i = 0; i < 6; i++) {
+        const face = i + 1;
+        const count = d1Counts[i];
+        const relFreq = d1Total > 0 ? (count / d1Total) : 0;
+        const pctReal = (relFreq * 100).toFixed(1);
+
+        // Altura de la barra con la escala fija (tope en 155px si supera 30%)
+        const barH = Math.min(155, relFreq * pxPerPct);
+        const y = groundY - barH;
+        const x = startX + (i * (barW + gap));
+
+        // Barra SVG
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", x);
+        rect.setAttribute("y", y);
+        rect.setAttribute("width", barW);
+        rect.setAttribute("height", barH);
+        rect.setAttribute("fill", "rgba(56, 189, 248, 0.35)");
+        rect.setAttribute("stroke", "var(--accent-blue)");
+        rect.setAttribute("stroke-width", "1.5");
+        g.appendChild(rect);
+
+        // Número de la cara
+        const tx = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        tx.setAttribute("x", x + barW / 2);
+        tx.setAttribute("y", groundY + 16);
+        tx.setAttribute("fill", "#fff");
+        tx.setAttribute("font-size", "11");
+        tx.setAttribute("font-weight", "bold");
+        tx.setAttribute("text-anchor", "middle");
+        tx.textContent = face;
+        g.appendChild(tx);
+
+        // Etiqueta del % sobre la barra
+        if (d1Total > 0 && barH > 8) {
+          const tp = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          tp.setAttribute("x", x + barW / 2);
+          tp.setAttribute("y", y - 4);
+          tp.setAttribute("fill", "var(--accent-gold)");
+          tp.setAttribute("font-size", "9.5");
+          tp.setAttribute("text-anchor", "middle");
+          tp.textContent = `${pctReal}%`;
+          g.appendChild(tp);
+        }
+
+        // Fila en la tabla HTML
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>Cara ${face}</strong></td>
+          <td style="color:var(--accent-blue);">${count}</td>
+          <td>${d1Total > 0 ? `${count} / ${d1Total} =${relFreq.toFixed(3)}` : '0'}</td>
+          <td style="color:var(--accent-gold); font-weight:bold;">${pctReal}%</td>
+          <td style="color:var(--text-muted);">1/6 ≈ 16,67%</td>
+        `;
+        tbody.appendChild(tr);
+      }
+    }
+    renderDado1();
+
+    // =========================================================================
+    // 4.2 LABORATORIO: 2 DADOS (SUMA DE 2 A 12 Y CAMPANA CALIBRADA)
+    // =========================================================================
+    let d2Counts = new Array(11).fill(0); // Índices 0 a 10 = sumas 2 a 12
+    let d2Total = 0;
+    // Maneras sobre 36 para sumas de 2 a 12:
+    const d2Ways = [1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1];
+
+    function rollDice2(times) {
+      let lastSum = 7;
+      for (let i = 0; i < times; i++) {
+        const dA = Math.floor(Math.random() * 6) + 1;
+        const dB = Math.floor(Math.random() * 6) + 1;
+        const sum = dA + dB;
+        d2Counts[sum - 2]++;
+        d2Total++;
+        lastSum = sum;
+      }
+      document.getElementById('lbl_d2_total').innerText = d2Total;
+      document.getElementById('lbl_d2_last').innerText = lastSum;
+      renderDado2();
+    }
+
+    function resetDice2() {
+      d2Counts = new Array(11).fill(0);
+      d2Total = 0;
+      document.getElementById('lbl_d2_total').innerText = 0;
+      document.getElementById('lbl_d2_last').innerText = "---";
+      renderDado2();
+    }
+
+    function renderDado2() {
+      const g = document.getElementById('d2_bars_group');
+      const tbody = document.getElementById('tbody_dado2');
+      const poly = document.getElementById('d2_theoretical_poly');
+      g.innerHTML = "";
+      tbody.innerHTML = "";
+
+      const startX = 56;
+      const barW = 16;
+      const gap = 8;
+      const groundY = 180;
+      // Escala fija: 20% = 150px (7.5px por cada 1%)
+      const pxPerPct = 150 / 0.20;
+
+      let polyPointsStr = "";
+
+      for (let i = 0; i < 11; i++) {
+        const sumVal = i + 2;
+        const count = d2Counts[i];
+        const relFreq = d2Total > 0 ? (count / d2Total) : 0;
+        const pctReal = (relFreq * 100).toFixed(1);
+        const ways = d2Ways[i];
+        const theoProb = ways / 36; // Teórico exacto
+        const pctTheo = (theoProb * 100).toFixed(1);
+
+        // Barra empírica (fijada con escala fija 0% a 20%)
+        const barH = Math.min(155, relFreq * pxPerPct);
+        const y = groundY - barH;
+        const x = startX + (i * (barW + gap));
+        const centerX = x + (barW / 2);
+
+        // Punto de la campana teórica (usando exactamente la misma escala fija)
+        const theoH = theoProb * pxPerPct;
+        const theoY = groundY - theoH;
+        polyPointsStr += `${centerX},${theoY.toFixed(1)} `;
+
+        // Barra SVG
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", x);
+        rect.setAttribute("y", y);
+        rect.setAttribute("width", barW);
+        rect.setAttribute("height", barH);
+        rect.setAttribute("fill", sumVal === 7 ? "rgba(251, 191, 36, 0.45)" : "rgba(16, 185, 129, 0.35)");
+        rect.setAttribute("stroke", sumVal === 7 ? "var(--accent-gold)" : "var(--accent-success)");
+        rect.setAttribute("stroke-width", "1.5");
+        g.appendChild(rect);
+
+        // Número de suma abajo
+        const tx = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        tx.setAttribute("x", centerX);
+        tx.setAttribute("y", groundY + 14);
+        tx.setAttribute("fill", sumVal === 7 ? "var(--accent-gold)" : "#94a3b8");
+        tx.setAttribute("font-size", "9.5");
+        tx.setAttribute("font-weight", sumVal === 7 ? "bold" : "normal");
+        tx.setAttribute("text-anchor", "middle");
+        tx.textContent = sumVal;
+        g.appendChild(tx);
+
+        // Porcentaje sobre la barra si hay altura suficiente
+        if (d2Total > 0 && barH > 10) {
+          const tp = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          tp.setAttribute("x", centerX);
+          tp.setAttribute("y", y - 3);
+          tp.setAttribute("fill", sumVal === 7 ? "var(--accent-gold)" : "var(--accent-success)");
+          tp.setAttribute("font-size", "8.5");
+          tp.setAttribute("text-anchor", "middle");
+          tp.textContent = `${Math.round(relFreq * 100)}%`;
+          g.appendChild(tp);
+        }
+
+        // Fila en tabla HTML
+        const tr = document.createElement('tr');
+        if (sumVal === 7) tr.style.background = "rgba(251, 191, 36, 0.08)";
+        tr.innerHTML = `
+          <td><strong>${sumVal}</strong></td>
+          <td style="color:var(--text-muted);">${ways} / 36</td>
+          <td style="color:var(--accent-blue);">${count}</td>
+          <td>${d2Total > 0 ? `${count} / ${d2Total} = ${relFreq.toFixed(3)}` : '0'}</td>
+          <td style="color:var(--accent-gold); font-weight:bold;">${pctReal}%</td>
+          <td style="color:var(--accent-success);">${pctTheo}%</td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      // Actualizar la línea de campana teórica dorada
+      poly.setAttribute("points", polyPointsStr.trim());
+    }
+    renderDado2();
+  </script>
+</body>
+</html>

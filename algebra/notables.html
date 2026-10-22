@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Álgebra: Identidades Notables</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 1rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ESTRUCTURA Y PANELES */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* TABLA RESUMEN */
+    .notables-table { width: 100%; border-collapse: collapse; background: #090d16; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); font-size: 1.1rem; }
+    .notables-table th { background: var(--bg-plate); padding: 1rem; color: var(--text-main); }
+    .notables-table td { padding: 1rem; border-top: 1px solid var(--border-color); text-align: center; }
+    .formula-hl { font-family: monospace; font-size: 1.3rem; font-weight: bold; color: var(--accent-blue); }
+
+    /* ALGEBRA PASO A PASO */
+    .alg-step { font-family: monospace; font-size: 1.5rem; margin-bottom: 0.8rem; opacity: 0.3; transition: all 0.3s; }
+    .alg-step.active { opacity: 1; font-weight: bold; color: var(--text-main); }
+    .alg-step.highlight { color: var(--accent-gold); transform: scale(1.05); transform-origin: left; }
+    
+    .btn-step { background: var(--accent-blue); color: #042f2e; border: none; padding: 0.8rem 1.5rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; margin-top: 1rem; }
+    .btn-step:hover { filter: brightness(1.2); }
+    .btn-step:disabled { background: var(--border-color); color: var(--text-muted); cursor: not-allowed; }
+
+    /* GEOMETRÍA DINÁMICA */
+    .geo-container { width: 100%; display: flex; justify-content: center; align-items: center; padding: 1rem 0; }
+    .geo-square { position: relative; width: 260px; height: 260px; border: 2px solid var(--text-main); display: flex; flex-wrap: wrap; transition: all 0.3s; }
+    
+    .geo-piece { display: flex; align-items: center; justify-content: center; font-weight: bold; font-family: monospace; font-size: 1.2rem; color: white; transition: all 0.3s ease; overflow: hidden; border: 1px solid rgba(255,255,255,0.3); }
+    .geo-a2 { background: var(--accent-blue); }
+    .geo-b2 { background: var(--accent-gold); color: #000; }
+    .geo-ab { background: var(--accent-op); }
+    .geo-ba { background: var(--accent-op); }
+
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+    .slider-row label { width: 40px; font-weight: bold; font-family: monospace; font-size: 1.2rem;}
+    .val-display { width: 30px; text-align: right; font-weight: bold; font-size: 1.2rem; color: var(--accent-blue); }
+
+    /* L-SHAPE DIFERENCIA */
+    .l-shape-container { position: relative; width: 260px; height: 260px; }
+    .d-a2 { position: absolute; top:0; left:0; background: var(--accent-blue); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; font-family: monospace; transition: all 0.5s; border: 2px solid var(--text-main);}
+    .d-b2 { position: absolute; bottom:0; right:0; background: rgba(244, 63, 94, 0.8); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; font-family: monospace; transition: all 0.5s; border: 2px dashed #fff; z-index: 5;}
+    
+    @media (max-width: 800px) { .grid-2 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Identidades Notables</h1>
+    <p>Aprende por qué (a+b)² NO es a² + b². Demostraciones algebraicas y visuales de las fórmulas más famosas.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('resumen', this)">📋 Tabla Resumen</button>
+      <button class="tab-btn" onclick="switchTab('cuadrado_suma', this)">1. Cuadrado Suma</button>
+      <button class="tab-btn" onclick="switchTab('cuadrado_resta', this)">2. Cuadrado Resta</button>
+      <button class="tab-btn" onclick="switchTab('diferencia', this)">3. Suma x Diferencia</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 0: RESUMEN ================= -->
+    <div id="resumen" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">Memorización</div>
+        <div class="content-text">Estas tres fórmulas son atajos matemáticos. Nos permiten multiplicar binomios de forma directa sin tener que hacer la multiplicación "todos por todos" paso a paso.</div>
+      </div>
+
+      <table class="notables-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Expresión</th>
+            <th>Desarrollo Algebraico</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Las 3 Principales (Fundamentales) -->
+          <tr>
+            <td><strong>Cuadrado de la suma</strong></td>
+            <td class="formula-hl">(a + b)²</td>
+            <td class="formula-hl">a² + 2ab + b²</td>
+          </tr>
+          <tr>
+            <td><strong>Cuadrado de la resta</strong></td>
+            <td class="formula-hl" style="color: var(--accent-op);">(a - b)²</td>
+            <td class="formula-hl" style="color: var(--accent-op);">a² - 2ab + b²</td>
+          </tr>
+          <tr>
+            <td><strong>Suma por diferencia</strong></td>
+            <td class="formula-hl" style="color: var(--accent-gold);">(a + b)(a - b)</td>
+            <td class="formula-hl" style="color: var(--accent-gold);">a² - b²</td>
+          </tr>
+
+          <!-- Extras muy comunes en Secundaria y Bachillerato -->
+          <tr>
+            <td><strong>Binomio con término común (Stevin)</strong></td>
+            <td class="formula-hl" style="color: var(--accent-blue);">(x + a)(x + b)</td>
+            <td class="formula-hl" style="color: var(--accent-blue);">x² + (a + b)x + ab</td>
+          </tr>
+          <tr>
+            <td><strong>Cubo de la suma</strong></td>
+            <td class="formula-hl" style="color: #a855f7;">(a + b)³</td>
+            <td class="formula-hl" style="color: #a855f7;">a³ + 3a²b + 3ab² + b³</td>
+          </tr>
+          <tr>
+            <td><strong>Cubo de la resta</strong></td>
+            <td class="formula-hl" style="color: #ec4899;">(a - b)³</td>
+            <td class="formula-hl" style="color: #ec4899;">a³ - 3a²b + 3ab² - b³</td>
+          </tr>
+          <tr>
+            <td><strong>Cuadrado de un trinomio</strong></td>
+            <td class="formula-hl" style="color: var(--accent-success);">(a + b + c)²</td>
+            <td class="formula-hl" style="color: var(--accent-success);">a² + b² + c² + 2ab + 2ac + 2bc</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ================= PESTAÑA 1: CUADRADO DE LA SUMA ================= -->
+    <div id="cuadrado_suma" class="tab-content">
+      <div class="grid-2">
+        <!-- ÁLGEBRA -->
+        <div class="panel-box">
+          <div class="panel-title">1. Demostración Algebraica</div>
+          <p style="color: var(--text-muted); margin-bottom: 1rem;">Multiplicamos el binomio por sí mismo aplicando la propiedad distributiva.</p>
+          
+          <div id="s_step0" class="alg-step active highlight">(a + b)²</div>
+          <div id="s_step1" class="alg-step">= (a + b) · (a + b)</div>
+          <div id="s_step2" class="alg-step">= a² + ab + ba + b²</div>
+          <div id="s_step3" class="alg-step">= a² + 2ab + b²</div>
+
+          <div style="margin-top: auto;">
+            <button class="btn-step" id="btn_s" onclick="nextStepSuma()">Siguiente Paso</button>
+            <button class="btn-step" style="background:transparent; border:1px solid var(--border-color); color:var(--text-main);" onclick="resetSuma()">Reiniciar</button>
+          </div>
+        </div>
+
+        <!-- GEOMETRÍA -->
+        <div class="panel-box">
+          <div class="panel-title">2. Demostración Geométrica (Áreas)</div>
+          <p style="color: var(--text-muted); margin-bottom: 1rem;">Un cuadrado de lado (a+b) se divide en 4 áreas. ¡El <strong>2ab</strong> son los dos rectángulos!</p>
+          
+          <div class="slider-row"><label>a =</label><input type="range" id="s_a" min="2" max="8" value="6" oninput="updateGeoSuma()"><span class="val-display" id="v_s_a">6</span></div>
+          <div class="slider-row"><label>b =</label><input type="range" id="s_b" min="2" max="8" value="4" oninput="updateGeoSuma()"><span class="val-display" style="color:var(--accent-gold);" id="v_s_b">4</span></div>
+
+          <div class="geo-container">
+            <div class="geo-square" id="sq_suma">
+              <div class="geo-piece geo-a2" id="s_p_a2">a²</div>
+              <div class="geo-piece geo-ab" id="s_p_ab">ab</div>
+              <div class="geo-piece geo-ba" id="s_p_ba">ab</div>
+              <div class="geo-piece geo-b2" id="s_p_b2">b²</div>
+            </div>
+          </div>
+          <div style="text-align:center; font-family:monospace; font-size:1.3rem; font-weight:bold; margin-top:1rem;" id="s_eq_geo"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: CUADRADO DE LA RESTA ================= -->
+    <div id="cuadrado_resta" class="tab-content">
+      <div class="grid-2">
+        <!-- ÁLGEBRA -->
+        <div class="panel-box">
+          <div class="panel-title">1. Demostración Algebraica</div>
+          <p style="color: var(--text-muted); margin-bottom: 1rem;">Al multiplicar (a - b) por sí mismo, los signos negativos se combinan.</p>
+          
+          <div id="r_step0" class="alg-step active highlight">(a - b)²</div>
+          <div id="r_step1" class="alg-step">= (a - b) · (a - b)</div>
+          <div id="r_step2" class="alg-step">= a² - ab - ba + b²</div>
+          <div id="r_step3" class="alg-step">= a² - 2ab + b²</div>
+
+          <div style="margin-top: auto;">
+            <button class="btn-step" id="btn_r" style="background: var(--accent-op); color: white;" onclick="nextStepResta()">Siguiente Paso</button>
+            <button class="btn-step" style="background:transparent; border:1px solid var(--border-color); color:var(--text-main);" onclick="resetResta()">Reiniciar</button>
+          </div>
+        </div>
+
+        <!-- GEOMETRÍA -->
+        <div class="panel-box">
+          <div class="panel-title">2. Demostración Geométrica (Recortes)</div>
+          <p style="color: var(--text-muted); margin-bottom: 1rem;">Al cuadrado gigante <strong>a²</strong> le recortamos dos bandas <strong>ab</strong>. Como hemos recortado la esquina <strong>b²</strong> dos veces, ¡tenemos que volver a sumarla al final (+b²)!</p>
+          
+          <div class="slider-row"><label>a =</label><input type="range" id="r_a" min="6" max="10" value="8" oninput="updateGeoResta()"><span class="val-display" id="v_r_a">8</span></div>
+          <div class="slider-row"><label>b =</label><input type="range" id="r_b" min="1" max="4" value="2" oninput="updateGeoResta()"><span class="val-display" style="color:var(--accent-gold);" id="v_r_b">2</span></div>
+
+          <div class="geo-container">
+            <div class="geo-square" id="sq_resta" style="border-color: var(--accent-blue);">
+              <!-- Aquí el (a-b)^2 es la pieza azul, el resto son recortes rojos/grises -->
+              <div class="geo-piece geo-a2" id="r_p_target" style="background: var(--accent-blue);">(a-b)²</div>
+              <div class="geo-piece geo-ab" id="r_p_ab" style="background: rgba(244, 63, 94, 0.3); border:1px dashed var(--accent-op); color:var(--accent-op);">ab recortado</div>
+              <div class="geo-piece geo-ba" id="r_p_ba" style="background: rgba(244, 63, 94, 0.3); border:1px dashed var(--accent-op); color:var(--accent-op);">ab recortado</div>
+              <div class="geo-piece geo-b2" id="r_p_b2" style="background: var(--accent-gold); color:black; font-size: 0.9rem;">+b²<br>sumado</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: SUMA POR DIFERENCIA ================= -->
+    <div id="diferencia" class="tab-content">
+      <div class="grid-2">
+        <!-- ÁLGEBRA -->
+        <div class="panel-box">
+          <div class="panel-title">1. Demostración Algebraica</div>
+          <p style="color: var(--text-muted); margin-bottom: 1rem;">Al multiplicar un binomio por su conjugado, los términos centrales se anulan mutuamente.</p>
+          
+          <div id="d_step0" class="alg-step active highlight">(a + b)(a - b)</div>
+          <div id="d_step1" class="alg-step">= a² - ab + ba - b²</div>
+          <div id="d_step2" class="alg-step">= a² <span style="text-decoration: line-through; color:var(--accent-op);">- ab + ab</span> - b²</div>
+          <div id="d_step3" class="alg-step">= a² - b²</div>
+
+          <div style="margin-top: auto;">
+            <button class="btn-step" id="btn_d" style="background: var(--accent-gold); color: black;" onclick="nextStepDifi()">Siguiente Paso</button>
+            <button class="btn-step" style="background:transparent; border:1px solid var(--border-color); color:var(--text-main);" onclick="resetDifi()">Reiniciar</button>
+          </div>
+        </div>
+
+        <!-- GEOMETRÍA -->
+        <div class="panel-box">
+          <div class="panel-title">2. Demostración Geométrica</div>
+          <p style="color: var(--text-muted); margin-bottom: 1rem;">Un cuadrado grande <strong>a²</strong> menos un cuadrado pequeño <strong>b²</strong>. Visualiza el hueco que queda.</p>
+          
+          <div class="slider-row"><label>a =</label><input type="range" id="d_a" min="6" max="10" value="8" oninput="updateGeoDifi()"><span class="val-display" id="v_d_a">8</span></div>
+          <div class="slider-row"><label>b =</label><input type="range" id="d_b" min="2" max="5" value="3" oninput="updateGeoDifi()"><span class="val-display" style="color:var(--accent-op);" id="v_d_b">3</span></div>
+
+          <div class="geo-container">
+            <div class="l-shape-container">
+              <div class="d-a2" id="d_p_a2">a²</div>
+              <div class="d-b2" id="d_p_b2">- b² (Hueco)</div>
+            </div>
+          </div>
+          <div style="text-align:center; font-family:monospace; font-size:1.3rem; font-weight:bold; margin-top:1rem;" id="d_eq_geo"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓN TABS ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // ================= ÁLGEBRA PASO A PASO =================
+    let stepS = 0, stepR = 0, stepD = 0;
+
+    // SUMA
+    function nextStepSuma() {
+      if(stepS < 3) {
+        document.getElementById(`s_step${stepS}`).classList.remove('highlight');
+        stepS++;
+        document.getElementById(`s_step${stepS}`).classList.add('active');
+        document.getElementById(`s_step${stepS}`).classList.add('highlight');
+        if(stepS === 3) document.getElementById('btn_s').disabled = true;
+      }
+    }
+    function resetSuma() {
+      stepS = 0;
+      document.getElementById('btn_s').disabled = false;
+      for(let i=1; i<=3; i++) {
+        document.getElementById(`s_step${i}`).className = 'alg-step';
+      }
+      document.getElementById('s_step0').className = 'alg-step active highlight';
+    }
+
+    // RESTA
+    function nextStepResta() {
+      if(stepR < 3) {
+        document.getElementById(`r_step${stepR}`).classList.remove('highlight');
+        stepR++;
+        document.getElementById(`r_step${stepR}`).classList.add('active');
+        document.getElementById(`r_step${stepR}`).classList.add('highlight');
+        if(stepR === 3) document.getElementById('btn_r').disabled = true;
+      }
+    }
+    function resetResta() {
+      stepR = 0;
+      document.getElementById('btn_r').disabled = false;
+      for(let i=1; i<=3; i++) {
+        document.getElementById(`r_step${i}`).className = 'alg-step';
+      }
+      document.getElementById('r_step0').className = 'alg-step active highlight';
+    }
+
+    // DIFERENCIA
+    function nextStepDifi() {
+      if(stepD < 3) {
+        document.getElementById(`d_step${stepD}`).classList.remove('highlight');
+        stepD++;
+        document.getElementById(`d_step${stepD}`).classList.add('active');
+        document.getElementById(`d_step${stepD}`).classList.add('highlight');
+        if(stepD === 3) document.getElementById('btn_d').disabled = true;
+      }
+    }
+    function resetDifi() {
+      stepD = 0;
+      document.getElementById('btn_d').disabled = false;
+      for(let i=1; i<=3; i++) {
+        document.getElementById(`d_step${i}`).className = 'alg-step';
+      }
+      document.getElementById('d_step0').className = 'alg-step active highlight';
+    }
+
+    // ================= GEOMETRÍA DINÁMICA =================
+    
+    // Cuadrado de la Suma
+    function updateGeoSuma() {
+      let a = parseInt(document.getElementById('s_a').value);
+      let b = parseInt(document.getElementById('s_b').value);
+      document.getElementById('v_s_a').innerText = a;
+      document.getElementById('v_s_b').innerText = b;
+      
+      let total = a + b;
+      let pctA = (a / total) * 100;
+      let pctB = (b / total) * 100;
+
+      document.getElementById('s_p_a2').style.width = pctA + '%';
+      document.getElementById('s_p_a2').style.height = pctA + '%';
+      document.getElementById('s_p_a2').innerText = `a²\n(${a*a})`;
+
+      document.getElementById('s_p_ab').style.width = pctB + '%';
+      document.getElementById('s_p_ab').style.height = pctA + '%';
+      document.getElementById('s_p_ab').innerText = `ab (${a*b})`;
+
+      document.getElementById('s_p_ba').style.width = pctA + '%';
+      document.getElementById('s_p_ba').style.height = pctB + '%';
+      document.getElementById('s_p_ba').innerText = `ab (${a*b})`;
+
+      document.getElementById('s_p_b2').style.width = pctB + '%';
+      document.getElementById('s_p_b2').style.height = pctB + '%';
+      document.getElementById('s_p_b2').innerText = `b²\n(${b*b})`;
+
+      document.getElementById('s_eq_geo').innerHTML = `Área Total = (${a}+${b})² = ${total*total}`;
+    }
+
+    // Cuadrado de la Resta
+    function updateGeoResta() {
+      let a = parseInt(document.getElementById('r_a').value);
+      let b = parseInt(document.getElementById('r_b').value);
+      
+      // Para la resta, a es el lado total. b es el trozo recortado.
+      if(b >= a) { b = a - 1; document.getElementById('r_b').value = b; }
+      
+      document.getElementById('v_r_a').innerText = a;
+      document.getElementById('v_r_b').innerText = b;
+      
+      let sideDiff = a - b;
+      let pctDiff = (sideDiff / a) * 100;
+      let pctB = (b / a) * 100;
+
+      document.getElementById('r_p_target').style.width = pctDiff + '%';
+      document.getElementById('r_p_target').style.height = pctDiff + '%';
+      document.getElementById('r_p_target').innerHTML = `(a-b)²<br>(${sideDiff*sideDiff})`;
+
+      document.getElementById('r_p_ab').style.width = pctB + '%';
+      document.getElementById('r_p_ab').style.height = pctDiff + '%';
+
+      document.getElementById('r_p_ba').style.width = pctDiff + '%';
+      document.getElementById('r_p_ba').style.height = pctB + '%';
+
+      document.getElementById('r_p_b2').style.width = pctB + '%';
+      document.getElementById('r_p_b2').style.height = pctB + '%';
+    }
+
+    // Suma por diferencia (Hueco en L)
+    function updateGeoDifi() {
+      let a = parseInt(document.getElementById('d_a').value);
+      let b = parseInt(document.getElementById('d_b').value);
+      
+      if(b >= a) { b = a - 1; document.getElementById('d_b').value = b; }
+      
+      document.getElementById('v_d_a').innerText = a;
+      document.getElementById('v_d_b').innerText = b;
+
+      // El área a^2 ocupa todo el contenedor (100% de los 260px)
+      document.getElementById('d_p_a2').style.width = '100%';
+      document.getElementById('d_p_a2').style.height = '100%';
+
+      // El área b^2 ocupa un porcentaje basado en (b/a)
+      let pctB = (b / a) * 100;
+      document.getElementById('d_p_b2').style.width = pctB + '%';
+      document.getElementById('d_p_b2').style.height = pctB + '%';
+      document.getElementById('d_p_b2').innerHTML = `- b²<br>(-${b*b})`;
+
+      let res = (a*a) - (b*b);
+      document.getElementById('d_eq_geo').innerHTML = `Área azul = ${a*a} - ${b*b} = ${res}`;
+    }
+
+    // Inicializar visualizadores geométricos
+    updateGeoSuma();
+    updateGeoResta();
+    updateGeoDifi();
+
+  </script>
+</body>
+</html>

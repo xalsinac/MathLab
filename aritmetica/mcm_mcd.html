@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aritmética: m.c.m. y M.C.D.</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS PRINCIPALES */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 1rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* SUBPESTAÑAS DE PROBLEMAS */
+    .subtabs-container {
+      display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;
+      background: var(--bg-card); padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-color);
+      margin-bottom: 1.5rem;
+    }
+    .subtab-btn {
+      padding: 0.6rem 1.4rem; background: var(--bg-primary); border: 1px solid var(--border-color);
+      color: var(--text-muted); border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    }
+    .subtab-btn:hover { border-color: var(--accent-blue); color: var(--text-main); }
+    .subtab-btn.active { background: var(--accent-blue); color: #042f2e; border-color: var(--accent-blue); font-weight: bold; }
+    .subtab-content { display: none; flex-direction: column; gap: 1rem; animation: fadeIn 0.3s forwards; }
+    .subtab-content.active { display: flex; }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* VISUALIZADOR DE MÚLTIPLOS (CARRILES) */
+    .track-row {
+      display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; overflow-x: auto; padding: 0.5rem 0;
+    }
+    .track-label {
+      min-width: 90px; font-weight: bold; font-family: monospace; font-size: 1.1rem;
+    }
+    .num-chip {
+      min-width: 45px; height: 45px; border-radius: 8px; background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center;
+      font-weight: bold; font-family: monospace; font-size: 1.1rem; color: var(--text-muted); transition: all 0.3s;
+    }
+    .num-chip.match {
+      background: rgba(16, 185, 129, 0.2); border-color: var(--accent-success); color: var(--accent-success);
+      transform: scale(1.1); box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    }
+
+    /* BARRAS DE DIVISORES (MCD VISUAL) */
+    .div-bars-container { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
+    .div-item {
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .div-chip-list { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .div-chip {
+      padding: 0.4rem 0.8rem; border-radius: 6px; background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color); font-family: monospace; font-weight: bold;
+    }
+    .div-chip.common {
+      background: rgba(56, 189, 248, 0.15); border-color: var(--accent-blue); color: var(--accent-blue);
+    }
+    .div-chip.greatest {
+      background: rgba(244, 63, 94, 0.2); border-color: var(--accent-op); color: var(--accent-op);
+      font-size: 1.15rem; font-weight: 800; transform: scale(1.08); box-shadow: 0 0 10px rgba(244,63,94,0.3);
+    }
+
+    /* FACTORIZACIÓN VERTICAL */
+    .fact-table {
+      border-collapse: collapse; font-family: monospace; font-size: 1.5rem; text-align: right;
+    }
+    .fact-table td { padding: 4px 10px; }
+    .fact-table td:first-child { border-right: 3px solid var(--text-main); }
+    .fact-table td:last-child { text-align: left; color: var(--accent-op); font-weight: bold; }
+
+    /* CONTROLES Y BOTONES */
+    .controls { display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; }
+
+    @media (max-width: 768px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>m.c.m. y M.C.D.</h1>
+    <p>Aprende qué significan de verdad, cómo encontrarlos paso a paso con factores primos y cómo resolver problemas cotidianos.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('curiosidad', this)">💡 1. ¿Qué son realmente?</button>
+      <button class="tab-btn" onclick="switchTab('factorizar', this)">🌲 2. Paso a Paso (Factores)</button>
+      <button class="tab-btn" onclick="switchTab('problemas', this)">📝 3. Problemas Clásicos</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: LA CURIOSIDAD VISUAL ================= -->
+    <div id="curiosidad" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">El Secreto Detrás de las Letras</div>
+        <div class="content-text">
+          No son fórmulas mágicas: el <strong>m.c.m.</strong> busca dónde coinciden las tablas de multiplicar hacia adelante, y el <strong>M.C.D.</strong> busca la medida exacta más grande en la que podemos cortar o empaquetar cantidades hacia atrás.
+        </div>
+      </div>
+
+      <!-- VISUALIZADOR 1: MÚLTIPLOS (MCM) -->
+      <div class="panel-box">
+        <div class="panel-title" style="color: var(--accent-success);">mínimo común múltiplo (m.c.m.) = La primera parada donde coinciden</div>
+        <p style="color: var(--text-muted); margin-bottom: 1rem;">Imagina dos autobuses: la <strong>Línea 12</strong> sale cada 12 min y la <strong>Línea 18</strong> cada 18 min. ¿Cuándo coinciden por primera vez en la parada?</p>
+        
+        <div class="track-row">
+          <div class="track-label" style="color:var(--accent-blue);">Línea 12:</div>
+          <div class="num-chip">12</div>
+          <div class="num-chip">24</div>
+          <div class="num-chip match">36</div>
+          <div class="num-chip">48</div>
+          <div class="num-chip">60</div>
+          <div class="num-chip match">72</div>
+          <div class="num-chip">84</div>
+        </div>
+
+        <div class="track-row">
+          <div class="track-label" style="color:var(--accent-gold);">Línea 18:</div>
+          <div class="num-chip">18</div>
+          <div class="num-chip match">36</div>
+          <div class="num-chip">54</div>
+          <div class="num-chip match">72</div>
+          <div class="num-chip">90</div>
+        </div>
+
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-success); border-radius: 8px; padding: 1rem; margin-top: 0.5rem; text-align: center;">
+          Coinciden en el 36 y en el 72, pero el <strong>mínimo</strong> (el primero de todos) es el <strong>36</strong>. <br>
+          <span style="font-family: monospace; font-size: 1.3rem; font-weight: bold; color: var(--accent-success);">m.c.m.(12, 18) = 36</span>
+        </div>
+      </div>
+
+      <!-- VISUALIZADOR 2: DIVISORES (MCD) -->
+      <div class="panel-box">
+        <div class="panel-title" style="color: var(--accent-op);">Máximo Común Divisor (M.C.D.) = El corte más grande posible</div>
+        <p style="color: var(--text-muted); margin-bottom: 1rem;">Tenemos dos listones de madera de <strong>24 cm</strong> y <strong>36 cm</strong>. Queremos cortarlos en trozos exactamente iguales de tamaño entero sin que sobre nada de madera. ¿Cuál es la mayor longitud de corte posible?</p>
+
+        <div class="div-bars-container">
+          <div class="div-item">
+            <span style="min-width: 140px; font-weight: bold; color: var(--accent-blue);">Divisores de 24:</span>
+            <div class="div-chip-list">
+              <span class="div-chip common">1</span><span class="div-chip common">2</span><span class="div-chip common">3</span><span class="div-chip common">4</span><span class="div-chip common greatest">6</span><span class="div-chip common">12</span><span class="div-chip">24</span>
+            </div>
+          </div>
+          <div class="div-item">
+            <span style="min-width: 140px; font-weight: bold; color: var(--accent-gold);">Divisores de 36:</span>
+            <div class="div-chip-list">
+              <span class="div-chip common">1</span><span class="div-chip common">2</span><span class="div-chip common">3</span><span class="div-chip common">4</span><span class="div-chip common greatest">6</span><span class="div-chip">9</span><span class="div-chip common">12</span><span class="div-chip">18</span><span class="div-chip">36</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="background: rgba(244, 63, 94, 0.1); border: 1px solid var(--accent-op); border-radius: 8px; padding: 1rem; margin-top: 1rem; text-align: center;">
+          Los divisores comunes son 1, 2, 3, 4, 6 y 12. El <strong>máximo</strong> (el más grande de todos) es el <strong>12</strong>. <br>
+          <span style="font-family: monospace; font-size: 1.3rem; font-weight: bold; color: var(--accent-op);">M.C.D.(24, 36) = 12</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: FACTORIZACIÓN PASO A PASO ================= -->
+    <div id="factorizar" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">El Método Universal</div>
+        <div class="content-text">
+          Hacer listas de números es lento cuando son cifras grandes. Por eso se descompone en <strong>factores primos</strong> (2, 3, 5, 7, 11...). Observa cómo se eligen los factores para <strong>40</strong> y <strong>60</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- ÁRBOLES DE FACTORIZACIÓN -->
+        <div class="panel-box">
+          <div class="panel-title">1. Descomposición en Factores Primos</div>
+          <div style="display: flex; justify-content: space-around; margin: 1.5rem 0;">
+            
+            <!-- Tabla 40 -->
+            <div>
+              <table class="fact-table">
+                <tr><td>40</td><td>2</td></tr>
+                <tr><td>20</td><td>2</td></tr>
+                <tr><td>10</td><td>2</td></tr>
+                <tr><td>5</td><td>5</td></tr>
+                <tr><td>1</td><td></td></tr>
+              </table>
+              <div style="margin-top: 0.8rem; font-family: monospace; font-size: 1.2rem; text-align: center;">
+                40 = <strong style="color:var(--accent-blue)">2³</strong> · <strong style="color:var(--accent-success)">5</strong>
+              </div>
+            </div>
+
+            <!-- Tabla 60 -->
+            <div>
+              <table class="fact-table">
+                <tr><td>60</td><td>2</td></tr>
+                <tr><td>30</td><td>2</td></tr>
+                <tr><td>15</td><td>3</td></tr>
+                <tr><td>5</td><td>5</td></tr>
+                <tr><td>1</td><td></td></tr>
+              </table>
+              <div style="margin-top: 0.8rem; font-family: monospace; font-size: 1.2rem; text-align: center;">
+                60 = <strong style="color:var(--accent-blue)">2²</strong> · <strong style="color:var(--accent-gold)">3</strong> · <strong style="color:var(--accent-success)">5</strong>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- REGLAS DE ELECCIÓN INTERACTIVAS -->
+        <div class="panel-box" style="justify-content: center;">
+          <div class="panel-title">2. ¿Cuáles escogemos?</div>
+          
+          <div style="margin-bottom: 1.5rem; background: rgba(56, 189, 248, 0.05); padding: 1rem; border-radius: 8px; border: 1px solid var(--accent-blue);">
+            <h4 style="color: var(--accent-blue); margin-bottom: 0.4rem;">Regla del m.c.m. (El glotón)</h4>
+            <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5;">
+              Coge <strong>TODOS</strong> los factores (comunes y no comunes). Si alguno se repite, coge el del <strong>MAYOR exponente</strong>.
+            </p>
+            <div style="margin-top: 0.5rem; font-family: monospace; font-size: 1.1rem; font-weight: bold;">
+              m.c.m.(40, 60) = 2³ · 3 · 5 = 8 · 3 · 5 = <span style="color:var(--accent-success)">120</span>
+            </div>
+          </div>
+
+          <div style="background: rgba(244, 63, 94, 0.05); padding: 1rem; border-radius: 8px; border: 1px solid var(--accent-op);">
+            <h4 style="color: var(--accent-op); margin-bottom: 0.4rem;">Regla del M.C.D. (El selecto)</h4>
+            <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5;">
+              Solo coge los factores que estén en <strong>AMBOS</strong> números a la vez (comunes) y con el <strong>MENOR exponente</strong>.
+            </p>
+            <div style="margin-top: 0.5rem; font-family: monospace; font-size: 1.1rem; font-weight: bold;">
+              M.C.D.(40, 60) = 2² · 5 = 4 · 5 = <span style="color:var(--accent-op)">20</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: PROBLEMAS CLÁSICOS CON SUBPESTAÑAS ================= -->
+    <div id="problemas" class="tab-content">
+      
+      <div class="subtabs-container">
+        <button class="subtab-btn active" onclick="switchSubTab('prob_mcm', this)">⏱️ Problema de Coincidencia (m.c.m.)</button>
+        <button class="subtab-btn" onclick="switchSubTab('prob_mcd', this)">📦 Problema de Reparto Máximo (M.C.D.)</button>
+      </div>
+
+      <!-- PROBLEMA 1: MCM -->
+      <div id="prob_mcm" class="subtab-content active">
+        <div class="panel-box">
+          <div class="panel-title" style="color: var(--accent-success);">El problema de las pastillas / alarmas</div>
+          <div class="explanation-card" style="border-left-color: var(--accent-success); margin: 0 0 1rem 0;">
+            <div class="content-text" style="font-size: 1.1rem;">
+              <strong>Enunciado:</strong> A un paciente en el hospital le dan una medicina azul cada <strong>6 horas</strong> y una pastilla roja cada <strong>8 horas</strong>. A las 8:00 de la mañana toma ambas a la vez. ¿Cuántas horas tienen que pasar para que vuelva a tomarlas juntas?
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div style="background: #090d16; padding: 1.2rem; border-radius: 8px; border: 1px dashed var(--border-color);">
+              <h4 style="color: var(--text-main); margin-bottom: 0.5rem;">Pista clave:</h4>
+              <p style="color: var(--text-muted); line-height: 1.5;">
+                Las tomas van aumentando: 6, 12, 18, 24... y 8, 16, 24... Estamos ante una <strong>coincidencia en el futuro</strong>. Por tanto, ¡hay que calcular múltiplos!
+              </p>
+            </div>
+            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-success); padding: 1.2rem; border-radius: 8px; text-align: center;">
+              <h4 style="color: var(--accent-success); margin-bottom: 0.5rem;">Resolución:</h4>
+              <div style="font-family: monospace; font-size: 1.2rem; line-height: 1.6;">
+                6 = 2 · 3 <br>
+                8 = 2³ <br>
+                <strong>m.c.m.(6, 8) = 2³ · 3 = 24</strong>
+              </div>
+              <p style="margin-top: 0.8rem; font-weight: bold; color: var(--text-main);">
+                Respuesta: Coincidirán de nuevo dentro de <strong>24 horas</strong> (exactamente al día siguiente a las 8:00).
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROBLEMA 2: MCD -->
+      <div id="prob_mcd" class="subtab-content">
+        <div class="panel-box">
+          <div class="panel-title" style="color: var(--accent-op);">El problema de las bolsitas de golosinas</div>
+          <div class="explanation-card" style="border-left-color: var(--accent-op); margin: 0 0 1rem 0;">
+            <div class="content-text" style="font-size: 1.1rem;">
+              <strong>Enunciado:</strong> Para una fiesta de cumpleaños tenemos <strong>20 caramelos de fresa</strong> y <strong>30 de menta</strong>. Queremos preparar bolsas idénticas con el <strong>máximo número posible</strong> de golosinas en cada una, sin que sobre ningún caramelo. ¿Cuántas bolsas podemos hacer y qué llevará cada una?
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div style="background: #090d16; padding: 1.2rem; border-radius: 8px; border: 1px dashed var(--border-color);">
+              <h4 style="color: var(--text-main); margin-bottom: 0.5rem;">Pista clave:</h4>
+              <p style="color: var(--text-muted); line-height: 1.5;">
+                Estamos <strong>repartiendo o cortando</strong> una cantidad total en grupos más pequeños de igual tamaño y piden el "máximo". Por tanto, ¡se resuelve con divisores!
+              </p>
+            </div>
+            <div style="background: rgba(244, 63, 94, 0.1); border: 1px solid var(--accent-op); padding: 1.2rem; border-radius: 8px; text-align: center;">
+              <h4 style="color: var(--accent-op); margin-bottom: 0.5rem;">Resolución:</h4>
+              <div style="font-family: monospace; font-size: 1.2rem; line-height: 1.6;">
+                20 = 2² · 5 <br>
+                30 = 2 · 3 · 5 <br>
+                <strong>M.C.D.(20, 30) = 2 · 5 = 10</strong>
+              </div>
+              <p style="margin-top: 0.8rem; font-weight: bold; color: var(--text-main);">
+                Respuesta: Podemos hacer <strong>10 bolsas</strong>. Cada bolsa tendrá 2 caramelos de fresa (20÷10) y 3 de menta (30÷10).
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓN ENTRE PESTAÑAS PRINCIPALES ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // --- NAVEGACIÓN ENTRE SUBPESTAÑAS DE PROBLEMAS ---
+    function switchSubTab(subtabId, btn) {
+      document.querySelectorAll('.subtab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(subtabId).classList.add('active');
+      btn.classList.add('active');
+    }
+  </script>
+</body>
+</html>

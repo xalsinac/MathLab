@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Método de la Balanza - Resolución Rigurosa de Ecuaciones</title>
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-card: #1e293b;
+      --bg-plate: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-blue: #38bdf8;
+      --accent-op: #f43f5e;
+      --accent-gold: #fbbf24;
+      --border-color: #475569;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    header {
+      text-align: center;
+      max-width: 800px;
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      color: var(--accent-blue);
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.5;
+    }
+
+    .container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      max-width: 950px;
+      width: 100%;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 1rem 1.2rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      border-bottom: 3px solid transparent;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-blue);
+      border-bottom-color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    /* Content Area */
+    .content {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    /* Interactive Balance Canvas/SVG */
+    .balance-container {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    svg.scale-svg {
+      width: 100%;
+      max-width: 700px;
+      height: 100%;
+    }
+
+    .beam, .base, .fulcrum, .chain {
+      stroke: var(--text-muted);
+      stroke-width: 4;
+      stroke-linecap: round;
+      fill: none;
+    }
+
+    .fulcrum {
+      fill: #475569;
+      stroke: none;
+    }
+
+    .plate {
+      fill: var(--bg-plate);
+      stroke: var(--border-color);
+      stroke-width: 2;
+    }
+
+    /* Plate Expressions Overlay */
+    .expression-box {
+      position: absolute;
+      min-width: 260px;
+      max-width: 330px;
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 0.85rem 1.2rem;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 8px 16px -2px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      min-height: 85px;
+    }
+
+    .left-expr {
+      left: calc(50% - 310px);
+      top: 85px;
+    }
+
+    .right-expr {
+      right: calc(50% - 310px);
+      top: 85px;
+    }
+
+    /* === ESTILOS TIPOGRÁFICOS MATEMÁTICOS === */
+
+    /* Fracción Vertical */
+    .frac {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 4px;
+      font-size: 0.95em;
+    }
+
+    .frac .num {
+      padding: 0 3px 2px 3px;
+      border-bottom: 2px solid currentColor;
+      display: block;
+    }
+
+    .frac .den {
+      padding: 2px 3px 0 3px;
+      display: block;
+    }
+
+    /* Raíz cuadrada con vínculo continuo */
+    .sqrt {
+      display: inline-flex;
+      align-items: stretch;
+      vertical-align: middle;
+      margin: 0 2px;
+    }
+
+    .sqrt .radical-symbol {
+      font-size: 1.3em;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      padding-right: 1px;
+      user-select: none;
+    }
+
+    .sqrt .radicand {
+      border-top: 2.5px solid currentColor;
+      padding: 3px 6px 1px 4px;
+      display: inline-block;
+      margin-left: -1px;
+    }
+
+    /* Exponentes */
+    sup {
+      font-size: 0.65em;
+      vertical-align: super;
+      margin-left: 2px;
+    }
+
+    /* Resaltado de operaciones */
+    .op-highlight {
+      color: var(--accent-op);
+      font-weight: 800;
+      animation: pulse 1s infinite alternate;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 4px;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); filter: brightness(1); }
+      to { transform: scale(1.05); filter: brightness(1.25); }
+    }
+
+    /* Explanation Banner */
+    .explanation-card {
+      width: 100%;
+      background: #0f172a;
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .explanation-card .step-badge {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-blue);
+      font-weight: 700;
+    }
+
+    .explanation-card .pedagogical-why {
+      font-size: 1.1rem;
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    .explanation-card .operation-label {
+      font-size: 0.95rem;
+      color: var(--accent-gold);
+      font-weight: 600;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      gap: 1rem;
+      width: 100%;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-prev {
+      background: var(--bg-plate);
+      color: var(--text-main);
+    }
+    .btn-prev:hover:not(:disabled) {
+      background: #475569;
+    }
+
+    .btn-next {
+      background: var(--accent-blue);
+      color: #042f2e;
+    }
+    .btn-next:hover:not(:disabled) {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .btn-reset {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+    }
+    .btn-reset:hover {
+      color: var(--text-main);
+      border-color: var(--text-muted);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 800px) {
+      .balance-container {
+        height: 350px;
+      }
+      .expression-box {
+        min-width: 170px;
+        max-width: 200px;
+        font-size: 1.1rem;
+        padding: 0.5rem;
+      }
+      .left-expr { left: 4%; top: 75px; }
+      .right-expr { right: 4%; top: 75px; }
+      .tabs { justify-content: start; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>La Balanza Algebraica</h1>
+    <p>Comprende por qué funcionan las ecuaciones: toda acción en un miembro requiere exactamente la misma acción en el otro para preservar la igualdad.</p>
+  </header>
+
+  <div class="container">
+    <!-- Selector de Niveles -->
+    <nav class="tabs" id="levelTabs">
+      <button class="tab-btn active" data-level="0">1. Lineal Simple</button>
+      <button class="tab-btn" data-level="1">2. Con Paréntesis</button>
+      <button class="tab-btn" data-level="2">3. Con Fracciones</button>
+      <button class="tab-btn" data-level="3">4. Irracional (Raíces)</button>
+    </nav>
+
+    <div class="content">
+      <!-- Representación de la Balanza -->
+      <div class="balance-container">
+        <svg class="scale-svg" viewBox="0 0 600 240">
+          <!-- Soporte central y base -->
+          <polygon points="300,70 280,210 320,210" class="fulcrum" />
+          <line x1="220" y1="210" x2="380" y2="210" class="base" stroke-width="6" />
+          <!-- Signo Igual central -->
+          <circle cx="300" cy="65" r="14" fill="#0284c7" />
+          <text x="300" y="70" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle" dominant-baseline="middle">=</text>
+
+          <!-- Barra horizontal rígida en equilibrio -->
+          <line x1="120" y1="65" x2="480" y2="65" class="beam" stroke-width="6" stroke="#64748b" />
+
+          <!-- Cuerdas y Plato Izquierdo -->
+          <line x1="120" y1="65" x2="80" y2="155" class="chain" />
+          <line x1="120" y1="65" x2="160" y2="155" class="chain" />
+          <path d="M 50 155 Q 120 180 190 155 Z" class="plate" />
+
+          <!-- Cuerdas y Plato Derecho -->
+          <line x1="480" y1="65" x2="440" y2="155" class="chain" />
+          <line x1="480" y1="65" x2="520" y2="155" class="chain" />
+          <path d="M 410 155 Q 480 180 550 155 Z" class="plate" />
+        </svg>
+
+        <!-- Cuadros con las expresiones en los platos -->
+        <div class="expression-box left-expr" id="leftExpr">3x - 5</div>
+        <div class="expression-box right-expr" id="rightExpr">10</div>
+      </div>
+
+      <!-- Tarjeta Explicativa Pedagógica -->
+      <div class="explanation-card">
+        <div class="step-badge" id="stepIndicator">Paso 0 de 4</div>
+        <div class="pedagogical-why" id="pedagogicalText">Estado inicial: La balanza está equilibrada. El objetivo es aislar la x.</div>
+        <div class="operation-label" id="opLabel">Ecuación: 3x - 5 = 10</div>
+      </div>
+
+      <!-- Controles de Navegación -->
+      <div class="controls">
+        <button class="btn btn-prev" id="btnPrev" disabled>← Paso Anterior</button>
+        <button class="btn btn-next" id="btnNext">Aplicar Operación →</button>
+        <button class="btn btn-reset" id="btnReset">Reiniciar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Helpers tipográficos
+    const f = (num, den) => `<span class="frac"><span class="num">${num}</span><span class="den">${den}</span></span>`;
+    const sq = (rad) => `<span class="sqrt"><span class="radical-symbol">&radic;</span><span class="radicand">${rad}</span></span>`;
+
+    // Banco de datos didáctico estructurado
+    const equationLevels = [
+      {
+        title: "Lineal Simple: 3x - 5 = 10",
+        steps: [
+          {
+            left: "3x - 5",
+            right: "10",
+            label: "Ecuación original",
+            why: "La balanza está en equilibrio. Queremos aislar la incógnita 'x', pero está acompañada de un -5 restando."
+          },
+          {
+            left: "3x - 5 <span class='op-highlight'>+ 5</span>",
+            right: "10 <span class='op-highlight'>+ 5</span>",
+            label: "Propiedad uniforme: Sumamos 5 a ambos lados",
+            why: "Para anular el -5 sin desequilibrar la balanza, añadimos exactamente +5 en AMBOS miembros."
+          },
+          {
+            left: "3x",
+            right: "15",
+            label: "Simplificación",
+            why: "En la izquierda, -5 + 5 da 0 (el término se neutraliza). En la derecha, 10 + 5 = 15."
+          },
+          {
+            left: `<span class='op-highlight'>${f('3x', '3')}</span>`,
+            right: `<span class='op-highlight'>${f('15', '3')}</span>`,
+            label: "Propiedad uniforme: Dividimos ambos miembros entre 3",
+            why: "La 'x' está multiplicada por 3. Para obtener 1x, dividimos TODO el plato izquierdo entre 3, y por tanto el plato derecho también."
+          },
+          {
+            left: "x",
+            right: "5",
+            label: "¡Solución alcanzada!",
+            why: "3x/3 es x. 15/3 es 5. La balanza nos demuestra de forma exacta que x = 5."
+          }
+        ]
+      },
+      {
+        title: "Con Paréntesis: 2(x + 4) = 14",
+        steps: [
+          {
+            left: "2(x + 4)",
+            right: "14",
+            label: "Ecuación original",
+            why: "Tenemos un paréntesis multiplicado por 2. El primer paso habitual en clase es eliminar el paréntesis."
+          },
+          {
+            left: "<span class='op-highlight'>2·x + 2·4</span>",
+            right: "14",
+            label: "Propiedad distributiva en el plato izquierdo",
+            why: "El 2 multiplica a todo lo que está dentro: 2 por x y 2 por 4. Solo reorganizamos el peso del plato izquierdo, la balanza sigue igual."
+          },
+          {
+            left: "2x + 8",
+            right: "14",
+            label: "Simplificación del paréntesis",
+            why: "Calculamos 2 · 4 = 8. Nos queda una ecuación lineal familiar: 2x + 8 = 14."
+          },
+          {
+            left: "2x + 8 <span class='op-highlight'>- 8</span>",
+            right: "14 <span class='op-highlight'>- 8</span>",
+            label: "Propiedad uniforme: Restamos 8 en ambos lados",
+            why: "Para neutralizar el +8 que acompaña a la x, quitamos exactamente 8 unidades de AMBOS platos."
+          },
+          {
+            left: "2x",
+            right: "6",
+            label: "Simplificación",
+            why: "En la izquierda, 8 - 8 = 0. En la derecha, 14 - 8 = 6."
+          },
+          {
+            left: `<span class='op-highlight'>${f('2x', '2')}</span>`,
+            right: `<span class='op-highlight'>${f('6', '2')}</span>`,
+            label: "Propiedad uniforme: Dividimos ambos miembros entre 2",
+            why: "Como tenemos 2x, dividimos ambos platos entre 2 para saber el valor de una sola x."
+          },
+          {
+            left: "x",
+            right: "3",
+            label: "¡Solución alcanzada!",
+            why: "2x/2 es x, y 6/2 es 3. La incógnita queda despejada: x = 3."
+          }
+        ]
+      },
+      {
+        title: "Con Fracciones: (2x - 1) / 3 = 5",
+        steps: [
+          {
+            left: f('2x - 1', '3'),
+            right: "5",
+            label: "Ecuación original",
+            why: "La barra de fracción muestra claramente que el 3 divide a TODO el numerador (2x - 1)."
+          },
+          {
+            left: `${f('2x - 1', '3')} <span class='op-highlight'>· 3</span>`,
+            right: `5 <span class='op-highlight'>· 3</span>`,
+            label: "Propiedad uniforme: Multiplicamos ambos miembros por 3",
+            why: "Multiplicamos la TOTALIDAD de cada miembro por el denominador (3) para eliminar la división."
+          },
+          {
+            left: "2x - 1",
+            right: "15",
+            label: "Simplificación",
+            why: "Dividir entre 3 y multiplicar por 3 son operaciones inversas (se neutralizan). En la derecha, 5 · 3 = 15."
+          },
+          {
+            left: "2x - 1 <span class='op-highlight'>+ 1</span>",
+            right: "15 <span class='op-highlight'>+ 1</span>",
+            label: "Propiedad uniforme: Sumamos 1 a ambos lados",
+            why: "Añadimos 1 unidad a ambos platos para cancelar el -1."
+          },
+          {
+            left: "2x",
+            right: "16",
+            label: "Simplificación",
+            why: "El plato izquierdo queda con 2x y el derecho con 16."
+          },
+          {
+            left: `<span class='op-highlight'>${f('2x', '2')}</span>`,
+            right: `<span class='op-highlight'>${f('16', '2')}</span>`,
+            label: "Propiedad uniforme: Dividimos ambos miembros entre 2",
+            why: "Dividimos entre 2 en ambos lados para encontrar el valor de una sola x."
+          },
+          {
+            left: "x",
+            right: "8",
+            label: "¡Solución alcanzada!",
+            why: "2x/2 es x, y 16/2 es 8. La incógnita queda despejada: x = 8."
+          }
+        ]
+      },
+      {
+        title: "Irracional: √(2x + 1) = 5",
+        steps: [
+          {
+            left: sq('2x + 1'),
+            right: "5",
+            label: "Ecuación original",
+            why: "La barra del radical cubre todo el polinomio '2x + 1', indicando que la raíz afecta a todo el bloque."
+          },
+          {
+            left: `<span class='op-highlight'>[${sq('2x + 1')}]<sup>2</sup></span>`,
+            right: `<span class='op-highlight'>5<sup>2</sup></span>`,
+            label: "Propiedad uniforme: Elevamos al cuadrado ambos lados",
+            why: "La operación inversa a la raíz cuadrada es la potencia 2. Para mantener la balanza, elevamos ambos miembros enteros."
+          },
+          {
+            left: "2x + 1",
+            right: "25",
+            label: "Simplificación",
+            why: "La raíz cuadrada y el exponente 2 se cancelan por completo: queda 2x + 1. En la derecha, 5² = 25."
+          },
+          {
+            left: "2x + 1 <span class='op-highlight'>- 1</span>",
+            right: "25 <span class='op-highlight'>- 1</span>",
+            label: "Propiedad uniforme: Restamos 1 en ambos lados",
+            why: "Neutralizamos el término independiente restando 1 en ambos platos."
+          },
+          {
+            left: "2x",
+            right: "24",
+            label: "Simplificación",
+            why: "La balanza queda con 2x = 24."
+          },
+          {
+            left: `<span class='op-highlight'>${f('2x', '2')}</span>`,
+            right: `<span class='op-highlight'>${f('24', '2')}</span>`,
+            label: "Propiedad uniforme: Dividimos ambos lados entre 2",
+            why: "Dividimos entre el coeficiente 2 para dejar a la x completamente sola."
+          },
+          {
+            left: "x",
+            right: "12",
+            label: "¡Solución alcanzada!",
+            why: "x = 12. Se puede verificar sustituyendo en la original: √(2·12 + 1) = √25 = 5."
+          }
+        ]
+      }
+    ];
+
+    let currentLevel = 0;
+    let currentStep = 0;
+
+    // Elementos DOM
+    const tabs = document.querySelectorAll('.tab-btn');
+    const leftExpr = document.getElementById('leftExpr');
+    const rightExpr = document.getElementById('rightExpr');
+    const stepIndicator = document.getElementById('stepIndicator');
+    const pedagogicalText = document.getElementById('pedagogicalText');
+    const opLabel = document.getElementById('opLabel');
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const btnReset = document.getElementById('btnReset');
+
+    function updateView() {
+      const level = equationLevels[currentLevel];
+      const step = level.steps[currentStep];
+
+      // Expresiones matemáticas
+      leftExpr.innerHTML = step.left;
+      rightExpr.innerHTML = step.right;
+
+      // Textos informativos
+      stepIndicator.textContent = `Paso ${currentStep} de ${level.steps.length - 1}`;
+      pedagogicalText.innerHTML = step.why;
+      opLabel.innerHTML = `<strong>Acción:</strong> ${step.label}`;
+
+      // Botones
+      btnPrev.disabled = (currentStep === 0);
+      btnNext.disabled = (currentStep === level.steps.length - 1);
+
+      if (currentStep === level.steps.length - 1) {
+        btnNext.textContent = "Completado ✓";
+      } else if (step.label.includes("Simplificación") || step.label.includes("distributiva")) {
+        btnNext.textContent = "Simplificar Balanza →";
+      } else {
+        btnNext.textContent = "Aplicar Operación →";
+      }
+    }
+
+    // Eventos de Navegación
+    btnNext.addEventListener('click', () => {
+      if (currentStep < equationLevels[currentLevel].steps.length - 1) {
+        currentStep++;
+        updateView();
+      }
+    });
+
+    btnPrev.addEventListener('click', () => {
+      if (currentStep > 0) {
+        currentStep--;
+        updateView();
+      }
+    });
+
+    btnReset.addEventListener('click', () => {
+      currentStep = 0;
+      updateView();
+    });
+
+    // Cambio de Pestañas
+    tabs.forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        tabs.forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+        currentLevel = parseInt(e.target.dataset.level);
+        currentStep = 0;
+        updateView();
+      });
+    });
+
+    // Inicialización
+    updateView();
+  </script>
+</body>
+</html>

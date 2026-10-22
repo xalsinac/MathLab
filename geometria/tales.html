@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geometría: Proporcionalidad y Teorema de Tales</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 1rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* CONTROLES DESLIZANTES */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .slider-row label { width: 160px; font-weight: 600; }
+    .val-badge { width: 45px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; }
+
+    /* ICONOS VISUALES */
+    .icon-stream {
+      display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.8rem; background: #090d16;
+      border-radius: 8px; border: 1px dashed var(--border-color); min-height: 52px; align-items: center;
+      font-size: 1.5rem;
+    }
+
+    /* ESQUEMA DE REGLA DE TRES */
+    .rule-box {
+      background: #090d16; border: 1px solid var(--border-color); border-radius: 10px;
+      padding: 1.2rem; font-family: monospace;
+    }
+    .rule-grid {
+      display: grid; grid-template-columns: 1fr auto 1fr; gap: 0.8rem; align-items: center;
+      font-size: 1.2rem; font-weight: bold; text-align: center;
+    }
+
+    /* SVG CANVAS */
+    .svg-canvas {
+      width: 100%; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block;
+    }
+
+    /* TARJETAS DE PROPORCIONES */
+    .ratio-card {
+      background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 0.8rem 1rem; display: flex; justify-content: space-between;
+      align-items: center; font-family: monospace; font-size: 1.05rem;
+    }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Proporcionalidad y Teorema de Tales</h1>
+    <p>Aprende por qué funcionan las proporciones, cómo se conectan con la semejanza de triángulos y cómo Tales midió las pirámides.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('directa', this)">🍊 1. Directa</button>
+      <button class="tab-btn" onclick="switchTab('inversa', this)">⏱️ 2. Inversa</button>
+      <button class="tab-btn" onclick="switchTab('tales', this)">📐 3. Teorema de Tales</button>
+      <button class="tab-btn" onclick="switchTab('semejanza', this)">🔺 4. Semejanza</button>
+      <button class="tab-btn" onclick="switchTab('piramide', this)">🏛️ 5. La Pirámide</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: PROPORCIONALIDAD DIRECTA ================= -->
+    <div id="directa" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">¿Por qué dividimos al hacer una regla de 3?</div>
+        <div class="content-text">
+          Decir simplemente "multiplica en cruz y divide" no explica nada. En una proporción directa, <strong>siempre dividimos para hallar el precio/valor de 1 sola unidad</strong> (reducción a la unidad), y luego <strong>multiplicamos</strong> por las unidades deseadas.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">El Ejemplo de las Naranjas</div>
+          <p style="color: var(--text-muted); margin-bottom: 1rem;">
+            Para hacer <strong>2 vasos de zumo</strong> usamos <strong>6 naranjas</strong>.
+          </p>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-gold);">Vasos deseados:</label>
+            <input type="range" id="dir_vasos" min="1" max="8" value="5" oninput="updateDirecta()">
+            <span class="val-badge" style="color:var(--accent-gold);" id="v_dir_vasos">5</span>
+          </div>
+
+          <div style="margin-top: 0.5rem;">
+            <span style="font-size: 0.85rem; color: var(--text-muted);">Vasos a servir:</span>
+            <div class="icon-stream" id="stream_vasos"></div>
+          </div>
+
+          <div style="margin-top: 0.8rem;">
+            <span style="font-size: 0.85rem; color: var(--text-muted);">Naranjas necesarias:</span>
+            <div class="icon-stream" id="stream_naranjas"></div>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Los Dos Caminos para Entenderlo</div>
+          
+          <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid var(--accent-blue); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+            <h4 style="color: var(--accent-blue); margin-bottom: 0.4rem;">Método 1: ¿Cuánto cuesta 1 vaso? (Lógico)</h4>
+            <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5;">
+              Si 2 vasos necesitan 6 naranjas: <br>
+              <strong>1 vaso = 6 ÷ 2 = 3 naranjas por vaso.</strong><br>
+              Para <span id="txt_vasos_logica">5</span> vasos: <span id="txt_calc_logica" style="color:var(--accent-gold); font-weight:bold;">5 × 3 = 15 naranjas</span>.
+            </p>
+          </div>
+
+          <div class="rule-box">
+            <h4 style="color: var(--accent-success); margin-bottom: 0.6rem;">Método 2: El camino de la "Z" (Mnemotécnico)</h4>
+            <div class="rule-grid">
+              <div>2 vasos</div>
+              <div style="color:var(--text-muted);">--- (÷) ---</div>
+              <div>6 naranjas</div>
+
+              <div id="r3_dir_target" style="color:var(--accent-gold);">5 vasos</div>
+              <div style="color:var(--accent-success);">--- (·) ---</div>
+              <div style="color:var(--accent-op);">x (¿?)</div>
+            </div>
+            <div style="text-align: center; margin-top: 1rem; font-size: 1.15rem; font-weight: bold; color: var(--accent-success);" id="dir_z_result">
+              x = (5 · 6) ÷ 2 = 15 naranjas
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: PROPORCIONALIDAD INVERSA ================= -->
+    <div id="inversa" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-op);">
+        <div class="badge" style="color: var(--accent-op);">¿Por qué aquí NO se multiplica en cruz?</div>
+        <div class="content-text">
+          En la proporcionalidad inversa (más trabajadores = menos tiempo), el esfuerzo total a realizar es una <strong>cantidad fija inalterable</strong> (horas-persona). Se mantiene constante el producto horizontal: <code>Trabajadores × Tiempo = Esfuerzo Fijo (k)</code>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Pintando la Fachada</div>
+          <p style="color: var(--text-muted); margin-bottom: 1rem;">
+            El trabajo completo requiere un total de <strong>24 horas de esfuerzo</strong> acumulado.
+          </p>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-blue);">Nº de Pintores:</label>
+            <input type="range" id="inv_pintores" min="1" max="8" value="3" oninput="updateInversa()">
+            <span class="val-badge" style="color:var(--accent-blue);" id="v_inv_pintores">3</span>
+          </div>
+
+          <div style="margin-top: 0.5rem;">
+            <span style="font-size: 0.85rem; color: var(--text-muted);">Equipo de pintores:</span>
+            <div class="icon-stream" id="stream_pintores"></div>
+          </div>
+
+          <div style="margin-top: 0.8rem;">
+            <span style="font-size: 0.85rem; color: var(--text-muted);">Horas de jornada cada uno:</span>
+            <div class="icon-stream" id="stream_horas" style="color:var(--accent-op); font-family:monospace; font-weight:bold; font-size:1.3rem;"></div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="justify-content: center;">
+          <div class="panel-title">El Producto Horizontal Constante</div>
+          
+          <div class="rule-box" style="margin-bottom: 1rem;">
+            <div class="rule-grid">
+              <div>1 pintor</div>
+              <div style="color:var(--text-muted);">× 24 h =</div>
+              <div style="color:var(--accent-gold);">24 h-persona</div>
+
+              <div id="txt_inv_pintores_row" style="color:var(--accent-blue);">3 pintores</div>
+              <div style="color:var(--text-muted);">× <span id="txt_inv_horas_row">8</span> h =</div>
+              <div style="color:var(--accent-gold);">24 h-persona</div>
+            </div>
+          </div>
+
+          <div style="background: rgba(244, 63, 94, 0.1); border: 1px solid var(--accent-op); border-radius: 8px; padding: 1.2rem; text-align: center;">
+            <div style="font-family: monospace; font-size: 1.2rem; font-weight: bold; color: var(--accent-op);" id="inv_calc_text">
+              x = (1 · 24) ÷ 3 = 8 horas
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
+              Al haber el triple de pintores (×3), el tiempo se reduce exactamente a la tercera parte (÷3).
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: TEOREMA DE TALES ================= -->
+    <div id="tales" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">¿POR QUÉ siempre da exactamente el mismo resultado?</div>
+        <div class="content-text">
+          Las rectas paralelas preservan el ángulo de apertura relativo. No importa dónde cortes: un lado es una copia exacta del otro multiplicada por un factor de escala constante.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Visualizador de Rectas Cortadas</div>
+          <div class="slider-row">
+            <label>Mover paralela B - B':</label>
+            <input type="range" id="tales_slider" min="60" max="180" value="110" oninput="updateTales()">
+          </div>
+
+          <svg class="svg-canvas" height="260" viewBox="0 0 320 250" id="tales_svg">
+            <line x1="30" y1="20" x2="150" y2="230" stroke="#64748b" stroke-width="2" />
+            <line x1="290" y1="20" x2="200" y2="230" stroke="#64748b" stroke-width="2" />
+            
+            <line x1="15" y1="50" x2="305" y2="50" stroke="#38bdf8" stroke-width="3" stroke-dasharray="5" />
+            <line x1="15" y1="110" x2="305" y2="110" id="t_line2" stroke="#fbbf24" stroke-width="3" />
+            <line x1="15" y1="200" x2="305" y2="200" stroke="#38bdf8" stroke-width="3" stroke-dasharray="5" />
+
+            <circle cx="47.1" cy="50" r="5" fill="#38bdf8" />
+            <circle cx="277.1" cy="50" r="5" fill="#38bdf8" />
+            <text x="25" y="45" fill="#fff" font-size="12" font-weight="bold">A</text>
+            <text x="288" y="45" fill="#fff" font-size="12" font-weight="bold">A'</text>
+
+            <circle cx="81.4" cy="110" id="pt_b" r="6" fill="#fbbf24" />
+            <circle cx="251.4" cy="110" id="pt_bp" r="6" fill="#fbbf24" />
+            <text x="60" y="105" id="txt_b" fill="#fbbf24" font-size="12" font-weight="bold">B</text>
+            <text x="262" y="105" id="txt_bp" fill="#fbbf24" font-size="12" font-weight="bold">B'</text>
+
+            <circle cx="132.8" cy="200" r="5" fill="#38bdf8" />
+            <circle cx="212.8" cy="200" r="5" fill="#38bdf8" />
+            <text x="110" y="220" fill="#fff" font-size="12" font-weight="bold">C</text>
+            <text x="222" y="220" fill="#fff" font-size="12" font-weight="bold">C'</text>
+          </svg>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Múltiples Formas de la Proporción</div>
+          <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+            <div class="ratio-card">
+              <div><span style="color:var(--accent-blue)">AB / A'B'</span> = <span style="color:var(--accent-gold)">BC / B'C'</span></div>
+              <div id="ratio_box_1" style="color:var(--accent-success); font-weight:bold;">1.06 = 1.06</div>
+            </div>
+            <div class="ratio-card">
+              <div><span style="color:var(--accent-blue)">AB / BC</span> = <span style="color:var(--accent-gold)">A'B' / B'C'</span></div>
+              <div id="ratio_box_2" style="color:var(--accent-success); font-weight:bold;">0.67 = 0.67</div>
+            </div>
+            <div class="ratio-card">
+              <div><span style="color:var(--accent-blue)">AB / AC</span> = <span style="color:var(--accent-gold)">A'B' / A'C'</span></div>
+              <div id="ratio_box_3" style="color:var(--accent-success); font-weight:bold;">0.40 = 0.40</div>
+            </div>
+          </div>
+          <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-success); border-radius: 8px; padding: 0.8rem; margin-top: 1rem; text-align: center; font-size: 0.88rem;">
+            Las longitudes varían, pero las razones permanecen estrictamente idénticas.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: SEMEJANZA DE TRIÁNGULOS ================= -->
+    <div id="semejanza" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+        <div class="badge" style="color: var(--accent-blue);">Triángulos en Posición de Tales</div>
+        <div class="content-text">
+          Dos triángulos son <strong>semejantes</strong> cuando tienen la <strong>misma forma</strong> (mismos ángulos interiores) pero <strong>distinto tamaño</strong>. Si trazamos una línea paralela a cualquiera de los lados de un triángulo, obtenemos un triángulo más pequeño semejante al original.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Triángulo Dividido por Paralela</div>
+          <div class="slider-row">
+            <label>Altura del corte:</label>
+            <input type="range" id="sem_slider" min="30" max="85" value="55" oninput="updateSemejanza()">
+            <span class="val-badge" id="v_sem_pct">55%</span>
+          </div>
+
+          <svg class="svg-canvas" height="260" viewBox="0 0 320 250">
+            <!-- Triángulo grande ABC: A(160, 25), B(30, 215), C(290, 215) -->
+            <polygon points="160,25 30,215 290,215" fill="rgba(56, 189, 248, 0.08)" stroke="#38bdf8" stroke-width="2" />
+            
+            <!-- Triángulo pequeño semejante AB'C' -->
+            <polygon id="sem_tri_small" points="160,25 88.5,129.5 231.5,129.5" fill="rgba(251, 191, 36, 0.2)" stroke="#fbbf24" stroke-width="3" />
+            
+            <!-- Línea paralela de corte -->
+            <line x1="15" y1="129.5" x2="305" y2="129.5" id="sem_cut_line" stroke="#fbbf24" stroke-width="2" stroke-dasharray="4" />
+
+            <!-- Vértices -->
+            <text x="155" y="18" fill="#fff" font-weight="bold" font-size="13">A</text>
+            <text x="15" y="225" fill="#38bdf8" font-weight="bold" font-size="13">B</text>
+            <text x="295" y="225" fill="#38bdf8" font-weight="bold" font-size="13">C</text>
+
+            <text x="65" y="125" id="lbl_b_prime" fill="#fbbf24" font-weight="bold" font-size="12">B'</text>
+            <text x="240" y="125" id="lbl_c_prime" fill="#fbbf24" font-weight="bold" font-size="12">C'</text>
+          </svg>
+        </div>
+
+        <div class="panel-box" style="justify-content: center;">
+          <div class="panel-title">Criterio Fundamental de Semejanza</div>
+          
+          <div style="background: #090d16; padding: 1.2rem; border-radius: 8px; border: 1px solid var(--border-color); font-family: monospace; font-size: 1.15rem; line-height: 1.8;">
+            <div>Lado pequeño / Lado grande = <span style="color:var(--accent-gold);" id="txt_ratio_k">0.55</span></div>
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 0.6rem 0;">
+            <div>AB' / AB = <span style="color:var(--accent-blue);" id="txt_ab_ratio">0.55</span></div>
+            <div>AC' / AC = <span style="color:var(--accent-blue);" id="txt_ac_ratio">0.55</span></div>
+            <div>B'C' / BC = <span style="color:var(--accent-blue);" id="txt_bc_ratio">0.55</span></div>
+          </div>
+
+          <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid var(--accent-gold); border-radius: 8px; padding: 1rem; margin-top: 1rem; text-align: center;">
+            <div style="font-family: monospace; font-weight: bold; color: var(--accent-gold); font-size: 1.15rem;">
+              AB'/AB = AC'/AC = B'C'/BC = k
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem;">
+              <em>k</em> es la <strong>razón de semejanza</strong>. Todos los lados del triángulo amarillo miden exactamente el factor <em>k</em> del triángulo azul.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 5: LA PIRÁMIDE DE KEOPS ================= -->
+    <div id="piramide" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">Triángulos Rectángulos Semejantes</div>
+        <div class="content-text">
+          Al estar el Sol a una distancia descomunal de la Tierra, sus rayos llegan con el <strong>mismo ángulo exacto</strong> (son rectas estrictamente paralelas). Por tanto, la sombra de la pirámide y la sombra del bastón forman <strong>dos triángulos rectángulos semejantes</strong> en posición de Tales.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Esquema con Rayos Solares Paralelos</div>
+          
+          <!-- Dibujo SVG matemáticamente exacto: pendiente = dy/dx = 140/210 = 2/3 ≈ 0.6667 -->
+          <svg class="svg-canvas" height="260" viewBox="0 0 360 250">
+            <!-- Suelo horizontal continuo en y=210 -->
+            <line x1="5" y1="210" x2="355" y2="210" stroke="#94a3b8" stroke-width="2" />
+
+            <!-- PIRÁMIDE DE KEOPS -->
+            <!-- Base de x=20 a x=200 (ancho 180, centro en x=110), Vértice superior (110, 70), Altura = 140 -->
+            <polygon points="110,70 20,210 200,210" fill="rgba(251, 191, 36, 0.15)" stroke="#fbbf24" stroke-width="2" />
+            
+            <!-- Altura H interior: de (110,70) a (110,210) -->
+            <line x1="110" y1="70" x2="110" y2="210" stroke="var(--accent-op)" stroke-width="3" stroke-dasharray="3" />
+            <circle cx="110" cy="70" r="4" fill="var(--accent-op)" />
+            <text x="115" y="140" fill="var(--accent-op)" font-weight="bold" font-size="14">H (¿?)</text>
+
+            <!-- RAYO 1: Pasa exactamente por la cúspide (110, 70) hasta el suelo (320, 210) -->
+            <!-- Pendiente: (210 - 70) / (320 - 110) = 140 / 210 = 2/3 -->
+            <line x1="65" y1="40" x2="335" y2="220" stroke="#fbbf24" stroke-width="2" stroke-dasharray="4" />
+            <text x="195" y="120" fill="rgba(251,191,36,0.8)" font-size="11" transform="rotate(33.7, 195, 120)">Rayo solar 1 ➔</text>
+
+            <!-- Sombra de la Pirámide: desde el centro de la base x=110 hasta la punta x=320 (210 px = 280 m) -->
+            <line x1="110" y1="216" x2="320" y2="216" stroke="#38bdf8" stroke-width="4" />
+            <text x="165" y="235" fill="#38bdf8" font-size="11" font-weight="bold">Sombra = 280 m</text>
+
+            <!-- BASTÓN VERTICAL: colocado en x=325, altura = 20 px (1.5 m) -> de y=190 a y=210 -->
+            <line x1="325" y1="190" x2="325" y2="210" stroke="#fff" stroke-width="4" />
+            <circle cx="325" cy="190" r="3" fill="#fff" />
+            <text x="290" y="185" fill="#fff" font-size="10" font-weight="bold">h = 1.5 m</text>
+
+            <!-- Sombra del bastón: de x=325 a x=355 (ancho 30 px = 3 m) -->
+            <line x1="325" y1="216" x2="355" y2="216" stroke="#10b981" stroke-width="4" />
+            <text x="328" y="235" fill="#10b981" font-size="10" font-weight="bold">s = 3 m</text>
+
+            <!-- RAYO 2: Pasa exactamente por la punta del bastón (325, 190) hasta el suelo (355, 210) -->
+            <!-- Pendiente: (210 - 190) / (355 - 325) = 20 / 30 = 2/3 (ESTRICTAMENTE PARALELO AL RAYO 1) -->
+            <line x1="310" y1="180" x2="360" y2="213.3" stroke="#fbbf24" stroke-width="2" stroke-dasharray="4" />
+          </svg>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">La Demostración por Semejanza</div>
+
+          <div style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0.8rem;">
+            Observa que se forman dos triángulos rectángulos con el <strong>mismo ángulo de elevación solar (33.7º)</strong>:
+            <ul style="margin: 0.5rem 0 0.5rem 1.2rem; color: var(--text-main);">
+              <li><strong>Triángulo mayor:</strong> catetos $H$ (altura pirámide) y $280\,\text{m}$ (sombra).</li>
+              <li><strong>Triángulo menor:</strong> catetos $1.5\,\text{m}$ (bastón) y $3\,\text{m}$ (sombra).</li>
+            </ul>
+          </div>
+
+          <div class="rule-box" style="margin-bottom: 1rem;">
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.4rem;">Igualdad de razones por semejanza:</div>
+            <div style="font-size: 1.2rem; color: var(--accent-blue); text-align: center;">
+              H / 1.5 = 280 / 3
+            </div>
+          </div>
+
+          <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-success); border-radius: 8px; padding: 1.1rem; text-align: center;">
+            <div style="font-family: monospace; font-size: 1.35rem; font-weight: bold; color: var(--accent-success);">
+              H = (280 · 1.5) ÷ 3 = 140 metros
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-main); margin-top: 0.5rem;">
+              La sombra del bastón medía el doble de su altura ($3 = 2 \times 1.5$), de modo que la pirámide mide exactamente la mitad de su sombra ($280 \div 2 = 140\,\text{m}$).
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓN ENTRE PESTAÑAS ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'tales') setTimeout(updateTales, 20);
+      if (tabId === 'semejanza') setTimeout(updateSemejanza, 20);
+    }
+
+    // =========================================================================
+    // 1. PROPORCIONALIDAD DIRECTA
+    // =========================================================================
+    function updateDirecta() {
+      const vasos = parseInt(document.getElementById('dir_vasos').value);
+      const naranjasPorVaso = 3;
+      const naranjas = vasos * naranjasPorVaso;
+
+      document.getElementById('v_dir_vasos').innerText = vasos;
+      document.getElementById('txt_vasos_logica').innerText = vasos;
+      document.getElementById('txt_calc_logica').innerText = `${vasos} × 3 = ${naranjas} naranjas`;
+
+      document.getElementById('r3_dir_target').innerText = `${vasos} vasos`;
+      document.getElementById('dir_z_result').innerText = `x = (${vasos} · 6) ÷ 2 = ${naranjas} naranjas`;
+
+      document.getElementById('stream_vasos').innerText = '🥤'.repeat(vasos);
+      document.getElementById('stream_naranjas').innerText = '🍊'.repeat(naranjas);
+    }
+    updateDirecta();
+
+    // =========================================================================
+    // 2. PROPORCIONALIDAD INVERSA
+    // =========================================================================
+    function updateInversa() {
+      const pintores = parseInt(document.getElementById('inv_pintores').value);
+      const totalEsfuerzo = 24;
+      const horas = totalEsfuerzo / pintores;
+      const horasTxt = Number.isInteger(horas) ? horas : horas.toFixed(1);
+
+      document.getElementById('v_inv_pintores').innerText = pintores;
+      document.getElementById('txt_inv_pintores_row').innerText = `${pintores} pintores`;
+      document.getElementById('txt_inv_horas_row').innerText = horasTxt;
+
+      document.getElementById('inv_calc_text').innerText = `x = (1 · 24) ÷ ${pintores} = ${horasTxt} horas`;
+      document.getElementById('stream_pintores').innerText = '👨‍🎨'.repeat(pintores);
+      document.getElementById('stream_horas').innerText = `⏳ ${horasTxt} horas de jornada`;
+    }
+    updateInversa();
+
+    // =========================================================================
+    // 3. TEOREMA DE TALES
+    // =========================================================================
+    function updateTales() {
+      const y = parseFloat(document.getElementById('tales_slider').value);
+      
+      const line = document.getElementById('t_line2');
+      line.setAttribute('y1', y);
+      line.setAttribute('y2', y);
+
+      const xLeft = 30 + (y - 20) * (120 / 210);
+      const xRight = 290 - (y - 20) * (90 / 210);
+
+      const ptB = document.getElementById('pt_b');
+      ptB.setAttribute('cx', xLeft);
+      ptB.setAttribute('cy', y);
+
+      const ptBp = document.getElementById('pt_bp');
+      ptBp.setAttribute('cx', xRight);
+      ptBp.setAttribute('cy', y);
+
+      const txtB = document.getElementById('txt_b');
+      txtB.setAttribute('x', xLeft - 22);
+      txtB.setAttribute('y', y - 6);
+
+      const txtBp = document.getElementById('txt_bp');
+      txtBp.setAttribute('x', xRight + 12);
+      txtBp.setAttribute('y', y - 6);
+
+      const dy1 = y - 50;
+      const dy2 = 200 - y;
+
+      const scaleLeft = Math.sqrt(1 + Math.pow(120/210, 2));
+      const scaleRight = Math.sqrt(1 + Math.pow(90/210, 2));
+
+      const segAB = dy1 * scaleLeft;
+      const segBC = dy2 * scaleLeft;
+      const segABp = dy1 * scaleRight;
+      const segBCp = dy2 * scaleRight;
+
+      const r1 = (segAB / segABp).toFixed(2);
+      const r1_check = (segBC / segBCp).toFixed(2);
+      document.getElementById('ratio_box_1').innerText = `${r1} = ${r1_check}`;
+
+      const r2 = (segAB / segBC).toFixed(2);
+      const r2_check = (segABp / segBCp).toFixed(2);
+      document.getElementById('ratio_box_2').innerText = `${r2} = ${r2_check}`;
+
+      const segAC = segAB + segBC;
+      const segACp = segABp + segBCp;
+      const r3 = (segAB / segAC).toFixed(2);
+      const r3_check = (segABp / segACp).toFixed(2);
+      document.getElementById('ratio_box_3').innerText = `${r3} = ${r3_check}`;
+    }
+    updateTales();
+
+    // =========================================================================
+    // 4. SEMEJANZA DE TRIÁNGULOS (POSICIÓN DE TALES)
+    // =========================================================================
+    function updateSemejanza() {
+      const pct = parseInt(document.getElementById('sem_slider').value) / 100;
+      document.getElementById('v_sem_pct').innerText = `${Math.round(pct * 100)}%`;
+
+      // Vértice A(160, 25), B(30, 215), C(290, 215)
+      // Interpolación lineal con factor pct desde A hacia B y C
+      const Ax = 160, Ay = 25;
+      const Bx = 30,  By = 215;
+      const Cx = 290, Cy = 215;
+
+      const Bpx = Ax + (Bx - Ax) * pct;
+      const Bpy = Ay + (By - Ay) * pct;
+      const Cpx = Ax + (Cx - Ax) * pct;
+      const Cpy = Ay + (Cy - Ay) * pct;
+
+      // Actualizar polígono pequeño
+      const poly = document.getElementById('sem_tri_small');
+      poly.setAttribute('points', `${Ax},${Ay} ${Bpx},${Bpy} ${Cpx},${Cpy}`);
+
+      // Línea de corte
+      const cutLine = document.getElementById('sem_cut_line');
+      cutLine.setAttribute('y1', Bpy);
+      cutLine.setAttribute('y2', Bpy);
+
+      // Etiquetas
+      const lblB = document.getElementById('lbl_b_prime');
+      lblB.setAttribute('x', Bpx - 22);
+      lblB.setAttribute('y', Bpy - 5);
+
+      const lblC = document.getElementById('lbl_c_prime');
+      lblC.setAttribute('x', Cpx + 8);
+      lblC.setAttribute('y', Cpy - 5);
+
+      // Razón k
+      const kTxt = pct.toFixed(2);
+      document.getElementById('txt_ratio_k').innerText = kTxt;
+      document.getElementById('txt_ab_ratio').innerText = kTxt;
+      document.getElementById('txt_ac_ratio').innerText = kTxt;
+      document.getElementById('txt_bc_ratio').innerText = kTxt;
+    }
+    updateSemejanza();
+  </script>
+</body>
+</html>

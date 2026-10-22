@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geometría: Polígonos y su Clasificación</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 1rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* CONTROLES DESLIZANTES */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem; }
+    .slider-row label { width: 150px; font-weight: 600; font-family: monospace; font-size: 1.05rem; }
+    .val-badge { width: 45px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; }
+
+    /* SVG CANVAS */
+    .svg-canvas {
+      width: 100%; height: 270px; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block;
+    }
+
+    /* CAJA DE INFORMACIÓN DINÁMICA */
+    .poly-info-card {
+      background: #090d16; border: 1px solid var(--border-color); border-radius: 8px;
+      padding: 1.2rem; font-family: monospace; font-size: 1.15rem; line-height: 1.8;
+      margin-top: 1rem; text-align: center;
+    }
+
+    /* TARJETAS INFORMATIVAS */
+    .info-card-item {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.3rem;
+    }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Los Polígonos</h1>
+    <p>Aprende qué son, identifica sus partes fundamentales, clasifícalos según sus lados (del triángulo al dodecágono) y comprende la diferencia entre cóncavo y convexo.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('partes', this)">🔷 1. Definición y Partes</button>
+      <button class="tab-btn" onclick="switchTab('regulares', this)">⚖️ 2. Regulares e Irregulares</button>
+      <button class="tab-btn" onclick="switchTab('lados', this)">🔢 3. Según sus Lados (3 a 12)</button>
+      <button class="tab-btn" onclick="switchTab('concavos', this)">↩️ 4. Convexos y Cóncavos</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: DEFINICIÓN Y PARTES ================= -->
+    <div id="partes" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">Etimología: Poli (Muchos) + Gono (Ángulos)</div>
+        <div class="content-text">
+          Un <strong>polígono</strong> es la figura plana delimitada por una <strong>línea poligonal cerrada</strong> y su región interior. Debe estar formado por segmentos rectos consecutivos (no puede tener curvas ni estar abierto).
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Elementos Fundamentales</div>
+          <div style="display:flex; flex-direction:column; gap:0.8rem;">
+            <div class="info-card-item" style="border-left:3px solid var(--accent-blue);">
+              <strong style="color:var(--accent-blue);">Lado:</strong>
+              <p>Cada uno de los segmentos de recta que delimitan el polígono.</p>
+            </div>
+            <div class="info-card-item" style="border-left:3px solid #fff;">
+              <strong style="color:#fff;">Vértice:</strong>
+              <p>El punto de unión entre dos lados consecutivos.</p>
+            </div>
+            <div class="info-card-item" style="border-left:3px solid var(--accent-op);">
+              <strong style="color:var(--accent-op);">Diagonal:</strong>
+              <p>Segmento que une dos vértices no consecutivos.</p>
+            </div>
+            <div class="info-card-item" style="border-left:3px solid var(--accent-gold);">
+              <strong style="color:var(--accent-gold);">Ángulo Interior:</strong>
+              <p>La abertura formada entre dos lados consecutivos dentro del polígono.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Diagrama Anatómico del Polígono</div>
+          
+          <svg class="svg-canvas" viewBox="0 0 320 250">
+            <!-- Polígono pentagonal de ejemplo: Vértices (160,35), (265,100), (225,210), (95,210), (55,100) -->
+            <polygon points="160,35 265,100 225,210 95,210 55,100" fill="rgba(56, 189, 248, 0.12)" stroke="var(--accent-blue)" stroke-width="3" />
+
+            <!-- Diagonal: de (55,100) a (225,210) -->
+            <line x1="55" y1="100" x2="225" y2="210" stroke="var(--accent-op)" stroke-width="2.5" stroke-dasharray="5" />
+            <text x="145" y="165" fill="var(--accent-op)" font-weight="bold" font-size="12" transform="rotate(33, 145, 165)">Diagonal</text>
+
+            <!-- Lado rotulado -->
+            <text x="155" y="228" fill="var(--accent-blue)" font-weight="bold" font-size="13" text-anchor="middle">Lado</text>
+
+            <!-- Arco de ángulo interior en el vértice inferior izquierdo (95, 210) -->
+            <path d="M 120 210 A 25 25 0 0 1 85 185" fill="none" stroke="var(--accent-gold)" stroke-width="2.5" />
+            <text x="105" y="195" fill="var(--accent-gold)" font-weight="bold" font-size="11">Ángulo</text>
+
+            <!-- Vértices marcados con bolitas -->
+            <circle cx="160" cy="35" r="5" fill="#fff" />
+            <text x="160" y="22" fill="#fff" font-weight="bold" font-size="12" text-anchor="middle">Vértice</text>
+
+            <circle cx="265" cy="100" r="4.5" fill="#fff" />
+            <circle cx="225" cy="210" r="4.5" fill="#fff" />
+            <circle cx="95" cy="210" r="4.5" fill="#fff" />
+            <circle cx="55" cy="100" r="4.5" fill="#fff" />
+          </svg>
+
+          <p style="text-align:center; color:var(--text-muted); font-size:0.85rem; margin-top:0.6rem;">
+            En cualquier polígono: <strong>Nº de Lados = Nº de Vértices = Nº de Ángulos Interiores</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: REGULARES E IRREGULARES ================= -->
+    <div id="regulares" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">La Doble Condición de la Regularidad</div>
+        <div class="content-text">
+          Para que un polígono sea <strong>regular</strong> debe cumplir <strong>dos condiciones a la vez</strong>:
+          ser <strong>equilátero</strong> (todos sus lados miden lo mismo) y ser <strong>equiángulo</strong> (todos sus ángulos miden lo mismo). 
+          Si falla una de las dos, es <strong>irregular</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- REGULARES -->
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-success);">Polígonos Regulares (Simetría Perfecta)</div>
+          <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:0.8rem;">
+            Poseen un centro geométrico exacto, <strong>radio</strong> (distancia del centro al vértice) y <strong>apotema</strong> (distancia perpendicular del centro al punto medio de un lado):
+          </p>
+
+          <svg class="svg-canvas" viewBox="0 0 280 200">
+            <!-- Hexágono regular centrado en (140, 100) -->
+            <polygon points="140,25 205,62 205,138 140,175 75,138 75,62" fill="rgba(16, 185, 129, 0.15)" stroke="var(--accent-success)" stroke-width="2.5" />
+            
+            <!-- Centro -->
+            <circle cx="140" cy="100" r="4" fill="#fff" />
+            <text x="145" y="95" fill="#fff" font-size="11">Centro</text>
+
+            <!-- Radio (al vértice) -->
+            <line x1="140" y1="100" x2="205" y2="62" stroke="var(--accent-blue)" stroke-width="2" />
+            <text x="175" y="75" fill="var(--accent-blue)" font-size="11" font-weight="bold">Radio</text>
+
+            <!-- Apotema (perpendicular al lado inferior) -->
+            <line x1="140" y1="100" x2="140" y2="175" stroke="var(--accent-op)" stroke-width="2.5" />
+            <text x="145" y="145" fill="var(--accent-op)" font-size="11" font-weight="bold">Apotema</text>
+          </svg>
+
+          <div style="background:rgba(16,185,129,0.08); padding:0.8rem; border-radius:6px; margin-top:0.8rem; text-align:center; font-size:0.9rem;">
+            Ejemplos: <strong>Triángulo Equilátero</strong>, <strong>Cuadrado</strong>, Pentágono Regular...
+          </div>
+        </div>
+
+        <!-- IRREGULARES -->
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-op);">Polígonos Irregulares (Asimétricos)</div>
+          <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:0.8rem;">
+            Sus lados o sus ángulos no son todos iguales entre sí. ¡Cuidado con las trampas de examen!
+          </p>
+
+          <svg class="svg-canvas" viewBox="0 0 280 200">
+            <!-- Rombo (trampa clásica: lados iguales pero ángulos distintos) -->
+            <polygon points="75,25 125,100 75,175 25,100" fill="rgba(244, 63, 94, 0.15)" stroke="var(--accent-op)" stroke-width="2.5" />
+            <text x="75" y="105" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">Rombo</text>
+
+            <!-- Pentágono deforme irregular -->
+            <polygon points="175,35 255,50 245,175 185,160 155,110" fill="rgba(244, 63, 94, 0.15)" stroke="var(--accent-op)" stroke-width="2.5" />
+            <text x="205" y="115" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">Irregular</text>
+          </svg>
+
+          <div style="background:rgba(244,63,94,0.08); padding:0.8rem; border-radius:6px; margin-top:0.8rem; font-size:0.88rem; line-height:1.5;">
+            ⚠️ <strong>¡Pregunta trampa!:</strong> El <strong>rombo</strong> tiene sus 4 lados iguales, pero NO es un polígono regular porque sus ángulos son distintos (2 agudos y 2 obtusos). El <strong>rectángulo</strong> tiene ángulos de 90º pero sus lados son desiguales 2 a 2.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: SEGÚN SUS LADOS ================= -->
+    <div id="lados" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+        <div class="badge" style="color: var(--accent-blue);">Los Prefijos Griegos Mandan</div>
+        <div class="content-text">
+          El nombre de casi todos los polígonos procede del número griego correspondiente seguido del sufijo <strong>-gono</strong> (ángulo): 
+          <em>penta-</em> (5), <em>hexa-</em> (6), <em>hepta-</em> (7), <em>octa-</em> (8), <em>enea-</em> (9), <em>deca-</em> (10), <em>endeca-</em> (11) y <em>dodeca-</em> (12).
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Selector de Lados</div>
+
+          <div class="slider-row" style="margin-bottom:1.5rem;">
+            <label style="color:var(--accent-blue);">Número de lados (n):</label>
+            <input type="range" id="poly_sides_slider" min="3" max="12" value="5" oninput="updatePolygonSides()">
+            <span class="val-badge" id="v_sides_count" style="color:var(--accent-blue);">5</span>
+          </div>
+
+          <div class="poly-info-card">
+            <div style="font-size:1.6rem; font-weight:bold; color:var(--accent-gold);" id="txt_poly_name">Pentágono</div>
+            <div style="color:var(--text-muted); font-size:1rem; margin-top:0.4rem;" id="txt_poly_prefix">Prefijo: <strong>Penta-</strong> (Cinco)</div>
+            <hr style="border:0; border-top:1px solid var(--border-color); margin:0.8rem 0;">
+            <div style="font-size:0.95rem; color:var(--text-main); text-align:left; line-height:1.7;">
+              • <strong>Vértices y ángulos:</strong> <span id="txt_poly_details" style="color:var(--accent-blue); font-weight:bold;">5</span><br>
+              • <strong>Suma ángulos interiores:</strong> <span id="txt_poly_anglesum" style="color:var(--accent-success); font-weight:bold;">540º</span><br>
+              • <strong>Ángulo interior regular:</strong> <span id="txt_poly_singleangle" style="color:var(--accent-gold); font-weight:bold;">108º</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Visualizador Geométrico en Tiempo Real</div>
+          <svg class="svg-canvas" viewBox="-120 -120 240 240" id="poly_dynamic_svg">
+            <!-- Polígono generado por JS -->
+            <polygon id="poly_shape" points="" fill="rgba(56, 189, 248, 0.15)" stroke="var(--accent-blue)" stroke-width="3" />
+            <!-- Vértices -->
+            <g id="poly_vertices_group"></g>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: CONVEXOS Y CÓNCAVOS ================= -->
+    <div id="concavos" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-op);">
+        <div class="badge" style="color: var(--accent-op);">El Truco de la "Cueva" y de la Recta</div>
+        <div class="content-text">
+          La diferencia entre cóncavo y convexo es una de las preguntas fijas en 1º de ESO. Un polígono es <strong>cóncavo si tiene alguna "cueva" o entrante</strong> (al menos un ángulo mayor de 180º). Si todos sus ángulos son menores de 180º, es <strong>convexo</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- CONVEXO -->
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-success);">Polígono Convexo (Sin Huecos)</div>
+          <ul style="color:var(--text-muted); font-size:0.95rem; line-height:1.7; margin-left:1.2rem; margin-bottom:1rem;">
+            <li>Todos sus ángulos interiores son <strong>menores de 180º</strong>.</li>
+            <li><strong>Todas sus diagonales quedan completamente dentro</strong> del polígono.</li>
+            <li>Cualquier recta que lo atraviese solo corta en <strong>máximo 2 lados</strong>.</li>
+          </ul>
+
+          <svg class="svg-canvas" viewBox="0 0 280 200">
+            <!-- Pentágono convexo -->
+            <polygon points="80,30 200,40 240,150 140,185 40,120" fill="rgba(16, 185, 129, 0.15)" stroke="var(--accent-success)" stroke-width="2.5" />
+            
+            <!-- Recta secante -->
+            <line x1="20" y1="90" x2="260" y2="90" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-dasharray="4" />
+            <circle cx="53" cy="90" r="4" fill="#fff" />
+            <circle cx="218" cy="90" r="4" fill="#fff" />
+            <text x="140" y="80" fill="#fff" font-size="11" text-anchor="middle">Solo 2 cortes</text>
+          </svg>
+        </div>
+
+        <!-- CÓNCAVO -->
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-op);">Polígono Cóncavo (Tiene una Cueva)</div>
+          <ul style="color:var(--text-muted); font-size:0.95rem; line-height:1.7; margin-left:1.2rem; margin-bottom:1rem;">
+            <li>Tiene <strong>al menos un ángulo interior mayor de 180º</strong> (ángulo cóncavo).</li>
+            <li><strong>Al menos una diagonal queda por fuera</strong> del polígono.</li>
+            <li>Una recta puede atravesarlo cortando en <strong>más de 2 puntos</strong>.</li>
+          </ul>
+
+          <svg class="svg-canvas" viewBox="0 0 280 200">
+            <!-- Polígono en forma de flecha/estrella con entrada -->
+            <polygon points="40,40 240,40 240,170 140,105 40,170" fill="rgba(244, 63, 94, 0.15)" stroke="var(--accent-op)" stroke-width="2.5" />
+            
+            <!-- Ángulo > 180º en (140, 105) -->
+            <path d="M 120 118 A 25 25 0 0 0 160 118" fill="none" stroke="var(--accent-gold)" stroke-width="2.5" />
+            <text x="140" y="145" fill="var(--accent-gold)" font-weight="bold" font-size="11" text-anchor="middle">&gt; 180º</text>
+
+            <!-- Diagonal exterior punteada -->
+            <line x1="40" y1="170" x2="240" y2="170" stroke="var(--accent-op)" stroke-width="2" stroke-dasharray="4" />
+            <text x="140" y="188" fill="var(--accent-op)" font-size="11" text-anchor="middle">Diagonal fuera</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓN ENTRE PESTAÑAS ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'lados') updatePolygonSides();
+    }
+
+    // =========================================================================
+    // 3. INSPECTOR INTERACTIVO DE POLÍGONOS REGULARES (3 A 12 LADOS)
+    // =========================================================================
+    const polyData = {
+      3:  { name: "Triángulo", prefix: "Tri- (Tres)", sides: 3 },
+      4:  { name: "Cuadrilátero (Cuadrado)", prefix: "Tetra- / Cuadri- (Cuatro)", sides: 4 },
+      5:  { name: "Pentágono", prefix: "Penta- (Cinco)", sides: 5 },
+      6:  { name: "Hexágono", prefix: "Hexa- (Seis)", sides: 6 },
+      7:  { name: "Heptágono", prefix: "Hepta- (Siete)", sides: 7 },
+      8:  { name: "Octógono / Octágono", prefix: "Octa- (Ocho)", sides: 8 },
+      9:  { name: "Eneágono / Nonágono", prefix: "Enea- (Nueve)", sides: 9 },
+      10: { name: "Decágono", prefix: "Deca- (Diez)", sides: 10 },
+      11: { name: "Endecágono / Undecágono", prefix: "Endeca- (Once)", sides: 11 },
+      12: { name: "Dodecágono", prefix: "Dodeca- (Doce)", sides: 12 }
+    };
+
+    function updatePolygonSides() {
+      const n = parseInt(document.getElementById('poly_sides_slider').value);
+      document.getElementById('v_sides_count').innerText = n;
+
+      const data = polyData[n];
+      document.getElementById('txt_poly_name').innerText = data.name;
+      document.getElementById('txt_poly_prefix').innerHTML = `Prefijo: <strong>${data.prefix}</strong>`;
+      document.getElementById('txt_poly_details').innerText = `${n} lados, ${n} vértices y ${n} ángulos`;
+
+      // Suma de ángulos interiores: S = (n - 2) * 180
+      const sumAngles = (n - 2) * 180;
+      document.getElementById('txt_poly_anglesum').innerText = `${sumAngles}º  [(${n} - 2) · 180º]`;
+
+      // Ángulo interior de un polígono regular: S / n
+      const singleAngle = (sumAngles / n).toFixed(1);
+      document.getElementById('txt_poly_singleangle').innerText = `${singleAngle}º`;
+
+      // Dibujar polígono regular en SVG
+      const r = 90; // radio visual
+      let pointsStr = "";
+      const verticesGroup = document.getElementById('poly_vertices_group');
+      verticesGroup.innerHTML = "";
+
+      // Ángulo inicial para que la base quede horizontal
+      const angleOffset = -Math.PI / 2;
+
+      for (let i = 0; i < n; i++) {
+        const theta = angleOffset + (i * 2 * Math.PI / n);
+        const x = r * Math.cos(theta);
+        const y = r * Math.sin(theta);
+        pointsStr += `${x.toFixed(1)},${y.toFixed(1)} `;
+
+        // Añadir bolita en cada vértice
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", x);
+        circle.setAttribute("cy", y);
+        circle.setAttribute("r", "4");
+        circle.setAttribute("fill", "#fff");
+        verticesGroup.appendChild(circle);
+      }
+
+      document.getElementById('poly_shape').setAttribute('points', pointsStr.trim());
+    }
+    updatePolygonSides();
+  </script>
+</body>
+</html>

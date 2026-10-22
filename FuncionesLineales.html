@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Funciones Lineales: y = mx + n</title>
+  <style>
+    /* ========================================================
+       SISTEMA DE DISEÑO MAESTRO (MODO OSCURO)
+       ======================================================== */
+    :root {
+      --bg-primary: #0f172a;       /* Fondo general oscuro */
+      --bg-card: #1e293b;          /* Fondo de la tarjeta principal */
+      --bg-plate: #334155;         /* Superficie secundaria / botones */
+      --border-color: #475569;     /* Bordes y líneas divisorias */
+
+      --text-main: #f8fafc;        /* Texto blanco principal */
+      --text-muted: #94a3b8;       /* Texto gris secundario */
+
+      --accent-blue: #38bdf8;      /* Títulos y acentos principales */
+      --accent-op: #f43f5e;        /* Pendiente m (rosa/rojo) */
+      --accent-gold: #fbbf24;      /* Corte n (dorado/amarillo) */
+      --accent-success: #10b981;   /* Indicadores positivos */
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    /* Enlace superior de retorno */
+    .nav-bar {
+      max-width: 950px;
+      width: 100%;
+      margin-bottom: 1rem;
+      display: flex;
+    }
+
+    .nav-back-link {
+      color: var(--accent-blue);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: opacity 0.2s;
+    }
+
+    .nav-back-link:hover {
+      opacity: 0.8;
+      text-decoration: underline;
+    }
+
+    /* Cabecera */
+    header.app-header {
+      text-align: center;
+      max-width: 800px;
+      margin-bottom: 2rem;
+    }
+
+    header.app-header h1 {
+      font-size: 2.2rem;
+      color: var(--accent-blue);
+      margin-bottom: 0.5rem;
+    }
+
+    header.app-header p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.5;
+    }
+
+    /* Contenedor tipo Tarjeta */
+    .app-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      max-width: 950px;
+      width: 100%;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Distribución en dos columnas */
+    .sim-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      width: 100%;
+    }
+
+    /* Contenedor del Canvas Cartesiano */
+    .canvas-container {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 440px;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      cursor: crosshair;
+    }
+
+    /* Panel Lateral de Controles */
+    .control-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .equation-display {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .param-m {
+      color: var(--accent-op);
+      font-weight: 800;
+    }
+
+    .param-n {
+      color: var(--accent-gold);
+      font-weight: 800;
+    }
+
+    .slider-group {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .slider-header span.val-badge {
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .val-m {
+      background: rgba(244, 63, 94, 0.15);
+      color: var(--accent-op);
+    }
+
+    .val-n {
+      background: rgba(251, 191, 36, 0.15);
+      color: var(--accent-gold);
+    }
+
+    input[type=range] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--bg-plate);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      margin: 0.5rem 0;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    /* Botones de presets */
+    .presets-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    .btn-preset {
+      padding: 0.6rem 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-preset:hover {
+      color: var(--text-main);
+      border-color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.08);
+      transform: translateY(-1px);
+    }
+
+    /* Tabla de valores */
+    .values-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: center;
+      background: var(--bg-primary);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .values-table th {
+      background: var(--bg-plate);
+      color: var(--text-muted);
+      padding: 0.4rem;
+      font-weight: 600;
+    }
+
+    .values-table td {
+      padding: 0.35rem;
+      border-top: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    /* Tarjeta explicativa inferior */
+    .explanation-card {
+      width: 100%;
+      background: var(--bg-primary);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .explanation-card .badge {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-blue);
+      font-weight: 700;
+    }
+
+    .explanation-card .content-text {
+      font-size: 1.05rem;
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    .explanation-card .highlight-label {
+      font-size: 0.95rem;
+      color: var(--accent-gold);
+      font-weight: 600;
+    }
+
+    @media (max-width: 820px) {
+      .sim-layout {
+        grid-template-columns: 1fr;
+      }
+      .canvas-container {
+        min-height: 360px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navegación superior -->
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link">
+      <span>&larr;</span> Volver al Menú Principal
+    </a>
+  </nav>
+
+  <!-- Cabecera alineada con la plantilla -->
+  <header class="app-header">
+    <h1>Funciones Lineales: y = mx + n</h1>
+    <p>Modifica los parámetros con los deslizadores para ver cómo la pendiente altera la inclinación y la ordenada en el origen traslada la recta verticalmente.</p>
+  </header>
+
+  <!-- Tarjeta contenedora -->
+  <main class="app-container">
+    <div class="sim-layout">
+      
+      <!-- Zona Gráfica Cartesiana -->
+      <div class="canvas-container">
+        <canvas id="cartesianCanvas" width="550" height="450"></canvas>
+      </div>
+
+      <!-- Panel Lateral de Mandos e Información -->
+      <div class="control-panel">
+        
+        <!-- Fórmula dinámica -->
+        <div class="equation-display" id="equationBox">
+          y = <span class="param-m">1</span>x + <span class="param-n">0</span>
+        </div>
+
+        <!-- Control Deslizante: Pendiente (m) -->
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>Pendiente (<strong class="param-m">m</strong>)</span>
+            <span class="val-badge val-m" id="badgeM">m = 1.0</span>
+          </div>
+          <input type="range" id="sliderM" min="-5" max="5" step="0.5" value="1">
+        </div>
+
+        <!-- Control Deslizante: Ordenada en el origen (n) -->
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>Corte con eje Y (<strong class="param-n">n</strong>)</span>
+            <span class="val-badge val-n" id="badgeN">n = 0.0</span>
+          </div>
+          <input type="range" id="sliderN" min="-5" max="5" step="0.5" value="0">
+        </div>
+
+        <!-- Casos didácticos directos -->
+        <div class="presets-container">
+          <button class="btn-preset" data-m="0" data-n="2">Constante (m = 0)</button>
+          <button class="btn-preset" data-m="2" data-n="0">Proporcional (n = 0)</button>
+          <button class="btn-preset" data-m="-1" data-n="3">Decreciente (m &lt; 0)</button>
+          <button class="btn-preset" data-m="3" data-n="-2">Creciente rápida</button>
+        </div>
+
+        <!-- Tabla pequeña de valores calculados en tiempo real -->
+        <table class="values-table">
+          <thead>
+            <tr>
+              <th>x</th>
+              <th>-2</th>
+              <th>-1</th>
+              <th>0</th>
+              <th>1</th>
+              <th>2</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="yValuesRow">
+              <th>y</th>
+              <td>-2</td>
+              <td>-1</td>
+              <td>0</td>
+              <td>1</td>
+              <td>2</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+
+    </div>
+
+    <!-- Tarjeta Didáctica Explicativa -->
+    <div style="padding: 0 1.5rem 1.5rem 1.5rem;">
+      <div class="explanation-card">
+        <div class="badge" id="typeBadge">Tipo de función: Función de proporcionalidad directa</div>
+        <div class="content-text" id="explanationText">
+          La recta pasa por el origen (0, 0) porque n = 0. Al ser la pendiente positiva (m > 0), la función es creciente.
+        </div>
+        <div class="highlight-label" id="keyFeature">
+          Punto de corte con el eje Y: (0, 0)
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const canvas = document.getElementById('cartesianCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Elementos del DOM
+    const sliderM = document.getElementById('sliderM');
+    const sliderN = document.getElementById('sliderN');
+    const badgeM = document.getElementById('badgeM');
+    const badgeN = document.getElementById('badgeN');
+    const equationBox = document.getElementById('equationBox');
+    const typeBadge = document.getElementById('typeBadge');
+    const explanationText = document.getElementById('explanationText');
+    const keyFeature = document.getElementById('keyFeature');
+    const yValuesRow = document.getElementById('yValuesRow');
+    const presetButtons = document.querySelectorAll('.btn-preset');
+
+    const range = 6;
+    let scale = canvas.width / (range * 2);
+    let originX = canvas.width / 2;
+    let originY = canvas.height / 2;
+
+    function resizeCanvas() {
+      const container = canvas.parentElement;
+      const rect = container.getBoundingClientRect();
+      const size = Math.min(rect.width, 550);
+      canvas.width = size;
+      canvas.height = Math.max(380, Math.min(rect.height, 460));
+      scale = canvas.width / (range * 2);
+      originX = canvas.width / 2;
+      originY = canvas.height / 2;
+      draw();
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+
+    function toScreenX(x) { return originX + x * scale; }
+    function toScreenY(y) { return originY - y * scale; }
+
+    function drawGrid() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Rejilla de fondo
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+
+      for (let i = -range; i <= range; i++) {
+        ctx.beginPath();
+        ctx.moveTo(toScreenX(i), 0);
+        ctx.lineTo(toScreenX(i), canvas.height);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(0, toScreenY(i));
+        ctx.lineTo(canvas.width, toScreenY(i));
+        ctx.stroke();
+      }
+
+      // Ejes principales
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 2;
+
+      ctx.beginPath();
+      ctx.moveTo(0, originY);
+      ctx.lineTo(canvas.width, originY);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(originX, 0);
+      ctx.lineTo(originX, canvas.height);
+      ctx.stroke();
+
+      // Números en los ejes
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+
+      for (let i = -range; i <= range; i++) {
+        if (i !== 0 && i % 2 === 0) {
+          ctx.fillText(i, toScreenX(i), originY + 5);
+        }
+      }
+
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      for (let i = -range; i <= range; i++) {
+        if (i !== 0 && i % 2 === 0) {
+          ctx.fillText(i, originX - 6, toScreenY(i));
+        }
+      }
+    }
+
+    function draw() {
+      const m = parseFloat(sliderM.value);
+      const n = parseFloat(sliderN.value);
+
+      drawGrid();
+
+      // Recta continua
+      const x1 = -range - 2;
+      const y1 = m * x1 + n;
+      const x2 = range + 2;
+      const y2 = m * x2 + n;
+
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(toScreenX(x1), toScreenY(y1));
+      ctx.lineTo(toScreenX(x2), toScreenY(y2));
+      ctx.stroke();
+
+      // Punto de corte con eje Y (0, n)
+      if (n >= -range && n <= range) {
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.arc(toScreenX(0), toScreenY(n), 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(` (0, ${n})`, toScreenX(0) + 7, toScreenY(n) - 4);
+      }
+
+      // Triángulo didáctico de pendiente
+      if (m !== 0) {
+        const xStep = 1;
+        const startX = 0;
+        const startY = n;
+        const endX = startX + xStep;
+        const endY = startY + m;
+
+        ctx.strokeStyle = 'rgba(244, 63, 94, 0.7)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+
+        ctx.beginPath();
+        ctx.moveTo(toScreenX(startX), toScreenY(startY));
+        ctx.lineTo(toScreenX(endX), toScreenY(startY));
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(toScreenX(endX), toScreenY(startY));
+        ctx.lineTo(toScreenX(endX), toScreenY(endY));
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#f43f5e';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(` m = ${m}`, toScreenX(endX) + 4, toScreenY((startY + endY) / 2));
+      }
+
+      updateUI(m, n);
+    }
+
+    function updateUI(m, n) {
+      badgeM.textContent = `m = ${m.toFixed(1)}`;
+      badgeN.textContent = `n = ${n.toFixed(1)}`;
+
+      // Fórmula visual
+      let eqHtml = 'y = ';
+      if (m === 0) {
+        eqHtml += `<span class="param-n">${n}</span>`;
+      } else {
+        const mStr = m === 1 ? '' : m === -1 ? '-' : m;
+        eqHtml += `<span class="param-m">${mStr}</span>x`;
+        if (n > 0) {
+          eqHtml += ` + <span class="param-n">${n}</span>`;
+        } else if (n < 0) {
+          eqHtml += ` - <span class="param-n">${Math.abs(n)}</span>`;
+        }
+      }
+      equationBox.innerHTML = eqHtml;
+
+      // Texto pedagógico dinámico
+      let type = '';
+      let explanation = '';
+
+      if (m === 0) {
+        type = 'Función Constante (Recta horizontal)';
+        explanation = `La pendiente es 0, lo que significa que la función no sube ni baja: para cualquier valor de x, la 'y' siempre vale exactamente ${n}. La recta es totalmente paralela al eje X.`;
+      } else if (n === 0) {
+        type = 'Función de Proporcionalidad Directa';
+        explanation = `La recta pasa exactamente por el origen de coordenadas (0, 0). ${m > 0 ? 'Es creciente: al avanzar en x hacia la derecha, la recta sube.' : 'Es decreciente: al avanzar en x hacia la derecha, la recta baja.'}`;
+      } else {
+        type = 'Función Afín / Lineal General';
+        explanation = `La recta corta al eje Y en la altura n = ${n}. ${m > 0 ? `Por cada unidad que avanzas a la derecha en el eje X, la función sube ${m} unidades.` : `Por cada unidad que avanzas a la derecha en el eje X, la función desciende ${Math.abs(m)} unidades.`}`;
+      }
+
+      typeBadge.textContent = `Tipo de función: ${type}`;
+      explanationText.textContent = explanation;
+      keyFeature.innerHTML = `Punto de corte con eje Y: <strong>(0, ${n})</strong> &nbsp;|&nbsp; Inclinación: <strong>${m > 0 ? 'Creciente' : m < 0 ? 'Decreciente' : 'Sin pendiente'}</strong>`;
+
+      // Tabla de valores dinámicos
+      const xs = [-2, -1, 0, 1, 2];
+      let rowHtml = '<th>y</th>';
+      xs.forEach(x => {
+        const y = m * x + n;
+        rowHtml += `<td>${Number.isInteger(y) ? y : y.toFixed(1)}</td>`;
+      });
+      yValuesRow.innerHTML = rowHtml;
+    }
+
+    sliderM.addEventListener('input', draw);
+    sliderN.addEventListener('input', draw);
+
+    presetButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        sliderM.value = btn.dataset.m;
+        sliderN.value = btn.dataset.n;
+        draw();
+      });
+    });
+
+    resizeCanvas();
+  </script>
+</body>
+</html>

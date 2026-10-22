@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aritmética: Fracción Generatriz</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    /* ARCO / GORRITO PERIÓDICO */
+    .periodo {
+      position: relative;
+      display: inline-block;
+      padding-top: 2px;
+    }
+    .periodo::before {
+      content: "";
+      position: absolute;
+      top: -3px;
+      left: 1px;
+      right: 1px;
+      height: 6px;
+      border: 2px solid var(--accent-op);
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 1rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* CODIFICACIÓN DE COLORES PARA PARTES DECIMALES */
+    .c-ent { color: #fff; font-weight: bold; }
+    .c-ante { color: var(--accent-gold); font-weight: bold; }
+    .c-per { color: var(--accent-op); font-weight: bold; text-decoration: overline; }
+    .c-per-plain { color: var(--accent-op); font-weight: bold; }
+
+    /* RESTA ALGEBRAICA EN VERTICAL */
+    .vertical-sub-box {
+      background: #090d16; border: 1px solid var(--border-color); border-radius: 10px;
+      padding: 1.5rem; font-family: 'Courier New', Courier, monospace; font-size: 1.35rem;
+      line-height: 1.8; margin: 1rem 0;
+    }
+    .sub-line-top { display: flex; justify-content: space-between; border-bottom: 2px solid transparent; }
+    .sub-line-bot { display: flex; justify-content: space-between; border-bottom: 2px solid var(--text-main); padding-bottom: 4px; }
+    .sub-line-res { display: flex; justify-content: space-between; padding-top: 6px; font-weight: bold; color: var(--accent-success); }
+    .cancelled-digits {
+      color: rgba(244, 63, 94, 0.4); text-decoration: line-through;
+    }
+
+    /* FORMATO DE FRACCIÓN VERTICAL */
+    .f-block {
+      display: inline-flex; flex-direction: column; vertical-align: middle;
+      text-align: center; margin: 0 0.5rem; font-family: monospace; font-weight: bold; font-size: 1.3rem;
+    }
+    .f-block .top { border-bottom: 2px solid currentColor; padding: 0 0.3rem; }
+    .f-block .bot { padding: 0 0.3rem; }
+
+    /* CONTROLES PASO A PASO */
+    .controls { display: flex; gap: 1rem; justify-content: center; margin-top: 1rem; }
+    .step-card {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 1rem 1.2rem; margin-bottom: 0.8rem;
+    }
+    .step-card.active {
+      border-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05);
+    }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .vertical-sub-box { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Fracción Generatriz</h1>
+    <p>Aprende el método algebraico para transformar cualquier número decimal en su fracción irreducible exacta sin fórmulas memorizadas.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('exacto', this)">🎯 1. Decimal Exacto</button>
+      <button class="tab-btn" onclick="switchTab('puro', this)">🔄 2. Periódico Puro</button>
+      <button class="tab-btn" onclick="switchTab('mixto', this)">🔀 3. Periódico Mixto</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: DECIMAL EXACTO ================= -->
+    <div id="exacto" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">Decimal Finito (Tiene fin)</div>
+        <div class="content-text">
+          Son los más sencillos. Tienen un número limitado de cifras decimales. Como la coma avanza de 10 en 10 (sistema decimal), simplemente <strong>escribimos todo el número sin coma en el numerador y dividimos entre un 1 seguido de tantos ceros como decimales tenga</strong>. Luego, siempre simplificamos.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Ejemplo Detallado: Transformar 2,75</div>
+          
+          <div class="step-card active">
+            <h4 style="color:var(--accent-blue); margin-bottom:0.3rem;">Paso 1: Contar los decimales</h4>
+            <p style="color:var(--text-muted); font-size:0.95rem;">
+              El número es <strong>2,75</strong>. Detrás de la coma hay <strong>2 cifras</strong> (el 7 y el 5).
+            </p>
+          </div>
+
+          <div class="step-card active">
+            <h4 style="color:var(--accent-gold); margin-bottom:0.3rem;">Paso 2: Escribir la fracción decimal</h4>
+            <p style="color:var(--text-muted); font-size:0.95rem;">
+              Arriba va el número sin coma: <strong>275</strong>.<br>
+              Abajo va un 1 con dos ceros: <strong>100</strong>.
+            </p>
+            <div style="text-align:center; margin-top:0.6rem;">
+              <span class="f-block"><span class="top">275</span><span class="bot">100</span></span>
+            </div>
+          </div>
+
+          <div class="step-card active">
+            <h4 style="color:var(--accent-success); margin-bottom:0.3rem;">Paso 3: Simplificar a la fracción irreducible</h4>
+            <p style="color:var(--text-muted); font-size:0.95rem;">
+              Ambos números acaban en 5 y 0, dividimos numerador y denominador entre 25:
+            </p>
+            <div style="text-align:center; margin-top:0.6rem; font-size:1.2rem;">
+              <span class="f-block"><span class="top">275 ÷ 25</span><span class="bot">100 ÷ 25</span></span>
+              <span> = </span>
+              <span class="f-block" style="color:var(--accent-success);"><span class="top">11</span><span class="bot">4</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="justify-content:center; text-align:center;">
+          <div class="panel-title">Comprobación Inmediata</div>
+          <p style="color:var(--text-muted); margin-bottom:1rem;">
+            Toda fracción es una división. Si divides el numerador entre el denominador en la calculadora, recuperas el decimal exacto:
+          </p>
+          <div style="font-family:monospace; font-size:2rem; font-weight:bold; color:var(--accent-blue); background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color);">
+            11 ÷ 4 = 2,75 ✓
+          </div>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-top:1rem;">
+            Regla mnemotécnica: <br>
+            • 1 decimal ➔ dividir entre 10 <br>
+            • 2 decimales ➔ dividir entre 100 <br>
+            • 3 decimales ➔ dividir entre 1000
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: PERIÓDICO PURO ================= -->
+    <div id="puro" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-op);">
+        <div class="badge" style="color: var(--accent-op);">El Truco de Restar la Cola Infinita</div>
+        <div class="content-text">
+          En los periódicos puros, las cifras se repiten hasta el infinito justo detrás de la coma: <strong>2,<span class="periodo">36</span> = 2,363636...</strong><br>
+          No podemos dividir entre ceros porque no acabaríamos nunca. <strong>El truco consiste en llamar <em>a</em> al número, multiplicarlo para correr la coma un período completo y restar las dos expresiones</strong>: ¡la cola infinita idéntica se cancela y desaparece por completo!
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Planteamiento Paso a Paso: 2,363636...</div>
+
+          <div class="step-card active">
+            <strong style="color:var(--accent-blue);">Paso 1: Llamamos "a" al número original</strong>
+            <div style="font-family:monospace; font-size:1.15rem; margin-top:0.3rem;">
+              a = 2,363636...
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.2rem;">El período tiene <strong>2 cifras</strong> ("36").</p>
+          </div>
+
+          <div class="step-card active">
+            <strong style="color:var(--accent-gold);">Paso 2: Multiplicamos por 100 para mover un período completo</strong>
+            <div style="font-family:monospace; font-size:1.15rem; margin-top:0.3rem;">
+              100 · a = 236,363636...
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.2rem;">Corremos la coma 2 posiciones hacia la derecha.</p>
+          </div>
+
+          <div class="step-card active">
+            <strong style="color:var(--accent-success);">Paso 3: Restamos en vertical (100a - a)</strong>
+            <p style="font-size:0.85rem; color:var(--text-muted);">
+              Observa cómo todos los decimales infinitos coinciden exactamente y se destruyen al restar:
+            </p>
+            <div class="vertical-sub-box">
+              <div class="sub-line-top">
+                <span>100a</span>
+                <span>= 236,<span class="cancelled-digits">363636...</span></span>
+              </div>
+              <div class="sub-line-bot">
+                <span>- &nbsp;&nbsp;a</span>
+                <span>= &nbsp;&nbsp;2,<span class="cancelled-digits">363636...</span></span>
+              </div>
+              <div class="sub-line-res">
+                <span>&nbsp;99a</span>
+                <span>= 234</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="justify-content:center;">
+          <div class="panel-title">Paso 4: Despejar y Simplificar</div>
+
+          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.2rem; line-height:2; text-align:center;">
+            <div>99a = 234</div>
+            <div>
+              a = 
+              <span class="f-block"><span class="top">234</span><span class="bot">99</span></span>
+            </div>
+            <div style="color:var(--text-muted); font-size:0.9rem; line-height:1.4; margin:0.5rem 0;">
+              (Dividimos entre 9 para hallar la fracción irreducible)
+            </div>
+            <div style="font-size:1.4rem;">
+              a = 
+              <span class="f-block" style="color:var(--accent-success);"><span class="top">26</span><span class="bot">11</span></span>
+            </div>
+          </div>
+
+          <div style="background:rgba(16,185,129,0.1); border:1px solid var(--accent-success); border-radius:8px; padding:1rem; margin-top:1rem; text-align:center;">
+            <strong style="color:var(--accent-success);">Comprobación:</strong>
+            <div style="font-family:monospace; font-size:1.3rem; margin-top:0.3rem;">26 ÷ 11 = 2,363636... ✓</div>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.4rem;">
+              ¡Ahora entiendes por qué salen nueves en el denominador! El <strong>99</strong> procede de restar <strong>100a - 1a</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: PERIÓDICO MIXTO ================= -->
+    <div id="mixto" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">Anteperíodo + Período</div>
+        <div class="content-text">
+          En los periódicos mixtos hay números decimales "rebeldes" que no se repiten antes de que empiece la fiesta periódica. Por ejemplo: 
+          <strong>1,2<span class="c-per">45</span> = 1,2454545...</strong><br>
+          • <strong>1</strong> es la parte entera.<br>
+          • <strong>2</strong> es el <strong>anteperíodo</strong> (no se repite).<br>
+          • <strong>45</strong> es el <strong>período</strong> (se repite infinitamente).
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">El Doble Salto Algebraico: 1,2454545...</div>
+
+          <div class="step-card active">
+            <strong style="color:var(--accent-blue);">Paso 1: Llamamos "a" al número</strong>
+            <div style="font-family:monospace; font-size:1.15rem; margin-top:0.2rem;">
+              a = 1,2454545...
+            </div>
+          </div>
+
+          <div class="step-card active">
+            <strong style="color:var(--accent-gold);">Paso 2: Salto 1 ➔ Llevar la coma al inicio del período</strong>
+            <p style="font-size:0.85rem; color:var(--text-muted);">Como hay 1 cifra de anteperíodo (el 2), multiplicamos por <strong>10</strong>:</p>
+            <div style="font-family:monospace; font-size:1.15rem; margin-top:0.2rem;">
+              10 · a = 12,454545...
+            </div>
+          </div>
+
+          <div class="step-card active">
+            <strong style="color:var(--accent-op);">Paso 3: Salto 2 ➔ Llevar la coma al final de un período completo</strong>
+            <p style="font-size:0.85rem; color:var(--text-muted);">Desde el número original hay 3 decimales hasta completar un período (el 2, el 4 y el 5). Multiplicamos por <strong>1000</strong>:</p>
+            <div style="font-family:monospace; font-size:1.15rem; margin-top:0.2rem;">
+              1000 · a = 1245,454545...
+            </div>
+          </div>
+
+          <div class="step-card active">
+            <strong style="color:var(--accent-success);">Paso 4: Restar las dos igualdades (1000a - 10a)</strong>
+            <div class="vertical-sub-box">
+              <div class="sub-line-top">
+                <span>1000a</span>
+                <span>= 1245,<span class="cancelled-digits">4545...</span></span>
+              </div>
+              <div class="sub-line-bot">
+                <span>- &nbsp;&nbsp;10a</span>
+                <span>= &nbsp;&nbsp;&nbsp;12,<span class="cancelled-digits">4545...</span></span>
+              </div>
+              <div class="sub-line-res">
+                <span>&nbsp;&nbsp;990a</span>
+                <span>= 1233</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="justify-content:center;">
+          <div class="panel-title">Despeje y Explicación del 990</div>
+
+          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.2rem; line-height:2; text-align:center;">
+            <div>990a = 1233</div>
+            <div>
+              a = 
+              <span class="f-block"><span class="top">1233</span><span class="bot">990</span></span>
+            </div>
+            <div style="color:var(--text-muted); font-size:0.9rem; line-height:1.4; margin:0.5rem 0;">
+              (Dividimos entre 9 para simplificar)
+            </div>
+            <div style="font-size:1.4rem;">
+              a = 
+              <span class="f-block" style="color:var(--accent-success);"><span class="top">137</span><span class="bot">110</span></span>
+            </div>
+          </div>
+
+          <div style="background:rgba(251,191,36,0.1); border:1px solid var(--accent-gold); border-radius:8px; padding:1rem; margin-top:1rem; text-align:center;">
+            <strong style="color:var(--accent-gold);">¿Por qué aparecen 9s y 0s?</strong>
+            <p style="font-size:0.9rem; color:var(--text-main); line-height:1.5; margin-top:0.4rem;">
+              Al restar <code>1000a - 10a = 990a</code>: <br>
+              • Salen <strong>dos nueves</strong> porque el período tiene 2 cifras ("45").<br>
+              • Sale <strong>un cero</strong> porque el anteperíodo tiene 1 cifra ("2").
+            </p>
+          </div>
+
+          <div style="background:rgba(16,185,129,0.1); border:1px solid var(--accent-success); border-radius:8px; padding:0.8rem; margin-top:0.8rem; text-align:center;">
+            <span style="font-family:monospace; font-size:1.15rem; color:var(--accent-success); font-weight:bold;">137 ÷ 110 = 1,2454545... ✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓN ENTRE PESTAÑAS ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
+  </script>
+</body>
+</html>

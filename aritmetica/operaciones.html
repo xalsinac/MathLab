@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aritmética: Operaciones Básicas</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 1.2rem 1rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; }
+
+    /* PIZARRA Y REJILLA */
+    .math-board {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 350px;
+      overflow-x: auto;
+    }
+
+    .vertical-sum {
+      display: grid;
+      gap: 5px;
+      font-size: 3.5rem;
+      font-weight: 700;
+      font-family: 'Courier New', Courier, monospace;
+      text-align: center;
+      position: relative;
+    }
+
+    .cell {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .col-u { color: var(--accent-blue); }  
+    .col-d { color: var(--accent-op); }    
+    .col-c { color: var(--accent-gold); }  
+    .signo { color: var(--text-muted); }
+
+    /* LLEVADAS SUMA */
+    .carry-row { font-size: 1.5rem; color: var(--accent-success); min-height: 30px; margin-bottom: -10px; }
+    .result-row { border-top: 4px solid var(--text-main); padding-top: 10px; margin-top: 5px; }
+
+    /* EFECTOS Y ANIMACIONES */
+    .highlight-col { background: rgba(255, 255, 255, 0.1); box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); }
+    .carry-enter { animation: dropIn 0.5s ease forwards; }
+    @keyframes dropIn {
+      0% { opacity: 0; transform: translateY(15px) scale(0.5); color: #fff; }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* LLEVADAS RESTA */
+    .carry-bot { font-size: 1.2rem; color: var(--accent-op); position: absolute; bottom: -5px; right: -10px; font-weight: bold; }
+
+    /* ANIMACIÓN BAJAR CIFRA (DIVISIÓN) */
+    .drop-digit { animation: dropDownAnim 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    @keyframes dropDownAnim {
+      0% { opacity: 0; transform: translateY(-25px); color: transparent; }
+      100% { opacity: 1; transform: translateY(0); color: inherit; }
+    }
+
+    /* CONTROLES */
+    .controls { display: flex; gap: 1rem; justify-content: center; margin-top: 1rem; }
+
+    @media (max-width: 600px) {
+      .vertical-sum { font-size: 2.2rem; }
+      .tab-content { padding: 1.5rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Operaciones con Naturales</h1>
+    <p>Aprende paso a paso los algoritmos de la suma, resta, multiplicación y división larga.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('suma', this)">➕ Suma</button>
+      <button class="tab-btn" onclick="switchTab('resta', this)">➖ Resta</button>
+      <button class="tab-btn" onclick="switchTab('multi', this)">✖️ Multiplicación</button>
+      <button class="tab-btn" onclick="switchTab('divi', this)">➗ División Larga</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: SUMA ================= -->
+    <div id="suma" class="tab-content active">
+      <div class="math-board">
+        <div class="vertical-sum" style="grid-template-columns: 40px repeat(3, 70px);">
+          <div class="cell carry-row"></div>
+          <div class="cell carry-row col-c"><span id="c100"></span></div>
+          <div class="cell carry-row col-d"><span id="c10"></span></div>
+          <div class="cell carry-row col-u"></div>
+
+          <div class="cell"></div>
+          <div class="cell col-c">4</div>
+          <div class="cell col-d">8</div>
+          <div class="cell col-u">6</div>
+
+          <div class="cell signo">+</div>
+          <div class="cell col-c">2</div>
+          <div class="cell col-d">5</div>
+          <div class="cell col-u">7</div>
+
+          <div class="cell result-row"></div>
+          <div class="cell result-row col-c"><span id="r100"></span></div>
+          <div class="cell result-row col-d"><span id="r10"></span></div>
+          <div class="cell result-row col-u"><span id="r1"></span></div>
+        </div>
+      </div>
+      <div class="explanation-card">
+        <div class="badge" id="stepIndicator">Paso 0</div>
+        <div class="content-text" id="pedagogicalText"></div>
+      </div>
+      <div class="controls">
+        <button class="btn btn-secondary" id="btnPrev" disabled>← Paso Anterior</button>
+        <button class="btn btn-primary" id="btnNext">Siguiente Paso →</button>
+        <button class="btn btn-secondary" id="btnReset" style="background: transparent; border: 1px solid var(--border-color);">Reiniciar</button>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: RESTA ================= -->
+    <div id="resta" class="tab-content">
+      <div class="math-board">
+        <div class="vertical-sum" style="grid-template-columns: 40px repeat(3, 70px);">
+          <div class="cell carry-row"></div>
+          <div class="cell carry-row col-c"></div>
+          <div class="cell carry-row col-d"><span id="r_top10"></span></div>
+          <div class="cell carry-row col-u"><span id="r_top1"></span></div>
+
+          <div class="cell"></div>
+          <div class="cell col-c">8</div>
+          <div class="cell col-d">3</div>
+          <div class="cell col-u">2</div>
+
+          <div class="cell signo">-</div>
+          <div class="cell col-c">4<span id="r_bot100" class="carry-bot"></span></div>
+          <div class="cell col-d">5<span id="r_bot10" class="carry-bot"></span></div>
+          <div class="cell col-u">7</div>
+
+          <div class="cell result-row"></div>
+          <div class="cell result-row col-c"><span id="r_res100"></span></div>
+          <div class="cell result-row col-d"><span id="r_res10"></span></div>
+          <div class="cell result-row col-u"><span id="r_res1"></span></div>
+        </div>
+      </div>
+      <div class="explanation-card" style="border-left-color: var(--accent-op);">
+        <div class="badge" style="color: var(--accent-op);" id="stepIndicatorResta">Paso 0</div>
+        <div class="content-text" id="pedagogicalTextResta"></div>
+      </div>
+      <div class="controls">
+        <button class="btn btn-secondary" id="btnPrevResta" disabled>← Paso Anterior</button>
+        <button class="btn btn-primary" id="btnNextResta" style="background: var(--accent-op); color: white;">Siguiente Paso →</button>
+        <button class="btn btn-secondary" id="btnResetResta" style="background: transparent; border: 1px solid var(--border-color);">Reiniciar</button>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: MULTIPLICACIÓN ================= -->
+    <div id="multi" class="tab-content">
+      <div class="math-board">
+        <div class="vertical-sum" style="grid-template-columns: 40px repeat(4, minmax(45px, 60px));">
+          <div class="cell carry-row"></div>
+          <div class="cell carry-row" style="color: #a855f7;"><span id="m_c1000"></span></div>
+          <div class="cell carry-row col-c"><span id="m_c100"></span></div>
+          <div class="cell carry-row col-d"><span id="m_c10"></span></div>
+          <div class="cell carry-row col-u"></div>
+
+          <div class="cell"></div><div class="cell"></div>
+          <div class="cell col-c">3</div><div class="cell col-d">4</div><div class="cell col-u">5</div>
+
+          <div class="cell signo">×</div><div class="cell"></div><div class="cell"></div>
+          <div class="cell col-d" id="m_f2_10">2</div><div class="cell col-u" id="m_f2_1">6</div>
+
+          <div class="cell result-row"></div>
+          <div class="cell result-row" style="color: #a855f7;"><span id="m_p1_1000"></span></div>
+          <div class="cell result-row col-c"><span id="m_p1_100"></span></div>
+          <div class="cell result-row col-d"><span id="m_p1_10"></span></div>
+          <div class="cell result-row col-u"><span id="m_p1_1"></span></div>
+
+          <div class="cell signo"><span id="m_plus"></span></div>
+          <div class="cell" style="color: #a855f7;"><span id="m_p2_1000"></span></div>
+          <div class="cell col-c"><span id="m_p2_100"></span></div>
+          <div class="cell col-d"><span id="m_p2_10"></span></div>
+          <div class="cell signo" style="border: 2px dashed var(--border-color); border-radius: 4px; height: 80%;"><span id="m_p2_1"></span></div>
+
+          <div class="cell result-row"></div>
+          <div class="cell result-row" style="color: #a855f7;"><span id="m_rf_1000"></span></div>
+          <div class="cell result-row col-c"><span id="m_rf_100"></span></div>
+          <div class="cell result-row col-d"><span id="m_rf_10"></span></div>
+          <div class="cell result-row col-u"><span id="m_rf_1"></span></div>
+        </div>
+      </div>
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);" id="stepIndicatorMulti">Paso 0</div>
+        <div class="content-text" id="pedagogicalTextMulti"></div>
+      </div>
+      <div class="controls">
+        <button class="btn btn-secondary" id="btnPrevMulti" disabled>← Paso Anterior</button>
+        <button class="btn btn-primary" id="btnNextMulti" style="background: var(--accent-gold); color: #000;">Siguiente Paso →</button>
+        <button class="btn btn-secondary" id="btnResetMulti" style="background: transparent; border: 1px solid var(--border-color);">Reiniciar</button>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: DIVISIÓN LARGA ================= -->
+    <div id="divi" class="tab-content">
+      <div class="math-board">
+        <div class="vertical-sum" style="grid-template-columns: 40px repeat(3, 50px) 20px 140px; grid-template-rows: repeat(7, 55px);">
+
+          <!-- Fila 1: Dividendo y Divisor -->
+          <div class="cell"></div>
+          <div class="cell" style="position:relative"><span id="d_hat1" style="position:absolute; top:-20px; color:var(--accent-op); font-size: 2rem;"></span>8</div>
+          <div class="cell" style="position:relative"><span id="d_hat2" style="position:absolute; top:-20px; color:var(--accent-op); font-size: 2rem;"></span>5</div>
+          <div class="cell" style="position:relative"><span id="d_hat3" style="position:absolute; top:-20px; color:var(--accent-op); font-size: 2rem;"></span>2</div>
+          <div class="cell"></div>
+          <div class="cell" style="border-left: 4px solid var(--text-main); border-bottom: 4px solid var(--text-main); text-align: left; padding-left: 15px; border-radius: 0 0 0 8px;">3</div>
+
+          <!-- Fila 2: Resta 1 y Cociente -->
+          <div class="cell signo" id="d_s1"></div>
+          <div class="cell" id="d_sub1_c" style="border-bottom: 4px solid transparent; color: var(--accent-op);"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell" id="d_q" style="text-align: left; padding-left: 15px; letter-spacing: 5px; color:var(--accent-success); justify-content: flex-start;"></div>
+
+          <!-- Fila 3: Resto 1 y Bajar Cifra -->
+          <div class="cell"></div>
+          <div class="cell" id="d_rem1_c" style="color:var(--accent-blue)"></div>
+          <div class="cell" id="d_drop1_d"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+
+          <!-- Fila 4: Resta 2 -->
+          <div class="cell signo" id="d_s2"></div>
+          <div class="cell" id="d_sub2_c" style="border-bottom: 4px solid transparent; color: var(--accent-op);"></div>
+          <div class="cell" id="d_sub2_d" style="border-bottom: 4px solid transparent; color: var(--accent-op);"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+
+          <!-- Fila 5: Resto 2 y Bajar Cifra -->
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell" id="d_rem2_d" style="color:var(--accent-blue)"></div>
+          <div class="cell" id="d_drop2_u"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+
+          <!-- Fila 6: Resta 3 -->
+          <div class="cell"></div>
+          <div class="cell signo" id="d_s3"></div>
+          <div class="cell" id="d_sub3_d" style="border-bottom: 4px solid transparent; color: var(--accent-op);"></div>
+          <div class="cell" id="d_sub3_u" style="border-bottom: 4px solid transparent; color: var(--accent-op);"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+
+          <!-- Fila 7: Resto Final -->
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+          <div class="cell" id="d_rem3_u" style="color:var(--accent-gold)"></div>
+          <div class="cell"></div>
+          <div class="cell"></div>
+        </div>
+      </div>
+
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);" id="stepIndicatorDivi">Paso 0</div>
+        <div class="content-text" id="pedagogicalTextDivi"></div>
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-secondary" id="btnPrevDivi" disabled>← Paso Anterior</button>
+        <button class="btn btn-primary" id="btnNextDivi" style="background: var(--accent-success); color: white;">Siguiente Paso →</button>
+        <button class="btn btn-secondary" id="btnResetDivi" style="background: transparent; border: 1px solid var(--border-color);">Reiniciar</button>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // ================= SUMA =================
+    const sumaSteps = [
+      { col: null, c10: "", c100: "", r1: "", r10: "", r100: "", text: "Para sumar, siempre colocamos los números alineados por la derecha (unidades con unidades, decenas con decenas). Empezamos siempre a operar por la columna de las unidades." },
+      { col: "u", c10: "1", c100: "", r1: "3", r10: "", r100: "", text: "<strong>1. Unidades:</strong> Sumamos 6 + 7 = 13. Escribimos el 3 abajo y nos <strong>llevamos 1</strong> a la columna de las decenas." },
+      { col: "d", c10: "1", c100: "1", r1: "3", r10: "4", r100: "", text: "<strong>2. Decenas:</strong> Sumamos 8 + 5 = 13, más 1 que nos llevábamos son 14. Escribimos el 4 abajo y nos <strong>llevamos 1</strong> a las centenas." },
+      { col: "c", c10: "1", c100: "1", r1: "3", r10: "4", r100: "7", text: "<strong>3. Centenas:</strong> Sumamos 4 + 2 = 6, más 1 que nos llevábamos son 7. Escribimos el 7 abajo. ¡Suma completada! El resultado es 743." }
+    ];
+    let currentStep = 0;
+    function updateSumaView() {
+      const step = sumaSteps[currentStep];
+      document.querySelectorAll('#suma .cell').forEach(el => el.classList.remove('highlight-col'));
+      if (step.col) document.querySelectorAll(`#suma .col-${step.col}`).forEach(el => el.classList.add('highlight-col'));
+
+      const elC10 = document.getElementById('c10'), elC100 = document.getElementById('c100');
+      elC10.className = (step.c10 !== "" && elC10.innerText === "") ? "carry-enter" : "";
+      elC100.className = (step.c100 !== "" && elC100.innerText === "") ? "carry-enter" : "";
+
+      elC10.innerText = step.c10; elC100.innerText = step.c100;
+      document.getElementById('r1').innerText = step.r1; document.getElementById('r10').innerText = step.r10; document.getElementById('r100').innerText = step.r100;
+
+      document.getElementById('stepIndicator').innerText = `Paso ${currentStep} de ${sumaSteps.length - 1}`;
+      document.getElementById('pedagogicalText').innerHTML = step.text;
+      document.getElementById('btnPrev').disabled = currentStep === 0;
+      document.getElementById('btnNext').disabled = currentStep === sumaSteps.length - 1;
+      document.getElementById('btnNext').innerHTML = currentStep === sumaSteps.length - 1 ? "Completado ✓" : "Siguiente Paso →";
+    }
+    document.getElementById('btnNext').addEventListener('click', () => { if (currentStep < sumaSteps.length - 1) { currentStep++; updateSumaView(); } });
+    document.getElementById('btnPrev').addEventListener('click', () => { if (currentStep > 0) { currentStep--; updateSumaView(); } });
+    document.getElementById('btnReset').addEventListener('click', () => { currentStep = 0; updateSumaView(); });
+    updateSumaView();
+
+    // ================= RESTA =================
+    const restaSteps = [
+      { col: null, top1: "", top10: "", bot10: "", bot100: "", res1: "", res10: "", res100: "", text: "Colocamos el minuendo (el mayor) arriba y el sustraendo abajo. ¡Recuerda! Siempre restamos desde abajo hacia arriba (¿cuánto falta para llegar?)." },
+      { col: "u", top1: "1", top10: "", bot10: "+1", bot100: "", res1: "5", res10: "", res100: "", text: "<strong>1. Unidades:</strong> A 2 no le puedo quitar 7. Le sumamos 10 al de arriba (se lee 12). Del 7 al 12 van <strong>5</strong>. Nos <strong>llevamos 1</strong> al de abajo en la columna siguiente." },
+      { col: "d", top1: "1", top10: "1", bot10: "+1", bot100: "+1", res1: "5", res10: "7", res100: "", text: "<strong>2. Decenas:</strong> El 5 de abajo más la llevada se convierte en 6. A 3 no le puedo quitar 6. Le prestamos un 1 (13). Del 6 al 13 van <strong>7</strong>. Nos <strong>llevamos 1</strong> a la siguiente columna." },
+      { col: "c", top1: "1", top10: "1", bot10: "+1", bot100: "+1", res1: "5", res10: "7", res100: "3", text: "<strong>3. Centenas:</strong> El 4 de abajo más la llevada se convierte en 5. A 8 sí le puedo quitar 5. Del 5 al 8 van <strong>3</strong>. ¡Resta completada! (375)." }
+    ];
+    let currentStepResta = 0;
+    function updateRestaView() {
+      const step = restaSteps[currentStepResta];
+      document.querySelectorAll('#resta .cell').forEach(el => el.classList.remove('highlight-col'));
+      if (step.col) document.querySelectorAll(`#resta .col-${step.col}`).forEach(el => el.classList.add('highlight-col'));
+
+      const elTop1 = document.getElementById('r_top1'), elTop10 = document.getElementById('r_top10');
+      elTop1.className = (step.top1 !== "" && elTop1.innerText === "") ? "carry-enter" : "";
+      elTop10.className = (step.top10 !== "" && elTop10.innerText === "") ? "carry-enter" : "";
+      
+      elTop1.innerText = step.top1; elTop10.innerText = step.top10;
+      document.getElementById('r_bot10').innerHTML = step.bot10; document.getElementById('r_bot100').innerHTML = step.bot100;
+      document.getElementById('r_res1').innerText = step.res1; document.getElementById('r_res10').innerText = step.res10; document.getElementById('r_res100').innerText = step.res100;
+
+      document.getElementById('stepIndicatorResta').innerText = `Paso ${currentStepResta} de ${restaSteps.length - 1}`;
+      document.getElementById('pedagogicalTextResta').innerHTML = step.text;
+      document.getElementById('btnPrevResta').disabled = currentStepResta === 0;
+      document.getElementById('btnNextResta').disabled = currentStepResta === restaSteps.length - 1;
+      document.getElementById('btnNextResta').innerHTML = currentStepResta === restaSteps.length - 1 ? "Completado ✓" : "Siguiente Paso →";
+    }
+    document.getElementById('btnNextResta').addEventListener('click', () => { if (currentStepResta < restaSteps.length - 1) { currentStepResta++; updateRestaView(); } });
+    document.getElementById('btnPrevResta').addEventListener('click', () => { if (currentStepResta > 0) { currentStepResta--; updateRestaView(); } });
+    document.getElementById('btnResetResta').addEventListener('click', () => { currentStepResta = 0; updateRestaView(); });
+    updateRestaView();
+
+    // ================= MULTIPLICACIÓN =================
+    const multiSteps = [
+      { hl: null, c10: "", c100: "", c1000: "", p1_1: "", p1_10: "", p1_100: "", p1_1000: "", p2_1: "", p2_10: "", p2_100: "", p2_1000: "", sign: "", rf_1: "", rf_10: "", rf_100: "", rf_1000: "", text: "Colocamos el multiplicando arriba y el multiplicador abajo. Empezamos multiplicando la cifra azul de abajo (unidades) por todos los números de arriba, de derecha a izquierda." },
+      { hl: "u", c10: "3", c100: "2", c1000: "", p1_1: "0", p1_10: "7", p1_100: "0", p1_1000: "2", p2_1: "", p2_10: "", p2_100: "", p2_1000: "", sign: "", rf_1: "", rf_10: "", rf_100: "", rf_1000: "", text: "<strong>1. Multiplicamos por 6:</strong> 6×5=30 (me llevo 3). 6×4=24+3=27 (me llevo 2). 6×3=18+2=20. Parcial: <strong>2070</strong>." },
+      { hl: "d", c10: "1", c100: "", c1000: "", p1_1: "0", p1_10: "7", p1_100: "0", p1_1000: "2", p2_1: "-", p2_10: "0", p2_100: "9", p2_1000: "6", sign: "", rf_1: "", rf_10: "", rf_100: "", rf_1000: "", text: "<strong>2. Multiplicamos por 2:</strong> Dejamos un <strong>hueco</strong> (o guion). 2×5=10 (me llevo 1). 2×4=8+1=9. 2×3=6. Parcial: <strong>690</strong>." },
+      { hl: null, c10: "", c100: "", c1000: "", p1_1: "0", p1_10: "7", p1_100: "0", p1_1000: "2", p2_1: "-", p2_10: "0", p2_100: "9", p2_1000: "6", sign: "+", rf_1: "0", rf_10: "7", rf_100: "9", rf_1000: "8", text: "<strong>3. Sumamos los parciales:</strong> Trazamos una línea y sumamos en vertical. 2070 + 6900 = <strong>8970</strong>." }
+    ];
+    let currentStepMulti = 0;
+    function updateMultiView() {
+      const step = multiSteps[currentStepMulti];
+      document.getElementById('m_f2_1').classList.remove('highlight-col'); document.getElementById('m_f2_10').classList.remove('highlight-col');
+      if (step.hl === 'u') document.getElementById('m_f2_1').classList.add('highlight-col');
+      if (step.hl === 'd') document.getElementById('m_f2_10').classList.add('highlight-col');
+
+      const c10 = document.getElementById('m_c10'), c100 = document.getElementById('m_c100');
+      c10.className = (step.c10 !== "" && c10.innerText === "") ? "carry-enter" : "";
+      c100.className = (step.c100 !== "" && c100.innerText === "") ? "carry-enter" : "";
+      c10.innerText = step.c10; c100.innerText = step.c100; document.getElementById('m_c1000').innerText = step.c1000;
+
+      document.getElementById('m_p1_1').innerText = step.p1_1; document.getElementById('m_p1_10').innerText = step.p1_10; document.getElementById('m_p1_100').innerText = step.p1_100; document.getElementById('m_p1_1000').innerText = step.p1_1000;
+      document.getElementById('m_p2_1').innerText = step.p2_1; document.getElementById('m_p2_10').innerText = step.p2_10; document.getElementById('m_p2_100').innerText = step.p2_100; document.getElementById('m_p2_1000').innerText = step.p2_1000;
+      document.getElementById('m_plus').innerText = step.sign;
+      document.getElementById('m_rf_1').innerText = step.rf_1; document.getElementById('m_rf_10').innerText = step.rf_10; document.getElementById('m_rf_100').innerText = step.rf_100; document.getElementById('m_rf_1000').innerText = step.rf_1000;
+
+      document.getElementById('stepIndicatorMulti').innerText = `Paso ${currentStepMulti} de ${multiSteps.length - 1}`;
+      document.getElementById('pedagogicalTextMulti').innerHTML = step.text;
+      document.getElementById('btnPrevMulti').disabled = currentStepMulti === 0;
+      document.getElementById('btnNextMulti').disabled = currentStepMulti === multiSteps.length - 1;
+      document.getElementById('btnNextMulti').innerHTML = currentStepMulti === multiSteps.length - 1 ? "Completado ✓" : "Siguiente Paso →";
+    }
+    document.getElementById('btnNextMulti').addEventListener('click', () => { if (currentStepMulti < multiSteps.length - 1) { currentStepMulti++; updateMultiView(); } });
+    document.getElementById('btnPrevMulti').addEventListener('click', () => { if (currentStepMulti > 0) { currentStepMulti--; updateMultiView(); } });
+    document.getElementById('btnResetMulti').addEventListener('click', () => { currentStepMulti = 0; updateMultiView(); });
+    updateMultiView();
+
+    // ================= DIVISIÓN LARGA =================
+    const diviSteps = [
+      { hat1: "", hat2: "", hat3: "", s1: "", sub1_c: "", l1: false, rem1_c: "", drop1_d: "", s2: "", sub2_c: "", sub2_d: "", l2: false, rem2_d: "", drop2_u: "", s3: "", sub3_d: "", sub3_u: "", l3: false, rem3_u: "", q: "", text: "Colocamos el dividendo (852) y el divisor (3). Al revés que en las otras operaciones, aquí empezamos siempre por la izquierda." },
+      { hat1: "⌒", hat2: "", hat3: "", s1: "", sub1_c: "", l1: false, rem1_c: "", drop1_d: "", s2: "", sub2_c: "", sub2_d: "", l2: false, rem2_d: "", drop2_u: "", s3: "", sub3_d: "", sub3_u: "", l3: false, rem3_u: "", q: "", text: "<strong>1. Tomar cifras:</strong> ¿El 8 se puede repartir entre 3? Sí. Le ponemos un <em>sombrerito</em> al 8." },
+      { hat1: "⌒", hat2: "", hat3: "", s1: "", sub1_c: "", l1: false, rem1_c: "", drop1_d: "", s2: "", sub2_c: "", sub2_d: "", l2: false, rem2_d: "", drop2_u: "", s3: "", sub3_d: "", sub3_u: "", l3: false, rem3_u: "", q: "2", text: "<strong>2. Dividir:</strong> Buscamos en la tabla del 3. 3×2=6. Escribimos <strong>2</strong> en el cociente." },
+      { hat1: "⌒", hat2: "", hat3: "", s1: "-", sub1_c: "6", l1: true, rem1_c: "", drop1_d: "", s2: "", sub2_c: "", sub2_d: "", l2: false, rem2_d: "", drop2_u: "", s3: "", sub3_d: "", sub3_u: "", l3: false, rem3_u: "", q: "2", text: "<strong>3. Multiplicar:</strong> Multiplicamos 3×2 = 6. Lo escribimos debajo del 8." },
+      { hat1: "⌒", hat2: "", hat3: "", s1: "-", sub1_c: "6", l1: true, rem1_c: "2", drop1_d: "", s2: "", sub2_c: "", sub2_d: "", l2: false, rem2_d: "", drop2_u: "", s3: "", sub3_d: "", sub3_u: "", l3: false, rem3_u: "", q: "2", text: "<strong>4. Restar:</strong> 8 - 6 = 2. Apuntamos el <strong>2</strong> como resto en azul." },
+      { hat1: "⌒", hat2: "⌒", hat3: "", s1: "-", sub1_c: "6", l1: true, rem1_c: "2", drop1_d: "5", s2: "", sub2_c: "", sub2_d: "", l2: false, rem2_d: "", drop2_u: "", s3: "", sub3_d: "", sub3_u: "", l3: false, rem3_u: "", q: "2", text: "<strong>5. Bajar cifra:</strong> Marcamos el 5 y lo bajamos. ¡Se forma el <strong>25</strong>!" },
+      { hat1: "⌒", hat2: "⌒", hat3: "", s1: "-", sub1_c: "6", l1: true, rem1_c: "2", drop1_d: "5", s2: "-", sub2_c: "2", sub2_d: "4", l2: true, rem2_d: "", drop2_u: "", s3: "", sub3_d: "", sub3_u: "", l3: false, rem3_u: "", q: "28", text: "<strong>6. Dividir:</strong> 25 entre 3. En la tabla, 3×8=24. Ponemos <strong>8</strong> en el cociente." },
+      { hat1: "⌒", hat2: "⌒", hat3: "", s1: "-", sub1_c: "6", l1: true, rem1_c: "2", drop1_d: "5", s2: "-", sub2_c: "2", sub2_d: "4", l2: true, rem2_d: "", drop2_u: "", s3: "", sub3_d: "", sub3_u: "", l3: false, rem3_u: "", q: "28", text: "<strong>7. Multiplicar:</strong> 3×8=24. Lo escribimos debajo del 25." },
+      { hat1: "⌒", hat2: "⌒", hat3: "", s1: "-", sub1_c: "6", l1: true, rem1_c: "2", drop1_d: "5", s2: "-", sub2_c: "2", sub2_d: "4", l2: true, rem2_d: "1", drop2_u: "", s3: "", sub3_d: "", sub3_u: "", l3: false, rem3_u: "", q: "28", text: "<strong>8. Restar:</strong> 25 - 24 = 1. Apuntamos el <strong>1</strong>." },
+      { hat1: "⌒", hat2: "⌒", hat3: "⌒", s1: "-", sub1_c: "6", l1: true, rem1_c: "2", drop1_d: "5", s2: "-", sub2_c: "2", sub2_d: "4", l2: true, rem2_d: "1", drop2_u: "2", s3: "", sub3_d: "", sub3_u: "", l3: false, rem3_u: "", q: "28", text: "<strong>9. Bajar cifra:</strong> Bajamos el 2. ¡Se forma el <strong>12</strong>!" },
+      { hat1: "⌒", hat2: "⌒", hat3: "⌒", s1: "-", sub1_c: "6", l1: true, rem1_c: "2", drop1_d: "5", s2: "-", sub2_c: "2", sub2_d: "4", l2: true, rem2_d: "1", drop2_u: "2", s3: "", sub3_d: "", sub3_u: "", l3: false, rem3_u: "", q: "284", text: "<strong>10. Dividir:</strong> 12 entre 3. 3×4=12 exacto. Ponemos <strong>4</strong> en el cociente." },
+      { hat1: "⌒", hat2: "⌒", hat3: "⌒", s1: "-", sub1_c: "6", l1: true, rem1_c: "2", drop1_d: "5", s2: "-", sub2_c: "2", sub2_d: "4", l2: true, rem2_d: "1", drop2_u: "2", s3: "-", sub3_d: "1", sub3_u: "2", l3: true, rem3_u: "", q: "284", text: "<strong>11. Multiplicar:</strong> 3×4=12. Lo escribimos debajo." },
+      { hat1: "⌒", hat2: "⌒", hat3: "⌒", s1: "-", sub1_c: "6", l1: true, rem1_c: "2", drop1_d: "5", s2: "-", sub2_c: "2", sub2_d: "4", l2: true, rem2_d: "1", drop2_u: "2", s3: "-", sub3_d: "1", sub3_u: "2", l3: true, rem3_u: "0", q: "284", text: "<strong>12. Restar:</strong> 12 - 12 = 0. ¡División terminada! (Resto 0)." }
+    ];
+
+    let currentStepDivi = 0;
+
+    function updateDiviView() {
+      const step = diviSteps[currentStepDivi];
+
+      document.getElementById('d_hat1').innerText = step.hat1;
+      document.getElementById('d_hat2').innerText = step.hat2;
+      document.getElementById('d_hat3').innerText = step.hat3;
+
+      document.getElementById('d_s1').innerText = step.s1;
+      document.getElementById('d_sub1_c').innerText = step.sub1_c;
+      document.getElementById('d_sub1_c').style.borderBottomColor = step.l1 ? "var(--text-main)" : "transparent";
+
+      document.getElementById('d_rem1_c').innerText = step.rem1_c;
+      const drop5 = document.getElementById('d_drop1_d');
+      drop5.className = (step.drop1_d !== "" && drop5.innerText === "") ? "cell drop-digit" : "cell";
+      drop5.innerText = step.drop1_d;
+
+      document.getElementById('d_s2').innerText = step.s2;
+      document.getElementById('d_sub2_c').innerText = step.sub2_c;
+      document.getElementById('d_sub2_d').innerText = step.sub2_d;
+      document.getElementById('d_sub2_c').style.borderBottomColor = step.l2 ? "var(--text-main)" : "transparent";
+      document.getElementById('d_sub2_d').style.borderBottomColor = step.l2 ? "var(--text-main)" : "transparent";
+
+      document.getElementById('d_rem2_d').innerText = step.rem2_d;
+      const drop2 = document.getElementById('d_drop2_u');
+      drop2.className = (step.drop2_u !== "" && drop2.innerText === "") ? "cell drop-digit" : "cell";
+      drop2.innerText = step.drop2_u;
+
+      document.getElementById('d_s3').innerText = step.s3;
+      document.getElementById('d_sub3_d').innerText = step.sub3_d;
+      document.getElementById('d_sub3_u').innerText = step.sub3_u;
+      document.getElementById('d_sub3_d').style.borderBottomColor = step.l3 ? "var(--text-main)" : "transparent";
+      document.getElementById('d_sub3_u').style.borderBottomColor = step.l3 ? "var(--text-main)" : "transparent";
+
+      document.getElementById('d_rem3_u').innerText = step.rem3_u;
+      document.getElementById('d_q').innerText = step.q;
+
+      document.getElementById('stepIndicatorDivi').innerText = `Paso ${currentStepDivi} de ${diviSteps.length - 1}`;
+      document.getElementById('pedagogicalTextDivi').innerHTML = step.text;
+      
+      document.getElementById('btnPrevDivi').disabled = currentStepDivi === 0;
+      document.getElementById('btnNextDivi').disabled = currentStepDivi === diviSteps.length - 1;
+      document.getElementById('btnNextDivi').innerHTML = currentStepDivi === diviSteps.length - 1 ? "Completado ✓" : "Siguiente Paso →";
+    }
+
+    document.getElementById('btnNextDivi').addEventListener('click', () => { if (currentStepDivi < diviSteps.length - 1) { currentStepDivi++; updateDiviView(); } });
+    document.getElementById('btnPrevDivi').addEventListener('click', () => { if (currentStepDivi > 0) { currentStepDivi--; updateDiviView(); } });
+    document.getElementById('btnResetDivi').addEventListener('click', () => { currentStepDivi = 0; updateDiviView(); });
+
+    updateDiviView();
+  </script>
+</body>
+</html>

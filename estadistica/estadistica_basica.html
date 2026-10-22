@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estadística: Conceptos Básicos, Tablas y Gráficos</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 1rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* VISUALIZADOR DE POBLACIÓN Y MUESTRA */
+    .crowd-container {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.8rem;
+      background: #090d16; border: 1px solid var(--border-color); border-radius: 10px;
+      padding: 1.2rem; text-align: center; margin: 1rem 0;
+    }
+    .person-icon {
+      font-size: 1.8rem; opacity: 0.25; transition: all 0.3s ease; user-select: none;
+    }
+    .person-icon.active-all {
+      opacity: 1; filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.6));
+    }
+    .person-icon.active-sample {
+      opacity: 1; filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.8)); transform: scale(1.15);
+    }
+    .person-icon.active-individual {
+      opacity: 1; filter: drop-shadow(0 0 10px rgba(244, 63, 94, 0.9)); transform: scale(1.25);
+    }
+
+    .btn-crowd-group {
+      display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;
+    }
+    .btn-crowd {
+      flex: 1; padding: 0.6rem 0.8rem; background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-main); border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+    .btn-crowd:hover { border-color: var(--accent-blue); }
+    .btn-crowd.active { background: rgba(56, 189, 248, 0.15); border-color: var(--accent-blue); color: var(--accent-blue); }
+
+    /* TABLA DE FRECUENCIAS */
+    .freq-table {
+      width: 100%; border-collapse: collapse; font-family: monospace; text-align: center; font-size: 1rem;
+    }
+    .freq-table th, .freq-table td {
+      border: 1px solid var(--border-color); padding: 0.6rem 0.4rem;
+    }
+    .freq-table th { background: rgba(255, 255, 255, 0.04); color: var(--text-muted); }
+    .freq-table tr:hover { background: rgba(56, 189, 248, 0.05); }
+    .freq-table tfoot td { font-weight: bold; background: rgba(255, 255, 255, 0.02); }
+
+    /* SVG CANVAS */
+    .svg-canvas {
+      width: 100%; height: 260px; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block;
+    }
+
+    /* CONTROLES DESLIZANTES */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem; }
+    .slider-row label { width: 140px; font-weight: 600; font-family: monospace; font-size: 1.05rem; }
+    .val-badge { width: 45px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; }
+
+    /* FRACCIÓN MATEMÁTICA VERTICAL */
+    .fraction-vertical {
+      display: inline-flex; flex-direction: column; vertical-align: middle;
+      text-align: center; margin: 0 0.4rem; font-family: monospace; font-weight: bold;
+    }
+    .fraction-vertical .num {
+      border-bottom: 2px solid currentColor; padding: 0 0.4rem 2px 0.4rem;
+    }
+    .fraction-vertical .den {
+      padding: 2px 0.4rem 0 0.4rem;
+    }
+
+    /* TARJETAS INFORMATIVAS */
+    .info-card-item {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.3rem;
+    }
+
+    /* CHIPS DE DATOS */
+    .data-chips-container {
+      display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.8rem 0;
+    }
+    .data-chip {
+      background: rgba(56, 189, 248, 0.15); border: 1px solid var(--accent-blue);
+      color: var(--accent-blue); font-family: monospace; font-size: 1.15rem; font-weight: bold;
+      padding: 0.3rem 0.6rem; border-radius: 6px;
+    }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Estadística Descriptiva Básica</h1>
+    <p>Aprende cómo se organiza una investigación estadística: población, muestra, tablas de frecuencias, diagramas y medidas de centralización.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('estudio', this)">📊 1. El Estudio Estadístico</button>
+      <button class="tab-btn" onclick="switchTab('tablas', this)">📋 2. Tabla de Frecuencias</button>
+      <button class="tab-btn" onclick="switchTab('graficos', this)">📈 3. Gráficos Estadísticos</button>
+      <button class="tab-btn" onclick="switchTab('centralizacion', this)">🎯 4. Media, Mediana y Moda</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: EL ESTUDIO ESTADÍSTICO ================= -->
+    <div id="estudio" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">¿Para qué sirve la estadística?</div>
+        <div class="content-text">
+          La <strong>Estadística</strong> es la rama de las matemáticas que recoge, organiza, analiza y saca conclusiones a partir de conjuntos de datos. Es la herramienta que usan médicos, meteorólogos, sociólogos o empresas para tomar decisiones basadas en evidencias.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Simulador Visual: Población, Muestra e Individuo</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
+            Pulsa en cada botón para ver cómo se ilumina la comunidad en el panel:
+          </p>
+
+          <div class="btn-crowd-group">
+            <button class="btn-crowd active" id="btn_crowd_pop" onclick="highlightCrowd('poblacion')">👥 Población (Todos)</button>
+            <button class="btn-crowd" id="btn_crowd_samp" onclick="highlightCrowd('muestra')">🔍 Muestra (Grupo)</button>
+            <button class="btn-crowd" id="btn_crowd_ind" onclick="highlightCrowd('individuo')">👤 Individuo (Uno)</button>
+          </div>
+
+          <!-- Matriz de 25 personas -->
+          <div class="crowd-container" id="crowd_box">
+            <!-- Rellenado por JS -->
+          </div>
+
+          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:0.9rem; min-height:75px;">
+            <div id="crowd_desc_title" style="font-weight:bold; font-size:1.05rem; color:var(--accent-blue); margin-bottom:0.3rem;">Población (N = 25)</div>
+            <div id="crowd_desc_text" style="font-size:0.9rem; color:var(--text-muted); line-height:1.5;">
+              Es el conjunto total y completo de todos los elementos que forman parte de la investigación.
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Variables Estadísticas (¿Qué preguntamos?)</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
+            La <strong>variable estadística</strong> es la característica o cualidad que estamos investigando en cada individuo:
+          </p>
+
+          <div style="display:flex; flex-direction:column; gap:0.9rem;">
+            <div class="info-card-item" style="border-top:3px solid var(--accent-op);">
+              <strong style="color:var(--accent-op);">1. Variables Cualitativas (Cualidades / Palabras):</strong>
+              <p>No se miden con números. Expresan un atributo o categoría.<br>
+              <em>Ejemplos: Color de ojos, deporte favorito, comida preferida, ciudad de residencia.</em></p>
+            </div>
+
+            <div class="info-card-item" style="border-top:3px solid var(--accent-success);">
+              <strong style="color:var(--accent-success);">2. Variables Cuantitativas (Números / Cantidades):</strong>
+              <p>Se expresan mediante cifras numéricas y permiten realizar cálculos matemáticos:</p>
+              <ul style="margin:0.3rem 0 0 1.2rem; font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+                <li><strong>Discretas (números enteros a saltos):</strong> Nº de hermanos (0, 1, 2...), goles en un partido, calzado. No puedes tener 1,5 hermanos.</li>
+                <li><strong>Continuas (pueden tomar cualquier valor decimal):</strong> Altura (1,68 m), peso (54,2 kg), tiempo de carrera.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: TABLA DE FRECUENCIAS ================= -->
+    <div id="tablas" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">Organizar el Caos de Datos</div>
+        <div class="content-text">
+          Hemos preguntado a <strong>20 alumnos</strong> de 1º de ESO cuántos hermanos tienen. Los datos recogidos en bruto son:
+          <code>1, 0, 2, 1, 1, 0, 3, 2, 1, 4, 1, 2, 0, 1, 2, 1, 3, 0, 1, 2</code>.<br>
+          Para entender estos datos de forma ordenada, construimos una <strong>tabla de frecuencias</strong>.
+        </div>
+      </div>
+
+      <div class="panel-box">
+        <div class="panel-title">Tabla de Frecuencias Completa (N = 20 alumnos)</div>
+
+        <table class="freq-table">
+          <thead>
+            <tr>
+              <th>Dato (xᵢ)</th>
+              <th>Frec. Absoluta (fᵢ)</th>
+              <th>Frec. Acumulada (Fᵢ)</th>
+              <th>Frec. Relativa (hᵢ = fᵢ / N)</th>
+              <th>Porcentaje (%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>0 hermanos</strong></td>
+              <td style="color:var(--accent-blue);">4</td>
+              <td>4</td>
+              <td>4 / 20 = <strong>0,20</strong></td>
+              <td style="color:var(--accent-gold);">20%</td>
+            </tr>
+            <tr>
+              <td><strong>1 hermano</strong></td>
+              <td style="color:var(--accent-blue);">8</td>
+              <td>12</td>
+              <td>8 / 20 = <strong>0,40</strong></td>
+              <td style="color:var(--accent-gold);">40%</td>
+            </tr>
+            <tr>
+              <td><strong>2 hermanos</strong></td>
+              <td style="color:var(--accent-blue);">5</td>
+              <td>17</td>
+              <td>5 / 20 = <strong>0,25</strong></td>
+              <td style="color:var(--accent-gold);">25%</td>
+            </tr>
+            <tr>
+              <td><strong>3 hermanos</strong></td>
+              <td style="color:var(--accent-blue);">2</td>
+              <td>19</td>
+              <td>2 / 20 = <strong>0,10</strong></td>
+              <td style="color:var(--accent-gold);">10%</td>
+            </tr>
+            <tr>
+              <td><strong>4 hermanos</strong></td>
+              <td style="color:var(--accent-blue);">1</td>
+              <td>20</td>
+              <td>1 / 20 = <strong>0,05</strong></td>
+              <td style="color:var(--accent-gold);">5%</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>TOTAL:</td>
+              <td style="color:var(--accent-success);">N = 20</td>
+              <td>---</td>
+              <td style="color:var(--accent-success);">Suma = 1,00</td>
+              <td style="color:var(--accent-success);">100%</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div class="grid-2" style="margin-top:1.2rem;">
+          <div class="info-card-item">
+            <strong style="color:var(--accent-blue);">Frecuencia Absoluta (fᵢ):</strong>
+            <p>El número de veces que se repite exactamente ese dato en el recuento.</p>
+          </div>
+          <div class="info-card-item">
+            <strong style="color:var(--accent-gold);">Frecuencia Acumulada (Fᵢ):</strong>
+            <p>La suma de las frecuencias absolutas hasta esa fila (cuántos tienen ese valor o menos).</p>
+          </div>
+          <div class="info-card-item">
+            <strong style="color:var(--accent-success);">Frecuencia Relativa (hᵢ):</strong>
+            <p>La proporción sobre el total (hᵢ = fᵢ / N). La suma de todas siempre debe dar exactamente 1.</p>
+          </div>
+          <div class="info-card-item">
+            <strong style="color:#c084fc;">Porcentaje (%):</strong>
+            <p>Multiplicar la frecuencia relativa por 100 (hᵢ · 100). La suma total es el 100%.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: GRÁFICOS ESTADÍSTICOS ================= -->
+    <div id="graficos" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+        <div class="badge" style="color: var(--accent-blue);">Una Imagen Vale Más que Mil Números</div>
+        <div class="content-text">
+          Los gráficos estadísticos permiten entender el comportamiento de una población de un solo vistazo. Según el tipo de variable, elegimos el gráfico más adecuado.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- DIAGRAMA DE BARRAS -->
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-blue);">1. Diagrama de Barras y Polígono de Frecuencias</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
+            La altura de cada barra es proporcional a su frecuencia absoluta (fᵢ). Al unir la cima de las barras obtenemos el <strong>polígono de frecuencias</strong>:
+          </p>
+
+          <svg class="svg-canvas" viewBox="0 0 300 220">
+            <line x1="35" y1="180" x2="285" y2="180" stroke="#64748b" stroke-width="2" />
+            <line x1="35" y1="180" x2="35" y2="20" stroke="#64748b" stroke-width="2" />
+            <text x="270" y="198" fill="#64748b" font-size="11">Hermanos</text>
+            <text x="12" y="25" fill="#64748b" font-size="11">fi</text>
+
+            <!-- Barras -->
+            <rect x="50" y="108" width="30" height="72" fill="rgba(56, 189, 248, 0.3)" stroke="var(--accent-blue)" stroke-width="2" />
+            <text x="65" y="196" fill="#fff" font-size="11" text-anchor="middle">0</text>
+            <text x="65" y="102" fill="var(--accent-blue)" font-size="10" font-weight="bold" text-anchor="middle">4</text>
+
+            <rect x="95" y="36" width="30" height="144" fill="rgba(56, 189, 248, 0.3)" stroke="var(--accent-blue)" stroke-width="2" />
+            <text x="110" y="196" fill="#fff" font-size="11" text-anchor="middle">1</text>
+            <text x="110" y="30" fill="var(--accent-blue)" font-size="10" font-weight="bold" text-anchor="middle">8</text>
+
+            <rect x="140" y="90" width="30" height="90" fill="rgba(56, 189, 248, 0.3)" stroke="var(--accent-blue)" stroke-width="2" />
+            <text x="155" y="196" fill="#fff" font-size="11" text-anchor="middle">2</text>
+            <text x="155" y="84" fill="var(--accent-blue)" font-size="10" font-weight="bold" text-anchor="middle">5</text>
+
+            <rect x="185" y="144" width="30" height="36" fill="rgba(56, 189, 248, 0.3)" stroke="var(--accent-blue)" stroke-width="2" />
+            <text x="200" y="196" fill="#fff" font-size="11" text-anchor="middle">3</text>
+            <text x="200" y="138" fill="var(--accent-blue)" font-size="10" font-weight="bold" text-anchor="middle">2</text>
+
+            <rect x="230" y="162" width="30" height="18" fill="rgba(56, 189, 248, 0.3)" stroke="var(--accent-blue)" stroke-width="2" />
+            <text x="245" y="196" fill="#fff" font-size="11" text-anchor="middle">4</text>
+            <text x="245" y="156" fill="var(--accent-blue)" font-size="10" font-weight="bold" text-anchor="middle">1</text>
+
+            <!-- Polígono de frecuencias -->
+            <polyline points="65,108 110,36 155,90 200,144 245,162" fill="none" stroke="var(--accent-gold)" stroke-width="2.5" />
+            <circle cx="65" cy="108" r="3.5" fill="var(--accent-gold)" />
+            <circle cx="110" cy="36" r="3.5" fill="var(--accent-gold)" />
+            <circle cx="155" cy="90" r="3.5" fill="var(--accent-gold)" />
+            <circle cx="200" cy="144" r="3.5" fill="var(--accent-gold)" />
+            <circle cx="245" cy="162" r="3.5" fill="var(--accent-gold)" />
+          </svg>
+        </div>
+
+        <!-- DIAGRAMA DE SECTORES (CIRCULAR) -->
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-gold);">2. Diagrama de Sectores (El Pastel de 360º)</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
+            Cada porción de la tarta tiene un ángulo proporcional a su porcentaje: <br>
+            <strong>Grados = Frecuencia Relativa (hᵢ) · 360º</strong>.
+          </p>
+
+          <svg class="svg-canvas" viewBox="-120 -120 240 240">
+            <!-- 0 hermanos (72º) -->
+            <path d="M 0 0 L 0 -85 A 85 85 0 0 1 80.8 -26.3 Z" fill="rgba(56, 189, 248, 0.4)" stroke="#090d16" stroke-width="2" />
+            <text x="35" y="-55" fill="#fff" font-size="10" font-weight="bold">0 (20%)</text>
+
+            <!-- 1 hermano (144º) -->
+            <path d="M 0 0 L 80.8 -26.3 A 85 85 0 0 1 -49.9 68.8 Z" fill="rgba(251, 191, 36, 0.4)" stroke="#090d16" stroke-width="2" />
+            <text x="45" y="45" fill="#fff" font-size="11" font-weight="bold">1 (40%)</text>
+
+            <!-- 2 hermanos (90º) -->
+            <path d="M 0 0 L -49.9 68.8 A 85 85 0 0 1 -68.8 -49.9 Z" fill="rgba(16, 185, 129, 0.4)" stroke="#090d16" stroke-width="2" />
+            <text x="-65" y="20" fill="#fff" font-size="10" font-weight="bold">2 (25%)</text>
+
+            <!-- 3 hermanos (36º) -->
+            <path d="M 0 0 L -68.8 -49.9 A 85 85 0 0 1 -26.3 -80.8 Z" fill="rgba(244, 63, 94, 0.4)" stroke="#090d16" stroke-width="2" />
+
+            <!-- 4 hermanos (18º) -->
+            <path d="M 0 0 L -26.3 -80.8 A 85 85 0 0 1 0 -85 Z" fill="rgba(168, 85, 247, 0.4)" stroke="#090d16" stroke-width="2" />
+
+            <circle cx="0" cy="0" r="16" fill="#090d16" stroke="var(--border-color)" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: MEDIDAS DE CENTRALIZACIÓN ================= -->
+    <div id="centralizacion" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">Los Tres Representantes del Grupo</div>
+        <div class="content-text">
+          Las <strong>medidas de centralización</strong> son números que intentan resumir todos los datos en un único valor típico alrededor del cual se agrupan los demás.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Las 3 Medidas Explicadas</div>
+          
+          <div style="display:flex; flex-direction:column; gap:0.9rem;">
+            <!-- MEDIA CON FRACCIÓN VERTICAL -->
+            <div class="info-card-item" style="border-left:3px solid var(--accent-blue);">
+              <strong style="color:var(--accent-blue); font-size:1.1rem;">Media Aritmética (x̄):</strong>
+              <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.5;">
+                El reparto equitativo. Se suman todos los datos y se divide entre el total de individuos (N):
+              </p>
+              
+              <div style="margin-top:0.6rem; text-align:center; font-size:1.15rem; color:var(--text-main);">
+                x̄ = 
+                <span class="fraction-vertical">
+                  <span class="num">x₁ + x₂ + x₃ + ... + xₙ</span>
+                  <span class="den">N</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="info-card-item" style="border-left:3px solid var(--accent-gold);">
+              <strong style="color:var(--accent-gold); font-size:1.1rem;">Mediana (Me):</strong>
+              <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.5;">
+                El valor del <strong>centro exacto</strong>. Primero ordenas los datos de menor a mayor: la mediana es el dato que queda justo en el medio, dejando el 50% de las observaciones a su izquierda y el 50% a su derecha.
+              </p>
+            </div>
+
+            <div class="info-card-item" style="border-left:3px solid var(--accent-op);">
+              <strong style="color:var(--accent-op); font-size:1.1rem;">Moda (Mo):</strong>
+              <p style="color:var(--text-muted); font-size:0.9rem; line-height:1.5;">
+                El dato más popular. Es el valor que tiene la <strong>mayor frecuencia absoluta</strong> (el número que más veces se repite).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Laboratorio Interactivo de Notas</div>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.5rem;">
+            Ajusta las notas de los 5 alumnos para ver cómo se colocan en la fórmula y en la fracción:
+          </p>
+
+          <div class="slider-row">
+            <label>Alumno 1:</label>
+            <input type="range" id="n_1" min="1" max="10" value="4" oninput="updateStatsLab()">
+            <span class="val-badge" id="vn_1">4</span>
+          </div>
+          <div class="slider-row">
+            <label>Alumno 2:</label>
+            <input type="range" id="n_2" min="1" max="10" value="5" oninput="updateStatsLab()">
+            <span class="val-badge" id="vn_2">5</span>
+          </div>
+          <div class="slider-row">
+            <label>Alumno 3:</label>
+            <input type="range" id="n_3" min="1" max="10" value="5" oninput="updateStatsLab()">
+            <span class="val-badge" id="vn_3">5</span>
+          </div>
+          <div class="slider-row">
+            <label>Alumno 4:</label>
+            <input type="range" id="n_4" min="1" max="10" value="7" oninput="updateStatsLab()">
+            <span class="val-badge" id="vn_4">7</span>
+          </div>
+          <div class="slider-row">
+            <label>Alumno 5:</label>
+            <input type="range" id="n_5" min="1" max="10" value="8" oninput="updateStatsLab()">
+            <span class="val-badge" id="vn_5">8</span>
+          </div>
+
+          <!-- SUSTITUCIÓN Y FRACCIÓN EN VIVO -->
+          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; margin-top:0.8rem;">
+            
+            <!-- Sustitución matemática de la media con fracción vertical real -->
+            <div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.4rem;">Cálculo de la Media Aritmética (x̄):</div>
+            <div style="font-size:1.15rem; color:var(--accent-blue); text-align:center; padding:0.5rem 0;" id="box_fraction_mean">
+              <!-- Rellenado dinámicamente con clase fraction-vertical -->
+            </div>
+
+            <hr style="border:0; border-top:1px solid var(--border-color); margin:0.8rem 0;">
+
+            <span style="font-size:0.85rem; color:var(--text-muted);">Datos ordenados para Mediana y Moda:</span>
+            <div class="data-chips-container" id="sorted_chips"></div>
+
+            <div style="display:flex; flex-direction:column; gap:0.4rem; font-family:monospace; font-size:1.1rem; margin-top:0.5rem;">
+              <div>• Mediana (Me): <strong style="color:var(--accent-gold);" id="txt_calc_median">5</strong></div>
+              <div>• Moda (Mo): <strong style="color:var(--accent-op);" id="txt_calc_mode">5</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓN ENTRE PESTAÑAS ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'centralizacion') updateStatsLab();
+    }
+
+    // =========================================================================
+    // 1. VISUALIZADOR DE POBLACIÓN, MUESTRA E INDIVIDUO (25 PERSONAS)
+    // =========================================================================
+    const totalPeople = 25;
+    // Índices fijos que forman la muestra representativa (6 de 25)
+    const sampleIndices = [2, 6, 11, 14, 18, 23];
+    const individualIndex = 11; // Uno en concreto
+
+    function initCrowd() {
+      const box = document.getElementById('crowd_box');
+      box.innerHTML = "";
+      for (let i = 0; i < totalPeople; i++) {
+        const span = document.createElement('span');
+        span.className = 'person-icon active-all';
+        span.id = `person_${i}`;
+        span.innerText = "👤";
+        box.appendChild(span);
+      }
+    }
+    initCrowd();
+
+    function highlightCrowd(mode) {
+      document.getElementById('btn_crowd_pop').classList.remove('active');
+      document.getElementById('btn_crowd_samp').classList.remove('active');
+      document.getElementById('btn_crowd_ind').classList.remove('active');
+
+      const title = document.getElementById('crowd_desc_title');
+      const desc = document.getElementById('crowd_desc_text');
+
+      for (let i = 0; i < totalPeople; i++) {
+        const el = document.getElementById(`person_${i}`);
+        el.className = 'person-icon'; // reset
+      }
+
+      if (mode === 'poblacion') {
+        document.getElementById('btn_crowd_pop').classList.add('active');
+        title.innerText = "Población (N = 25 individuos)";
+        title.style.color = "var(--accent-blue)";
+        desc.innerText = "Están iluminados TODOS los elementos de la comunidad que queremos investigar.";
+        for (let i = 0; i < totalPeople; i++) {
+          document.getElementById(`person_${i}`).classList.add('active-all');
+        }
+      } else if (mode === 'muestra') {
+        document.getElementById('btn_crowd_samp').classList.add('active');
+        title.innerText = "Muestra Representativa (n = 6 individuos)";
+        title.style.color = "var(--accent-gold)";
+        desc.innerText = "Solo se ilumina un subgrupo representativo elegido al azar para no tener que encuestar a todos.";
+        sampleIndices.forEach(idx => {
+          document.getElementById(`person_${idx}`).classList.add('active-sample');
+        });
+      } else {
+        document.getElementById('btn_crowd_ind').classList.add('active');
+        title.innerText = "Individuo (Cada elemento único, n = 1)";
+        title.style.color = "var(--accent-op)";
+        desc.innerText = "Cada una de las personas u objetos concretos que forman la población.";
+        document.getElementById(`person_${individualIndex}`).classList.add('active-individual');
+      }
+    }
+
+    // =========================================================================
+    // 4. LABORATORIO DE MEDIDAS DE CENTRALIZACIÓN
+    // =========================================================================
+    function updateStatsLab() {
+      const v1 = parseInt(document.getElementById('n_1').value);
+      const v2 = parseInt(document.getElementById('n_2').value);
+      const v3 = parseInt(document.getElementById('n_3').value);
+      const v4 = parseInt(document.getElementById('n_4').value);
+      const v5 = parseInt(document.getElementById('n_5').value);
+
+      document.getElementById('vn_1').innerText = v1;
+      document.getElementById('vn_2').innerText = v2;
+      document.getElementById('vn_3').innerText = v3;
+      document.getElementById('vn_4').innerText = v4;
+      document.getElementById('vn_5').innerText = v5;
+
+      const raw = [v1, v2, v3, v4, v5];
+      const sum = v1 + v2 + v3 + v4 + v5;
+      const mean = (sum / 5).toFixed(2);
+
+      // Fracción vertical auténtica en la media
+      const fracBox = document.getElementById('box_fraction_mean');
+      fracBox.innerHTML = `
+        x̄ = 
+        <span class="fraction-vertical">
+          <span class="num">${v1} + ${v2} + ${v3} + ${v4} + ${v5}</span>
+          <span class="den">5</span>
+        </span>
+        = 
+        <span class="fraction-vertical">
+          <span class="num">${sum}</span>
+          <span class="den">5</span>
+        </span>
+        = <strong style="color:var(--accent-success); font-size:1.3rem;">${mean}</strong>
+      `;
+
+      // Datos ordenados
+      const sorted = [...raw].sort((a, b) => a - b);
+      const chipsBox = document.getElementById('sorted_chips');
+      chipsBox.innerHTML = "";
+      sorted.forEach((n, idx) => {
+        const span = document.createElement('span');
+        span.className = 'data-chip';
+        if (idx === 2) {
+          span.style.borderColor = 'var(--accent-gold)';
+          span.style.color = 'var(--accent-gold)';
+          span.title = "Elemento central (Mediana)";
+        }
+        span.innerText = n;
+        chipsBox.appendChild(span);
+      });
+
+      // Mediana (elemento en la posición 3, índice 2)
+      const median = sorted[2];
+      document.getElementById('txt_calc_median').innerText = `${median} (el dato central)`;
+
+      // Moda (el valor más frecuente)
+      const counts = {};
+      let maxCount = 0;
+      sorted.forEach(x => {
+        counts[x] = (counts[x] || 0) + 1;
+        if (counts[x] > maxCount) maxCount = counts[x];
+      });
+
+      let modes = [];
+      for (const key in counts) {
+        if (counts[key] === maxCount && maxCount > 1) {
+          modes.push(key);
+        }
+      }
+
+      const modeTxt = (modes.length === 0) 
+        ? "No hay moda (todos aparecen una sola vez)" 
+        : `${modes.join(', ')} (se repite ${maxCount} veces)`;
+
+      document.getElementById('txt_calc_mode').innerText = modeTxt;
+    }
+    updateStatsLab();
+  </script>
+</body>
+</html>

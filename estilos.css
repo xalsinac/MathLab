@@ -1,0 +1,213 @@
+/* ========================================================
+   PLANTILLA MAESTRA DE ESTILOS - MATEMÁTICAS INTERACTIVAS
+   ======================================================== */
+
+:root {
+  /* Paleta cromática principal */
+  --bg-primary: #0f172a;       /* Fondo general oscuro */
+  --bg-card: #1e293b;          /* Fondo de tarjetas y paneles */
+  --bg-plate: #334155;         /* Elementos interactivos / bandejas */
+  --border-color: #475569;     /* Líneas divisorias */
+
+  /* Colores de texto */
+  --text-main: #f8fafc;        /* Texto blanco principal */
+  --text-muted: #94a3b8;       /* Texto secundario / gris */
+
+  /* Acentos pedagógicos */
+  --accent-blue: #38bdf8;      /* Títulos, pasos activos, enlaces */
+  --accent-op: #f43f5e;        /* Operación destacada / acción clave (rojo/rosa) */
+  --accent-gold: #fbbf24;      /* Reglas, avisos y etiquetas (amarillo/dorado) */
+  --accent-success: #10b981;   /* Solución final / acierto (verde) */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+/* Cabecera común */
+header.app-header {
+  text-align: center;
+  max-width: 800px;
+  margin-bottom: 2rem;
+}
+
+header.app-header h1 {
+  font-size: 2.2rem;
+  color: var(--accent-blue);
+  margin-bottom: 0.5rem;
+}
+
+header.app-header p {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+/* Barra superior de navegación / volver al inicio */
+.nav-bar {
+  max-width: 950px;
+  width: 100%;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.nav-back-link {
+  color: var(--accent-blue);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: opacity 0.2s;
+}
+
+.nav-back-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* Contenedor principal de actividades */
+.app-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  max-width: 950px;
+  width: 100%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tarjeta explicativa pedagógica */
+.explanation-card {
+  width: 100%;
+  background: var(--bg-primary);
+  border-left: 4px solid var(--accent-blue);
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.explanation-card .badge {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent-blue);
+  font-weight: 700;
+}
+
+.explanation-card .content-text {
+  font-size: 1.1rem;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+.explanation-card .highlight-label {
+  font-size: 0.95rem;
+  color: var(--accent-gold);
+  font-weight: 600;
+}
+
+/* Botones estándar */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background: var(--accent-blue);
+  color: #042f2e;
+}
+
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--bg-plate);
+  color: var(--text-main);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #475569;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   TIPOGRAFÍA MATEMÁTICA VISUAL REUTILIZABLE
+   ========================================= */
+
+/* Fracción vertical */
+.frac {
+  display: inline-flex;
+  flex-direction: column;
+  vertical-align: middle;
+  text-align: center;
+  padding: 0 4px;
+  font-size: 0.95em;
+}
+
+.frac .num {
+  padding: 0 3px 2px 3px;
+  border-bottom: 2px solid currentColor;
+  display: block;
+}
+
+.frac .den {
+  padding: 2px 3px 0 3px;
+  display: block;
+}
+
+/* Raíz cuadrada continua */
+.sqrt {
+  display: inline-flex;
+  align-items: stretch;
+  vertical-align: middle;
+  margin: 0 2px;
+}
+
+.sqrt .radical-symbol {
+  font-size: 1.3em;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  padding-right: 1px;
+}
+
+.sqrt .radicand {
+  border-top: 2.5px solid currentColor;
+  padding: 3px 6px 1px 4px;
+  display: inline-block;
+  margin-left: -1px;
+}

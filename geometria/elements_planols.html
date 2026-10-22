@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geometria: Elements Geomètrics Bàsics</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓ I PESTANYES PRINCIPALS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 1rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* SUBPESTANYES */
+    .subtabs-container {
+      display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;
+      background: var(--bg-card); padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);
+      margin-bottom: 1rem;
+    }
+    .subtab-btn {
+      padding: 0.5rem 1.2rem; background: var(--bg-primary); border: 1px solid var(--border-color);
+      color: var(--text-muted); border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    }
+    .subtab-btn:hover { border-color: var(--accent-blue); color: var(--text-main); }
+    .subtab-btn.active { background: var(--accent-blue); color: #042f2e; border-color: var(--accent-blue); font-weight: bold; }
+    .subtab-content { display: none; flex-direction: column; gap: 1.2rem; animation: fadeIn 0.3s forwards; }
+    .subtab-content.active { display: flex; }
+
+    /* PANELLS I ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* CONTROLS DESLLISSADORS */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem; }
+    .slider-row label { width: 140px; font-weight: 600; font-family: monospace; font-size: 1.05rem; }
+    .val-badge { width: 55px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; }
+
+    /* SVG CANVAS */
+    .svg-canvas {
+      width: 100%; height: 260px; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block;
+    }
+
+    /* TARGETES INFORMATIVES */
+    .info-card-item {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.3rem;
+    }
+    .info-card-item strong { color: var(--accent-blue); font-size: 1.05rem; }
+    .info-card-item p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.4; }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Tornar al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Elements Geomètrics del Pla</h1>
+    <p>Rectes, angles, polígons, figures circulars i la relació màgica entre els triangles i la circumferència.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('elements', this)">📏 1. Rectes i Pla</button>
+      <button class="tab-btn" onclick="switchTab('angles', this)">📐 2. Els Angles</button>
+      <button class="tab-btn" onclick="switchTab('figures', this)">🔷 3. Figures Planes</button>
+      <button class="tab-btn" onclick="switchTab('circulars', this)">⭕ 4. La Circumferència</button>
+      <button class="tab-btn" onclick="switchTab('notables', this)">🎯 5. Triangles i Cercles</button>
+    </nav>
+
+    <!-- ================= PESTANYA 1: ELEMENTS DEL PLA ================= -->
+    <div id="elements" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">El Maó de la Geometria</div>
+        <div class="content-text">
+          Tota la geometria comença amb 3 conceptes bàsics: el <strong>punt</strong> (sense dimensions), la <strong>recta</strong> (longitud infinita en dues direccions) i el <strong>pla</strong> (superfície infinita bidimensional).
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Punt, Recta, Semirecta i Segment</div>
+          <div style="display:flex; flex-direction:column; gap:0.8rem;">
+            <div class="info-card-item">
+              <strong>Recta:</strong>
+              <p>Línia de punts infinita sense principi ni final. Es nomena amb una lletra minúscula (<em>r</em>, <em>s</em>).</p>
+            </div>
+            <div class="info-card-item">
+              <strong style="color:var(--accent-gold);">Semirecta:</strong>
+              <p>Té un punt d'origen però s'estén fins a l'infinit en un sol sentit.</p>
+            </div>
+            <div class="info-card-item">
+              <strong style="color:var(--accent-success);">Segment [AB]:</strong>
+              <p>Porció de recta compresa entre dos punts <em>A</em> i <em>B</em>. Té principi i final mesurables.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Posicions Relatives de Dues Rectes</div>
+          <svg class="svg-canvas" viewBox="0 0 320 220">
+            <!-- Paral·leles -->
+            <line x1="20" y1="40" x2="140" y2="40" stroke="var(--accent-blue)" stroke-width="2.5" />
+            <line x1="20" y1="65" x2="140" y2="65" stroke="var(--accent-blue)" stroke-width="2.5" />
+            <text x="35" y="95" fill="var(--text-main)" font-size="12" font-weight="bold">Paral·leles</text>
+            <text x="25" y="112" fill="var(--text-muted)" font-size="10">Mai no es tallen</text>
+
+            <!-- Secants -->
+            <line x1="170" y1="30" x2="300" y2="90" stroke="var(--accent-gold)" stroke-width="2.5" />
+            <line x1="180" y1="90" x2="290" y2="30" stroke="var(--accent-gold)" stroke-width="2.5" />
+            <circle cx="237" cy="60" r="4" fill="#fff" />
+            <text x="205" y="115" fill="var(--text-main)" font-size="12" font-weight="bold">Secants</text>
+            <text x="185" y="132" fill="var(--text-muted)" font-size="10">Es tallen en 1 punt</text>
+
+            <!-- Perpendiculars -->
+            <line x1="100" y1="145" x2="220" y2="145" stroke="var(--accent-op)" stroke-width="2.5" />
+            <line x1="160" y1="125" x2="160" y2="205" stroke="var(--accent-op)" stroke-width="2.5" />
+            <rect x="160" y="130" width="15" height="15" fill="none" stroke="#fff" stroke-width="1.5" />
+            <text x="95" y="215" fill="var(--text-main)" font-size="12" font-weight="bold">Perpendiculars (90º)</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTANYA 2: ELS ANGLES ================= -->
+    <div id="angles" class="tab-content">
+      
+      <div class="subtabs-container">
+        <button class="subtab-btn active" onclick="switchSubTab('sub_tipus_ang', this)">📐 Tipus d'Angles (Interactiu)</button>
+        <button class="subtab-btn" onclick="switchSubTab('sub_rel_ang', this)">🤝 Relacions (Complementaris / Suplementaris)</button>
+      </div>
+
+      <!-- SUBPESTANYA 2.1: TIPUS D'ANGLES -->
+      <div id="sub_tipus_ang" class="subtab-content active">
+        <div class="grid-2">
+          <div class="panel-box">
+            <div class="panel-title">Transportador d'Angles Dinàmic</div>
+            
+            <div class="slider-row">
+              <label>Obertura (º):</label>
+              <input type="range" id="ang_slider" min="0" max="360" value="65" oninput="updateAngle()">
+              <span class="val-badge" id="v_ang_deg" style="color:var(--accent-gold);">65º</span>
+            </div>
+
+            <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); margin-top:1rem;">
+              <span style="color:var(--text-muted); font-size:0.85rem;">Classificació de l'angle:</span>
+              <div id="txt_ang_class" style="font-size:1.4rem; font-weight:bold; color:var(--accent-success); margin-top:0.3rem;">Angle Agut</div>
+              <p id="txt_ang_desc" style="font-size:0.95rem; color:var(--text-muted); margin-top:0.5rem; line-height:1.5;">
+                Medeix menys de 90º.
+              </p>
+            </div>
+          </div>
+
+          <div class="panel-box">
+            <div class="panel-title">Visualització Gràfica</div>
+            <svg class="svg-canvas" viewBox="-120 -120 240 240" id="ang_svg">
+              <!-- Arc de referència -->
+              <circle cx="0" cy="0" r="80" fill="none" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3" />
+              <!-- Costat fix (eix X positiu) -->
+              <line x1="0" y1="0" x2="90" y2="0" stroke="#94a3b8" stroke-width="3" />
+              <!-- Sector acolorit -->
+              <path id="ang_sector" d="" fill="rgba(251, 191, 36, 0.2)" stroke="var(--accent-gold)" stroke-width="2" />
+              <!-- Costat mòbil -->
+              <line id="ang_line_mobile" x1="0" y1="0" x2="90" y2="0" stroke="var(--accent-gold)" stroke-width="3" />
+              <!-- Vèrtex central -->
+              <circle cx="0" cy="0" r="5" fill="#fff" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUBPESTANYA 2.2: RELACIONS ENTRE ANGLES -->
+      <div id="sub_rel_ang" class="subtab-content">
+        <div class="grid-3">
+          <div class="info-card-item" style="border-top:3px solid var(--accent-blue);">
+            <strong>Angles Complementaris</strong>
+            <p>Són dos angles que <strong>sumen 90º</strong> (un angle recte).</p>
+            <div style="font-family:monospace; margin-top:0.5rem; color:var(--accent-blue); font-weight:bold;">
+              30º + 60º = 90º
+            </div>
+          </div>
+
+          <div class="info-card-item" style="border-top:3px solid var(--accent-gold);">
+            <strong>Angles Suplementaris</strong>
+            <p>Són dos angles que <strong>sumen 180º</strong> (un angle pla).</p>
+            <div style="font-family:monospace; margin-top:0.5rem; color:var(--accent-gold); font-weight:bold;">
+              120º + 60º = 180º
+            </div>
+          </div>
+
+          <div class="info-card-item" style="border-top:3px solid var(--accent-op);">
+            <strong>Oposats pel Vèrtex</strong>
+            <p>Formats per dues rectes secants. Els angles oposats <strong>mesuren exactament el mateix</strong>.</p>
+            <div style="font-family:monospace; margin-top:0.5rem; color:var(--accent-op); font-weight:bold;">
+              α = α' &nbsp;|&nbsp; β = β'
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= PESTANYA 3: FIGURES PLANES ================= -->
+    <!-- ================= PESTANYA 3: FIGURES PLANES ================= -->
+    <div id="figures" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+        <div class="badge" style="color: var(--accent-blue);">Polígons del Pla</div>
+        <div class="content-text">
+          Un polígon és una figura plana delimitada per segments rectes tancats. Els més fonamentals en 1r d'ESO són els <strong>triangles</strong> (3 costats, sumen 180º) i els <strong>quadrilàters</strong> (4 costats, sumen 360º).
+        </div>
+      </div>
+
+      <!-- SUBPESTANYES DE FIGURES PLANES -->
+      <div class="subtabs-container">
+        <button class="subtab-btn active" onclick="switchSubTab('sub_triangles', this)">🔺 Classificació de Triangles</button>
+        <button class="subtab-btn" onclick="switchSubTab('sub_quadrilaters', this)">⬛ Classificació de Quadrilàters</button>
+      </div>
+
+      <!-- ================= 3.1: TRIANGLES ================= -->
+      <div id="sub_triangles" class="subtab-content active">
+        
+        <!-- SEGONS ELS COSTATS -->
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-blue);">1. Segons la longitud dels seus costats</div>
+          <div class="grid-3" style="margin-top:0.5rem;">
+            
+            <!-- Equilàter -->
+            <div class="info-card-item" style="text-align:center; align-items:center;">
+              <svg width="120" height="90" viewBox="0 0 120 90">
+                <polygon points="60,10 15,80 105,80" fill="rgba(56, 189, 248, 0.15)" stroke="var(--accent-blue)" stroke-width="2.5" />
+                <!-- Marquetes de costats iguals -->
+                <line x1="34" y1="43" x2="41" y2="47" stroke="#fff" stroke-width="1.5" />
+                <line x1="79" y1="47" x2="86" y2="43" stroke="#fff" stroke-width="1.5" />
+                <line x1="60" y1="76" x2="60" y2="84" stroke="#fff" stroke-width="1.5" />
+              </svg>
+              <strong style="color:var(--accent-blue); margin-top:0.5rem;">Equilàter</strong>
+              <p><strong>3 costats iguals</strong>.<br>Tots 3 angles mesuren exactament 60º.</p>
+            </div>
+
+            <!-- Isòsceles -->
+            <div class="info-card-item" style="text-align:center; align-items:center;">
+              <svg width="120" height="90" viewBox="0 0 120 90">
+                <polygon points="60,8 30,82 90,82" fill="rgba(56, 189, 248, 0.15)" stroke="var(--accent-blue)" stroke-width="2.5" />
+                <!-- Marquetes als 2 costats iguals -->
+                <line x1="42" y1="43" x2="48" y2="47" stroke="#fff" stroke-width="1.5" />
+                <line x1="72" y1="47" x2="78" y2="43" stroke="#fff" stroke-width="1.5" />
+              </svg>
+              <strong style="color:var(--accent-blue); margin-top:0.5rem;">Isòsceles</strong>
+              <p><strong>2 costats iguals</strong> i un de desigual (la base). Té 2 angles iguals.</p>
+            </div>
+
+            <!-- Escalè -->
+            <div class="info-card-item" style="text-align:center; align-items:center;">
+              <svg width="120" height="90" viewBox="0 0 120 90">
+                <polygon points="25,25 10,80 110,80" fill="rgba(56, 189, 248, 0.15)" stroke="var(--accent-blue)" stroke-width="2.5" />
+              </svg>
+              <strong style="color:var(--accent-blue); margin-top:0.5rem;">Escalè</strong>
+              <p><strong>3 costats diferents</strong>.<br>Tots 3 angles tenen mesures diferents.</p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SEGONS ELS ANGLES -->
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-gold);">2. Segons l'obertura dels seus angles</div>
+          <div class="grid-3" style="margin-top:0.5rem;">
+            
+            <!-- Acutangle -->
+            <div class="info-card-item" style="text-align:center; align-items:center;">
+              <svg width="120" height="90" viewBox="0 0 120 90">
+                <polygon points="65,15 20,78 100,78" fill="rgba(251, 191, 36, 0.15)" stroke="var(--accent-gold)" stroke-width="2.5" />
+              </svg>
+              <strong style="color:var(--accent-gold); margin-top:0.5rem;">Acutangle</strong>
+              <p>Té els <strong>3 angles aguts</strong> (tots tres mesuren menys de 90º).</p>
+            </div>
+
+            <!-- Rectangle -->
+            <div class="info-card-item" style="text-align:center; align-items:center;">
+              <svg width="120" height="90" viewBox="0 0 120 90">
+                <polygon points="25,15 25,78 105,78" fill="rgba(251, 191, 36, 0.15)" stroke="var(--accent-gold)" stroke-width="2.5" />
+                <!-- Indicador d'angle recte 90º -->
+                <rect x="25" y="66" width="12" height="12" fill="none" stroke="var(--accent-op)" stroke-width="2" />
+              </svg>
+              <strong style="color:var(--accent-gold); margin-top:0.5rem;">Rectangle</strong>
+              <p>Té <strong>1 angle recte (90º)</strong>.<br>El costat oposat s'anomena hipotenusa.</p>
+            </div>
+
+            <!-- Obtusangle -->
+            <div class="info-card-item" style="text-align:center; align-items:center;">
+              <svg width="120" height="90" viewBox="0 0 120 90">
+                <polygon points="15,45 50,78 112,78" fill="rgba(251, 191, 36, 0.15)" stroke="var(--accent-gold)" stroke-width="2.5" />
+                <!-- Arc angle obtús -->
+                <path d="M 40 70 A 15 15 0 0 0 58 78" fill="none" stroke="var(--accent-op)" stroke-width="2" />
+              </svg>
+              <strong style="color:var(--accent-gold); margin-top:0.5rem;">Obtusangle</strong>
+              <p>Té <strong>1 angle obtús</strong> (més gran de 90º) i dos angles aguts.</p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= 3.2: QUADRILÀTERS ================= -->
+      <div id="sub_quadrilaters" class="subtab-content">
+        
+        <!-- PARAL·LELOGRAMS -->
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-success);">1. Paral·lelograms (Costats oposats paral·lels 2 a 2)</div>
+          <div class="grid-3" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-top:0.5rem;">
+            
+            <!-- Quadrat -->
+            <div class="info-card-item" style="text-align:center; align-items:center;">
+              <svg width="100" height="80" viewBox="0 0 100 80">
+                <rect x="20" y="10" width="60" height="60" fill="rgba(16, 185, 129, 0.15)" stroke="var(--accent-success)" stroke-width="2.5" />
+              </svg>
+              <strong style="color:var(--accent-success);">Quadrat</strong>
+              <p>4 costats iguals i 4 angles rectes (90º).</p>
+            </div>
+
+            <!-- Rectangle -->
+            <div class="info-card-item" style="text-align:center; align-items:center;">
+              <svg width="110" height="80" viewBox="0 0 110 80">
+                <rect x="15" y="20" width="80" height="45" fill="rgba(16, 185, 129, 0.15)" stroke="var(--accent-success)" stroke-width="2.5" />
+              </svg>
+              <strong style="color:var(--accent-success);">Rectangle</strong>
+              <p>Costats iguals 2 a 2 i 4 angles rectes (90º).</p>
+            </div>
+
+            <!-- Rombe -->
+            <div class="info-card-item" style="text-align:center; align-items:center;">
+              <svg width="100" height="80" viewBox="0 0 100 80">
+                <polygon points="50,10 85,40 50,70 15,40" fill="rgba(16, 185, 129, 0.15)" stroke="var(--accent-success)" stroke-width="2.5" />
+              </svg>
+              <strong style="color:var(--accent-success);">Rombe</strong>
+              <p>4 costats iguals i angles oposats iguals 2 a 2.</p>
+            </div>
+
+            <!-- Romboide -->
+            <div class="info-card-item" style="text-align:center; align-items:center;">
+              <svg width="110" height="80" viewBox="0 0 110 80">
+                <polygon points="35,18 100,18 75,62 10,62" fill="rgba(16, 185, 129, 0.15)" stroke="var(--accent-success)" stroke-width="2.5" />
+              </svg>
+              <strong style="color:var(--accent-success);">Romboide</strong>
+              <p>Costats i angles oposats iguals 2 a 2 (sense angles rectes).</p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- TRAPEZIS I TRAPEZOIDES -->
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-op);">2. No Paral·lelograms (Trapezis i Trapezoides)</div>
+          <div class="grid-3" style="margin-top:0.5rem;">
+            
+            <!-- Trapezi Isòsceles -->
+            <div class="info-card-item" style="text-align:center; align-items:center;">
+              <svg width="120" height="80" viewBox="0 0 120 80">
+                <polygon points="35,18 85,18 105,62 15,62" fill="rgba(244, 63, 94, 0.15)" stroke="var(--accent-op)" stroke-width="2.5" />
+                <line x1="35" y1="18" x2="85" y2="18" stroke="var(--accent-gold)" stroke-width="2" />
+                <line x1="15" y1="62" x2="105" y2="62" stroke="var(--accent-gold)" stroke-width="2" />
+              </svg>
+              <strong style="color:var(--accent-op);">Trapezi Isòsceles</strong>
+              <p>2 costats paral·lels (bases) i els 2 costats no paral·lels iguals.</p>
+            </div>
+
+            <!-- Trapezi Rectangle -->
+            <div class="info-card-item" style="text-align:center; align-items:center;">
+              <svg width="120" height="80" viewBox="0 0 120 80">
+                <polygon points="25,18 80,18 105,62 25,62" fill="rgba(244, 63, 94, 0.15)" stroke="var(--accent-op)" stroke-width="2.5" />
+                <rect x="25" y="18" width="10" height="10" fill="none" stroke="#fff" stroke-width="1.5" />
+                <rect x="25" y="52" width="10" height="10" fill="none" stroke="#fff" stroke-width="1.5" />
+              </svg>
+              <strong style="color:var(--accent-op);">Trapezi Rectangle</strong>
+              <p>2 costats paral·lels i <strong>2 angles rectes (90º)</strong> consecutius.</p>
+            </div>
+
+            <!-- Trapezoide -->
+            <div class="info-card-item" style="text-align:center; align-items:center;">
+              <svg width="120" height="80" viewBox="0 0 120 80">
+                <polygon points="25,22 85,12 105,68 15,55" fill="rgba(244, 63, 94, 0.15)" stroke="var(--accent-op)" stroke-width="2.5" />
+              </svg>
+              <strong style="color:var(--accent-op);">Trapezoide</strong>
+              <p><strong>Cap costat paral·lel</strong>. Té 4 costats i 4 angles completament asimètrics.</p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ================= PESTANYA 4: CIRCUMFERÈNCIA I CERCLE ================= -->
+    <div id="circulars" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-op);">
+        <div class="badge" style="color: var(--accent-op);">Diferència Clau: Línia vs. Superfície</div>
+        <div class="content-text">
+          La <strong>circumferència</strong> és només la línia corba exterior (el perímetre, com un anell). El <strong>cercle</strong> és tot l'interior, és a dir, la superfície plana continguda (com una moneda).
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Elements de la Circumferència</div>
+          <svg class="svg-canvas" viewBox="0 0 300 240">
+            <!-- Circumferència base -->
+            <circle cx="150" cy="120" r="85" fill="rgba(56, 189, 248, 0.05)" stroke="var(--accent-blue)" stroke-width="2.5" />
+            <circle cx="150" cy="120" r="4" fill="#fff" />
+            <text x="140" y="112" fill="#fff" font-size="12">Centre</text>
+
+            <!-- Diàmetre (d = 2r) -->
+            <line x1="65" y1="120" x2="235" y2="120" stroke="var(--accent-op)" stroke-width="2.5" />
+            <text x="175" y="135" fill="var(--accent-op)" font-size="11" font-weight="bold">Diàmetre</text>
+
+            <!-- Radi (r) -->
+            <line x1="150" y1="120" x2="210" y2="60" stroke="var(--accent-gold)" stroke-width="2.5" />
+            <text x="180" y="85" fill="var(--accent-gold)" font-size="11" font-weight="bold">Radi</text>
+
+            <!-- Corda i Arc -->
+            <line x1="75" y1="165" x2="160" y2="204" stroke="var(--accent-success)" stroke-width="2" />
+            <text x="100" y="195" fill="var(--accent-success)" font-size="11">Corda</text>
+            <path d="M 75 165 A 85 85 0 0 0 160 204" fill="none" stroke="#fff" stroke-width="3" />
+            <text x="110" y="222" fill="#fff" font-size="10">Arc</text>
+
+            <!-- Recta Tangent -->
+            <line x1="235" y1="40" x2="235" y2="200" stroke="#a855f7" stroke-width="2" stroke-dasharray="3" />
+            <text x="240" y="120" fill="#a855f7" font-size="11">Tangent (1 punt)</text>
+          </svg>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Figures Circulars (Porcions del Cercle)</div>
+          <div style="display:flex; flex-direction:column; gap:0.8rem;">
+            <div class="info-card-item">
+              <strong style="color:var(--accent-gold);">Sector Circular:</strong>
+              <p>Porció de cercle compresa entre dos radis i el seu arc (com un tall de pizza).</p>
+            </div>
+            <div class="info-card-item">
+              <strong style="color:var(--accent-blue);">Corona Circular:</strong>
+              <p>Superfície compresa entre dues circumferències concèntriques de radis diferents (com un dònut o CD).</p>
+            </div>
+            <div class="info-card-item">
+              <strong style="color:var(--accent-success);">Segment Circular:</strong>
+              <p>Porció de cercle delimitada per una corda i el seu arc corresponent.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTANYA 5: TRIANGLES I CIRCUMFERÈNCIA ================= -->
+    <div id="notables" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">Els Punts Notables del Triangle</div>
+        <div class="content-text">
+          Tot triangle té associades dues circumferències màgiques úniques: una que passa exactament pels seus 3 vèrtexs per fora (<strong>Circumscrita</strong>), i una altra que toca els seus 3 costats per dins (<strong>Inscrita</strong>).
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- CIRCUMCENTRE -->
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-blue);">1. El Circumcentre (Circumferència Exterior)</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
+            És el punt de tall de les <strong>mediatrius</strong> dels costats (les rectes perpendiculars pel punt mig de cada costat). Està a la mateixa distància dels tres vèrtexs.
+          </p>
+          
+          <svg class="svg-canvas" viewBox="0 0 260 220">
+            <!-- Circumferència circumscrita exterior -->
+            <circle cx="130" cy="115" r="75" fill="none" stroke="var(--accent-blue)" stroke-width="2" stroke-dasharray="4" />
+            
+            <!-- Triangle -->
+            <polygon points="130,40 60,150 200,150" fill="rgba(56, 189, 248, 0.1)" stroke="#fff" stroke-width="2.5" />
+            
+            <!-- Circumcentre -->
+            <circle cx="130" cy="115" r="5" fill="var(--accent-blue)" />
+            <text x="138" y="118" fill="var(--accent-blue)" font-size="11" font-weight="bold">Circumcentre</text>
+
+            <!-- Vèrtexs tocant la circumferència -->
+            <circle cx="130" cy="40" r="3.5" fill="#fff" />
+            <circle cx="60" cy="150" r="3.5" fill="#fff" />
+            <circle cx="200" cy="150" r="3.5" fill="#fff" />
+          </svg>
+          <div style="background:rgba(56,189,248,0.08); padding:0.6rem; border-radius:6px; margin-top:0.6rem; text-align:center; font-size:0.85rem; color:var(--text-main);">
+            Passa per fora tocant els <strong>3 vèrtexs</strong>.
+          </div>
+        </div>
+
+        <!-- INCENTRE -->
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-gold);">2. L'Incentre (Circumferència Interior)</div>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
+            És el punt de tall de les <strong>bisectrius</strong> dels angles (les rectes que divideixen cada angle per la meitat). Està a la mateixa distància dels tres costats.
+          </p>
+
+          <svg class="svg-canvas" viewBox="0 0 260 220">
+            <!-- Triangle gran -->
+            <polygon points="130,30 40,180 220,180" fill="rgba(251, 191, 36, 0.08)" stroke="#fff" stroke-width="2.5" />
+            
+            <!-- Circumferència inscrita interior -->
+            <circle cx="130" cy="125" r="54" fill="none" stroke="var(--accent-gold)" stroke-width="2.5" />
+            
+            <!-- Incentre -->
+            <circle cx="130" cy="125" r="5" fill="var(--accent-gold)" />
+            <text x="138" y="128" fill="var(--accent-gold)" font-size="11" font-weight="bold">Incentre</text>
+          </svg>
+          <div style="background:rgba(251,191,36,0.08); padding:0.6rem; border-radius:6px; margin-top:0.6rem; text-align:center; font-size:0.85rem; color:var(--text-main);">
+            Queda a l'interior tocant els <strong>3 costats</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓ ENTRE PESTANYES PRINCIPALS ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'angles') updateAngle();
+    }
+
+    // --- NAVEGACIÓ ENTRE SUBPESTANYES ---
+    function switchSubTab(subtabId, btn) {
+      document.querySelectorAll('.subtab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(subtabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // =========================================================================
+    // 2. SIMULADOR D'ANGLES DINÀMIC (SVG)
+    // =========================================================================
+    function updateAngle() {
+      const deg = parseInt(document.getElementById('ang_slider').value);
+      document.getElementById('v_ang_deg').innerText = `${deg}º`;
+
+      const r = 80;
+      // Convertir graus a radians en sentit antihorari (en SVG la Y creix cap avall, per això -sin)
+      const rad = (deg * Math.PI) / 180;
+      const x = r * Math.cos(rad);
+      const y = -r * Math.sin(rad);
+
+      // Actualitzar línia mòbil
+      const line = document.getElementById('ang_line_mobile');
+      line.setAttribute('x2', x);
+      line.setAttribute('y2', y);
+
+      // Actualitzar arc acolorit de l'angle
+      const largeArc = deg > 180 ? 1 : 0;
+      let pathD = "";
+      if (deg === 360) {
+        pathD = `M 0 0 L 80 0 A 80 80 0 1 0 79.99 -0.1 Z`;
+      } else if (deg > 0) {
+        pathD = `M 0 0 L 80 0 A 80 80 0 ${largeArc} 0 ${x} ${y} Z`;
+      }
+      document.getElementById('ang_sector').setAttribute('d', pathD);
+
+      // Classificació didàctica
+      const title = document.getElementById('txt_ang_class');
+      const desc = document.getElementById('txt_ang_desc');
+
+      if (deg === 0) {
+        title.innerText = "Angle Nul (0º)";
+        title.style.color = "var(--text-muted)";
+        desc.innerText = "Els dos costats coincideixen. No hi ha obertura.";
+      } else if (deg < 90) {
+        title.innerText = "Angle Agut (< 90º)";
+        title.style.color = "var(--accent-blue)";
+        desc.innerText = "L'obertura és menor que un angle recte (com la punta d'una fletxa).";
+      } else if (deg === 90) {
+        title.innerText = "Angle Recte (90º exactes)";
+        title.style.color = "var(--accent-success)";
+        desc.innerText = "Format per dues rectes perpendiculars. És l'angle dels cantons d'un quadrat.";
+      } else if (deg < 180) {
+        title.innerText = "Angle Obtús (> 90º i < 180º)";
+        title.style.color = "var(--accent-gold)";
+        desc.innerText = "Més obert que un angle recte, però sense arribar a una línia recta.";
+      } else if (deg === 180) {
+        title.innerText = "Angle Pla (180º exactes)";
+        title.style.color = "var(--accent-op)";
+        desc.innerText = "Els costats formen una recta contínua. Equivaleix a mitja volta.";
+      } else if (deg < 360) {
+        title.innerText = "Angle Còncau (> 180º)";
+        title.style.color = "#c084fc";
+        desc.innerText = "Obertura superior a un angle pla.";
+      } else {
+        title.innerText = "Angle Complet (360º)";
+        title.style.color = "var(--accent-success)";
+        desc.innerText = "Una volta circular sencera.";
+      }
+    }
+    updateAngle();
+  </script>
+</body>
+</html>

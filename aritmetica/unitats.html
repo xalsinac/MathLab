@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aritmètica: Canvis d'Unitats (Sistema Mètric)</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓ I PESTANYES */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 1rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PANELLS I ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* SVG CANVAS */
+    .svg-canvas {
+      width: 100%; height: 260px; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block;
+    }
+
+    /* ESCALA D'ESGLAONS (HTML/CSS) */
+    .staircase-box {
+      display: flex; flex-direction: column; gap: 0.4rem; margin: 1rem 0;
+    }
+    .stair-step {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.6rem 1rem; border-radius: 6px; font-family: monospace; font-weight: bold;
+      border: 1px solid var(--border-color); background: rgba(255, 255, 255, 0.02);
+      transition: all 0.2s;
+    }
+    .stair-step.base {
+      border-color: var(--accent-gold); background: rgba(251, 191, 36, 0.1); color: var(--accent-gold); font-size: 1.15rem;
+    }
+    .stair-step.multi { color: var(--accent-blue); }
+    .stair-step.submulti { color: var(--accent-success); }
+
+    /* TARGETA REGLES D'OR */
+    .rule-card {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.4rem;
+    }
+
+    /* FORMULARI CONVERTIDOR */
+    .conv-grid {
+      display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: center;
+      margin-bottom: 1.2rem;
+    }
+    .conv-input-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .conv-input-group label { font-size: 0.85rem; color: var(--text-muted); font-weight: bold; }
+    .conv-input-group input, .conv-input-group select {
+      padding: 0.7rem 0.9rem; background: #090d16; border: 1px solid var(--border-color);
+      border-radius: 6px; color: var(--text-main); font-family: monospace; font-size: 1.1rem;
+    }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .conv-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Tornar al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Canvis d'Unitats (Sistema Mètric)</h1>
+    <p>Aprèn a pujar i baixar per l'escala de longitud, superfície, volum i el pont d'equivalències entre litres, decímetres cúbics i quilos.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('lineal', this)">🪜 1. L'Escala (m, g, L)</button>
+      <button class="tab-btn" onclick="switchTab('superficie', this)">🔲 2. Superfície (m²)</button>
+      <button class="tab-btn" onclick="switchTab('volum', this)">🧊 3. Volum (m³)</button>
+      <button class="tab-btn" onclick="switchTab('pont', this)">💧 4. El Pont Màgic</button>
+      <button class="tab-btn" onclick="switchTab('laboratori', this)">🧮 5. Convertidor Pas a Pas</button>
+    </nav>
+
+    <!-- ================= PESTANYA 1: L'ESCALA LINEAL ================= -->
+    <div id="lineal" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">La Regla d'Or del Sistema Decimal</div>
+        <div class="content-text">
+          Com que el nostre sistema és decimal, <strong>cada esglaó equival a un 10 (un zero)</strong>:<br>
+          • <strong>Baixar l'escala ➔ Multiplicar per 10</strong> (la unitat es fa més petita, en necessitem més quantitat).<br>
+          • <strong>Pujar l'escala ➔ Dividir entre 10</strong> (la unitat es fa més gran, en necessitem menys quantitat).
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">L'Escala de Longitud (Metres)</div>
+          
+          <div class="staircase-box">
+            <div class="stair-step multi"><span>km (quilòmetre)</span><span>1.000 m</span></div>
+            <div class="stair-step multi"><span>hm (hectòmetre)</span><span>100 m</span></div>
+            <div class="stair-step multi"><span>dam (decàmetre)</span><span>10 m</span></div>
+            <div class="stair-step base"><span>⭐ m (METRE - Unitat Base)</span><span>1 m</span></div>
+            <div class="stair-step submulti"><span>dm (decímetre)</span><span>0,1 m</span></div>
+            <div class="stair-step submulti"><span>cm (centímetre)</span><span>0,01 m</span></div>
+            <div class="stair-step submulti"><span>mm (mil·límetre)</span><span>0,001 m</span></div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="justify-content:center;">
+          <div class="panel-title">El mateix per a Grams (g) i Litres (L)</div>
+          
+          <div style="display:flex; flex-direction:column; gap:0.9rem;">
+            <div class="rule-card" style="border-left:3px solid var(--accent-blue);">
+              <strong style="color:var(--accent-blue);">Massa (El Gram):</strong>
+              <p>kg ➔ hg ➔ dag ➔ <strong>g</strong> ➔ dg ➔ cg ➔ mg.<br>
+              <em>Exemple: 5 kg = 5 · 1.000 = 5.000 g (baixem 3 esglaons ➔ afegim 3 zeros).</em></p>
+            </div>
+
+            <div class="rule-card" style="border-left:3px solid var(--accent-gold);">
+              <strong style="color:var(--accent-gold);">Capacitat (El Litre):</strong>
+              <p>kL ➔ hL ➔ daL ➔ <strong>L</strong> ➔ dL ➔ cL ➔ mL.<br>
+              <em>Exemple: 350 cL = 350 ÷ 100 = 3,5 L (pugem 2 esglaons ➔ movem la coma 2 llocs a l'esquerra).</em></p>
+            </div>
+
+            <div style="background:rgba(16,185,129,0.08); border:1px solid var(--accent-success); border-radius:8px; padding:0.9rem; text-align:center; font-size:0.95rem;">
+              💡 <strong>Consell per recordar:</strong> Si baixes les escales, <em>corres</em> i et fas gran (<strong>multipliques</strong>). Si les puges, et canses i et fas petit (<strong>divideixes</strong>).
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTANYA 2: SUPERFÍCIE (m²) ================= -->
+    <div id="superficie" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">Superfície = 2 Dimensions (Llargada × Amplada)</div>
+        <div class="content-text">
+          Quan mesurem àrees en metres quadrats (m²), cada esglaó <strong>NO val 10, sinó 100 (dos zeros: 10² = 100)</strong>. Vegem per què físicament.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">La Demostració Visual del Quadrat</div>
+          <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:1rem;">
+            Imagina un quadrat d'<strong>1 metre de costat</strong>. Com que 1 m són 10 dm, el quadrat mesura 10 dm d'ample i 10 dm d'alt:
+          </p>
+
+          <svg class="svg-canvas" viewBox="0 0 260 220">
+            <!-- Quadrat 10x10 quadrícules -->
+            <defs>
+              <pattern id="grid_dm2" width="16" height="16" patternUnits="userSpaceOnUse">
+                <rect width="16" height="16" fill="rgba(251, 191, 36, 0.08)" stroke="rgba(251, 191, 36, 0.25)" stroke-width="1" />
+              </pattern>
+            </defs>
+            <rect x="50" y="30" width="160" height="160" fill="url(#grid_dm2)" stroke="var(--accent-gold)" stroke-width="3" />
+
+            <!-- Indicadors de mesura -->
+            <text x="75" y="20" fill="var(--accent-gold)" font-weight="bold" font-size="12">1 m = 10 decímetres</text>
+            <text x="215" y="115" fill="var(--accent-gold)" font-weight="bold" font-size="12" transform="rotate(90, 215, 115)">1 m = 10 dm</text>
+            
+            <text x="80" y="115" fill="#fff" font-weight="bold" font-size="13">10 × 10 = 100</text>
+            <text x="90" y="135" fill="var(--accent-gold)" font-weight="bold" font-size="12">quadrats de 1 dm²</text>
+          </svg>
+        </div>
+
+        <div class="panel-box" style="justify-content:center;">
+          <div class="panel-title">La Regla dels Dos Zeros (100)</div>
+          
+          <div style="font-family:monospace; font-size:1.15rem; background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); line-height:1.9;">
+            <div>1 esglaó cap avall ➔ <span style="color:var(--accent-success);">· 100</span> (2 zeros)</div>
+            <div>2 esglaons cap avall ➔ <span style="color:var(--accent-success);">· 10.000</span> (4 zeros)</div>
+            <hr style="border:0; border-top:1px solid var(--border-color); margin:0.5rem 0;">
+            <div>1 esglaó cap amunt ➔ <span style="color:var(--accent-op);">÷ 100</span> (2 llocs a l'esquerra)</div>
+            <div>2 esglaons cap amunt ➔ <span style="color:var(--accent-op);">÷ 10.000</span> (4 llocs a l'esquerra)</div>
+          </div>
+
+          <div style="background:rgba(251,191,36,0.1); border:1px solid var(--accent-gold); border-radius:8px; padding:1rem; margin-top:1rem;">
+            <strong>Exemple pràctic:</strong>
+            <p style="font-size:0.95rem; color:var(--text-muted); margin-top:0.3rem;">
+              Passar <strong>3,5 m² a cm²</strong>:<br>
+              De m² a cm² baixem 2 esglaons (dm² i cm²).<br>
+              Com que cada esglaó val 2 zeros: $2 \times 2 = 4$ zeros ($\cdot 10.000$).<br>
+              <strong>3,5 × 10.000 = 35.000 cm²</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTANYA 3: VOLUM (m³) ================= -->
+    <div id="volum" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-op);">
+        <div class="badge" style="color: var(--accent-op);">Volum = 3 Dimensions (Llarg × Ample × Alt)</div>
+        <div class="content-text">
+          En volum espacial (m³), cada esglaó de l'escala <strong>val 1.000 (tres zeros: 10³ = 1.000)</strong>. Un sol metre cúbic conté una quantitat gegant de decímetres cúbics.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">La Demostració Visual del Cub (10 × 10 × 10)</div>
+          
+          <svg class="svg-canvas" viewBox="0 0 280 240">
+            <!-- Cub isomètric 3D -->
+            <!-- Cara frontal -->
+            <polygon points="60,110 160,110 160,210 60,210" fill="rgba(244, 63, 94, 0.15)" stroke="var(--accent-op)" stroke-width="2.5" />
+            <!-- Cara superior -->
+            <polygon points="60,110 120,50 220,50 160,110" fill="rgba(244, 63, 94, 0.25)" stroke="var(--accent-op)" stroke-width="2.5" />
+            <!-- Cara lateral dreta -->
+            <polygon points="160,110 220,50 220,150 160,210" fill="rgba(244, 63, 94, 0.35)" stroke="var(--accent-op)" stroke-width="2.5" />
+
+            <text x="75" y="165" fill="#fff" font-weight="bold" font-size="13">10 × 10 × 10 =</text>
+            <text x="65" y="185" fill="var(--accent-op)" font-weight="bold" font-size="14">1.000 dm³ en 1 m³</text>
+          </svg>
+        </div>
+
+        <div class="panel-box" style="justify-content:center;">
+          <div class="panel-title">La Regla dels Tres Zeros (1.000)</div>
+          
+          <div style="font-family:monospace; font-size:1.15rem; background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); line-height:1.9;">
+            <div>1 esglaó cap avall ➔ <span style="color:var(--accent-success);">· 1.000</span> (3 zeros)</div>
+            <div>2 esglaons cap avall ➔ <span style="color:var(--accent-success);">· 1.000.000</span> (6 zeros)</div>
+            <hr style="border:0; border-top:1px solid var(--border-color); margin:0.5rem 0;">
+            <div>1 esglaó cap amunt ➔ <span style="color:var(--accent-op);">÷ 1.000</span> (3 llocs a l'esquerra)</div>
+          </div>
+
+          <div style="background:rgba(244,63,94,0.1); border:1px solid var(--accent-op); border-radius:8px; padding:1rem; margin-top:1rem;">
+            <strong>Exemple pràctic:</strong>
+            <p style="font-size:0.95rem; color:var(--text-muted); margin-top:0.3rem;">
+              Passar <strong>2.500 dm³ a m³</strong>:<br>
+              Pugem 1 esglaó (de dm³ a m³), per tant dividim entre 1.000.<br>
+              <strong>2.500 ÷ 1.000 = 2,5 m³</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTANYA 4: EL PONT MÀGIC ================= -->
+    <div id="pont" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+        <div class="badge" style="color: var(--accent-blue);">La Connexió Històrica de la Ciència</div>
+        <div class="content-text">
+          Els científics que van inventar el Sistema Mètric van establir una connexió perfecta entre <strong>com mesurem l'espai buit (volum)</strong>, <strong>el líquid que hi cap a dins (capacitat)</strong> i <strong>el pes que té si l'omplim d'aigua pura (massa)</strong>.
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="panel-box" style="align-items:center; text-align:center; border-top:4px solid var(--accent-blue);">
+          <div style="font-size:3rem; margin-bottom:0.5rem;">🥛</div>
+          <h4 style="color:var(--accent-blue); margin-bottom:0.4rem;">El Cartró de Llet</h4>
+          <div style="font-family:monospace; font-size:1.3rem; font-weight:bold; color:#fff;">
+            1 dm³ = 1 L = 1 kg
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.5rem; line-height:1.4;">
+            Un cub de 10 cm de costat (1 dm³) té la capacitat exacta d'<strong>1 litre</strong>. Si l'omples d'aigua, pesa exactament <strong>1 kg</strong>.
+          </p>
+        </div>
+
+        <div class="panel-box" style="align-items:center; text-align:center; border-top:4px solid var(--accent-gold);">
+          <div style="font-size:3rem; margin-bottom:0.5rem;">🏊</div>
+          <h4 style="color:var(--accent-gold); margin-bottom:0.4rem;">El Dipòsit / Piscina</h4>
+          <div style="font-family:monospace; font-size:1.3rem; font-weight:bold; color:#fff;">
+            1 m³ = 1.000 L = 1 t
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.5rem; line-height:1.4;">
+            Un dipòsit d'1 m³ equival a <strong>1.000 litres</strong> d'aigua, que pesen exactament 1.000 kg (<strong>1 tona</strong>).
+          </p>
+        </div>
+
+        <div class="panel-box" style="align-items:center; text-align:center; border-top:4px solid var(--accent-success);">
+          <div style="font-size:3rem; margin-bottom:0.5rem;">💉</div>
+          <h4 style="color:var(--accent-success); margin-bottom:0.4rem;">El Glaçó de Gel</h4>
+          <div style="font-family:monospace; font-size:1.3rem; font-weight:bold; color:#fff;">
+            1 cm³ = 1 mL = 1 g
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.5rem; line-height:1.4;">
+            Un cubet d'1 cm d'aresta (com un dau petit) conté <strong>1 mil·lilitre</strong> d'aigua i pesa <strong>1 gram</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTANYA 5: CONVERTIDOR INTERACTIU ================= -->
+    <div id="laboratori" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">Comprova les Teves Operacions</div>
+        <div class="content-text">
+          Tria el tipus de magnitud, introdueix el valor que vulguis canviar i observa la resolució detallada amb el càlcul d'esglaons i multiplicadors.
+        </div>
+      </div>
+
+      <div class="panel-box">
+        <div class="panel-title">Configurador del Canvi d'Unitats</div>
+
+        <div class="slider-row" style="margin-bottom:1.2rem;">
+          <label style="width:180px;">Tipus de Magnitud:</label>
+          <select id="sel_mag_type" onchange="setupUnitSelectors()" style="padding:0.6rem 1rem; background:#090d16; border:1px solid var(--border-color); border-radius:6px; color:var(--text-main); font-weight:bold;">
+            <option value="lineal">Longitud (m) / Massa (g) / Capacitat (L)</option>
+            <option value="superficie">Superfície (m² - Esglaons de 100)</option>
+            <option value="volum">Volum (m³ - Esglaons de 1.000)</option>
+          </select>
+        </div>
+
+        <div class="conv-grid">
+          <div class="conv-input-group">
+            <label>Quantitat:</label>
+            <input type="number" id="inp_val" value="25" oninput="calculateConversion()">
+          </div>
+
+          <div class="conv-input-group">
+            <label>De (Origen):</label>
+            <select id="sel_from" onchange="calculateConversion()"></select>
+          </div>
+
+          <div class="conv-input-group">
+            <label>A (Destí):</label>
+            <select id="sel_to" onchange="calculateConversion()"></select>
+          </div>
+        </div>
+
+        <!-- RESOLUCIÓ PAS A PAS -->
+        <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:1.8; margin-top:0.5rem;">
+          <div style="color:var(--text-muted); font-size:0.9rem;" id="calc_step_steps"></div>
+          <div style="font-size:1.2rem; margin-top:0.3rem;" id="calc_step_math"></div>
+          <div style="font-size:1.5rem; font-weight:bold; color:var(--accent-success); margin-top:0.5rem;" id="calc_step_res"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓ ENTRE PESTANYES ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'laboratori') calculateConversion();
+    }
+
+    // =========================================================================
+    // 5. CONVERTIDOR DINÀMIC PAS A PAS
+    // =========================================================================
+    const unitsData = {
+      lineal: [
+        { name: "km (quilòmetre)", factor: 1000 },
+        { name: "hm (hectòmetre)", factor: 100 },
+        { name: "dam (decàmetre)", factor: 10 },
+        { name: "m (metre)", factor: 1 },
+        { name: "dm (decímetre)", factor: 0.1 },
+        { name: "cm (centímetre)", factor: 0.01 },
+        { name: "mm (mil·límetre)", factor: 0.001 }
+      ],
+      superficie: [
+        { name: "km² (quilòmetre quadrat)", exp: 6 },
+        { name: "hm² (hectòmetre quadrat)", exp: 4 },
+        { name: "dam² (decàmetre quadrat)", exp: 2 },
+        { name: "m² (metre quadrat)", exp: 0 },
+        { name: "dm² (decímetre quadrat)", exp: -2 },
+        { name: "cm² (centímetre quadrat)", exp: -4 },
+        { name: "mm² (mil·límetre quadrat)", exp: -6 }
+      ],
+      volum: [
+        { name: "km³ (quilòmetre cúbic)", exp: 9 },
+        { name: "hm³ (hectòmetre cúbic)", exp: 6 },
+        { name: "dam³ (decàmetre cúbic)", exp: 3 },
+        { name: "m³ (metre cúbic)", exp: 0 },
+        { name: "dm³ (decímetre cúbic / Litre)", exp: -3 },
+        { name: "cm³ (centímetre cúbic / mL)", exp: -6 },
+        { name: "mm³ (mil·límetre cúbic)", exp: -9 }
+      ]
+    };
+
+    function setupUnitSelectors() {
+      const type = document.getElementById('sel_mag_type').value;
+      const list = unitsData[type];
+
+      const sFrom = document.getElementById('sel_from');
+      const sTo = document.getElementById('sel_to');
+
+      sFrom.innerHTML = "";
+      sTo.innerHTML = "";
+
+      list.forEach((u, i) => {
+        sFrom.innerHTML += `<option value="${i}">${u.name}</option>`;
+        sTo.innerHTML += `<option value="${i}">${u.name}</option>`;
+      });
+
+      // Valors per defecte que tinguin sentit
+      sFrom.selectedIndex = 0; // km
+      sTo.selectedIndex = 3;   // m
+      calculateConversion();
+    }
+
+    function calculateConversion() {
+      const type = document.getElementById('sel_mag_type').value;
+      const list = unitsData[type];
+      const val = parseFloat(document.getElementById('inp_val').value) || 0;
+
+      const idxFrom = parseInt(document.getElementById('sel_from').value);
+      const idxTo = parseInt(document.getElementById('sel_to').value);
+
+      const diffSteps = idxTo - idxFrom; // positiu = baixem esglaons; negatiu = pugem
+      const absSteps = Math.abs(diffSteps);
+
+      let multZeroesPerStep = (type === 'lineal') ? 1 : (type === 'superficie') ? 2 : 3;
+      let totalZeroes = absSteps * multZeroesPerStep;
+      let factor = Math.pow(10, totalZeroes);
+
+      let result = 0;
+      let stepStr = "";
+      let mathStr = "";
+
+      if (diffSteps === 0) {
+        result = val;
+        stepStr = "Són la mateixa unitat. No hi ha cap canvi.";
+        mathStr = `${val} × 1 = ${result}`;
+      } else if (diffSteps > 0) {
+        // Baixar ➔ Multiplicar
+        result = val * factor;
+        stepStr = `Baixem <strong>${absSteps} esglaó(ns)</strong>. Com que cada esglaó val ${multZeroesPerStep} zero(s), multipliquem per 10^${totalZeroes} (<strong>${factor.toLocaleString()}</strong>).`;
+        mathStr = `${val} × ${factor.toLocaleString()} = ${result}`;
+      } else {
+        // Pujar ➔ Dividir
+        result = val / factor;
+        stepStr = `Pugem <strong>${absSteps} esglaó(ns)</strong>. Dividim entre 10^${totalZeroes} (<strong>${factor.toLocaleString()}</strong>).`;
+        mathStr = `${val} ÷ ${factor.toLocaleString()} = ${result}`;
+      }
+
+      document.getElementById('calc_step_steps').innerHTML = stepStr;
+      document.getElementById('calc_step_math').innerHTML = mathStr;
+      document.getElementById('calc_step_res').innerText = `Resultat: ${result} ${list[idxTo].name.split(' ')[0]}`;
+    }
+
+    // Inicialització
+    setupUnitSelectors();
+  </script>
+</body>
+</html>

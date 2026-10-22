@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geometría 3D: Cuerpos Geométricos y Volúmenes</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 1rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* CONTROLES DESLIZANTES */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem; }
+    .slider-row label { width: 150px; font-weight: 600; font-family: monospace; font-size: 1.05rem; }
+    .val-badge { width: 75px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.15rem; }
+
+    /* SVG CANVAS */
+    .svg-canvas {
+      width: 100%; height: 280px; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block;
+    }
+
+    /* TARJETAS INFORMATIVAS */
+    .info-card-item {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.3rem;
+    }
+
+    /* BOTONES SELECTORES */
+    .btn-group { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .btn-choice {
+      flex: 1; padding: 0.6rem 0.8rem; background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-main); border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.9rem;
+      transition: all 0.2s; font-family: monospace;
+    }
+    .btn-choice:hover { border-color: var(--accent-blue); }
+    .btn-choice.active { background: rgba(56, 189, 248, 0.15); border-color: var(--accent-blue); color: var(--accent-blue); }
+
+    /* TABLA RESUMEN */
+    .table-3d {
+      width: 100%; border-collapse: collapse; font-family: monospace; font-size: 0.95rem; text-align: center;
+    }
+    .table-3d th, .table-3d td {
+      border: 1px solid var(--border-color); padding: 0.55rem;
+    }
+    .table-3d th { background: rgba(255, 255, 255, 0.04); color: var(--text-muted); }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Cuerpos Geométricos y Volúmenes (2º ESO)</h1>
+    <p>Explora el espacio tridimensional: poliedros regulares (los 5 sólidos platónicos), desarrollos planos desplegables, cuerpos de revolución y cálculo de volúmenes.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('elementos', this)">📦 1. Poliedros y Euler</button>
+      <button class="tab-btn" onclick="switchTab('platonicos', this)">💎 2. Los 5 Sólidos Platónicos</button>
+      <button class="tab-btn" onclick="switchTab('despliegue', this)">📄 3. Desarrollo Plano</button>
+      <button class="tab-btn" onclick="switchTab('revolucion', this)">🌀 4. Cuerpos de Revolución</button>
+      <button class="tab-btn" onclick="switchTab('volumen', this)">🧊 5. Volúmenes y Unidades</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: ELEMENTOS Y EULER ================= -->
+    <div id="elementos" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">¿Qué es un Poliedro?</div>
+        <div class="content-text">
+          Un <strong>poliedro</strong> (del griego <em>poly</em> = muchos, <em>hedra</em> = caras) es un cuerpo geométrico tridimensional cerrado delimitado exclusivamente por <strong>polígonos planos</strong> (no contiene ninguna superficie curva).
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Elementos de un Poliedro</div>
+          
+          <div style="display:flex; flex-direction:column; gap:0.8rem;">
+            <div class="info-card-item" style="border-left:3px solid var(--accent-blue);">
+              <strong style="color:var(--accent-blue);">Caras (C):</strong>
+              <p>Son los polígonos planos que delimitan el cuerpo (en un cubo, 6 cuadrados iguales).</p>
+            </div>
+            <div class="info-card-item" style="border-left:3px solid var(--accent-gold);">
+              <strong style="color:var(--accent-gold);">Aristas (A):</strong>
+              <p>Las líneas o segmentos donde se cortan dos caras contiguas (los bordes del cuerpo).</p>
+            </div>
+            <div class="info-card-item" style="border-left:3px solid var(--accent-op);">
+              <strong style="color:var(--accent-op);">Vértices (V):</strong>
+              <p>Los puntos o esquinas donde se encuentran tres o más aristas.</p>
+            </div>
+          </div>
+
+          <div style="background:#090d16; border:1px solid var(--accent-success); border-radius:8px; padding:1.1rem; margin-top:1rem; font-family:monospace;">
+            <div style="color:var(--accent-success); font-weight:bold; font-size:1.1rem;">Teorema de Euler para Poliedros Convexos:</div>
+            <div style="font-size:1.5rem; text-align:center; margin:0.5rem 0; color:#fff;">
+              C + V = A + 2
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin:0;">
+              En el cubo: 6 caras + 8 vértices = 12 aristas + 2 ➔ 14 = 14. ¡Se cumple en todos los poliedros convexos!
+            </p>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Anatomía Visual 3D (Cubo Isométrico)</div>
+          
+          <svg class="svg-canvas" viewBox="0 0 320 260">
+            <line x1="110" y1="170" x2="110" y2="80" stroke="#475569" stroke-width="2" stroke-dasharray="4" />
+            <line x1="110" y1="170" x2="60" y2="200" stroke="#475569" stroke-width="2" stroke-dasharray="4" />
+            <line x1="110" y1="170" x2="210" y2="170" stroke="#475569" stroke-width="2" stroke-dasharray="4" />
+
+            <polygon points="160,50 260,50 210,80 110,80" fill="rgba(56, 189, 248, 0.25)" stroke="var(--accent-blue)" stroke-width="2" />
+            <text x="185" y="70" fill="var(--accent-blue)" font-size="12" font-weight="bold">Cara superior</text>
+
+            <polygon points="110,80 210,80 160,200 60,200" fill="rgba(56, 189, 248, 0.15)" stroke="var(--accent-blue)" stroke-width="2" />
+            <text x="120" y="145" fill="#fff" font-size="12" font-weight="bold">Cara frontal</text>
+
+            <polygon points="210,80 260,50 260,170 210,200" fill="rgba(56, 189, 248, 0.35)" stroke="var(--accent-blue)" stroke-width="2" />
+
+            <line x1="60" y1="200" x2="160" y2="200" stroke="var(--accent-gold)" stroke-width="3" />
+            <text x="100" y="222" fill="var(--accent-gold)" font-weight="bold" font-size="12">Arista</text>
+
+            <circle cx="160" cy="50" r="5" fill="var(--accent-op)" />
+            <circle cx="260" cy="50" r="4" fill="#fff" />
+            <circle cx="210" cy="80" r="4" fill="#fff" />
+            <circle cx="110" cy="80" r="4" fill="#fff" />
+            <circle cx="60" cy="200" r="4" fill="#fff" />
+            <circle cx="160" cy="200" r="4" fill="#fff" />
+            <circle cx="210" cy="200" r="4" fill="#fff" />
+            <circle cx="260" cy="170" r="4" fill="#fff" />
+            <text x="140" y="38" fill="var(--accent-op)" font-weight="bold" font-size="12">Vértice</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: LOS 5 SÓLIDOS PLATÓNICOS ================= -->
+    <div id="platonicos" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">Solo Existen 5 en Todo el Universo</div>
+        <div class="content-text">
+          Un <strong>poliedro regular</strong> tiene todas sus caras formadas por el mismo polígono regular idéntico y en cada vértice concurre el mismo número de aristas. En 3D es matemáticamente imposible que existan más de cinco: son los llamados <strong>sólidos platónicos</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Selector de Sólido Platónico</div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-gold);">Poliedro:</label>
+            <input type="range" id="plat_slider" min="0" max="4" value="1" oninput="updatePlatonic()">
+            <span class="val-badge" id="v_plat_name" style="color:var(--accent-gold);">Cubo (6)</span>
+          </div>
+
+          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:1.9; margin-top:0.8rem;">
+            <div style="font-size:1.4rem; font-weight:bold; color:var(--accent-blue);" id="txt_plat_title">Hexaedro (Cubo)</div>
+            <div style="color:var(--text-muted); font-size:0.95rem; margin-top:0.3rem;" id="txt_plat_faces_type">Caras: 6 cuadrados regulares</div>
+            <hr style="border:0; border-top:1px solid var(--border-color); margin:0.6rem 0;">
+            <div style="font-size:1.05rem;">• Número de Caras (C): <strong id="txt_plat_c" style="color:var(--accent-blue);">6</strong></div>
+            <div style="font-size:1.05rem;">• Número de Vértices (V): <strong id="txt_plat_v" style="color:var(--accent-op);">8</strong></div>
+            <div style="font-size:1.05rem;">• Número de Aristas (A): <strong id="txt_plat_a" style="color:var(--accent-gold);">12</strong></div>
+            <div style="color:var(--accent-success); margin-top:0.4rem;" id="txt_plat_euler">Euler: 6 + 8 = 12 + 2 ✔</div>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Ilustración Vectorial 3D</div>
+          <svg class="svg-canvas" viewBox="0 0 300 240" id="plat_svg_canvas">
+            <g id="plat_svg_group"></g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="panel-box">
+        <div class="panel-title">Tabla Comparativa de los 5 Sólidos Platónicos</div>
+        <table class="table-3d">
+          <thead>
+            <tr>
+              <th>Poliedro</th>
+              <th>Forma de la Cara</th>
+              <th>Caras (C)</th>
+              <th>Vértices (V)</th>
+              <th>Aristas (A)</th>
+              <th>Euler (C + V = A + 2)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Tetraedro</strong></td>
+              <td>Triángulos equiláteros</td>
+              <td style="color:var(--accent-blue);">4</td>
+              <td style="color:var(--accent-op);">4</td>
+              <td style="color:var(--accent-gold);">6</td>
+              <td>4 + 4 = 6 + 2 (8 = 8)</td>
+            </tr>
+            <tr style="background:rgba(56,189,248,0.06);">
+              <td><strong>Hexaedro (Cubo)</strong></td>
+              <td>Cuadrados</td>
+              <td style="color:var(--accent-blue);">6</td>
+              <td style="color:var(--accent-op);">8</td>
+              <td style="color:var(--accent-gold);">12</td>
+              <td>6 + 8 = 12 + 2 (14 = 14)</td>
+            </tr>
+            <tr>
+              <td><strong>Octaedro</strong></td>
+              <td>Triángulos equiláteros</td>
+              <td style="color:var(--accent-blue);">8</td>
+              <td style="color:var(--accent-op);">6</td>
+              <td style="color:var(--accent-gold);">12</td>
+              <td>8 + 6 = 12 + 2 (14 = 14)</td>
+            </tr>
+            <tr>
+              <td><strong>Dodecaedro</strong></td>
+              <td>Pentágonos regulares</td>
+              <td style="color:var(--accent-blue);">12</td>
+              <td style="color:var(--accent-op);">20</td>
+              <td style="color:var(--accent-gold);">30</td>
+              <td>12 + 20 = 30 + 2 (32 = 32)</td>
+            </tr>
+            <tr>
+              <td><strong>Icosaedro</strong></td>
+              <td>Triángulos equiláteros</td>
+              <td style="color:var(--accent-blue);">20</td>
+              <td style="color:var(--accent-op);">12</td>
+              <td style="color:var(--accent-gold);">30</td>
+              <td>20 + 12 = 30 + 2 (32 = 32)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: DESARROLLO PLANO ================= -->
+    <div id="despliegue" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">Del Plano al Espacio</div>
+        <div class="content-text">
+          El <strong>desarrollo plano</strong> es la figura que se obtiene al recortar y abrir las caras del poliedro extendiéndolas sobre una hoja de papel. Es el patrón necesario para construir cajas y embalajes de cartón.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Control de Plegado / Desplegado</div>
+
+          <div class="btn-group">
+            <button class="btn-choice active" id="btn_net_cube" onclick="setNetModel('cube')">📦 Cubo (Hexaedro)</button>
+            <button class="btn-choice" id="btn_net_pyr" onclick="setNetModel('pyr')">🔺 Pirámide Cuadrangular</button>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-success);">Apertura:</label>
+            <input type="range" id="net_slider" min="0" max="100" value="0" oninput="updateNetFolding()">
+            <span class="val-badge" id="v_net_pct" style="color:var(--accent-success); width:95px;">0%</span>
+          </div>
+
+          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; margin-top:1rem; font-size:0.95rem; line-height:1.7;">
+            <div id="txt_net_desc" style="color:var(--text-main);">
+              <strong>Estado:</strong> Poliedro 3D cerrado en perspectiva real.
+            </div>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.4rem;">
+              Desliza al 100% para ver cómo las paredes caen hacia los lados hasta convertirse en una plantilla plana de cartón lista para imprimir.
+            </p>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Animación Geométrica de Despliegue</div>
+          <!-- IMPORTANTE: viewBox centrado con origen en (0,0) -->
+          <svg class="svg-canvas" viewBox="-140 -130 280 260" id="net_svg">
+            <g id="net_svg_group"></g>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: CUERPOS DE REVOLUCIÓN ================= -->
+    <div id="revolucion" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+        <div class="badge" style="color: var(--accent-blue);">Girar en Torno a un Eje</div>
+        <div class="content-text">
+          Los <strong>cuerpos de revolución</strong> no son poliedros (tienen superficies curvas). Se generan haciendo girar una figura plana <strong>360º alrededor de una recta fija llamada eje de giro</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Simulador de Revolución</div>
+
+          <div class="btn-group">
+            <button class="btn-choice active" id="btn_rev_cyl" onclick="setRevModel('cyl')">Cilindro (Rectángulo)</button>
+            <button class="btn-choice" id="btn_rev_cone" onclick="setRevModel('cone')">Cono (Triángulo Rectángulo)</button>
+            <button class="btn-choice" id="btn_rev_sph" onclick="setRevModel('sph')">Esfera (Semicírculo)</button>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-blue);">Giro alrededor del eje:</label>
+            <input type="range" id="rev_slider" min="0" max="360" value="70" oninput="updateRevolution()">
+            <span class="val-badge" id="v_rev_deg" style="color:var(--accent-blue);">70º</span>
+          </div>
+
+          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; margin-top:1rem; font-family:monospace; line-height:1.7;">
+            <div id="txt_rev_title" style="color:var(--accent-gold); font-weight:bold; font-size:1.15rem;">Cilindro</div>
+            <div id="txt_rev_expl" style="color:var(--text-muted); font-size:0.9rem; margin-top:0.3rem;">
+              Se genera al girar un rectángulo de base r y altura h alrededor de uno de sus lados.
+            </div>
+            <div style="color:var(--accent-success); font-weight:bold; margin-top:0.5rem;" id="txt_rev_formula">
+              Volumen = Área base · h = π · r² · h
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Trazado Tridimensional de Giro</div>
+          <svg class="svg-canvas" viewBox="-120 -130 240 260" id="rev_svg">
+            <g id="rev_svg_group"></g>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 5: VOLÚMENES Y UNIDADES ================= -->
+    <div id="volumen" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-op);">
+        <div class="badge" style="color: var(--accent-op);">El Espacio Ocupado en 3D</div>
+        <div class="content-text">
+          El <strong>volumen</strong> mide la cantidad de espacio tridimensional que ocupa un cuerpo. 
+          Todas las fórmulas responden a un principio lógico: <strong>apilar capas de área de la base ($A_b$) a lo largo de la altura ($h$)</strong>, dividiendo entre 3 si el cuerpo termina en punta.
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="panel-box" style="border-top:4px solid var(--accent-blue);">
+          <h4 style="color:var(--accent-blue); margin-bottom:0.5rem;">1. Cuerpos Rectos (Prisma / Cilindro)</h4>
+          <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.5;">
+            Tienen dos bases paralelas iguales. Imagina apilar lonchas de embutido o monedas del mismo tamaño:
+          </p>
+          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:6px; padding:0.9rem; text-align:center; font-family:monospace; font-size:1.15rem; color:var(--accent-blue); margin-top:0.6rem;">
+            V = Área base · h
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.4rem;">
+            • Cilindro: <strong>V = π · r² · h</strong>
+          </p>
+        </div>
+
+        <div class="panel-box" style="border-top:4px solid var(--accent-gold);">
+          <h4 style="color:var(--accent-gold); margin-bottom:0.5rem;">2. Cuerpos con Punta (Pirámide / Cono)</h4>
+          <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.5;">
+            Las capas se van encogiendo hasta un solo punto. Ocupan exactamente <strong>un tercio</strong> de la caja que los envuelve:
+          </p>
+          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:6px; padding:0.9rem; text-align:center; font-family:monospace; font-size:1.15rem; color:var(--accent-gold); margin-top:0.6rem;">
+            V = (Área base · h) / 3
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.4rem;">
+            • Cono: <strong>V = (π · r² · h) / 3</strong>
+          </p>
+        </div>
+
+        <div class="panel-box" style="border-top:4px solid var(--accent-success);">
+          <h4 style="color:var(--accent-success); margin-bottom:0.5rem;">3. La Esfera Perfecta</h4>
+          <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.5;">
+            Arquímedes demostró que una esfera ocupa exactamente 2/3 del cilindro en el que encaja ajustada:
+          </p>
+          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:6px; padding:0.9rem; text-align:center; font-family:monospace; font-size:1.15rem; color:var(--accent-success); margin-top:0.6rem;">
+            V = (4/3) · π · r³
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.4rem;">
+            Depende únicamente del cubo del radio (r³).
+          </p>
+        </div>
+      </div>
+
+      <div class="panel-box">
+        <div class="panel-title" style="color:var(--accent-gold);">Unidades de Volumen y Capacidad</div>
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-around; align-items:center; background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; font-size:1.1rem; gap:1rem;">
+          <div>1 m³ = <strong>1.000 dm³</strong> = <strong>1.000 Litros (1 kL)</strong></div>
+          <div style="color:var(--accent-gold);">⭐ <strong>1 dm³ = 1 Litro</strong> ⭐</div>
+          <div>1 cm³ = <strong>1 mililitro (1 mL)</strong> = <strong>1 gramo de agua</strong></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓN ENTRE PESTAÑAS ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'platonicos') updatePlatonic();
+      if (tabId === 'despliegue') updateNetFolding();
+      if (tabId === 'revolucion') updateRevolution();
+    }
+
+    // =========================================================================
+    // 2. SÓLIDOS PLATÓNICOS DINÁMICOS
+    // =========================================================================
+    const platData = [
+      { name: "Tetraedro (4)", title: "Tetraedro Regular", faces: "4 triángulos equiláteros", c: 4, v: 4, a: 6, euler: "4 + 4 = 6 + 2 (8 = 8) ✔" },
+      { name: "Cubo (6)", title: "Hexaedro (Cubo)", faces: "6 cuadrados regulares", c: 6, v: 8, a: 12, euler: "6 + 8 = 12 + 2 (14 = 14) ✔" },
+      { name: "Octaedro (8)", title: "Octaedro Regular", faces: "8 triángulos equiláteros", c: 8, v: 6, a: 12, euler: "8 + 6 = 12 + 2 (14 = 14) ✔" },
+      { name: "Dodecaedro (12)", title: "Dodecaedro Regular", faces: "12 pentágonos regulares", c: 12, v: 20, a: 30, euler: "12 + 20 = 30 + 2 (32 = 32) ✔" },
+      { name: "Icosaedro (20)", title: "Icosaedro Regular", faces: "20 triángulos equiláteros", c: 20, v: 12, a: 30, euler: "20 + 12 = 30 + 2 (32 = 32) ✔" }
+    ];
+
+    function updatePlatonic() {
+      const idx = parseInt(document.getElementById('plat_slider').value);
+      const data = platData[idx];
+
+      document.getElementById('v_plat_name').innerText = data.name;
+      document.getElementById('txt_plat_title').innerText = data.title;
+      document.getElementById('txt_plat_faces_type').innerText = `Caras: ${data.faces}`;
+      document.getElementById('txt_plat_c').innerText = data.c;
+      document.getElementById('txt_plat_v').innerText = data.v;
+      document.getElementById('txt_plat_a').innerText = data.a;
+      document.getElementById('txt_plat_euler').innerText = `Euler: ${data.euler}`;
+
+      const g = document.getElementById('plat_svg_group');
+      if (!g) return;
+      g.innerHTML = "";
+
+      if (idx === 0) {
+        // TETRAEDRO
+        g.innerHTML = `
+          <polygon points="150,35 60,195 240,195" fill="rgba(56,189,248,0.18)" stroke="var(--accent-blue)" stroke-width="2.5" />
+          <polygon points="150,35 150,145 240,195" fill="rgba(56,189,248,0.35)" stroke="var(--accent-blue)" stroke-width="2.5" />
+          <polygon points="150,35 60,195 150,145" fill="rgba(56,189,248,0.1)" stroke="var(--accent-blue)" stroke-width="2.5" />
+          <line x1="60" y1="195" x2="150" y2="145" stroke="#fff" stroke-width="2" />
+          <line x1="150" y1="145" x2="240" y2="195" stroke="#fff" stroke-width="2" />
+          <circle cx="150" cy="35" r="4" fill="#fff" />
+          <circle cx="60" cy="195" r="4" fill="#fff" />
+          <circle cx="240" cy="195" r="4" fill="#fff" />
+          <circle cx="150" cy="145" r="4" fill="#fff" />
+        `;
+      } else if (idx === 1) {
+        // CUBO
+        g.innerHTML = `
+          <polygon points="150,45 225,85 150,125 75,85" fill="rgba(251,191,36,0.3)" stroke="var(--accent-gold)" stroke-width="2" />
+          <polygon points="75,85 150,125 150,210 75,170" fill="rgba(251,191,36,0.15)" stroke="var(--accent-gold)" stroke-width="2" />
+          <polygon points="150,125 225,85 225,170 150,210" fill="rgba(251,191,36,0.45)" stroke="var(--accent-gold)" stroke-width="2" />
+          <line x1="75" y1="85" x2="150" y2="125" stroke="var(--accent-gold)" stroke-width="2" />
+          <line x1="150" y1="45" x2="150" y2="130" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3" />
+        `;
+      } else if (idx === 2) {
+        // OCTAEDRO
+        g.innerHTML = `
+          <polygon points="150,30 65,120 150,150" fill="rgba(16,185,129,0.18)" stroke="var(--accent-success)" stroke-width="2" />
+          <polygon points="150,30 235,120 150,150" fill="rgba(16,185,129,0.38)" stroke="var(--accent-success)" stroke-width="2" />
+          <polygon points="150,210 65,120 150,150" fill="rgba(16,185,129,0.12)" stroke="var(--accent-success)" stroke-width="2" />
+          <polygon points="150,210 235,120 150,150" fill="rgba(16,185,129,0.28)" stroke="var(--accent-success)" stroke-width="2" />
+          <line x1="65" y1="120" x2="235" y2="120" stroke="rgba(255,255,255,0.4)" stroke-dasharray="3" />
+        `;
+      } else if (idx === 3) {
+        // DODECAEDRO (Proyección Schlegel simétrica)
+        const cx = 150, cy = 120;
+        const rIn = 42, rOut = 88;
+        let inPts = [], outPts = [];
+        
+        for (let i = 0; i < 5; i++) {
+          const aIn = -Math.PI/2 + (i * 2 * Math.PI / 5);
+          inPts.push({ x: cx + rIn * Math.cos(aIn), y: cy + rIn * Math.sin(aIn) });
+        }
+        for (let i = 0; i < 10; i++) {
+          const aOut = -Math.PI/2 + (i * Math.PI / 5);
+          outPts.push({ x: cx + rOut * Math.cos(aOut), y: cy + rOut * Math.sin(aOut) });
+        }
+
+        let svgStr = "";
+        for (let i = 0; i < 5; i++) {
+          const p1 = inPts[i];
+          const p2 = inPts[(i + 1) % 5];
+          const o1 = outPts[2 * i];
+          const oMid = outPts[2 * i + 1];
+          const o2 = outPts[(2 * i + 2) % 10];
+          svgStr += `<polygon points="${p1.x},${p1.y} ${p2.x},${p2.y} ${o2.x},${o2.y} ${oMid.x},${oMid.y} ${o1.x},${o1.y}" fill="rgba(244,63,94,${0.15 + (i%2)*0.1})" stroke="var(--accent-op)" stroke-width="2" />`;
+        }
+        svgStr += `<polygon points="${inPts.map(p => `${p.x},${p.y}`).join(' ')}" fill="rgba(244,63,94,0.45)" stroke="var(--accent-op)" stroke-width="2.5" />`;
+        svgStr += `<polygon points="${outPts.map(p => `${p.x},${p.y}`).join(' ')}" fill="none" stroke="var(--accent-op)" stroke-width="2.5" />`;
+
+        g.innerHTML = svgStr;
+      } else {
+        // ICOSAEDRO (Triangulación simétrica)
+        const cx = 150, cy = 120;
+        const r = 88;
+        let hex = [];
+        for (let i = 0; i < 6; i++) {
+          const a = -Math.PI/2 + (i * Math.PI / 3);
+          hex.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
+        }
+        const rTri = 46;
+        let tri = [];
+        for (let i = 0; i < 3; i++) {
+          const a = Math.PI/2 + (i * 2 * Math.PI / 3);
+          tri.push({ x: cx + rTri * Math.cos(a), y: cy + rTri * Math.sin(a) });
+        }
+
+        let svgStr = "";
+        svgStr += `<polygon points="${tri[0].x},${tri[0].y} ${tri[1].x},${tri[1].y} ${tri[2].x},${tri[2].y}" fill="rgba(168,85,247,0.5)" stroke="#a855f7" stroke-width="2" />`;
+        svgStr += `<polygon points="${tri[0].x},${tri[0].y} ${hex[2].x},${hex[2].y} ${hex[3].x},${hex[3].y}" fill="rgba(168,85,247,0.25)" stroke="#a855f7" stroke-width="1.8" />`;
+        svgStr += `<polygon points="${tri[0].x},${tri[0].y} ${hex[3].x},${hex[3].y} ${hex[4].x},${hex[4].y}" fill="rgba(168,85,247,0.18)" stroke="#a855f7" stroke-width="1.8" />`;
+        svgStr += `<polygon points="${tri[1].x},${tri[1].y} ${hex[4].x},${hex[4].y} ${hex[5].x},${hex[5].y}" fill="rgba(168,85,247,0.3)" stroke="#a855f7" stroke-width="1.8" />`;
+        svgStr += `<polygon points="${tri[1].x},${tri[1].y} ${hex[5].x},${hex[5].y} ${hex[0].x},${hex[0].y}" fill="rgba(168,85,247,0.22)" stroke="#a855f7" stroke-width="1.8" />`;
+        svgStr += `<polygon points="${tri[2].x},${tri[2].y} ${hex[0].x},${hex[0].y} ${hex[1].x},${hex[1].y}" fill="rgba(168,85,247,0.35)" stroke="#a855f7" stroke-width="1.8" />`;
+        svgStr += `<polygon points="${tri[2].x},${tri[2].y} ${hex[1].x},${hex[1].y} ${hex[2].x},${hex[2].y}" fill="rgba(168,85,247,0.15)" stroke="#a855f7" stroke-width="1.8" />`;
+        svgStr += `<polygon points="${hex.map(p => `${p.x},${p.y}`).join(' ')}" fill="none" stroke="#a855f7" stroke-width="2.5" />`;
+
+        g.innerHTML = svgStr;
+      }
+    }
+
+    // =========================================================================
+    // 3. DESPLIEGUE PLANO (ABRIR / CERRAR)
+    // =========================================================================
+    let currentNetModel = 'cube';
+
+    function setNetModel(model) {
+      currentNetModel = model;
+      document.getElementById('btn_net_cube').classList.toggle('active', model === 'cube');
+      document.getElementById('btn_net_pyr').classList.toggle('active', model === 'pyr');
+      updateNetFolding();
+    }
+
+    function updateNetFolding() {
+      const slider = document.getElementById('net_slider');
+      if (!slider) return;
+      const pct = parseInt(slider.value);
+      const frac = pct / 100; // 0 = 3D cerrado, 1 = 2D abierto
+
+      document.getElementById('v_net_pct').innerText = `${pct}% ${pct === 0 ? '(Cerrado)' : pct === 100 ? '(Desarrollo Plano)' : ''}`;
+
+      const desc = document.getElementById('txt_net_desc');
+      if (pct === 0) {
+        desc.innerHTML = "<strong>Estado:</strong> Cuerpo 3D cerrado en perspectiva real.";
+      } else if (pct < 100) {
+        desc.innerHTML = `<strong>Abatiendo caras:</strong> Las paredes se abren progresivamente hacia el plano (${pct}%)...`;
+      } else {
+        desc.innerHTML = "<strong>Estado:</strong> Desarrollo plano en cruz desplegado en el papel (plantilla 2D para recortar).";
+      }
+
+      const g = document.getElementById('net_svg_group');
+      if (!g) return;
+      g.innerHTML = "";
+
+      if (currentNetModel === 'cube') {
+        const s = 46;
+        if (frac === 0) {
+          // Cubo 3D cerrado en perspectiva
+          g.innerHTML = `
+            <polygon points="0,-25 45,-50 0,-75 -45,-50" fill="rgba(251,191,36,0.35)" stroke="var(--accent-gold)" stroke-width="2" />
+            <polygon points="-45,-50 0,-25 0,35 -45,10" fill="rgba(56,189,248,0.25)" stroke="var(--accent-blue)" stroke-width="2" />
+            <polygon points="0,-25 45,-50 45,10 0,35" fill="rgba(56,189,248,0.4)" stroke="var(--accent-blue)" stroke-width="2" />
+          `;
+        } else {
+          // Abatimiento hacia la cruz latina
+          const bLeft = -s/2, bTop = -s/2;
+          g.innerHTML += `<rect x="${bLeft}" y="${bTop}" width="${s}" height="${s}" fill="rgba(56,189,248,0.3)" stroke="var(--accent-blue)" stroke-width="2" />`;
+          g.innerHTML += `<text x="0" y="4" fill="#fff" font-size="10" text-anchor="middle">Base</text>`;
+
+          const wL = s * frac;
+          g.innerHTML += `<rect x="${bLeft - wL}" y="${bTop}" width="${wL}" height="${s}" fill="rgba(251,191,36,0.25)" stroke="var(--accent-gold)" stroke-width="2" />`;
+
+          const wR = s * frac;
+          g.innerHTML += `<rect x="${bLeft + s}" y="${bTop}" width="${wR}" height="${s}" fill="rgba(251,191,36,0.25)" stroke="var(--accent-gold)" stroke-width="2" />`;
+
+          const hB = s * frac;
+          g.innerHTML += `<rect x="${bLeft}" y="${bTop + s}" width="${s}" height="${hB}" fill="rgba(16,185,129,0.25)" stroke="var(--accent-success)" stroke-width="2" />`;
+
+          const hT = s * frac;
+          g.innerHTML += `<rect x="${bLeft}" y="${bTop - hT}" width="${s}" height="${hT}" fill="rgba(16,185,129,0.25)" stroke="var(--accent-success)" stroke-width="2" />`;
+
+          const hRoof = s * Math.max(0, (frac - 0.2) / 0.8);
+          if (hRoof > 0) {
+            g.innerHTML += `<rect x="${bLeft}" y="${bTop - hT - hRoof}" width="${s}" height="${hRoof}" fill="rgba(244,63,94,0.3)" stroke="var(--accent-op)" stroke-width="1.8" />`;
+          }
+        }
+      } else {
+        // PIRÁMIDE CUADRANGULAR
+        const bSize = 54;
+        const bHalf = bSize / 2;
+
+        if (frac === 0) {
+          // Pirámide en perspectiva oblicua 3D real
+          g.innerHTML = `
+            <line x1="-50" y1="35" x2="0" y2="15" stroke="#475569" stroke-width="1.8" stroke-dasharray="3" />
+            <line x1="0" y1="15" x2="50" y2="35" stroke="#475569" stroke-width="1.8" stroke-dasharray="3" />
+            <polygon points="-50,35 0,55 50,35 0,15" fill="rgba(251,191,36,0.15)" stroke="var(--accent-gold)" stroke-width="1.5" />
+            <polygon points="-50,35 0,55 0,-65" fill="rgba(56,189,248,0.25)" stroke="var(--accent-blue)" stroke-width="2" />
+            <polygon points="0,55 50,35 0,-65" fill="rgba(56,189,248,0.4)" stroke="var(--accent-blue)" stroke-width="2" />
+            <circle cx="0" cy="-65" r="4" fill="var(--accent-op)" />
+            <text x="0" y="-75" fill="var(--accent-op)" font-size="11" font-weight="bold" text-anchor="middle">Cúspide</text>
+          `;
+        } else {
+          // Abatimiento hacia el desarrollo plano en estrella
+          g.innerHTML += `<rect x="${-bHalf}" y="${-bHalf}" width="${bSize}" height="${bSize}" fill="rgba(251,191,36,0.25)" stroke="var(--accent-gold)" stroke-width="2" />`;
+          g.innerHTML += `<text x="0" y="4" fill="#fff" font-size="10" text-anchor="middle">Base</text>`;
+
+          const triH = 55 * frac;
+          g.innerHTML += `<polygon points="${-bHalf},${-bHalf} ${bHalf},${-bHalf} 0,${-bHalf - triH}" fill="rgba(56,189,248,0.25)" stroke="var(--accent-blue)" stroke-width="2" />`;
+          g.innerHTML += `<polygon points="${-bHalf},${bHalf} ${bHalf},${bHalf} 0,${bHalf + triH}" fill="rgba(56,189,248,0.25)" stroke="var(--accent-blue)" stroke-width="2" />`;
+          g.innerHTML += `<polygon points="${bHalf},${-bHalf} ${bHalf},${bHalf} ${bHalf + triH},0" fill="rgba(16,185,129,0.25)" stroke="var(--accent-success)" stroke-width="2" />`;
+          g.innerHTML += `<polygon points="${-bHalf},${-bHalf} ${-bHalf},${bHalf} ${-bHalf - triH},0" fill="rgba(16,185,129,0.25)" stroke="var(--accent-success)" stroke-width="2" />`;
+        }
+      }
+    }
+
+    // =========================================================================
+    // 4. CUERPOS DE REVOLUCIÓN
+    // =========================================================================
+    let currentRevModel = 'cyl';
+
+    function setRevModel(model) {
+      currentRevModel = model;
+      document.getElementById('btn_rev_cyl').classList.toggle('active', model === 'cyl');
+      document.getElementById('btn_rev_cone').classList.toggle('active', model === 'cone');
+      document.getElementById('btn_rev_sph').classList.toggle('active', model === 'sph');
+      updateRevolution();
+    }
+
+    function updateRevolution() {
+      const slider = document.getElementById('rev_slider');
+      if (!slider) return;
+      const deg = parseInt(slider.value);
+      document.getElementById('v_rev_deg').innerText = `${deg}º`;
+
+      const tTitle = document.getElementById('txt_rev_title');
+      const tExpl = document.getElementById('txt_rev_expl');
+      const tFormula = document.getElementById('txt_rev_formula');
+
+      const g = document.getElementById('rev_svg_group');
+      if (!g) return;
+      g.innerHTML = "";
+
+      g.innerHTML += `
+        <line x1="0" y1="-110" x2="0" y2="110" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4" />
+        <text x="6" y="-100" fill="#94a3b8" font-size="11">Eje</text>
+      `;
+
+      const r = 60;
+      const rad = (deg * Math.PI) / 180;
+      const rotX = r * Math.cos(rad);
+
+      if (currentRevModel === 'cyl') {
+        tTitle.innerText = "Cilindro";
+        tExpl.innerText = "Un rectángulo de base r y altura h gira 360º sobre uno de sus lados.";
+        tFormula.innerHTML = "Volumen = Área base · h = π · r² · h";
+
+        g.innerHTML += `
+          <rect x="0" y="-70" width="${r}" height="140" fill="rgba(56,189,248,0.2)" stroke="var(--accent-blue)" stroke-width="2" />
+        `;
+
+        if (deg > 10) {
+          g.innerHTML += `
+            <ellipse cx="0" cy="-70" rx="${r}" ry="${r * 0.28}" fill="none" stroke="var(--accent-gold)" stroke-width="2" stroke-dasharray="3" />
+            <ellipse cx="0" cy="70" rx="${r}" ry="${r * 0.28}" fill="none" stroke="var(--accent-gold)" stroke-width="2" stroke-dasharray="3" />
+            <line x1="-${r}" y1="-70" x2="-${r}" y2="70" stroke="var(--accent-gold)" stroke-width="2" />
+          `;
+        }
+
+        g.innerHTML += `
+          <line x1="0" y1="-70" x2="${rotX}" y2="-70" stroke="var(--accent-op)" stroke-width="2.5" />
+          <line x1="${rotX}" y1="-70" x2="${rotX}" y2="70" stroke="var(--accent-op)" stroke-width="2.5" />
+          <line x1="0" y1="70" x2="${rotX}" y2="70" stroke="var(--accent-op)" stroke-width="2.5" />
+        `;
+      } else if (currentRevModel === 'cone') {
+        tTitle.innerText = "Cono";
+        tExpl.innerText = "Un triángulo rectángulo gira 360º apoyado sobre uno de sus catetos (la altura).";
+        tFormula.innerHTML = "Volumen = (π · r² · h) / 3 &nbsp; (la generatriz g cumple: g² = r² + h²)";
+
+        g.innerHTML += `
+          <polygon points="0,-75 0,75 ${r},75" fill="rgba(251,191,36,0.2)" stroke="var(--accent-gold)" stroke-width="2" />
+        `;
+
+        if (deg > 10) {
+          g.innerHTML += `
+            <ellipse cx="0" cy="75" rx="${r}" ry="${r * 0.28}" fill="none" stroke="var(--accent-blue)" stroke-width="2" stroke-dasharray="3" />
+            <line x1="0" y1="-75" x2="-${r}" y2="75" stroke="var(--accent-blue)" stroke-width="2" />
+          `;
+        }
+
+        g.innerHTML += `
+          <line x1="0" y1="-75" x2="${rotX}" y2="75" stroke="var(--accent-op)" stroke-width="2.5" />
+          <line x1="0" y1="75" x2="${rotX}" y2="75" stroke="var(--accent-op)" stroke-width="2.5" />
+        `;
+      } else {
+        tTitle.innerText = "Esfera";
+        tExpl.innerText = "Un semicírculo gira 360º sobre su diámetro recto.";
+        tFormula.innerHTML = "Volumen = (4/3) · π · r³ &nbsp;|&nbsp; Superficie = 4 · π · r²";
+
+        g.innerHTML += `
+          <path d="M 0 -65 A 65 65 0 0 1 0 65 Z" fill="rgba(16,185,129,0.2)" stroke="var(--accent-success)" stroke-width="2" />
+        `;
+
+        if (deg > 10) {
+          g.innerHTML += `
+            <ellipse cx="0" cy="0" rx="65" ry="22" fill="none" stroke="var(--accent-gold)" stroke-width="2" stroke-dasharray="3" />
+            <circle cx="0" cy="0" r="65" fill="none" stroke="var(--accent-success)" stroke-width="2" />
+          `;
+        }
+
+        g.innerHTML += `
+          <ellipse cx="0" cy="0" rx="${Math.abs(rotX)}" ry="65" fill="none" stroke="var(--accent-op)" stroke-width="2" />
+        `;
+      }
+    }
+
+    // Inicializaciones automáticas al cargar
+    updatePlatonic();
+    updateNetFolding();
+    updateRevolution();
+  </script>
+</body>
+</html>

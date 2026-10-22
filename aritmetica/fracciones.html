@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aritmética: Fracciones (Racionales)</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 1rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* CONTROLES DESLIZANTES */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .slider-row label { width: 130px; font-weight: 600; }
+    .val-badge { width: 40px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; }
+
+    /* FORMATO DE FRACCIONES MATEMÁTICAS */
+    .frac-block { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; vertical-align: middle; margin: 0 0.5rem; font-family: monospace; font-weight: bold; }
+    .f-num { padding: 0 0.4rem; border-bottom: 2px solid var(--text-main); color: var(--accent-blue); font-size: 2rem; line-height: 1.1; }
+    .f-den { padding: 0 0.4rem; color: var(--accent-gold); font-size: 2rem; line-height: 1.1; margin-top: 2px; }
+    .f-sign { font-size: 2rem; font-weight: bold; color: var(--text-muted); vertical-align: middle; margin: 0 0.2rem; }
+    .frac-sm .f-num, .frac-sm .f-den { font-size: 1.3rem; }
+    .crossed-out { text-decoration: line-through; color: var(--accent-op); opacity: 0.7;}
+
+    /* PIZZA (SVG PIE CHART) */
+    .pizza-container { position: relative; width: 220px; height: 220px; margin: 0 auto; border-radius: 50%; background: #090d16; border: 2px solid var(--border-color); display: flex; align-items: center; justify-content: center; }
+    svg.pizza-svg { width: 100%; height: 100%; transform: rotate(-90deg); border-radius: 50%; }
+    .slice { stroke: var(--bg-primary); stroke-width: 2; transition: all 0.3s ease; }
+    
+    .anim-pulse { animation: pulseWarning 1.5s infinite; }
+    @keyframes pulseWarning { 0% { transform: scale(1); } 50% { transform: scale(1.05); color: var(--accent-op); } 100% { transform: scale(1); } }
+
+    @media (max-width: 800px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    /* TARJETAS DE TIPOS DE FRACCIONES */
+    .frac-type-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .frac-type-card.active-type {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: var(--accent-blue);
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(56, 189, 248, 0.2);
+    }
+    .frac-type-card h4 { color: var(--text-main); margin-bottom: 0.5rem; font-size: 1.1rem; }
+    .frac-type-card p { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.4; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Fracciones (Números Racionales)</h1>
+    <p>Aprende qué es una fracción, cómo encontrar fracciones equivalentes (simplificar) y las reglas para operar con ellas.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('anatomia', this)">🍕 1. ¿Qué es?</button>
+      <button class="tab-btn" onclick="switchTab('equivalentes', this)">⚖️ 2. Simplificar</button>
+      <button class="tab-btn" onclick="switchTab('sumaresta', this)">➕ 3. Suma / Resta</button>
+      <button class="tab-btn" onclick="switchTab('multidivi', this)">✖️ 4. Multi / Divi</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: ANATOMÍA ================= -->
+    <div id="anatomia" class="tab-content active">
+      
+      <!-- EXPLICACIÓN: QUÉ ES UN NÚMERO RACIONAL -->
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">¿Qué es un Número Racional (Q)?</div>
+        <div class="content-text">
+          Un número racional es aquel que <strong>PUEDE</strong> escribirse en forma de fracción (una división a/b). No significa que siempre esté escrito así. Por ejemplo, el número <strong>2</strong> es racional porque equivale a la fracción <strong>2/1</strong> o <strong>4/2</strong>. ¡Incluso <strong>√4</strong> es un número racional, porque su resultado es 2!
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">El Horno de Pizzas</div>
+          
+          <div class="slider-row" style="margin-top: 1rem;">
+            <label style="color:var(--accent-blue);">Numerador</label>
+            <input type="range" id="a_num" min="0" max="12" value="3" oninput="updatePizza()">
+            <span class="val-badge" style="color:var(--accent-blue);" id="v_a_num">3</span>
+          </div>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 2rem;">Partes que <strong>tomamos</strong> de la unidad.</p>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-gold);">Denominador</label>
+            <input type="range" id="a_den" min="1" max="12" value="8" oninput="updatePizza()">
+            <span class="val-badge" style="color:var(--accent-gold);" id="v_a_den">8</span>
+          </div>
+          <p style="font-size: 0.9rem; color: var(--text-muted);">En cuántas partes IGUALES <strong>dividimos</strong> la unidad.</p>
+          
+          <div id="div_zero_warn" style="display:none; color: var(--accent-op); background: rgba(244,63,94,0.1); padding: 0.8rem; border-radius: 8px; margin-top: 1rem; border: 1px solid var(--accent-op); font-weight: bold;" class="anim-pulse">
+            ¡ERROR! No puedes cortar una pizza en 0 pedazos. El denominador NUNCA puede ser 0.
+          </div>
+        </div>
+
+        <div class="panel-box" style="align-items: center; justify-content: center;">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 2rem;">
+            <div class="frac-block" style="transform: scale(1.5);">
+              <div class="f-num" id="a_disp_num">3</div>
+              <div class="f-den" id="a_disp_den">8</div>
+            </div>
+            <div class="pizza-container">
+              <svg class="pizza-svg" viewBox="0 0 100 100" id="pizza_svg"></svg>
+            </div>
+          </div>
+          <p id="a_text_res" style="text-align: center; margin-top: 2rem; color: var(--text-main); font-weight: bold; font-size: 1.1rem;"></p>
+        </div>
+      </div>
+
+<!-- TIPOS DE FRACCIONES DINÁMICO -->
+      <div class="panel-box" style="margin-top: 0.5rem;">
+        <div class="panel-title" style="color: var(--accent-blue);">Tipos de Fracciones</div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+          
+          <!-- Propia -->
+          <div class="frac-type-card" id="card_propia">
+            <h4>Fracción Propia</h4>
+            <div class="frac-block frac-sm">
+              <div class="f-num">3</div><div class="f-den">4</div>
+            </div>
+            <p>Numerador <strong>menor</strong> que el denominador. Representan menos de 1 unidad entera.</p>
+          </div>
+
+          <!-- Unidad -->
+          <div class="frac-type-card" id="card_unidad">
+            <h4>Igual a la Unidad</h4>
+            <div class="frac-block frac-sm">
+              <div class="f-num">4</div><div class="f-den">4</div>
+            </div>
+            <p>Numerador <strong>igual</strong> al denominador. Representan exactamente 1 unidad (1 entera).</p>
+          </div>
+
+          <!-- Impropia -->
+          <div class="frac-type-card" id="card_impropia">
+            <h4>Fracción Impropia</h4>
+            <div class="frac-block frac-sm">
+              <div class="f-num">5</div><div class="f-den">4</div>
+            </div>
+            <p>Numerador <strong>mayor</strong> que el denominador. Necesitas más de 1 unidad para representarla.</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: FRACCIONES EQUIVALENTES (SIMPLIFICAR) ================= -->
+    <div id="equivalentes" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-success);">Fracciones Semejantes</div>
+        <div class="content-text">
+          A veces, dos fracciones escritas de forma distinta representan <strong>exactamente la misma cantidad</strong>. Si multiplicamos o dividimos el numerador y el denominador por el mismo número, el valor real no cambia.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">1. Amplificar (Multiplicar)</div>
+          <p style="color: var(--text-muted); margin-bottom: 1rem;">La fracción original es "Un Medio" (la mitad). Multiplícala y verás que representa la misma porción de pizza.</p>
+          
+          <div class="slider-row" style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px;">
+            <label>Multiplicar por:</label>
+            <input type="range" id="e_mult" min="1" max="6" value="2" oninput="updateEquiv()">
+            <span class="val-badge" id="v_e_mult">x2</span>
+          </div>
+
+          <div style="display: flex; justify-content: center; align-items: center; margin-top: 1rem;">
+            <div class="frac-block">
+              <div class="f-num">1</div>
+              <div class="f-den">2</div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0 1rem; color: var(--text-muted);">
+              <div style="font-size: 0.8rem; font-weight: bold;" id="e_arr_top">x2 ↗</div>
+              <div class="f-sign">=</div>
+              <div style="font-size: 0.8rem; font-weight: bold;" id="e_arr_bot">x2 ↘</div>
+            </div>
+
+            <div class="frac-block">
+              <div class="f-num" id="e_res_num">2</div>
+              <div class="f-den" id="e_res_den">4</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="align-items: center;">
+          <div class="panel-title" style="align-self: flex-start;">Demostración Visual</div>
+          <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 1rem; width: 100%;">
+            <!-- Pizza 1/2 -->
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <div class="pizza-container" style="width: 130px; height: 130px;">
+                <svg class="pizza-svg" viewBox="0 0 100 100" id="pizza_eq1"></svg>
+              </div>
+              <p style="margin-top: 1rem; font-weight: bold;">1/2</p>
+            </div>
+            <div class="f-sign">=</div>
+            <!-- Pizza Equivalente -->
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <div class="pizza-container" style="width: 130px; height: 130px;">
+                <svg class="pizza-svg" viewBox="0 0 100 100" id="pizza_eq2"></svg>
+              </div>
+              <p style="margin-top: 1rem; font-weight: bold;" id="e_text_pizza">2/4</p>
+            </div>
+          </div>
+          <p style="text-align: center; color: var(--accent-success); margin-top: 1rem; font-weight: bold;">¡La porción es exactamente la misma!</p>
+        </div>
+      </div>
+
+      <!-- SIMPLIFICAR POR FACTORIZACIÓN -->
+      <div class="panel-box">
+        <div class="panel-title" style="color: var(--accent-op);">2. Simplificar a la Fracción Irreducible (Dividir)</div>
+        <p style="color: var(--text-muted); margin-bottom: 1rem;">Para reducir fracciones con números muy altos, en lugar de dividir a ciegas, podemos descomponer ambos números en <strong>factores primos</strong>. Luego, simplemente tachamos (eliminamos) los números que se repitan tanto arriba como abajo.</p>
+        
+        <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; margin-top: 1rem;">
+          <div class="frac-block">
+            <div class="f-num">24</div>
+            <div class="f-den">36</div>
+          </div>
+          
+          <div class="f-sign">→</div>
+          
+          <!-- Factorización -->
+          <div class="frac-block" style="padding: 0 1rem;">
+            <div class="f-num">
+              <span class="crossed-out">2</span> · <span class="crossed-out">2</span> · 2 · <span class="crossed-out">3</span>
+            </div>
+            <div class="f-den">
+              <span class="crossed-out">2</span> · <span class="crossed-out">2</span> · <span class="crossed-out">3</span> · 3
+            </div>
+          </div>
+
+          <div class="f-sign">=</div>
+          
+          <!-- Irreducible -->
+          <div class="frac-block">
+            <div class="f-num" style="color: var(--accent-success);">2</div>
+            <div class="f-den" style="color: var(--accent-success);">3</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= PESTAÑA 3: SUMA Y RESTA ================= -->
+    <div id="sumaresta" class="tab-content">
+      
+      <!-- MISMO DENOMINADOR -->
+      <div class="panel-box" style="margin-bottom: 1.5rem;">
+        <div class="panel-title" style="color: var(--accent-blue);">1. Con Mismo Denominador (Fácil)</div>
+        <p style="color: var(--text-muted); margin-bottom: 1rem;">Como los trozos de las dos pizzas son del <strong>mismo tamaño</strong>, simplemente sumamos/restamos los trozos (numeradores) y mantenemos el denominador intacto.</p>
+        
+        <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap;">
+          <div class="frac-block">
+            <div class="f-num">2</div>
+            <div class="f-den">5</div>
+          </div>
+          <div class="f-sign">+</div>
+          <div class="frac-block">
+            <div class="f-num">1</div>
+            <div class="f-den">5</div>
+          </div>
+          <div class="f-sign">=</div>
+          <div class="frac-block">
+            <div class="f-num" style="border-bottom: 2px dashed var(--text-main); color: var(--text-main);">2 + 1</div>
+            <div class="f-den" style="color: var(--text-main);">5</div>
+          </div>
+          <div class="f-sign">=</div>
+          <div class="frac-block">
+            <div class="f-num" style="color: var(--accent-success);">3</div>
+            <div class="f-den" style="color: var(--accent-success);">5</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DISTINTO DENOMINADOR -->
+      <div class="panel-box">
+        <div class="panel-title" style="color: var(--accent-op);">2. Con Distinto Denominador (m.c.m.)</div>
+        <p style="color: var(--text-muted); margin-bottom: 1rem;">¡Cuidado! No podemos sumar tercios con quintos (son trozos de diferente tamaño). Primero hay que buscar un denominador común (m.c.m. o multiplicarlos entre sí) para que los trozos sean iguales.</p>
+        
+        <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap;">
+          <div class="frac-block">
+            <div class="f-num">1</div>
+            <div class="f-den">3</div>
+          </div>
+          <div class="f-sign">+</div>
+          <div class="frac-block">
+            <div class="f-num">2</div>
+            <div class="f-den">5</div>
+          </div>
+          
+          <div class="f-sign" style="color: var(--accent-op);">→</div>
+          
+          <div style="display: flex; flex-direction: column; align-items: center; margin: 0 1rem;">
+            <span style="font-size: 0.85rem; color: var(--text-muted);">Común den.: 3×5=15</span>
+            <div style="display: flex; align-items: center;">
+              <div class="frac-block frac-sm">
+                <div class="f-num">5</div>
+                <div class="f-den">15</div>
+              </div>
+              <div class="f-sign">+</div>
+              <div class="frac-block frac-sm">
+                <div class="f-num">6</div>
+                <div class="f-den">15</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="f-sign">=</div>
+          
+          <div class="frac-block">
+            <div class="f-num" style="color: var(--accent-success);">11</div>
+            <div class="f-den" style="color: var(--accent-success);">15</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= PESTAÑA 4: MULTIPLICACIÓN Y DIVISIÓN ================= -->
+    <div id="multidivi" class="tab-content">
+      
+      <!-- MULTIPLICACIÓN -->
+      <div class="panel-box" style="margin-bottom: 1.5rem;">
+        <div class="panel-title" style="color: var(--accent-gold);">Multiplicación (En línea recta)</div>
+        <p style="color: var(--text-muted); margin-bottom: 1rem;">Se multiplican los numeradores entre sí y los denominadores entre sí. ¡Directo!</p>
+        
+        <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap;">
+          <div class="frac-block">
+            <div class="f-num">3</div>
+            <div class="f-den">4</div>
+          </div>
+          <div class="f-sign">·</div>
+          <div class="frac-block">
+            <div class="f-num">2</div>
+            <div class="f-den">5</div>
+          </div>
+          <div class="f-sign">=</div>
+          <div class="frac-block">
+            <div class="f-num" style="border-bottom: 2px dashed var(--text-main); color: var(--text-main);">3 · 2</div>
+            <div class="f-den" style="color: var(--text-main);">4 · 5</div>
+          </div>
+          <div class="f-sign">=</div>
+          <div class="frac-block">
+            <div class="f-num" style="color: var(--accent-success);">6</div>
+            <div class="f-den" style="color: var(--accent-success);">20</div>
+          </div>
+          <div class="f-sign">→</div>
+          <div class="frac-block frac-sm">
+            <div class="f-num" style="color: var(--text-muted);">3</div>
+            <div class="f-den" style="color: var(--text-muted);">10</div>
+          </div>
+          <span style="font-size:0.8rem; color:var(--text-muted); align-self:flex-end; margin-left:5px;">(Simplificado)</span>
+        </div>
+      </div>
+
+      <!-- DIVISIÓN CON INVERSA -->
+      <div class="panel-box">
+        <div class="panel-title" style="color: #a855f7;">División (Multiplicar por la Inversa)</div>
+        <p style="color: var(--text-muted); margin-bottom: 1rem;">Para dividir fracciones, lo más seguro es <strong>convertirlo en una multiplicación</strong>. Solo tienes que darle la vuelta a la segunda fracción (su fracción inversa) y multiplicar en línea.</p>
+        
+        <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap;">
+          <!-- Op Original -->
+          <div class="frac-block">
+            <div class="f-num">2</div>
+            <div class="f-den">7</div>
+          </div>
+          <div class="f-sign">÷</div>
+          <div class="frac-block">
+            <div class="f-num" style="color: #a855f7;">3</div>
+            <div class="f-den" style="color: #a855f7;">5</div>
+          </div>
+          
+          <div class="f-sign" style="color: var(--text-muted);">→</div>
+          
+          <!-- Op Invertida -->
+          <div class="frac-block">
+            <div class="f-num">2</div>
+            <div class="f-den">7</div>
+          </div>
+          <div class="f-sign" style="color: var(--accent-success); font-size: 2.5rem;">·</div>
+          <div class="frac-block" style="position: relative;">
+            <div class="f-num" style="color: #a855f7;">5</div>
+            <div class="f-den" style="color: #a855f7;">3</div>
+            <div style="position: absolute; top:-25px; font-size:0.75rem; color:#a855f7; white-space:nowrap; font-family:sans-serif;">Inversa ↺</div>
+          </div>
+
+          <div class="f-sign">=</div>
+          
+          <!-- Cálculo -->
+          <div class="frac-block">
+            <div class="f-num" style="border-bottom: 2px dashed var(--text-main); color: var(--text-main);">2 · 5</div>
+            <div class="f-den" style="color: var(--text-main);">7 · 3</div>
+          </div>
+          <div class="f-sign">=</div>
+          
+          <!-- Resultado -->
+          <div class="frac-block">
+            <div class="f-num" style="color: var(--accent-success);">10</div>
+            <div class="f-den" style="color: var(--accent-success);">21</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    // --- TABS NAVEGACIÓN ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if(tabId === 'anatomia') updatePizza();
+      if(tabId === 'equivalentes') updateEquiv();
+    }
+
+    // ================= DIBUJADOR DE SVG PIZZA =================
+    function drawPizzaSVG(svgElementId, n, d, colorOn, colorOff) {
+      const svg = document.getElementById(svgElementId);
+      svg.innerHTML = '';
+      if(d <= 0) return;
+
+      const cx = 50, cy = 50, r = 48; 
+      let currentAngle = 0;
+      const angleStep = 360 / d;
+
+      for (let i = 0; i < d; i++) {
+        const startAngle = (currentAngle * Math.PI) / 180;
+        const endAngle = ((currentAngle + angleStep) * Math.PI) / 180;
+        
+        const x1 = cx + r * Math.cos(startAngle);
+        const y1 = cy + r * Math.sin(startAngle);
+        const x2 = cx + r * Math.cos(endAngle);
+        const y2 = cy + r * Math.sin(endAngle);
+        
+        const largeArcFlag = angleStep > 180 ? 1 : 0;
+        
+        let pathD = "";
+        if (d === 1) { 
+          pathD = `M 50 2 a 48 48 0 1 0 0.01 0`;
+        } else {
+          pathD = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+        }
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', pathD);
+        path.setAttribute('class', 'slice');
+        
+        if (i < n) path.setAttribute('fill', colorOn);
+        else path.setAttribute('fill', colorOff);
+        
+        svg.appendChild(path);
+        currentAngle += angleStep;
+      }
+    }
+
+    // ================= PESTAÑA 1: ANATOMÍA =================
+    function updatePizza() {
+      const num = parseInt(document.getElementById('a_num').value);
+      const den = parseInt(document.getElementById('a_den').value);
+      
+      document.getElementById('v_a_num').innerText = num;
+      document.getElementById('v_a_den').innerText = den;
+      
+      document.getElementById('a_disp_num').innerText = num;
+      document.getElementById('a_disp_den').innerText = den;
+
+      const warnDiv = document.getElementById('div_zero_warn');
+      if (den === 0) {
+        warnDiv.style.display = 'block';
+        document.getElementById('a_text_res').innerText = "";
+        document.getElementById('tipo_frac_text').innerText = "División Indefinida (Error)";
+        document.getElementById('pizza_svg').innerHTML = '';
+        return;
+      } else {
+        warnDiv.style.display = 'none';
+      }
+
+// Tipos de fracción (Propia, Impropia, Unidad)
+      document.getElementById('card_propia').classList.remove('active-type');
+      document.getElementById('card_unidad').classList.remove('active-type');
+      document.getElementById('card_impropia').classList.remove('active-type');
+
+      if (num > 0 && den > 0) {
+        if (num < den) {
+          document.getElementById('card_propia').classList.add('active-type');
+        } else if (num === den) {
+          document.getElementById('card_unidad').classList.add('active-type');
+        } else if (num > den) {
+          document.getElementById('card_impropia').classList.add('active-type');
+        }
+      }
+
+      const drawNum = num > den ? den : num; 
+      const colorOn = "#38bdf8"; 
+      const colorOff = "#1e293b"; 
+
+      drawPizzaSVG('pizza_svg', drawNum, den, colorOn, colorOff);
+
+      if (num === den) {
+        document.getElementById('a_text_res').innerHTML = `¡Te has comido la pizza entera! = <span style="color:var(--accent-success)">1 Unidad</span>`;
+      } else if (num === 0) {
+        document.getElementById('a_text_res').innerText = `No te has comido nada.`;
+      } else if (num > den) {
+        document.getElementById('a_text_res').innerHTML = `¡Necesitas MÁS de 1 pizza para representar ${num}/${den}!`;
+      } else {
+        document.getElementById('a_text_res').innerText = `Has cogido ${num} de los ${den} trozos totales.`;
+      }
+    }
+
+    // ================= PESTAÑA 2: SIMPLIFICACIÓN =================
+    function updateEquiv() {
+      const m = parseInt(document.getElementById('e_mult').value);
+      document.getElementById('v_e_mult').innerText = `x${m}`;
+      document.getElementById('e_arr_top').innerText = `x${m} ↗`;
+      document.getElementById('e_arr_bot').innerText = `x${m} ↘`;
+
+      const numBase = 1;
+      const denBase = 2;
+      
+      const newNum = numBase * m;
+      const newDen = denBase * m;
+
+      document.getElementById('e_res_num').innerText = newNum;
+      document.getElementById('e_res_den').innerText = newDen;
+      document.getElementById('e_text_pizza').innerText = `${newNum}/${newDen}`;
+
+      const colorOn = "#10b981"; 
+      const colorOff = "#1e293b"; 
+
+      drawPizzaSVG('pizza_eq1', numBase, denBase, colorOn, colorOff);
+      drawPizzaSVG('pizza_eq2', newNum, newDen, colorOn, colorOff);
+    }
+
+    // Inits
+    updatePizza();
+    updateEquiv();
+
+  </script>
+</body>
+</html>

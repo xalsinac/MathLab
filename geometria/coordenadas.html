@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geometría: Sistema de Coordenadas Cartesianas</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 1rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* CONTROLES DESLIZANTES */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem; }
+    .slider-row label { width: 150px; font-weight: 600; font-family: monospace; font-size: 1.05rem; }
+    .val-badge { width: 45px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; }
+
+    /* COLORES PEDAGÓGICOS */
+    .c-x { color: var(--accent-blue); font-weight: bold; }
+    .c-y { color: var(--accent-gold); font-weight: bold; }
+
+    /* SVG CANVAS DEL PLANO */
+    .svg-canvas {
+      width: 100%; height: 320px; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block;
+    }
+
+    /* TARJETAS DE CUADRANTES */
+    .quadrant-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 1rem;
+    }
+    .quad-card {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 0.8rem; text-align: center; font-family: monospace;
+      transition: all 0.3s;
+    }
+
+    /* CAJA DE PUNTO MATEMÁTICO */
+    .point-display {
+      font-family: 'Courier New', Courier, monospace; font-size: 2.2rem; font-weight: bold;
+      text-align: center; background: #090d16; padding: 1rem; border-radius: 10px;
+      border: 1px solid var(--border-color); margin: 1rem 0;
+    }
+
+    /* LISTA DE PUNTOS DE LA FIGURA */
+    .points-list {
+      display: flex; flex-direction: column; gap: 0.4rem; max-height: 250px;
+      overflow-y: auto; padding-right: 0.5rem; margin-top: 0.5rem;
+    }
+    .point-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.5rem 0.8rem; border-radius: 6px; background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color); font-family: monospace; font-size: 1rem;
+      transition: all 0.2s;
+    }
+    .point-item.done {
+      border-color: var(--accent-blue); background: rgba(56, 189, 248, 0.08); color: var(--accent-blue);
+    }
+    .point-item.current {
+      border-color: var(--accent-success); background: rgba(16, 185, 129, 0.15); color: var(--accent-success);
+      font-weight: bold; transform: scale(1.02);
+    }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>El Sistema de Coordenadas</h1>
+    <p>Aprende a ubicarte en el plano cartesiano, colocar puntos (X, Y), reconocer los cuatro cuadrantes, descubrir las simetrías y dibujar uniendo coordenadas.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('anatomia', this)">🧭 1. El Plano y los Ejes</button>
+      <button class="tab-btn" onclick="switchTab('laboratorio', this)">📍 2. Colocar Puntos</button>
+      <button class="tab-btn" onclick="switchTab('trampas', this)">⚠️ 3. Puntos en los Ejes</button>
+      <button class="tab-btn" onclick="switchTab('simetria', this)">🪞 4. Simetrías</button>
+      <button class="tab-btn" onclick="switchTab('dibujo', this)">✏️ 5. Une los Puntos</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: ANATOMÍA DEL PLANO ================= -->
+    <div id="anatomia" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">Inventado por René Descartes</div>
+        <div class="content-text">
+          Un plano cartesiano está formado por <strong>dos rectas numéricas perpendiculares</strong> que se cruzan en el cero. Nos permite dar una dirección exacta a cualquier punto del espacio usando dos números: <strong>P(x, y)</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Los Dos Ejes Fundamentales</div>
+          <ul style="color: var(--text-main); line-height: 1.8; margin-left: 1.2rem;">
+            <li>
+              <strong class="c-x">Eje X (Eje de Abscisas):</strong> Es la línea <strong>horizontal</strong>. 
+              Hacia la derecha están los números <span class="c-x">positivos (+1, +2, +3...)</span> y hacia la izquierda los <span style="color:var(--accent-op);">negativos (-1, -2, -3...)</span>.
+            </li>
+            <li>
+              <strong class="c-y">Eje Y (Eje de Ordenadas):</strong> Es la línea <strong>vertical</strong>. 
+              Hacia arriba están los números <span class="c-y">positivos (+1, +2, +3...)</span> y hacia abajo los <span style="color:var(--accent-op);">negativos (-1, -2, -3...)</span>.
+            </li>
+            <li>
+              <strong>Origen de Coordenadas (0, 0):</strong> El punto central donde se cortan ambos ejes (la letra <strong>O</strong>).
+            </li>
+          </ul>
+
+          <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid var(--accent-blue); border-radius: 8px; padding: 0.9rem; margin-top: 1rem;">
+            <strong style="color:var(--accent-blue);">La regla de oro: ¡Orden alfabético!</strong>
+            <p style="font-size: 0.95rem; color: var(--text-muted); margin-top: 0.3rem;">
+              En el abecedario la <strong>X</strong> va antes que la <strong>Y</strong>. En un punto <strong>(x, y)</strong> siempre caminas primero por la calle horizontal (X) y luego tomas el ascensor vertical (Y).
+            </p>
+          </div>
+        </div>
+
+        <!-- GRÁFICO VISUAL DE LOS EJES Y LOS 4 CUADRANTES -->
+        <div class="panel-box">
+          <div class="panel-title">Esquema Visual de los Cuadrantes</div>
+          
+          <svg class="svg-canvas" viewBox="-150 -140 300 280">
+            <!-- Cuadrícula tenue de fondo -->
+            <defs>
+              <pattern id="grid_anat" width="25" height="25" patternUnits="userSpaceOnUse">
+                <path d="M 25 0 L 0 0 0 25" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect x="-150" y="-140" width="300" height="280" fill="url(#grid_anat)" />
+
+            <!-- Ejes X e Y gruesos -->
+            <line x1="-140" y1="0" x2="140" y2="0" stroke="var(--accent-blue)" stroke-width="2.5" />
+            <line x1="0" y1="-130" x2="0" y2="130" stroke="var(--accent-gold)" stroke-width="2.5" />
+
+            <!-- Flechas y etiquetas de los ejes -->
+            <text x="125" y="-8" fill="var(--accent-blue)" font-size="12" font-weight="bold">+X</text>
+            <text x="-142" y="-8" fill="var(--accent-blue)" font-size="12" font-weight="bold">-X</text>
+            <text x="8" y="-118" fill="var(--accent-gold)" font-size="12" font-weight="bold">+Y</text>
+            <text x="8" y="125" fill="var(--accent-gold)" font-size="12" font-weight="bold">-Y</text>
+
+            <!-- Origen O (0,0) -->
+            <circle cx="0" cy="0" r="4" fill="#fff" />
+            <text x="-16" y="16" fill="#fff" font-size="11" font-weight="bold">(0,0)</text>
+
+            <!-- Cuadrante I -->
+            <rect x="15" y="-120" width="120" height="105" fill="rgba(16, 185, 129, 0.08)" rx="6" />
+            <text x="35" y="-80" fill="var(--accent-success)" font-weight="bold" font-size="14">I Cuadrante</text>
+            <text x="55" y="-55" fill="var(--accent-success)" font-weight="bold" font-size="13">(+ , +)</text>
+
+            <!-- Cuadrante II -->
+            <rect x="-135" y="-120" width="120" height="105" fill="rgba(56, 189, 248, 0.08)" rx="6" />
+            <text x="-120" y="-80" fill="var(--accent-blue)" font-weight="bold" font-size="14">II Cuadrante</text>
+            <text x="-95" y="-55" fill="var(--accent-blue)" font-weight="bold" font-size="13">(- , +)</text>
+
+            <!-- Cuadrante III -->
+            <rect x="-135" y="15" width="120" height="105" fill="rgba(244, 63, 94, 0.08)" rx="6" />
+            <text x="-125" y="55" fill="var(--accent-op)" font-weight="bold" font-size="14">III Cuadrante</text>
+            <text x="-95" y="80" fill="var(--accent-op)" font-weight="bold" font-size="13">(- , -)</text>
+
+            <!-- Cuadrante IV -->
+            <rect x="15" y="15" width="120" height="105" fill="rgba(251, 191, 36, 0.08)" rx="6" />
+            <text x="30" y="55" fill="var(--accent-gold)" font-weight="bold" font-size="14">IV Cuadrante</text>
+            <text x="55" y="80" fill="var(--accent-gold)" font-weight="bold" font-size="13">(+ , -)</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: LABORATORIO INTERACTIVO ================= -->
+    <div id="laboratorio" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+        <div class="badge" style="color: var(--accent-blue);">Coloca el punto y observa</div>
+        <div class="content-text">
+          Usa los deslizadores para cambiar las coordenadas de <strong>P(x, y)</strong>. Fíjate en cómo las líneas punteadas proyectan la posición sobre cada eje para leer sus valores.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Controles del Punto</div>
+          
+          <div class="slider-row">
+            <label class="c-x">Eje X (Horizontal):</label>
+            <input type="range" id="p_x" min="-5" max="5" value="3" oninput="updateLabPoint()">
+            <span class="val-badge c-x" id="vp_x">3</span>
+          </div>
+          <div class="slider-row">
+            <label class="c-y">Eje Y (Vertical):</label>
+            <input type="range" id="p_y" min="-5" max="5" value="2" oninput="updateLabPoint()">
+            <span class="val-badge c-y" id="vp_y">2</span>
+          </div>
+
+          <div class="point-display" id="point_label_card">
+            P(<span class="c-x">3</span>, <span class="c-y">2</span>)
+          </div>
+
+          <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem; line-height:1.7;">
+            <div>• <strong>Ubicación:</strong> <span id="txt_quad_location" style="font-weight:bold; color:var(--accent-success);">I Cuadrante</span></div>
+            <div>• <strong>Instrucciones:</strong> <span id="txt_steps_travel" style="color:var(--text-muted);">Camina 3 hacia la derecha y sube 2.</span></div>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Plano Cartesiano Dinámico</div>
+          
+          <svg class="svg-canvas" viewBox="-150 -150 300 300" id="lab_svg">
+            <defs>
+              <pattern id="grid_lab" width="25" height="25" patternUnits="userSpaceOnUse">
+                <path d="M 25 0 L 0 0 0 25" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect x="-150" y="-150" width="300" height="300" fill="url(#grid_lab)" />
+
+            <!-- Ejes X e Y -->
+            <line x1="-140" y1="0" x2="140" y2="0" stroke="#94a3b8" stroke-width="2" />
+            <line x1="0" y1="-140" x2="0" y2="140" stroke="#94a3b8" stroke-width="2" />
+            <text x="130" y="-8" fill="#94a3b8" font-size="12" font-weight="bold">X</text>
+            <text x="8" y="-128" fill="#94a3b8" font-size="12" font-weight="bold">Y</text>
+
+            <!-- Líneas guía discontinuas proyectadas -->
+            <line id="guide_x" x1="75" y1="0" x2="75" y2="-50" stroke="var(--accent-blue)" stroke-width="2" stroke-dasharray="4" />
+            <line id="guide_y" x1="0" y1="-50" x2="75" y2="-50" stroke="var(--accent-gold)" stroke-width="2" stroke-dasharray="4" />
+
+            <!-- Punto en el plano -->
+            <circle id="point_dot" cx="75" cy="-50" r="7" fill="var(--accent-success)" stroke="#fff" stroke-width="2" />
+            <text id="point_svg_lbl" x="85" y="-55" fill="#fff" font-weight="bold" font-size="13">P(3, 2)</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: PUNTOS EN LOS EJES (TRAMPAS) ================= -->
+    <div id="trampas" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-op);">
+        <div class="badge" style="color: var(--accent-op);">La Trampa Más Frecuente de los Exámenes</div>
+        <div class="content-text">
+          Muchos alumnos dudan cuando una de las dos coordenadas vale <strong>0</strong>. ¿Dónde se coloca el punto (4, 0)? ¿Y el punto (0, -3)? La regla es muy simple: <strong>el cero indica que en ese eje NO te desplazas</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-blue);">1. Puntos sobre el Eje X (Y = 0)</div>
+          <p style="color: var(--text-muted); margin-bottom: 0.8rem;">
+            Tienen la forma <strong>(<span class="c-x">número</span>, <span class="c-y">0</span>)</strong>. La segunda coordenada es cero porque <strong>no subes ni bajas nada</strong>: te quedas sobre la línea horizontal.
+          </p>
+          <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.7;">
+            <div>• <strong>A(4, 0):</strong> Avanzas 4 a la derecha y no subes. Está sobre el <strong>eje X</strong>.</div>
+            <div>• <strong>B(-2, 0):</strong> Retrocedes 2 a la izquierda y no subes. Está sobre el <strong>eje X</strong>.</div>
+          </div>
+          <div style="background:rgba(56,189,248,0.1); border:1px solid var(--accent-blue); border-radius:8px; padding:0.8rem; margin-top:1rem; text-align:center; font-size:0.9rem;">
+            💡 Si la <strong>Y vale 0</strong>, el punto pertenece al <strong>eje X</strong>.
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title" style="color:var(--accent-gold);">2. Puntos sobre el Eje Y (X = 0)</div>
+          <p style="color: var(--text-muted); margin-bottom: 0.8rem;">
+            Tienen la forma <strong>(<span class="c-x">0</span>, <span class="c-y">número</span>)</strong>. La primera coordenada es cero porque <strong>no te mueves en horizontal</strong>: vas directo al ascensor vertical.
+          </p>
+          <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.7;">
+            <div>• <strong>C(0, 3):</strong> No te mueves en horizontal y subes 3. Está sobre el <strong>eje Y</strong>.</div>
+            <div>• <strong>D(0, -4):</strong> No te mueves en horizontal y bajas 4. Está sobre el <strong>eje Y</strong>.</div>
+          </div>
+          <div style="background:rgba(251,191,36,0.1); border:1px solid var(--accent-gold); border-radius:8px; padding:0.8rem; margin-top:1rem; text-align:center; font-size:0.9rem;">
+            💡 Si la <strong>X vale 0</strong>, el punto pertenece al <strong>eje Y</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: SIMETRÍAS (EL ESPEJO) ================= -->
+    <div id="simetria" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">Los Ejes Como Espejos</div>
+        <div class="content-text">
+          Los ejes de coordenadas actúan como un espejo plano. Si reflejas un punto respecto al eje Y, solo cambia de signo la coordenada X. Si lo reflejas respecto al eje X, solo cambia de signo la Y.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">El Punto Original y sus Reflejos</div>
+          <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:1rem;">
+            Tomamos el punto original <strong style="color:var(--accent-blue);">A(3, 2)</strong> y lo reflejamos en los diferentes espejos:
+          </p>
+
+          <div style="display:flex; flex-direction:column; gap:0.8rem; font-family:monospace; font-size:1.05rem;">
+            <div style="background:rgba(56,189,248,0.08); border:1px solid var(--accent-blue); padding:0.8rem; border-radius:8px;">
+              <strong style="color:var(--accent-blue);">Punto Original:</strong> A(3, 2)
+            </div>
+            
+            <div style="background:rgba(244,63,94,0.08); border:1px solid var(--accent-op); padding:0.8rem; border-radius:8px;">
+              <strong style="color:var(--accent-op);">Simetría respecto al Eje Y (espejo vertical):</strong><br>
+              A'(-3, 2) ➔ <em>Cambia el signo de la X</em>.
+            </div>
+
+            <div style="background:rgba(251,191,36,0.08); border:1px solid var(--accent-gold); padding:0.8rem; border-radius:8px;">
+              <strong style="color:var(--accent-gold);">Simetría respecto al Eje X (espejo horizontal):</strong><br>
+              A''(3, -2) ➔ <em>Cambia el signo de la Y</em>.
+            </div>
+
+            <div style="background:rgba(16,185,129,0.08); border:1px solid var(--accent-success); padding:0.8rem; border-radius:8px;">
+              <strong style="color:var(--accent-success);">Simetría respecto al Origen (0,0):</strong><br>
+              A'''(-3, -2) ➔ <em>Cambian ambos signos</em>.
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Visualización Geométrica del Reflejo</div>
+          
+          <svg class="svg-canvas" viewBox="-150 -150 300 300">
+            <defs>
+              <pattern id="grid_sim" width="25" height="25" patternUnits="userSpaceOnUse">
+                <path d="M 25 0 L 0 0 0 25" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect x="-150" y="-150" width="300" height="300" fill="url(#grid_sim)" />
+
+            <!-- Ejes -->
+            <line x1="-140" y1="0" x2="140" y2="0" stroke="#94a3b8" stroke-width="2" />
+            <line x1="0" y1="-140" x2="0" y2="140" stroke="#94a3b8" stroke-width="2" />
+
+            <!-- Líneas punteadas de simetría -->
+            <line x1="75" y1="-50" x2="-75" y2="-50" stroke="rgba(244,63,94,0.4)" stroke-dasharray="3" />
+            <line x1="75" y1="-50" x2="75" y2="50" stroke="rgba(251,191,36,0.4)" stroke-dasharray="3" />
+            <line x1="75" y1="-50" x2="-75" y2="50" stroke="rgba(16,185,129,0.4)" stroke-dasharray="3" />
+
+            <!-- Punto A (3, 2) -->
+            <circle cx="75" cy="-50" r="6" fill="var(--accent-blue)" stroke="#fff" stroke-width="1.5" />
+            <text x="85" y="-55" fill="var(--accent-blue)" font-weight="bold" font-size="11">A(3, 2)</text>
+
+            <!-- Reflejo en Y: A'(-3, 2) -->
+            <circle cx="-75" cy="-50" r="6" fill="var(--accent-op)" stroke="#fff" stroke-width="1.5" />
+            <text x="-135" y="-55" fill="var(--accent-op)" font-weight="bold" font-size="11">A'(-3, 2)</text>
+
+            <!-- Reflejo en X: A''(3, -2) -->
+            <circle cx="75" cy="50" r="6" fill="var(--accent-gold)" stroke="#fff" stroke-width="1.5" />
+            <text x="85" y="65" fill="var(--accent-gold)" font-weight="bold" font-size="11">A''(3, -2)</text>
+
+            <!-- Reflejo en Origen: A'''(-3, -2) -->
+            <circle cx="-75" cy="50" r="6" fill="var(--accent-success)" stroke="#fff" stroke-width="1.5" />
+            <text x="-140" y="65" fill="var(--accent-success)" font-weight="bold" font-size="11">A'''(-3, -2)</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 5: UNE LOS PUNTOS (DIBUJO MISTERIOSO) ================= -->
+    <div id="dibujo" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">El Dibujo Secreto</div>
+        <div class="content-text">
+          En matemáticas, una figura o una función no es más que una colección de puntos unidos por líneas. Desplaza el deslizador para ir descubriendo las coordenadas y dibujar la figura paso a paso.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Lista de Coordenadas de la Figura</div>
+          
+          <div class="slider-row">
+            <label>Puntos unidos:</label>
+            <input type="range" id="draw_slider" min="1" max="11" value="1" oninput="updateDrawFigure()">
+            <span class="val-badge" id="v_draw_count">1 / 11</span>
+          </div>
+
+          <div class="points-list" id="points_list_box">
+            <!-- Rellenado por JS -->
+          </div>
+
+          <div style="background:#090d16; padding:0.8rem 1rem; border-radius:8px; border:1px solid var(--border-color); margin-top:1rem; text-align:center;">
+            <span id="draw_status_msg" style="font-weight:bold; color:var(--accent-blue); font-size:1.05rem;">Colocando el primer punto...</span>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Lienzo Cartesiano (La Silueta)</div>
+          
+          <svg class="svg-canvas" viewBox="-150 -150 300 300" id="draw_svg">
+            <defs>
+              <pattern id="grid_draw" width="25" height="25" patternUnits="userSpaceOnUse">
+                <path d="M 25 0 L 0 0 0 25" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect x="-150" y="-150" width="300" height="300" fill="url(#grid_draw)" />
+
+            <!-- Ejes -->
+            <line x1="-140" y1="0" x2="140" y2="0" stroke="#64748b" stroke-width="1.5" />
+            <line x1="0" y1="-140" x2="0" y2="140" stroke="#64748b" stroke-width="1.5" />
+            <text x="130" y="-6" fill="#64748b" font-size="11">X</text>
+            <text x="6" y="-130" fill="#64748b" font-size="11">Y</text>
+
+            <!-- Trazado de líneas continuas que unen los puntos -->
+            <polyline id="fig_polyline" points="" fill="rgba(56, 189, 248, 0.15)" stroke="var(--accent-blue)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+
+            <!-- Grupo de puntos dinámicos -->
+            <g id="fig_dots_group"></g>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓN ENTRE PESTAÑAS ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'laboratorio') updateLabPoint();
+      if (tabId === 'dibujo') updateDrawFigure();
+    }
+
+    // =========================================================================
+    // 2. LABORATORIO DE PUNTOS DINÁMICO
+    // =========================================================================
+    function updateLabPoint() {
+      const x = parseInt(document.getElementById('p_x').value);
+      const y = parseInt(document.getElementById('p_y').value);
+
+      document.getElementById('vp_x').innerText = x;
+      document.getElementById('vp_y').innerText = y;
+
+      document.getElementById('point_label_card').innerHTML = `P(<span class="c-x">${x}</span>, <span class="c-y">${y}</span>)`;
+
+      const scale = 25;
+      const svgX = x * scale;
+      const svgY = -y * scale;
+
+      const dot = document.getElementById('point_dot');
+      dot.setAttribute('cx', svgX);
+      dot.setAttribute('cy', svgY);
+
+      const lbl = document.getElementById('point_svg_lbl');
+      lbl.setAttribute('x', svgX + 10);
+      lbl.setAttribute('y', svgY - 6);
+      lbl.textContent = `P(${x}, ${y})`;
+
+      const gX = document.getElementById('guide_x');
+      gX.setAttribute('x1', svgX);
+      gX.setAttribute('y1', 0);
+      gX.setAttribute('x2', svgX);
+      gX.setAttribute('y2', svgY);
+
+      const gY = document.getElementById('guide_y');
+      gY.setAttribute('x1', 0);
+      gY.setAttribute('y1', svgY);
+      gY.setAttribute('x2', svgX);
+      gY.setAttribute('y2', svgY);
+
+      let quadTxt = "";
+      let travelTxt = "";
+
+      if (x === 0 && y === 0) {
+        quadTxt = "Origen de Coordenadas (0, 0)";
+        travelTxt = "No te mueves: estás en el centro del plano.";
+      } else if (x === 0) {
+        quadTxt = "Sobre el Eje Y (Eje de Ordenadas)";
+        travelTxt = y > 0 ? `No te mueves en horizontal y subes ${y}.` : `No te mueves en horizontal y bajas ${Math.abs(y)}.`;
+      } else if (y === 0) {
+        quadTxt = "Sobre el Eje X (Eje de Abscisas)";
+        travelTxt = x > 0 ? `Avanzas ${x} a la derecha y no subes nada.` : `Retrocedes ${Math.abs(x)} a la izquierda y no subes nada.`;
+      } else if (x > 0 && y > 0) {
+        quadTxt = "I Cuadrante (+, +)";
+        travelTxt = `Camina ${x} a la derecha y sube ${y}.`;
+      } else if (x < 0 && y > 0) {
+        quadTxt = "II Cuadrante (-, +)";
+        travelTxt = `Retrocede ${Math.abs(x)} a la izquierda y sube ${y}.`;
+      } else if (x < 0 && y < 0) {
+        quadTxt = "III Cuadrante (-, -)";
+        travelTxt = `Retrocede ${Math.abs(x)} a la izquierda y baja ${Math.abs(y)}.`;
+      } else {
+        quadTxt = "IV Cuadrante (+, -)";
+        travelTxt = `Camina ${x} a la derecha y baja ${Math.abs(y)}.`;
+      }
+
+      document.getElementById('txt_quad_location').innerText = quadTxt;
+      document.getElementById('txt_steps_travel').innerText = travelTxt;
+    }
+    updateLabPoint();
+
+    // =========================================================================
+    // 5. UNE LOS PUNTOS (DIBUJO DE LA CASA)
+    // Coordenadas premeditadas que dibujan una casa con chimenea y tejado
+    // =========================================================================
+    const housePoints = [
+      { name: "P₁",  x: -3, y: -4, desc: "Esquina inferior izquierda" },
+      { name: "P₂",  x: 3,  y: -4, desc: "Esquina inferior derecha" },
+      { name: "P₃",  x: 3,  y: 0,  desc: "Pared derecha" },
+      { name: "P₄",  x: 1,  y: 2,  desc: "Chimenea (lado derecho)" },
+      { name: "P₅",  x: 1,  y: 4,  desc: "Chimenea (arriba)" },
+      { name: "P₆",  x: 0,  y: 4,  desc: "Chimenea (ancho)" },
+      { name: "P₇",  x: 0,  y: 3,  desc: "Chimenea (baja al tejado)" },
+      { name: "P₈",  x: 0,  y: 3,  desc: "Cúspide del tejado" },
+      { name: "P₉",  x: -3, y: 0,  desc: "Tejado a pared izquierda" },
+      { name: "P₁₀", x: -3, y: -4, desc: "Cerrar fachada izquierda" },
+      { name: "P₁₁", x: 3,  y: 0,  desc: "Viga del tejado" }
+    ];
+
+    function updateDrawFigure() {
+      const count = parseInt(document.getElementById('draw_slider').value);
+      document.getElementById('v_draw_count').innerText = `${count} / ${housePoints.length}`;
+
+      const listContainer = document.getElementById('points_list_box');
+      listContainer.innerHTML = "";
+
+      let polyPointsStr = "";
+      const scale = 25;
+
+      const dotsGroup = document.getElementById('fig_dots_group');
+      dotsGroup.innerHTML = "";
+
+      for (let i = 0; i < housePoints.length; i++) {
+        const pt = housePoints[i];
+        const isCurrent = (i === count - 1);
+        const isDrawn = (i < count);
+
+        // Elemento en la lista HTML
+        const item = document.createElement('div');
+        item.className = "point-item" + (isCurrent ? " current" : isDrawn ? " done" : "");
+        item.innerHTML = `<span><strong>${pt.name}</strong> (${pt.x}, ${pt.y})</span> <span style="font-size:0.85rem; color:var(--text-muted);">${pt.desc}</span>`;
+        listContainer.appendChild(item);
+
+        // Si el punto está activo según el slider
+        if (isDrawn) {
+          const px = pt.x * scale;
+          const py = -pt.y * scale;
+          polyPointsStr += `${px},${py} `;
+
+          // Dibujar bolita en SVG
+          const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          circle.setAttribute("cx", px);
+          circle.setAttribute("cy", py);
+          circle.setAttribute("r", isCurrent ? "6" : "4.5");
+          circle.setAttribute("fill", isCurrent ? "var(--accent-success)" : "var(--accent-blue)");
+          circle.setAttribute("stroke", "#fff");
+          circle.setAttribute("stroke-width", "1.5");
+          dotsGroup.appendChild(circle);
+
+          // Etiqueta del punto
+          const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          text.setAttribute("x", px + 6);
+          text.setAttribute("y", py - 6);
+          text.setAttribute("fill", isCurrent ? "var(--accent-success)" : "#94a3b8");
+          text.setAttribute("font-size", "10");
+          text.setAttribute("font-weight", "bold");
+          text.textContent = pt.name;
+          dotsGroup.appendChild(text);
+        }
+      }
+
+      document.getElementById('fig_polyline').setAttribute('points', polyPointsStr.trim());
+
+      const status = document.getElementById('draw_status_msg');
+      if (count === 1) {
+        status.innerText = "Colocando el primer punto P₁(-3, -4)...";
+        status.style.color = "var(--accent-blue)";
+      } else if (count < housePoints.length) {
+        status.innerText = `Uniendo segmentos... (${count} de ${housePoints.length} puntos)`;
+        status.style.color = "var(--accent-gold)";
+      } else {
+        status.innerText = "¡Enhorabuena! Has descubierto la figura: ¡Una casa con chimenea! 🏠";
+        status.style.color = "var(--accent-success)";
+      }
+    }
+    updateDrawFigure();
+  </script>
+</body>
+</html>

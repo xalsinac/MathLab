@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geometría: Teorema de Pitágoras y Aplicaciones</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 1rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* SUBPESTAÑAS */
+    .subtabs-container {
+      display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;
+      background: var(--bg-card); padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);
+      margin-bottom: 1rem;
+    }
+    .subtab-btn {
+      padding: 0.5rem 1.2rem; background: var(--bg-primary); border: 1px solid var(--border-color);
+      color: var(--text-muted); border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    }
+    .subtab-btn:hover { border-color: var(--accent-blue); color: var(--text-main); }
+    .subtab-btn.active { background: var(--accent-blue); color: #042f2e; border-color: var(--accent-blue); font-weight: bold; }
+    .subtab-content { display: none; flex-direction: column; gap: 1.2rem; animation: fadeIn 0.3s forwards; }
+    .subtab-content.active { display: flex; }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* CONTROLES DESLIZANTES */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem; }
+    .slider-row label { width: 140px; font-weight: 600; font-family: monospace; font-size: 1.05rem; }
+    .val-badge { width: 45px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; }
+
+    /* SVG CANVAS */
+    .svg-canvas {
+      width: 100%; height: 300px; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block;
+    }
+
+    /* CAJA DE FÓRMULA DESTACADA */
+    .formula-hero {
+      background: #090d16; border: 2px solid var(--accent-gold); border-radius: 10px;
+      padding: 1.2rem; text-align: center; font-family: monospace; font-size: 1.6rem;
+      font-weight: bold; color: var(--accent-gold); margin: 0.8rem 0;
+    }
+
+    /* RAÍZ CUADRADA RIGUROSA CON BARRA SUPERIOR */
+    .radical-box {
+      display: inline-flex; align-items: center; font-family: monospace; font-weight: bold;
+    }
+    .radical-box .rad-symbol {
+      font-size: 1.35em; line-height: 1; transform: scaleY(1.15); margin-right: 1px;
+    }
+    .radical-box .rad-content {
+      border-top: 2px solid currentColor; padding-top: 2px; padding-left: 2px; padding-right: 3px;
+    }
+
+    /* TARJETAS DE TERNAS PITAGÓRICAS */
+    .terna-chip {
+      background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 0.8rem; text-align: center; font-family: monospace;
+      transition: all 0.2s;
+    }
+    .terna-chip:hover {
+      border-color: var(--accent-gold); background: rgba(251, 191, 36, 0.08); transform: translateY(-2px);
+    }
+
+    /* TARJETAS INFORMATIVAS */
+    .info-card-item {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.3rem;
+    }
+
+    /* BOTONES */
+    .btn-action {
+      padding: 0.6rem 1.2rem; background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-main); border-radius: 6px; font-weight: bold; cursor: pointer;
+      transition: all 0.2s; font-family: monospace;
+    }
+    .btn-action:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+    .btn-action.active { background: rgba(56, 189, 248, 0.15); border-color: var(--accent-blue); color: var(--accent-blue); }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>El Teorema de Pitágoras</h1>
+    <p>Demostración visual de las áreas, cálculo con ternas enteras, teoremas de la altura y del cateto, y aplicación a figuras planas.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('historia', this)">🏛️ 1. Historia y Teorema</button>
+      <button class="tab-btn" onclick="switchTab('laboratorio', this)">📐 2. Laboratorio y Ternas</button>
+      <button class="tab-btn" onclick="switchTab('altura_cateto', this)">⛰️ 3. Altura y Cateto</button>
+      <button class="tab-btn" onclick="switchTab('areas_planas', this)">✂️ 4. Aplicación a Áreas</button>
+      <button class="tab-btn" onclick="switchTab('calculadora', this)">🧮 5. Calculadora Paso a Paso</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: HISTORIA Y TEOREMA ================= -->
+    <div id="historia" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">Pitágoras de Samos (Siglo VI a.C.)</div>
+        <div class="content-text">
+          Los antiguos agrimensores egipcios usaban una cuerda de 12 nudos equidistantes que, cerrada en triángulo de lados <strong>3, 4 y 5</strong>, garantizaba una esquina recta de 90º. Pitágoras demostró que esta relación se cumple exactamente en <strong>todo triángulo rectángulo</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">El Enunciado Fundamental</div>
+          <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1rem;">
+            En todo triángulo rectángulo, el lado opuesto al ángulo recto se llama <strong>Hipotenusa (c)</strong> y es siempre el mayor. Los lados que forman el ángulo recto son los <strong>Catetos (a y b)</strong>.
+          </p>
+
+          <div class="formula-hero">
+            a² + b² = c²
+          </div>
+
+          <p style="color:var(--text-main); font-size:1.05rem; line-height:1.6; margin-top:0.8rem;">
+            <em>"El área del cuadrado construido sobre la hipotenusa es igual a la suma de las áreas de los cuadrados construidos sobre los dos catetos."</em>
+          </p>
+
+          <div style="background:rgba(56,189,248,0.08); border:1px solid var(--accent-blue); border-radius:8px; padding:0.9rem; margin-top:1rem; font-size:0.9rem;">
+            💡 <strong>¿Qué problema resuelve?</strong> Permite calcular cualquier distancia recta en diagonal conociendo solo sus desplazamientos horizontales y verticales perpendiculares.
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Demostración Geométrica Exterior (3 - 4 - 5)</div>
+          
+          <!-- Cuadrado c² proyectado hacia el exterior sin cruzar el triángulo -->
+          <svg class="svg-canvas" viewBox="0 0 340 310">
+            <!-- 
+              Triángulo rectángulo central:
+              Vértice recto en (120, 190).
+              Cateto vertical b = 60 (y va de 190 a 130). Punto superior en (120, 130).
+              Cateto horizontal a = 80 (x va de 120 a 200). Punto derecho en (200, 190).
+            -->
+            <polygon points="120,190 200,190 120,130" fill="rgba(56, 189, 248, 0.25)" stroke="var(--accent-blue)" stroke-width="2.5" />
+            <!-- Ángulo recto -->
+            <rect x="120" y="178" width="12" height="12" fill="none" stroke="#fff" stroke-width="1.5" />
+
+            <!-- Cuadrado Cateto a (80x80 hacia abajo) -->
+            <!-- De x=120 a 200, y=190 a 270 -->
+            <rect x="120" y="190" width="80" height="80" fill="rgba(251, 191, 36, 0.2)" stroke="var(--accent-gold)" stroke-width="2" />
+            <text x="160" y="235" fill="var(--accent-gold)" font-weight="bold" font-size="13" text-anchor="middle">a² = 16</text>
+            <text x="160" y="252" fill="var(--accent-gold)" font-size="11" text-anchor="middle">(4 × 4)</text>
+
+            <!-- Cuadrado Cateto b (60x60 hacia la izquierda) -->
+            <!-- De x=60 a 120, y=130 a 190 -->
+            <rect x="60" y="130" width="60" height="60" fill="rgba(244, 63, 94, 0.2)" stroke="var(--accent-op)" stroke-width="2" />
+            <text x="90" y="165" fill="var(--accent-op)" font-weight="bold" font-size="13" text-anchor="middle">b² = 9</text>
+            <text x="90" y="180" fill="var(--accent-op)" font-size="11" text-anchor="middle">(3 × 3)</text>
+
+            <!-- Cuadrado Hipotenusa c (100x100) EXTERIOR hacia arriba-derecha -->
+            <!-- 
+              Lado hipotenusa va de P1(120, 130) a P2(200, 190).
+              Vector P1->P2 = (80, 60), longitud = 100.
+              Vector normal exterior hacia arriba-derecha = (60, -80).
+              P3 = P2 + (60, -80) = (260, 110).
+              P4 = P1 + (60, -80) = (180, 50).
+            -->
+            <polygon points="120,130 200,190 260,110 180,50" fill="rgba(16, 185, 129, 0.22)" stroke="var(--accent-success)" stroke-width="2.5" />
+            <text x="190" y="125" fill="var(--accent-success)" font-weight="bold" font-size="14" text-anchor="middle">c² = 25</text>
+            <text x="190" y="142" fill="var(--accent-success)" font-size="11" text-anchor="middle">(5 × 5)</text>
+          </svg>
+
+          <div style="text-align:center; font-family:monospace; font-size:1.2rem; color:var(--text-main); margin-top:0.4rem;">
+            Área <span style="color:var(--accent-op);">9</span> + Área <span style="color:var(--accent-gold);">16</span> = Área <span style="color:var(--accent-success); font-weight:bold;">25</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: LABORATORIO Y TERNAS ================= -->
+    <div id="laboratorio" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+        <div class="badge" style="color: var(--accent-blue);">Manipula y Descubre Ternas</div>
+        <div class="content-text">
+          Cambia la longitud de los dos catetos con los deslizadores y observa el recálculo en vivo de la hipotenusa. Más abajo encontrarás las **ternas pitagóricas**: triángulos rectángulos con medidas exactas de números enteros.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Controles de Catetos</div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-gold);">Cateto a (Base):</label>
+            <input type="range" id="cat_a" min="3" max="8" value="4" oninput="updatePitLab()">
+            <span class="val-badge" id="v_cat_a" style="color:var(--accent-gold);">4 cm</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-op);">Cateto b (Altura):</label>
+            <input type="range" id="cat_b" min="3" max="8" value="3" oninput="updatePitLab()">
+            <span class="val-badge" id="v_cat_b" style="color:var(--accent-op);">3 cm</span>
+          </div>
+
+          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:1.9; margin-top:1rem;">
+            <div>• Área cuadrado a² = <strong style="color:var(--accent-gold);" id="txt_area_a">16 cm²</strong></div>
+            <div>• Área cuadrado b² = <strong style="color:var(--accent-op);" id="txt_area_b">9 cm²</strong></div>
+            <hr style="border:0; border-top:1px solid var(--border-color); margin:0.5rem 0;">
+            <div>• Suma a² + b² = <strong style="color:var(--accent-success);" id="txt_sum_ab">25 cm²</strong> = c²</div>
+            <div style="font-size:1.3rem; margin-top:0.4rem;">
+              • Hipotenusa: 
+              c = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content" id="txt_radicando">25</span></span>
+              = <strong style="color:var(--accent-success);" id="txt_val_c">5.00 cm</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Triángulo Rectángulo Dinámico</div>
+          
+          <svg class="svg-canvas" viewBox="0 0 320 250" id="lab_pit_svg">
+            <line id="svg_line_a" x1="50" y1="200" x2="210" y2="200" stroke="var(--accent-gold)" stroke-width="3.5" />
+            <text id="svg_lbl_a" x="130" y="222" fill="var(--accent-gold)" font-weight="bold" font-size="13" text-anchor="middle">a = 4 cm</text>
+
+            <line id="svg_line_b" x1="50" y1="200" x2="50" y2="80" stroke="var(--accent-op)" stroke-width="3.5" />
+            <text id="svg_lbl_b" x="25" y="145" fill="var(--accent-op)" font-weight="bold" font-size="13" text-anchor="middle">b = 3 cm</text>
+
+            <line id="svg_line_c" x1="50" y1="80" x2="210" y2="200" stroke="var(--accent-success)" stroke-width="4" />
+            <text id="svg_lbl_c" x="145" y="130" fill="var(--accent-success)" font-weight="bold" font-size="13" text-anchor="middle">c = 5.0 cm</text>
+
+            <rect x="50" y="185" width="15" height="15" fill="none" stroke="#fff" stroke-width="1.5" />
+            <polygon id="svg_tri_poly" points="50,200 210,200 50,80" fill="rgba(56, 189, 248, 0.15)" stroke="none" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- SECCIÓN DE TERNAS PITAGÓRICAS (SIN DECIMALES) -->
+      <div class="panel-box" style="margin-top:1rem;">
+        <div class="panel-title" style="color:var(--accent-gold);">Ternas Pitagóricas Clásicas (Sin Decimales)</div>
+        <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:1rem; line-height:1.6;">
+          Una <strong>terna pitagórica</strong> es un conjunto de tres números naturales $(a, b, c)$ que cumplen exactamente $a^2 + b^2 = c^2$. Son los números preferidos de los profesores para poner en exámenes:
+        </p>
+
+        <div class="grid-3">
+          <div class="terna-chip">
+            <strong style="color:var(--accent-gold); font-size:1.15rem;">(3, 4, 5)</strong>
+            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:0.3rem;">3² + 4² = 9 + 16 = 25 (5²)</div>
+            <div style="font-size:0.8rem; color:var(--accent-success); margin-top:0.2rem;">La terna egipcia básica</div>
+          </div>
+
+          <div class="terna-chip">
+            <strong style="color:var(--accent-gold); font-size:1.15rem;">(5, 12, 13)</strong>
+            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:0.3rem;">5² + 12² = 25 + 144 = 169 (13²)</div>
+            <div style="font-size:0.8rem; color:var(--accent-success); margin-top:0.2rem;">Muy habitual en ejercicios</div>
+          </div>
+
+          <div class="terna-chip">
+            <strong style="color:var(--accent-gold); font-size:1.15rem;">(6, 8, 10)</strong>
+            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:0.3rem;">6² + 8² = 36 + 64 = 100 (10²)</div>
+            <div style="font-size:0.8rem; color:var(--accent-blue); margin-top:0.2rem;">Doble de (3, 4, 5)</div>
+          </div>
+
+          <div class="terna-chip">
+            <strong style="color:var(--accent-gold); font-size:1.15rem;">(8, 15, 17)</strong>
+            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:0.3rem;">8² + 15² = 64 + 225 = 289 (17²)</div>
+            <div style="font-size:0.8rem; color:var(--accent-success); margin-top:0.2rem;">Terna primitiva</div>
+          </div>
+
+          <div class="terna-chip">
+            <strong style="color:var(--accent-gold); font-size:1.15rem;">(7, 24, 25)</strong>
+            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:0.3rem;">7² + 24² = 49 + 576 = 625 (25²)</div>
+            <div style="font-size:0.8rem; color:var(--accent-success); margin-top:0.2rem;">Terna primitiva</div>
+          </div>
+
+          <div class="terna-chip">
+            <strong style="color:var(--accent-gold); font-size:1.15rem;">(9, 12, 15)</strong>
+            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:0.3rem;">9² + 12² = 81 + 144 = 225 (15²)</div>
+            <div style="font-size:0.8rem; color:var(--accent-blue); margin-top:0.2rem;">Triple de (3, 4, 5)</div>
+          </div>
+        </div>
+
+        <div style="background:rgba(251,191,36,0.08); border:1px solid var(--accent-gold); border-radius:8px; padding:0.9rem; margin-top:1rem; font-size:0.9rem;">
+          💡 <strong>Propiedad multiplicativa:</strong> Si multiplicas los tres números de una terna por cualquier valor entero $k$, ¡obtienes otra terna válida! Por ejemplo: $(3,4,5) \times 2 = (6,8,10)$ o $\times 10 = (30,40,50)$.
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: TEOREMA DE LA ALTURA Y DEL CATETO ================= -->
+    <div id="altura_cateto" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">La Geometría Oculta al Trazar la Altura</div>
+        <div class="content-text">
+          Al apoyar un triángulo rectángulo sobre su hipotenusa <strong>c</strong> y trazar la altura <strong>h</strong>, la hipotenusa queda dividida en dos segmentos llamados <strong>proyecciones: m y n</strong> ($c = m + n$).
+          Esto genera dos teoremas de semejanza fundamentales.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">1. Teorema de la Altura</div>
+          <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:0.8rem;">
+            El cuadrado de la altura relativa a la hipotenusa es igual al producto de las dos proyecciones de los catetos:
+          </p>
+
+          <div style="background:#090d16; border:1px solid var(--accent-blue); border-radius:8px; padding:1.2rem; text-align:center; font-family:monospace; font-size:1.35rem; color:var(--accent-blue); font-weight:bold;">
+            h² = m · n &nbsp; ➔ &nbsp; 
+            h = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">m · n</span></span>
+          </div>
+
+          <div class="panel-title" style="margin-top:1.5rem;">2. Teorema del Cateto</div>
+          <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:0.8rem;">
+            El cuadrado de un cateto es igual a la hipotenusa completa ($c$) multiplicada por su proyección adyacente:
+          </p>
+
+          <div style="background:#090d16; border:1px solid var(--accent-gold); border-radius:8px; padding:1.2rem; text-align:center; font-family:monospace; font-size:1.25rem; color:var(--accent-gold); font-weight:bold; line-height:2;">
+            <div>
+              b² = c · m &nbsp; ➔ &nbsp; 
+              b = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">c · m</span></span>
+            </div>
+            <div>
+              a² = c · n &nbsp; ➔ &nbsp; 
+              a = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">c · n</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Visualización: Proyecciones m y n</div>
+          
+          <svg class="svg-canvas" viewBox="0 0 320 240">
+            <polygon points="30,190 290,190 120,60" fill="rgba(56, 189, 248, 0.15)" stroke="var(--accent-blue)" stroke-width="2.5" />
+            
+            <circle cx="120" cy="60" r="3" fill="#fff" />
+            <text x="120" y="45" fill="#fff" font-size="11" text-anchor="middle">Ángulo 90º</text>
+
+            <line x1="120" y1="60" x2="120" y2="190" stroke="var(--accent-op)" stroke-width="2.5" stroke-dasharray="4" />
+            <text x="132" y="125" fill="var(--accent-op)" font-weight="bold" font-size="13">h</text>
+            <rect x="120" y="178" width="12" height="12" fill="none" stroke="#fff" stroke-width="1.2" />
+
+            <line x1="30" y1="205" x2="118" y2="205" stroke="var(--accent-gold)" stroke-width="2" />
+            <text x="75" y="222" fill="var(--accent-gold)" font-weight="bold" font-size="12" text-anchor="middle">m</text>
+
+            <line x1="122" y1="205" x2="290" y2="205" stroke="var(--accent-success)" stroke-width="2" />
+            <text x="205" y="222" fill="var(--accent-success)" font-weight="bold" font-size="12" text-anchor="middle">n</text>
+
+            <text x="65" y="115" fill="var(--accent-blue)" font-weight="bold" font-size="12">Cateto b</text>
+            <text x="215" y="115" fill="var(--accent-blue)" font-weight="bold" font-size="12">Cateto a</text>
+          </svg>
+          <p style="text-align:center; color:var(--text-muted); font-size:0.85rem; margin-top:0.4rem;">
+            Hipotenusa total = m + n. Todos los triángulos formados son semejantes entre sí.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: APLICACIÓN A ÁREAS ================= -->
+    <div id="areas_planas" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">El Arma Secreta de los Problemas Geométricos</div>
+        <div class="content-text">
+          En los problemas casi nunca nos dan la altura de forma directa. Para calcular el área de un triángulo isósceles, un trapecio o un rombo, el procedimiento consiste en <strong>aislar el triángulo rectángulo oculto</strong> y aplicar Pitágoras.
+        </div>
+      </div>
+
+      <div class="subtabs-container">
+        <button class="subtab-btn active" onclick="switchSubTab('sub_iso', this)">🔺 Triángulo Isósceles</button>
+        <button class="subtab-btn" onclick="switchSubTab('sub_trap', this)">🪜 Trapecio Isósceles</button>
+        <button class="subtab-btn" onclick="switchSubTab('sub_rom', this)">💠 Rombo</button>
+      </div>
+
+      <!-- 4.1 TRIÁNGULO ISÓSCELES -->
+      <div id="sub_iso" class="subtab-content active">
+        <div class="grid-2">
+          <div class="panel-box">
+            <div class="panel-title" style="color:var(--accent-blue);">Problema Típico: Falta la Altura</div>
+            <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1rem;">
+              Calcular el área de un triángulo isósceles de <strong>base 6 cm</strong> y <strong>lados iguales 5 cm</strong>.
+            </p>
+
+            <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; font-family:monospace; font-size:1.05rem; line-height:1.9;">
+              <div>1. La altura divide la base en dos mitades de <strong>3 cm</strong>.</div>
+              <div>2. Triángulo rectángulo: Cateto = 3 cm, Hipotenusa = 5 cm, Altura = h.</div>
+              <div style="color:var(--accent-gold); margin-top:0.3rem;">3. Pitágoras: 3² + h² = 5² ➔ 9 + h² = 25</div>
+              <div style="color:var(--accent-gold);">
+                h² = 25 - 9 = 16 ➔ 
+                h = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">16</span></span> = <strong>4 cm</strong>
+              </div>
+              <hr style="border:0; border-top:1px solid var(--border-color); margin:0.6rem 0;">
+              <div style="color:var(--accent-success); font-weight:bold; font-size:1.15rem;">
+                Área = (Base · h) / 2 = (6 · 4) / 2 = 12 cm²
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-box">
+            <svg class="svg-canvas" viewBox="0 0 300 230">
+              <polygon points="50,190 250,190 150,50" fill="rgba(56, 189, 248, 0.15)" stroke="var(--accent-blue)" stroke-width="2.5" />
+              <text x="90" y="110" fill="var(--accent-blue)" font-size="12">Lado = 5 cm</text>
+              <text x="205" y="110" fill="var(--accent-blue)" font-size="12">5 cm</text>
+
+              <line x1="150" y1="50" x2="150" y2="190" stroke="var(--accent-op)" stroke-width="2.5" stroke-dasharray="4" />
+              <text x="156" y="125" fill="var(--accent-op)" font-weight="bold" font-size="12">h = 4 cm</text>
+
+              <polygon points="150,190 250,190 150,50" fill="rgba(251, 191, 36, 0.15)" stroke="none" />
+              <rect x="150" y="178" width="12" height="12" fill="none" stroke="#fff" stroke-width="1.2" />
+
+              <text x="95" y="208" fill="var(--text-muted)" font-size="11">3 cm</text>
+              <text x="195" y="208" fill="var(--accent-gold)" font-weight="bold" font-size="11">3 cm (Cateto)</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4.2 TRAPECIO ISÓSCELES -->
+      <div id="sub_trap" class="subtab-content">
+        <div class="grid-2">
+          <div class="panel-box">
+            <div class="panel-title" style="color:var(--accent-gold);">Problema Típico: Altura del Trapecio</div>
+            <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1rem;">
+              Trapecio con <strong>Base mayor = 10 cm</strong>, <strong>base menor = 4 cm</strong> y <strong>lados oblicuos = 5 cm</strong>.
+            </p>
+
+            <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; font-family:monospace; font-size:1.05rem; line-height:1.9;">
+              <div>1. Base del triángulo lateral: (10 - 4) / 2 = <strong>3 cm</strong>.</div>
+              <div>2. Triángulo lateral: Cateto = 3 cm, Hipotenusa = 5 cm.</div>
+              <div style="color:var(--accent-gold); margin-top:0.3rem;">
+                3. Pitágoras: 3² + h² = 5² ➔ 
+                h = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">25 - 9</span></span> = <strong>4 cm</strong>
+              </div>
+              <hr style="border:0; border-top:1px solid var(--border-color); margin:0.6rem 0;">
+              <div style="color:var(--accent-success); font-weight:bold; font-size:1.15rem;">
+                Área = [ (B + b) · h ] / 2 = [ (10 + 4) · 4 ] / 2 = 28 cm²
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-box">
+            <svg class="svg-canvas" viewBox="0 0 320 230">
+              <polygon points="30,180 290,180 210,60 110,60" fill="rgba(251, 191, 36, 0.15)" stroke="var(--accent-gold)" stroke-width="2.5" />
+              <text x="160" y="50" fill="var(--accent-gold)" font-weight="bold" font-size="12" text-anchor="middle">b = 4 cm</text>
+              <text x="160" y="202" fill="var(--accent-gold)" font-weight="bold" font-size="12" text-anchor="middle">B = 10 cm</text>
+
+              <line x1="110" y1="60" x2="110" y2="180" stroke="var(--accent-op)" stroke-width="2.5" stroke-dasharray="4" />
+              <text x="116" y="125" fill="var(--accent-op)" font-weight="bold" font-size="12">h = 4 cm</text>
+
+              <polygon points="30,180 110,180 110,60" fill="rgba(244, 63, 94, 0.2)" stroke="none" />
+              <text x="65" y="195" fill="var(--accent-op)" font-size="11" font-weight="bold">3 cm</text>
+              <text x="55" y="115" fill="#fff" font-size="11">5 cm</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4.3 ROMBO -->
+      <div id="sub_rom" class="subtab-content">
+        <div class="grid-2">
+          <div class="panel-box">
+            <div class="panel-title" style="color:var(--accent-success);">Hallar el Lado de un Rombo</div>
+            <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-bottom:1rem;">
+              Las diagonales de un rombo se cruzan en su centro formando 4 triángulos rectángulos congruentes.
+            </p>
+
+            <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; font-family:monospace; font-size:1.05rem; line-height:1.9;">
+              <div>Si Diagonal mayor D = 8 cm y menor d = 6 cm:</div>
+              <div>1. Los catetos son las semidiagonales: <strong>4 cm</strong> y <strong>3 cm</strong>.</div>
+              <div>2. El lado del rombo (L) es la <strong>hipotenusa</strong>.</div>
+              <div style="color:var(--accent-success); margin-top:0.3rem;">
+                3. L = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">4² + 3²</span></span> = 
+                <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">16 + 9</span></span> = 
+                <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">25</span></span> = <strong>5 cm</strong>
+              </div>
+              <hr style="border:0; border-top:1px solid var(--border-color); margin:0.6rem 0;">
+              <div>• Perímetro = 4 · L = 4 · 5 = <strong>20 cm</strong></div>
+            </div>
+          </div>
+
+          <div class="panel-box">
+            <svg class="svg-canvas" viewBox="0 0 300 230">
+              <polygon points="150,30 250,115 150,200 50,115" fill="rgba(16, 185, 129, 0.15)" stroke="var(--accent-success)" stroke-width="2.5" />
+
+              <line x1="50" y1="115" x2="250" y2="115" stroke="var(--accent-gold)" stroke-width="2" stroke-dasharray="3" />
+              <line x1="150" y1="30" x2="150" y2="200" stroke="var(--accent-op)" stroke-width="2" stroke-dasharray="3" />
+
+              <polygon points="150,115 250,115 150,30" fill="rgba(56, 189, 248, 0.25)" stroke="var(--accent-blue)" stroke-width="2" />
+              <text x="195" y="110" fill="var(--accent-gold)" font-size="11" font-weight="bold">D/2 = 4</text>
+              <text x="155" y="70" fill="var(--accent-op)" font-size="11" font-weight="bold">d/2 = 3</text>
+              <text x="215" y="65" fill="var(--accent-success)" font-weight="bold" font-size="12">L = 5</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= PESTAÑA 5: CALCULADORA PASO A PASO ================= -->
+    <div id="calculadora" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+        <div class="badge" style="color: var(--accent-blue);">Resolución Detallada</div>
+        <div class="content-text">
+          Selecciona si buscas la Hipotenusa o un Cateto, introduce las medidas y observa el despeje algebraico completo con la raíz cuadrada continua.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">¿Qué elemento te falta?</div>
+
+          <div style="display:flex; gap:0.6rem; margin-bottom:1.2rem;">
+            <button class="btn-action active" id="btn_mode_hyp" onclick="setCalcMode('hyp')">Hallar Hipotenusa (c)</button>
+            <button class="btn-action" id="btn_mode_cat" onclick="setCalcMode('cat')">Hallar un Cateto (a ó b)</button>
+          </div>
+
+          <div id="calc_inputs_box"></div>
+
+          <button class="btn-action" style="background:var(--accent-blue); color:#042f2e; border:none; width:100%; margin-top:1rem; padding:0.8rem;" onclick="solvePythagoras()">
+            Calcular Paso a Paso
+          </button>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Resolución Paso a Paso</div>
+          <div id="calc_result_box" style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:2.2; font-size:1.1rem; min-height:180px;">
+            Pulsa en 'Calcular' para ver la resolución matemática.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // --- NAVEGACIÓN ENTRE PESTAÑAS PRINCIPALES ---
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+      if (tabId === 'laboratorio') updatePitLab();
+      if (tabId === 'calculadora') renderCalcInputs();
+    }
+
+    // --- NAVEGACIÓN ENTRE SUBPESTAÑAS ---
+    function switchSubTab(subtabId, btn) {
+      document.querySelectorAll('.subtab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(subtabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // =========================================================================
+    // 2. LABORATORIO INTERACTIVO (a² + b² = c²)
+    // =========================================================================
+    function updatePitLab() {
+      const a = parseInt(document.getElementById('cat_a').value);
+      const b = parseInt(document.getElementById('cat_b').value);
+
+      document.getElementById('v_cat_a').innerText = `${a} cm`;
+      document.getElementById('v_cat_b').innerText = `${b} cm`;
+
+      const a2 = a * a;
+      const b2 = b * b;
+      const sum = a2 + b2;
+      const c = Math.sqrt(sum);
+
+      document.getElementById('txt_area_a').innerText = `${a2} cm²`;
+      document.getElementById('txt_area_b').innerText = `${b2} cm²`;
+      document.getElementById('txt_sum_ab').innerText = `${sum} cm²`;
+      document.getElementById('txt_radicando').innerText = sum;
+      document.getElementById('txt_val_c').innerText = `${c.toFixed(2)} cm`;
+
+      const scale = 25;
+      const pX = 50 + (a * scale);
+      const pY = 200 - (b * scale);
+
+      document.getElementById('svg_line_a').setAttribute('x2', pX);
+      document.getElementById('svg_lbl_a').setAttribute('x', 50 + (a * scale / 2));
+      document.getElementById('svg_lbl_a').textContent = `a = ${a} cm`;
+
+      document.getElementById('svg_line_b').setAttribute('y2', pY);
+      document.getElementById('svg_lbl_b').setAttribute('y', 200 - (b * scale / 2));
+      document.getElementById('svg_lbl_b').textContent = `b = ${b} cm`;
+
+      document.getElementById('svg_line_c').setAttribute('x1', 50);
+      document.getElementById('svg_line_c').setAttribute('y1', pY);
+      document.getElementById('svg_line_c').setAttribute('x2', pX);
+      document.getElementById('svg_line_c').setAttribute('y2', 200);
+
+      document.getElementById('svg_lbl_c').setAttribute('x', 50 + (a * scale / 2) + 12);
+      document.getElementById('svg_lbl_c').setAttribute('y', pY + (b * scale / 2) - 8);
+      document.getElementById('svg_lbl_c').textContent = `c = ${c.toFixed(1)} cm`;
+
+      document.getElementById('svg_tri_poly').setAttribute('points', `50,200 ${pX},200 50,${pY}`);
+    }
+    updatePitLab();
+
+    // =========================================================================
+    // 5. CALCULADORA PASO A PASO
+    // =========================================================================
+    let currentCalcMode = 'hyp';
+
+    function setCalcMode(mode) {
+      currentCalcMode = mode;
+      document.getElementById('btn_mode_hyp').classList.toggle('active', mode === 'hyp');
+      document.getElementById('btn_mode_cat').classList.toggle('active', mode === 'cat');
+      renderCalcInputs();
+    }
+
+    function renderCalcInputs() {
+      const box = document.getElementById('calc_inputs_box');
+      if (currentCalcMode === 'hyp') {
+        box.innerHTML = `
+          <div class="slider-row">
+            <label style="color:var(--accent-gold);">Cateto a:</label>
+            <input type="number" id="inp_val_a" value="6" style="padding:0.5rem; background:#090d16; border:1px solid var(--border-color); border-radius:6px; color:#fff; width:100px; font-family:monospace; font-size:1.1rem;">
+          </div>
+          <div class="slider-row">
+            <label style="color:var(--accent-op);">Cateto b:</label>
+            <input type="number" id="inp_val_b" value="8" style="padding:0.5rem; background:#090d16; border:1px solid var(--border-color); border-radius:6px; color:#fff; width:100px; font-family:monospace; font-size:1.1rem;">
+          </div>
+        `;
+      } else {
+        box.innerHTML = `
+          <div class="slider-row">
+            <label style="color:var(--accent-success);">Hipotenusa (c):</label>
+            <input type="number" id="inp_val_c" value="10" style="padding:0.5rem; background:#090d16; border:1px solid var(--border-color); border-radius:6px; color:#fff; width:100px; font-family:monospace; font-size:1.1rem;">
+          </div>
+          <div class="slider-row">
+            <label style="color:var(--accent-gold);">Cateto conocido (a):</label>
+            <input type="number" id="inp_val_a" value="8" style="padding:0.5rem; background:#090d16; border:1px solid var(--border-color); border-radius:6px; color:#fff; width:100px; font-family:monospace; font-size:1.1rem;">
+          </div>
+        `;
+      }
+      solvePythagoras();
+    }
+
+    function solvePythagoras() {
+      const res = document.getElementById('calc_result_box');
+
+      if (currentCalcMode === 'hyp') {
+        const a = parseFloat(document.getElementById('inp_val_a').value);
+        const b = parseFloat(document.getElementById('inp_val_b').value);
+
+        if (!a || !b || a <= 0 || b <= 0) {
+          res.innerHTML = "<span style='color:var(--accent-op);'>Introduce medidas positivas para ambos catetos.</span>";
+          return;
+        }
+
+        const a2 = a * a;
+        const b2 = b * b;
+        const sum = a2 + b2;
+        const c = Math.sqrt(sum);
+
+        res.innerHTML = `
+          <div>1. Fórmula general: <strong>c² = a² + b²</strong></div>
+          <div>2. Sustituimos valores: c² = (${a})² + (${b})²</div>
+          <div>3. Elevamos al cuadrado: c² = ${a2} + ${b2} = <strong>${sum}</strong></div>
+          <div>4. Despejamos haciendo raíz: c = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">${sum}</span></span></div>
+          <div style="font-size:1.35rem; color:var(--accent-success); font-weight:bold; margin-top:0.5rem;">
+            ➔ Hipotenusa c = ${c.toFixed(2)} cm
+          </div>
+        `;
+      } else {
+        const c = parseFloat(document.getElementById('inp_val_c').value);
+        const a = parseFloat(document.getElementById('inp_val_a').value);
+
+        if (!c || !a || c <= 0 || a <= 0) {
+          res.innerHTML = "<span style='color:var(--accent-op);'>Introduce medidas válidas.</span>";
+          return;
+        }
+        if (a >= c) {
+          res.innerHTML = "<span style='color:var(--accent-op);'>¡Error geométrico! La hipotenusa (c) debe ser siempre estrictamente mayor que cualquier cateto.</span>";
+          return;
+        }
+
+        const c2 = c * c;
+        const a2 = a * a;
+        const diff = c2 - a2;
+        const b = Math.sqrt(diff);
+
+        res.innerHTML = `
+          <div>1. Fórmula general: <strong>a² + b² = c²</strong></div>
+          <div>2. Despejamos el cateto (restando): <strong>b² = c² - a²</strong></div>
+          <div>3. Sustituimos valores: b² = (${c})² - (${a})² = ${c2} - ${a2} = <strong>${diff}</strong></div>
+          <div>4. Despejamos haciendo raíz: b = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">${diff}</span></span></div>
+          <div style="font-size:1.35rem; color:var(--accent-gold); font-weight:bold; margin-top:0.5rem;">
+            ➔ Cateto b = ${b.toFixed(2)} cm
+          </div>
+        `;
+      }
+    }
+
+    renderCalcInputs();
+  </script>
+</body>
+</html>

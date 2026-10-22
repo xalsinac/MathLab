@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Álgebra: Monomios y Polinomios</title>
+  
+  <!-- Enlazamos nuestra plantilla maestra -->
+  <link rel="stylesheet" href="estilos.css">
+
+  <style>
+    /* =======================================================
+       ESTILOS DE LAS PESTAÑAS (TABS GRANDES Y ESTILIZADAS)
+       ======================================================= */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 1.2rem 1.5rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.15rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+      letter-spacing: 0.5px;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-blue);
+      border-bottom-color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    /* Ocultar pestañas no activas */
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; }
+
+    /* =======================================================
+       ESTILOS ESPECÍFICOS DE LA APLICACIÓN
+       ======================================================= */
+    .anatomy-display {
+      font-size: 3rem;
+      font-weight: 800;
+      text-align: center;
+      padding: 1.5rem;
+      background: #090d16;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      letter-spacing: 1px;
+      min-height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Colores pedagógicos */
+    .coef { color: var(--accent-op); }       /* Rojo/Rosa para coeficiente */
+    .literal { color: var(--accent-blue); }  /* Azul para letras */
+    .exp { color: var(--accent-gold); font-size: 0.6em; vertical-align: super; margin-left: 2px;} /* Dorado para exponente */
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      width: 100%;
+    }
+
+    .panel-box {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-title {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
+
+    /* Sliders */
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .slider-row label {
+      width: 130px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    
+    .val-display {
+      width: 30px;
+      text-align: right;
+      font-weight: bold;
+      font-family: monospace;
+      font-size: 1.1rem;
+    }
+
+    /* Mesa de operaciones */
+    .operation-result {
+      font-size: 1.8rem;
+      font-weight: 700;
+      text-align: center;
+      padding: 1rem;
+      background: #090d16;
+      border-radius: 8px;
+      border: 1px dashed var(--border-color);
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .badge-status {
+      display: inline-block;
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    .status-yes { background: rgba(16, 185, 129, 0.15); color: var(--accent-success); border: 1px solid rgba(16,185,129,0.3); }
+    .status-no { background: rgba(244, 63, 94, 0.15); color: var(--accent-op); border: 1px solid rgba(244,63,94,0.3); }
+
+    .op-title {
+      color: var(--accent-blue);
+      font-weight: 800;
+      font-size: 1.1rem;
+      margin-top: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.3rem;
+    }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .anatomy-display { font-size: 2.2rem; }
+      .tab-btn { font-size: 1rem; padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Botón de volver -->
+  <nav class="nav-bar">
+    <a href="index.html" class="nav-back-link">
+      <span>&larr;</span> Volver al Menú Principal
+    </a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Monomios y Polinomios</h1>
+    <p>Comprende la anatomía del álgebra y aprende visualmente cómo se suman, restan y multiplican las expresiones.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <!-- Pestañas Integradas -->
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('monomios', this)">1. Operaciones con Monomios</button>
+      <button class="tab-btn" onclick="switchTab('polinomios', this)">2. Operaciones con Polinomios</button>
+    </nav>
+
+    <!-- =======================================================
+         PESTAÑA 1: MONOMIOS
+         ======================================================= -->
+    <div id="monomios" class="tab-content active">
+      
+      <div class="explanation-card">
+        <div class="badge">Anatomía de un Monomio</div>
+        <div class="content-text">
+          Un monomio es el bloque de construcción básico. Se compone de un número multiplicador (<strong class="coef">coeficiente</strong>) y una o varias letras con exponentes (<strong class="literal">parte literal</strong>).
+        </div>
+      </div>
+
+      <div class="anatomy-display" id="monoDisplay"></div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Modifica el Monomio</div>
+          <div class="slider-row">
+            <label class="coef">Coeficiente</label>
+            <input type="range" id="mCoef" min="-5" max="5" value="3" oninput="updateMonomioAnatomy()">
+            <span class="val-display coef" id="vCoef">3</span>
+          </div>
+          <div class="slider-row">
+            <label class="literal">Exponente de x</label>
+            <input type="range" id="mExpX" min="0" max="4" value="2" oninput="updateMonomioAnatomy()">
+            <span class="val-display literal" id="vExpX">2</span>
+          </div>
+          <div class="slider-row">
+            <label class="literal">Exponente de y</label>
+            <input type="range" id="mExpY" min="0" max="4" value="1" oninput="updateMonomioAnatomy()">
+            <span class="val-display literal" id="vExpY">1</span>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Análisis</div>
+          <p style="margin-bottom: 0.8rem; font-size: 1.1rem;">Coeficiente: <strong class="coef" id="outCoef" style="font-size:1.3rem;">3</strong></p>
+          <p style="margin-bottom: 0.8rem; font-size: 1.1rem;">Parte Literal: <strong class="literal" id="outLit" style="font-size:1.3rem;">x²y</strong></p>
+          <p style="margin-bottom: 0.8rem; font-size: 1.1rem;">Grado Absoluto: <strong class="exp" id="outGrado" style="font-size:1.5rem; vertical-align: baseline;">3</strong></p>
+          <div style="background: rgba(56, 189, 248, 0.1); padding: 0.8rem; border-radius: 6px; font-size: 0.9rem; margin-top: auto; color: var(--text-muted);" id="monoTip">
+            El grado es la suma de los exponentes de sus letras (2 + 1 = 3).
+          </div>
+        </div>
+      </div>
+
+      <!-- Mesa de operaciones Monomios -->
+      <div class="explanation-card" style="margin-top: 1rem; border-left-color: var(--accent-op);">
+        <div class="badge" style="color: var(--accent-op);">Operaciones entre Monomios A y B</div>
+        <div class="content-text">
+          Para <strong>sumar/restar</strong>, deben ser <em>semejantes</em> (misma parte literal exacta). Para <strong>multiplicar</strong>, se multiplican coeficientes y se suman exponentes.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Monomio A</div>
+          <div class="anatomy-display" style="font-size: 2.2rem; min-height: 80px;" id="dispA"></div>
+          <div class="slider-row">
+            <label>Coeficiente A</label>
+            <input type="range" id="coefA" min="-5" max="5" value="2" oninput="updateOperacionesMonomios()">
+          </div>
+          <div class="slider-row">
+            <label>Exponente x</label>
+            <input type="range" id="expA" min="0" max="3" value="2" oninput="updateOperacionesMonomios()">
+          </div>
+        </div>
+        
+        <div class="panel-box">
+          <div class="panel-title">Monomio B</div>
+          <div class="anatomy-display" style="font-size: 2.2rem; min-height: 80px;" id="dispB"></div>
+          <div class="slider-row">
+            <label>Coeficiente B</label>
+            <input type="range" id="coefB" min="-5" max="5" value="4" oninput="updateOperacionesMonomios()">
+          </div>
+          <div class="slider-row">
+            <label>Exponente x</label>
+            <input type="range" id="expB" min="0" max="3" value="2" oninput="updateOperacionesMonomios()">
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-box" style="text-align: center;">
+        <div class="panel-title">Resultados</div>
+        <div id="statusSemejantes" class="badge-status status-yes">Son semejantes</div>
+        
+        <div class="grid-2">
+          <div>
+            <div class="op-title">Suma (A + B)</div>
+            <div class="operation-result" id="resSuma">6x²</div>
+            <p id="sumTip" style="font-size: 0.85rem; color: var(--accent-gold);"></p>
+          </div>
+          <div>
+            <div class="op-title">Multiplicación (A · B)</div>
+            <div class="operation-result" id="resMult">8x⁴</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Coeficientes multiplicados, exponentes sumados.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- =======================================================
+         PESTAÑA 2: POLINOMIOS
+         ======================================================= -->
+    <div id="polinomios" class="tab-content">
+      
+      <div class="explanation-card">
+        <div class="badge">Mesa de Operaciones con Polinomios</div>
+        <div class="content-text">
+          Un polinomio es una suma de monomios no semejantes. Al <strong>sumarlos</strong> o <strong>restarlos</strong> agrupamos los de igual grado. Al <strong>multiplicarlos</strong>, aplicamos la propiedad distributiva (todos por todos).
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Constructor Polinomio P(x) -->
+        <div class="panel-box">
+          <div class="panel-title" style="color: var(--accent-blue);">Polinomio P(x)</div>
+          <div class="anatomy-display" id="dispPolyP" style="font-size: 2rem; min-height: 80px; padding: 1rem;"></div>
+          
+          <div class="slider-row">
+            <label>Coef. de x²</label>
+            <input type="range" id="p2" min="-3" max="3" value="2" oninput="updateOperacionesPolinomios()">
+            <span class="val-display" id="vp2">2</span>
+          </div>
+          <div class="slider-row">
+            <label>Coef. de x</label>
+            <input type="range" id="p1" min="-3" max="3" value="-1" oninput="updateOperacionesPolinomios()">
+            <span class="val-display" id="vp1">-1</span>
+          </div>
+          <div class="slider-row">
+            <label>Término Indep.</label>
+            <input type="range" id="p0" min="-3" max="3" value="3" oninput="updateOperacionesPolinomios()">
+            <span class="val-display" id="vp0">3</span>
+          </div>
+        </div>
+
+        <!-- Constructor Polinomio Q(x) -->
+        <div class="panel-box">
+          <div class="panel-title" style="color: var(--accent-gold);">Polinomio Q(x)</div>
+          <div class="anatomy-display" id="dispPolyQ" style="font-size: 2rem; min-height: 80px; padding: 1rem;"></div>
+          
+          <div class="slider-row">
+            <label>Coef. de x²</label>
+            <input type="range" id="q2" min="-3" max="3" value="1" oninput="updateOperacionesPolinomios()">
+            <span class="val-display" id="vq2">1</span>
+          </div>
+          <div class="slider-row">
+            <label>Coef. de x</label>
+            <input type="range" id="q1" min="-3" max="3" value="2" oninput="updateOperacionesPolinomios()">
+            <span class="val-display" id="vq1">2</span>
+          </div>
+          <div class="slider-row">
+            <label>Término Indep.</label>
+            <input type="range" id="q0" min="-3" max="3" value="-2" oninput="updateOperacionesPolinomios()">
+            <span class="val-display" id="vq0">-2</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resultados Polinomios -->
+      <div class="panel-box">
+        <div class="panel-title">Resultados de las Operaciones</div>
+        
+        <div class="op-title">Suma: P(x) + Q(x)</div>
+        <div class="operation-result" id="resPolySuma"></div>
+        <p style="font-size: 0.9rem; color: var(--text-muted); text-align: center;">Agrupamos y sumamos los coeficientes de los términos que tienen el mismo grado.</p>
+
+        <div class="op-title">Resta: P(x) - Q(x)</div>
+        <div class="operation-result" id="resPolyResta"></div>
+        <p style="font-size: 0.9rem; color: var(--text-muted); text-align: center;">Es lo mismo que sumar, pero cambiando todos los signos del polinomio Q(x).</p>
+
+        <div class="op-title">Multiplicación: P(x) · Q(x)</div>
+        <div class="operation-result" id="resPolyMult"></div>
+        <p style="font-size: 0.9rem; color: var(--text-muted); text-align: center;">Propiedad distributiva: Cada monomio de P(x) multiplica a todos los monomios de Q(x), luego se agrupan los semejantes.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // --- NAVEGACIÓN DE PESTAÑAS ---
+    function switchTab(tabId, btnElement) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(tabId).classList.add('active');
+      btnElement.classList.add('active');
+    }
+
+    // --- FORMATEO MATEMÁTICO BASE ---
+    function formatMonoTerm(coef, expX, expY = 0, isFirst = false) {
+      if (coef === 0) return { full: "0", lit: "", isZero: true };
+      
+      let sign = (!isFirst && coef > 0) ? "+" : (coef < 0 && isFirst) ? "-" : (coef < 0) ? "-" : "";
+      let absCoef = Math.abs(coef);
+      
+      // Ocultar 1 si hay letras
+      let hasLetters = expX > 0 || expY > 0;
+      let displayCoef = (absCoef === 1 && hasLetters) ? "" : absCoef.toString();
+
+      let lit = "";
+      if (expX === 1) lit += "x";
+      else if (expX > 1) lit += `x<span class="exp">${expX}</span>`;
+      
+      if (expY === 1) lit += "y";
+      else if (expY > 1) lit += `y<span class="exp">${expY}</span>`;
+
+      return { 
+        full: `<span class="coef">${sign}${displayCoef}</span><span class="literal">${lit}</span>`, 
+        litRaw: lit,
+        isZero: false
+      };
+    }
+
+    // Formateador para construir polinomios limpios
+    function buildPolyString(coeffsArray) {
+      let html = "";
+      let isFirst = true;
+      let isAllZero = true;
+
+      for (let i = 0; i < coeffsArray.length; i++) {
+        let degree = coeffsArray.length - 1 - i;
+        let c = coeffsArray[i];
+
+        if (c !== 0) {
+          isAllZero = false;
+          let sign = "";
+          if (!isFirst && c > 0) sign = " + ";
+          if (!isFirst && c < 0) sign = " - ";
+          if (isFirst && c < 0) sign = "-";
+
+          let absC = Math.abs(c);
+          let coefStr = (absC === 1 && degree !== 0) ? "" : absC.toString();
+
+          let lit = "";
+          if (degree === 1) lit = "x";
+          else if (degree > 1) lit = `x<span class="exp">${degree}</span>`;
+
+          html += `<span class="coef">${sign}${coefStr}</span><span class="literal">${lit}</span>`;
+          isFirst = false;
+        }
+      }
+      return isAllZero ? "<span class='coef'>0</span>" : html;
+    }
+
+    // --- PESTAÑA 1: MONOMIOS ---
+    function updateMonomioAnatomy() {
+      const c = parseInt(document.getElementById('mCoef').value);
+      const ex = parseInt(document.getElementById('mExpX').value);
+      const ey = parseInt(document.getElementById('mExpY').value);
+      
+      document.getElementById('vCoef').innerText = c;
+      document.getElementById('vExpX').innerText = ex;
+      document.getElementById('vExpY').innerText = ey;
+
+      const term = formatMonoTerm(c, ex, ey, true);
+      document.getElementById('monoDisplay').innerHTML = term.isZero ? "<span class='coef'>0</span>" : term.full;
+      
+      document.getElementById('outCoef').innerText = c;
+      document.getElementById('outLit').innerHTML = term.isZero || term.litRaw === "" ? "Sin letras" : term.litRaw;
+      
+      const grado = (c === 0) ? 0 : ex + ey;
+      document.getElementById('outGrado').innerText = grado;
+
+      let tip = "";
+      if (c === 0) tip = "Si el coeficiente es 0, todo el monomio se anula y vale 0.";
+      else if (ex === 0 && ey === 0) tip = "Al no tener letras, se le llama 'término independiente'. Su grado es 0.";
+      else if (Math.abs(c) === 1) tip = "¡Ojo! En matemáticas el coeficiente 1 (o -1) no se escribe, ¡pero está ahí!";
+      else tip = `El grado es la suma de exponentes: ${ex} + ${ey} = ${grado}.`;
+      document.getElementById('monoTip').innerText = tip;
+    }
+
+    function updateOperacionesMonomios() {
+      const ca = parseInt(document.getElementById('coefA').value);
+      const ea = parseInt(document.getElementById('expA').value);
+      const cb = parseInt(document.getElementById('coefB').value);
+      const eb = parseInt(document.getElementById('expB').value);
+
+      document.getElementById('dispA').innerHTML = formatMonoTerm(ca, ea, 0, true).isZero ? "0" : formatMonoTerm(ca, ea, 0, true).full;
+      document.getElementById('dispB').innerHTML = formatMonoTerm(cb, eb, 0, true).isZero ? "0" : formatMonoTerm(cb, eb, 0, true).full;
+
+      const semejantes = (ea === eb) && (ca !== 0 && cb !== 0);
+      const status = document.getElementById('statusSemejantes');
+      
+      if (ca === 0 || cb === 0) {
+        status.className = "badge-status status-no";
+        status.innerText = "Uno es 0";
+      } else if (semejantes) {
+        status.className = "badge-status status-yes";
+        status.innerText = "¡Sí! Son Semejantes";
+      } else {
+        status.className = "badge-status status-no";
+        status.innerText = "No son semejantes (distinto exponente)";
+      }
+
+      // Suma A + B
+      if (ca === 0) {
+        document.getElementById('resSuma').innerHTML = formatMonoTerm(cb, eb, 0, true).full;
+        document.getElementById('sumTip').innerText = "0 + B = B";
+      } else if (cb === 0) {
+        document.getElementById('resSuma').innerHTML = formatMonoTerm(ca, ea, 0, true).full;
+        document.getElementById('sumTip').innerText = "A + 0 = A";
+      } else if (semejantes) {
+        const sumCoef = ca + cb;
+        document.getElementById('resSuma').innerHTML = sumCoef === 0 ? "0" : formatMonoTerm(sumCoef, ea, 0, true).full;
+        document.getElementById('sumTip').innerText = `Sumamos coeficientes: ${ca} + ${cb} = ${sumCoef}. Letras iguales.`;
+      } else {
+        document.getElementById('resSuma').innerHTML = `${formatMonoTerm(ca, ea, 0, true).full} ${formatMonoTerm(cb, eb, 0, false).full}`;
+        document.getElementById('sumTip').innerText = "Se deja indicado. Representan cosas distintas (como sumar peras y manzanas).";
+      }
+
+      // Multiplicación A * B
+      const multCoef = ca * cb;
+      const multExp = ea + eb;
+      document.getElementById('resMult').innerHTML = multCoef === 0 ? "0" : formatMonoTerm(multCoef, multExp, 0, true).full;
+    }
+
+    // --- PESTAÑA 2: POLINOMIOS ---
+    function updateOperacionesPolinomios() {
+      // Coeficientes P(x)
+      const p2 = parseInt(document.getElementById('p2').value);
+      const p1 = parseInt(document.getElementById('p1').value);
+      const p0 = parseInt(document.getElementById('p0').value);
+      
+      document.getElementById('vp2').innerText = p2;
+      document.getElementById('vp1').innerText = p1;
+      document.getElementById('vp0').innerText = p0;
+
+      // Coeficientes Q(x)
+      const q2 = parseInt(document.getElementById('q2').value);
+      const q1 = parseInt(document.getElementById('q1').value);
+      const q0 = parseInt(document.getElementById('q0').value);
+
+      document.getElementById('vq2').innerText = q2;
+      document.getElementById('vq1').innerText = q1;
+      document.getElementById('vq0').innerText = q0;
+
+      // Mostrar P(x) y Q(x)
+      const arrP = [p2, p1, p0];
+      const arrQ = [q2, q1, q0];
+      document.getElementById('dispPolyP').innerHTML = buildPolyString(arrP);
+      document.getElementById('dispPolyQ').innerHTML = buildPolyString(arrQ);
+
+      // --- Suma: P + Q ---
+      const sumArr = [p2 + q2, p1 + q1, p0 + q0];
+      document.getElementById('resPolySuma').innerHTML = buildPolyString(sumArr);
+
+      // --- Resta: P - Q ---
+      const resArr = [p2 - q2, p1 - q1, p0 - q0];
+      document.getElementById('resPolyResta').innerHTML = buildPolyString(resArr);
+
+      // --- Multiplicación: P * Q ---
+      // P es grado 2, Q es grado 2 -> Max grado 4
+      // P = p2*x² + p1*x + p0
+      // Q = q2*x² + q1*x + q0
+      const m4 = p2 * q2;
+      const m3 = (p2 * q1) + (p1 * q2);
+      const m2 = (p2 * q0) + (p1 * q1) + (p0 * q2);
+      const m1 = (p1 * q0) + (p0 * q1);
+      const m0 = p0 * q0;
+
+      const multArr = [m4, m3, m2, m1, m0];
+      document.getElementById('resPolyMult').innerHTML = buildPolyString(multArr);
+    }
+
+    // Inicializar todo
+    updateMonomioAnatomy();
+    updateOperacionesMonomios();
+    updateOperacionesPolinomios();
+
+  </script>
+</body>
+</html>

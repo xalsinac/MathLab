@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabla Completa de Derivadas | MatesLab</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    .table-page-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+    }
+
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+    }
+
+    .print-btn {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border: none;
+      font-weight: 800;
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .print-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* TABLA RESUMEN */
+    .deriv-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: monospace;
+      font-size: 1.02rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .deriv-table th, 
+    .deriv-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+    }
+
+    .deriv-table th {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .deriv-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .col-tipo {
+      color: var(--text-muted);
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      width: 20%;
+    }
+
+    .col-simple {
+      color: var(--accent-blue);
+      font-weight: bold;
+      width: 25%;
+    }
+
+    .col-compuesta {
+      color: #fff;
+      font-weight: bold;
+      width: 28%;
+    }
+
+    .col-ejemplo {
+      color: var(--accent-gold);
+      width: 27%;
+      font-size: 0.95em;
+    }
+
+    .fraction-vertical {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      margin: 0 0.2rem;
+      line-height: 1.1;
+      font-size: 0.9em;
+    }
+    .fraction-vertical .num { border-bottom: 2px solid currentColor; padding: 0 0.2rem 1px 0.2rem; }
+    .fraction-vertical .den { padding: 1px 0.2rem 0 0.2rem; }
+
+    .radical-box { display: inline-flex; align-items: flex-start; vertical-align: middle; }
+    .radical-box .rad-index { font-size: 0.6em; margin-right: -0.1em; margin-top: -0.2em; color: var(--accent-gold); font-weight: bold; }
+    .radical-box .rad-symbol { font-family: Arial, sans-serif; font-size: 1.25em; line-height: 0.7; margin-top: 2px; margin-right: -1px; }
+    .radical-box .rad-content { border-top: 2px solid currentColor; padding: 2px 3px 0 2px; margin-top: 2px; }
+
+    /* ESTILOS DE IMPRESIÓN (PDF A4) */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .nav-bar, .app-header, .action-bar, footer {
+        display: none !important;
+      }
+      .table-page-wrap {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        gap: 0.6rem !important;
+      }
+      .print-header {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 0.6rem;
+      }
+      .print-header h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.1rem;
+        color: #000;
+      }
+      .section-title {
+        color: #000 !important;
+        border-bottom: 2px solid #000 !important;
+        font-size: 0.95rem !important;
+        margin-bottom: 0.3rem !important;
+      }
+      .deriv-table {
+        background: #fff !important;
+        border: 1px solid #000 !important;
+        font-size: 0.82rem !important;
+        margin-bottom: 0.5rem;
+      }
+      .deriv-table th {
+        background: #f1f5f9 !important;
+        color: #000 !important;
+        border-bottom: 1px solid #000 !important;
+        padding: 0.35rem 0.5rem !important;
+      }
+      .deriv-table td {
+        border-bottom: 1px solid #ccc !important;
+        color: #000 !important;
+        padding: 0.35rem 0.5rem !important;
+      }
+      .col-tipo { color: #333 !important; }
+      .col-simple { color: #000 !important; font-weight: normal; }
+      .col-compuesta { color: #000 !important; font-weight: bold; }
+      .col-ejemplo { color: #000 !important; font-weight: normal; }
+    }
+
+    .print-header { display: none; }
+
+    @media (max-width: 750px) {
+      .deriv-table th, .deriv-table td { padding: 0.6rem 0.4rem; font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Tabla Completa de Derivadas</h1>
+    <p>Formulario de cálculo diferencial: álgebra de derivadas, funciones simples y compuestas con la regla de la cadena (u · u').</p>
+  </header>
+
+  <main class="table-page-wrap">
+
+    <div class="print-header">
+      <h1>Tabla de Derivadas y Regla de la Cadena</h1>
+      <p>MatesLab • Formulario de Análisis Matemático (Bachillerato)</p>
+    </div>
+
+    <div class="action-bar">
+      <div style="font-size:0.9rem; color:var(--text-muted);">
+        📋 <strong>Regla de la Cadena:</strong> Toda función compuesta <code>y = f(u)</code> se deriva multiplicando por la derivada interna <code>u'</code>.
+      </div>
+      <button class="print-btn" onclick="window.print()">
+        <span>🖨️</span> Imprimir / Guardar PDF
+      </button>
+    </div>
+
+    <!-- ================= SECCIÓN 1: ÁLGEBRA DE DERIVADAS ================= -->
+    <section>
+      <div class="section-title">
+        <span>⚙️</span> 1. Reglas de Derivación (Álgebra)
+      </div>
+
+      <table class="deriv-table">
+        <thead>
+          <tr>
+            <th style="width:25%;">Operación</th>
+            <th style="width:40%;">Función</th>
+            <th style="width:35%;">Derivada</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-tipo">Constante por función</td>
+            <td>y = k · u</td>
+            <td class="col-compuesta">y' = k · u'</td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Suma / Resta</td>
+            <td>y = u ± v</td>
+            <td class="col-compuesta">y' = u' ± v'</td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Producto</td>
+            <td>y = u · v</td>
+            <td class="col-compuesta">y' = u' · v + u · v'</td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Cociente</td>
+            <td>y = <span class="fraction-vertical"><span class="num">u</span><span class="den">v</span></span></td>
+            <td class="col-compuesta">y' = <span class="fraction-vertical"><span class="num">u' · v − u · v'</span><span class="den">v²</span></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ================= SECCIÓN 2: POTENCIALES, EXPONENCIALES Y LOGARÍTMICAS ================= -->
+    <section>
+      <div class="section-title">
+        <span>📈</span> 2. Polinómicas, Exponenciales y Logaritmos
+      </div>
+
+      <table class="deriv-table">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Simple (x)</th>
+            <th>Compuesta (u)</th>
+            <th>Ejemplo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-tipo">Constante</td>
+            <td class="col-simple">(k)' = 0</td>
+            <td class="col-compuesta">—</td>
+            <td class="col-ejemplo">(7)' = 0</td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Identidad</td>
+            <td class="col-simple">(x)' = 1</td>
+            <td class="col-compuesta">(u)' = u'</td>
+            <td class="col-ejemplo">(5x)' = 5</td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Potencial</td>
+            <td class="col-simple">(xⁿ)' = n · xⁿ⁻¹</td>
+            <td class="col-compuesta">(uⁿ)' = n · uⁿ⁻¹ · u'</td>
+            <td class="col-ejemplo">((3x²−1)⁴)' = 4(3x²−1)³ · 6x</td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Raíz cuadrada</td>
+            <td class="col-simple">
+              (<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">x</span></span>)' = 
+              <span class="fraction-vertical"><span class="num">1</span><span class="den">2<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">x</span></span></span></span>
+            </td>
+            <td class="col-compuesta">
+              (<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">u</span></span>)' = 
+              <span class="fraction-vertical"><span class="num">u'</span><span class="den">2<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">u</span></span></span></span>
+            </td>
+            <td class="col-ejemplo">
+              (<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">x³+1</span></span>)' = 
+              <span class="fraction-vertical"><span class="num">3x²</span><span class="den">2<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">x³+1</span></span></span></span>
+            </td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Exponencial e</td>
+            <td class="col-simple">(eˣ)' = eˣ</td>
+            <td class="col-compuesta">(eᵘ)' = eᵘ · u'</td>
+            <td class="col-ejemplo">(e⁵ˣ)' = 5 · e⁵ˣ</td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Exponencial a</td>
+            <td class="col-simple">(aˣ)' = aˣ · ln(a)</td>
+            <td class="col-compuesta">(aᵘ)' = aᵘ · ln(a) · u'</td>
+            <td class="col-ejemplo">(2ˣ³)' = 3x² · 2ˣ³ · ln(2)</td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Log. Neperiano</td>
+            <td class="col-simple">(ln x)' = <span class="fraction-vertical"><span class="num">1</span><span class="den">x</span></span></td>
+            <td class="col-compuesta">(ln u)' = <span class="fraction-vertical"><span class="num">u'</span><span class="den">u</span></span></td>
+            <td class="col-ejemplo">(ln(x²+4))' = <span class="fraction-vertical"><span class="num">2x</span><span class="den">x²+4</span></span></td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Logaritmo base a</td>
+            <td class="col-simple">(logₐ x)' = <span class="fraction-vertical"><span class="num">1</span><span class="den">x · ln(a)</span></span></td>
+            <td class="col-compuesta">(logₐ u)' = <span class="fraction-vertical"><span class="num">u'</span><span class="den">u · ln(a)</span></span></td>
+            <td class="col-ejemplo">(log₁₀(3x))' = <span class="fraction-vertical"><span class="num">1</span><span class="den">x · ln(10)</span></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ================= SECCIÓN 3: TRIGONOMÉTRICAS E INVERSAS ================= -->
+    <section>
+      <div class="section-title">
+        <span>📐</span> 3. Trigonométricas y Trigonométricas Inversas
+      </div>
+
+      <table class="deriv-table">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Simple (x)</th>
+            <th>Compuesta (u)</th>
+            <th>Ejemplo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-tipo">Seno</td>
+            <td class="col-simple">(sen x)' = cos x</td>
+            <td class="col-compuesta">(sen u)' = u' · cos u</td>
+            <td class="col-ejemplo">(sen(4x))' = 4 · cos(4x)</td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Coseno</td>
+            <td class="col-simple">(cos x)' = −sen x</td>
+            <td class="col-compuesta">(cos u)' = −u' · sen u</td>
+            <td class="col-ejemplo">(cos(x²))' = −2x · sen(x²)</td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Tangente</td>
+            <td class="col-simple">(tg x)' = 1 + tg² x = <span class="fraction-vertical"><span class="num">1</span><span class="den">cos² x</span></span></td>
+            <td class="col-compuesta">(tg u)' = u' · (1 + tg² u) = <span class="fraction-vertical"><span class="num">u'</span><span class="den">cos² u</span></span></td>
+            <td class="col-ejemplo">(tg(3x))' = <span class="fraction-vertical"><span class="num">3</span><span class="den">cos²(3x)</span></span></td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Arcoseno</td>
+            <td class="col-simple">
+              (arcsen x)' = 
+              <span class="fraction-vertical"><span class="num">1</span><span class="den"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">1 − x²</span></span></span></span>
+            </td>
+            <td class="col-compuesta">
+              (arcsen u)' = 
+              <span class="fraction-vertical"><span class="num">u'</span><span class="den"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">1 − u²</span></span></span></span>
+            </td>
+            <td class="col-ejemplo">
+              (arcsen(2x))' = 
+              <span class="fraction-vertical"><span class="num">2</span><span class="den"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">1 − 4x²</span></span></span></span>
+            </td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Arcocoseno</td>
+            <td class="col-simple">
+              (arccos x)' = 
+              <span class="fraction-vertical"><span class="num">−1</span><span class="den"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">1 − x²</span></span></span></span>
+            </td>
+            <td class="col-compuesta">
+              (arccos u)' = 
+              <span class="fraction-vertical"><span class="num">−u'</span><span class="den"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">1 − u²</span></span></span></span>
+            </td>
+            <td class="col-ejemplo">
+              (arccos(5x))' = 
+              <span class="fraction-vertical"><span class="num">−5</span><span class="den"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">1 − 25x²</span></span></span></span>
+            </td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Arcotangente</td>
+            <td class="col-simple">(arctg x)' = <span class="fraction-vertical"><span class="num">1</span><span class="den">1 + x²</span></span></td>
+            <td class="col-compuesta">(arctg u)' = <span class="fraction-vertical"><span class="num">u'</span><span class="den">1 + u²</span></span></td>
+            <td class="col-ejemplo">(arctg(3x))' = <span class="fraction-vertical"><span class="num">3</span><span class="den">1 + 9x²</span></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Funciones Avanzadas y Ecuaciones | MatesLab</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* VARIABLES & TEMA */
+    :root {
+      --bg-main: #0b1120;
+      --bg-panel: #0f172a;
+      --bg-card: #090d16;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --accent-blue: #38bdf8;
+      --accent-gold: #fbbf24;
+      --accent-success: #10b981;
+      --accent-op: #f43f5e;
+      --accent-purple: #c084fc;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* BARRA DE NAVEGACIÓN Y ENCABEZADO */
+    .nav-bar {
+      padding: 0.8rem 1.5rem;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-color);
+    }
+    .nav-back-link {
+      color: var(--accent-blue);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .nav-back-link:hover { text-decoration: underline; }
+
+    .app-header {
+      padding: 2rem 1.5rem 1rem 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .app-header h1 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.85rem;
+      color: #fff;
+    }
+    .app-header p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem 3rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-container {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      display: flex;
+      overflow-x: auto;
+      gap: 0.2rem;
+      padding: 0.3rem;
+    }
+    .tab-btn {
+      flex: 1;
+      min-width: 170px;
+      padding: 0.9rem 0.6rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .tab-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .tab-btn.active {
+      color: #042f2e;
+      background: var(--accent-blue);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .tab-content.active {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* PANELES Y CUADRÍCULA */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1.05fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    .panel-box {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .panel-title {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      font-weight: 800;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+      margin: 0;
+    }
+
+    .explanation-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-left: 5px solid var(--accent-blue);
+      border-radius: 10px;
+      padding: 1.1rem 1.3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .explanation-badge {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .explanation-text {
+      color: var(--text-main);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* SLIDERS Y CONTROLES */
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+    .slider-row label {
+      width: 140px;
+      font-family: monospace;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+    .slider-row input[type="range"] {
+      flex: 1;
+      min-width: 110px;
+      accent-color: var(--accent-blue);
+    }
+    .val-badge {
+      width: 50px;
+      text-align: right;
+      font-family: monospace;
+      font-size: 1.05rem;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    /* TARJETA DE ESTUDIO RIGUROSO (DOMINIO, RECORRIDO, ETC) */
+    .props-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem;
+    }
+    .prop-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      font-size: 0.88rem;
+    }
+    .prop-name {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
+    .prop-val {
+      font-family: monospace;
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    /* FÓRMULAS VISUALES */
+    .math-formula {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1.15rem;
+      font-weight: bold;
+      background: var(--bg-card);
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      text-align: center;
+      color: #fff;
+    }
+    .fraction-vertical {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      margin: 0 0.2rem;
+      line-height: 1;
+      font-size: 0.9em;
+    }
+    .fraction-vertical .num { border-bottom: 2px solid currentColor; padding: 0 0.2rem 1px 0.2rem; }
+    .fraction-vertical .den { padding: 1px 0.2rem 0 0.2rem; }
+
+    /* SVG CANVAS */
+    .svg-canvas {
+      width: 100%;
+      height: 420px;
+      background: var(--bg-card);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      display: block;
+    }
+
+    /* TALLER DE ECUACIONES */
+    .eq-selector {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .eq-btn {
+      flex: 1;
+      min-width: 140px;
+      padding: 0.65rem 0.6rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    .eq-btn.active {
+      border-color: var(--accent-purple);
+      color: var(--accent-purple);
+      background: rgba(192, 132, 252, 0.1);
+    }
+
+    .step-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-purple);
+      border-radius: 8px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.92rem;
+      line-height: 1.7;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .step-num {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--accent-purple);
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 900px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .props-grid { grid-template-columns: 1fr; }
+      .svg-canvas { height: 340px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Funciones Avanzadas y Ecuaciones</h1>
+    <p>Estudio sistemático de funciones racionales (hipérbolas), radicales, definidas a trozos con saltos de continuidad, simetría inversa entre exponenciales y logaritmos, y resolución paso a paso de ecuaciones algebraicas.</p>
+  </header>
+
+  <main class="app-container">
+
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('tab_inversa', this)">⚡ 1. Proporcionalidad Inversa</button>
+      <button class="tab-btn" onclick="switchTab('tab_radical', this)">√ 2. Función Radical</button>
+      <button class="tab-btn" onclick="switchTab('tab_trozos', this)">✂️ 3. A Trozos (Continuidad)</button>
+      <button class="tab-btn" onclick="switchTab('tab_exp_log', this)">🔄 4. Exponencial vs Logarítmica</button>
+      <button class="tab-btn" onclick="switchTab('tab_taller', this)">🧪 5. Taller de Ecuaciones</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: PROPORCIONALIDAD INVERSA ================= -->
+    <div id="tab_inversa" class="tab-content active">
+      <div class="explanation-card">
+        <div class="explanation-badge">Geometría de la Hipérbola Trasladada</div>
+        <div class="explanation-text">
+          La función de proporcionalidad inversa traslada la hipérbola estándar: <strong>f(x) = k / (x − a) + b</strong>. El valor <strong>a</strong> anula el denominador generando una <strong>asíntota vertical (x = a)</strong> que parte el dominio. El valor <strong>b</strong> marca el límite al infinito generando la <strong>asíntota horizontal (y = b)</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Parámetros de la Hipérbola</div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-blue);">Constante (k):</label>
+            <input type="range" id="sl_inv_k" min="-8" max="8" step="1" value="3" oninput="updateInversa()">
+            <span class="val-badge" id="v_inv_k">3</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-op);">Desplazamiento X (a):</label>
+            <input type="range" id="sl_inv_a" min="-5" max="5" step="1" value="1" oninput="updateInversa()">
+            <span class="val-badge" id="v_inv_a">1</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-gold);">Desplazamiento Y (b):</label>
+            <input type="range" id="sl_inv_b" min="-5" max="5" step="1" value="2" oninput="updateInversa()">
+            <span class="val-badge" id="v_inv_b">2</span>
+          </div>
+
+          <div class="math-formula" id="formula_inversa">
+            f(x) = <span class="fraction-vertical"><span class="num">3</span><span class="den">x − 1</span></span> + 2
+          </div>
+
+          <!-- FICHA DE PROPIEDADES -->
+          <div class="props-grid">
+            <div class="prop-item">
+              <span class="prop-name">Dominio:</span>
+              <span class="prop-val" id="inv_dom" style="color:var(--accent-blue);">ℝ \ {1}</span>
+            </div>
+            <div class="prop-item">
+              <span class="prop-name">Recorrido (Imagen):</span>
+              <span class="prop-val" id="inv_rec" style="color:var(--accent-gold);">ℝ \ {2}</span>
+            </div>
+            <div class="prop-item">
+              <span class="prop-name">Asíntota Vertical:</span>
+              <span class="prop-val" id="inv_av" style="color:var(--accent-op);">x = 1</span>
+            </div>
+            <div class="prop-item">
+              <span class="prop-name">Asíntota Horizontal:</span>
+              <span class="prop-val" id="inv_ah" style="color:var(--accent-gold);">y = 2</span>
+            </div>
+            <div class="prop-item">
+              <span class="prop-name">Monotonía:</span>
+              <span class="prop-val" id="inv_mono">Decreciente en todo su dominio</span>
+            </div>
+            <div class="prop-item">
+              <span class="prop-name">Centro de Simetría:</span>
+              <span class="prop-val" id="inv_centro">(1, 2)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-blue);">
+          <svg class="svg-canvas" viewBox="-130 -130 260 260" id="svg_inversa">
+            <!-- Trazado de ramas y asíntotas -->
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: FUNCIÓN RADICAL ================= -->
+    <div id="tab_radical" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="explanation-badge" style="color:var(--accent-success);">La Media Parábola Horizontal</div>
+        <div class="explanation-text">
+          La función <strong>f(x) = a · √(b·x + c) + d</strong> representa media rama de parábola tumbada. Dado que los radicandos negativos no existen en ℝ, su dominio nace estrictamente en la inecuación <strong>b·x + c ≥ 0</strong>, fijando el vértice inicial de la curva.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Parámetros del Radical</div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-success);">Orientación/Escala (a):</label>
+            <input type="range" id="sl_rad_a" min="-3" max="3" step="0.5" value="1.5" oninput="updateRadical()">
+            <span class="val-badge" id="v_rad_a">1.5</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-blue);">Sentido Horizontal (b):</label>
+            <input type="range" id="sl_rad_b" min="-2" max="2" step="1" value="1" oninput="updateRadical()">
+            <span class="val-badge" id="v_rad_b">1</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-op);">Desplazamiento X (c):</label>
+            <input type="range" id="sl_rad_c" min="-6" max="6" step="1" value="-3" oninput="updateRadical()">
+            <span class="val-badge" id="v_rad_c">-3</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-gold);">Elevación Y (d):</label>
+            <input type="range" id="sl_rad_d" min="-5" max="5" step="1" value="-1" oninput="updateRadical()">
+            <span class="val-badge" id="v_rad_d">-1</span>
+          </div>
+
+          <div class="math-formula" id="formula_radical">
+            f(x) = 1.5 · √(1x − 3) − 1
+          </div>
+
+          <!-- PROPIEDADES RADICAL -->
+          <div class="props-grid">
+            <div class="prop-item">
+              <span class="prop-name">Vértice Inicial:</span>
+              <span class="prop-val" id="rad_vertice" style="color:var(--accent-gold);">(3.0, -1.0)</span>
+            </div>
+            <div class="prop-item">
+              <span class="prop-name">Dominio:</span>
+              <span class="prop-val" id="rad_dom" style="color:var(--accent-success);">[3.0, +∞)</span>
+            </div>
+            <div class="prop-item">
+              <span class="prop-name">Recorrido:</span>
+              <span class="prop-val" id="rad_rec">[-1.0, +∞)</span>
+            </div>
+            <div class="prop-item">
+              <span class="prop-name">Monotonía:</span>
+              <span class="prop-val" id="rad_mono">Estrictamente Creciente</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-success);">
+          <svg class="svg-canvas" viewBox="-130 -130 260 260" id="svg_radical">
+            <!-- Trazado de curva radical -->
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: FUNCIONES DEFINIDAS A TROZOS ================= -->
+    <div id="tab_trozos" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-op);">
+        <div class="explanation-badge" style="color:var(--accent-op);">Discontinuidades y Puntos de Empalme</div>
+        <div class="explanation-text">
+          Una función definida a trozos utiliza fórmulas distintas según el intervalo. En la frontera <strong>x = c</strong>, una función es <strong>continua</strong> si el límite por la izquierda coincide con el límite por la derecha: <strong>lim<sub>x→c⁻</sub> f(x) = lim<sub>x→c⁺</sub> f(x) = f(c)</strong>. Si no coinciden, se produce un <strong>salto finito</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Frontera y Parámetros de Tramos</div>
+
+          <div style="font-size:0.85rem; color:var(--text-muted);">
+            • <strong>Tramo 1 (x &lt; c):</strong> Recta <code>f(x) = m·x + n</code><br>
+            • <strong>Tramo 2 (x ≥ c):</strong> Parábola <code>f(x) = −(x − c)² + k</code>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-op);">Punto de corte (c):</label>
+            <input type="range" id="sl_trz_c" min="-3" max="3" step="1" value="1" oninput="updateTrozos()">
+            <span class="val-badge" id="v_trz_c">1</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-blue);">Pendiente recta (m):</label>
+            <input type="range" id="sl_trz_m" min="-2" max="3" step="0.5" value="1" oninput="updateTrozos()">
+            <span class="val-badge" id="v_trz_m">1</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-gold);">Corte recta (n):</label>
+            <input type="range" id="sl_trz_n" min="-4" max="4" step="1" value="1" oninput="updateTrozos()">
+            <span class="val-badge" id="v_trz_n">1</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-success);">Vértice parábola (k):</label>
+            <input type="range" id="sl_trz_k" min="-3" max="5" step="1" value="3" oninput="updateTrozos()">
+            <span class="val-badge" id="v_trz_k">3</span>
+          </div>
+
+          <!-- DIAGNÓSTICO DE CONTINUIDAD -->
+          <div id="trz_diagnostico" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:8px; padding:1rem; font-family:monospace; font-size:0.95rem; line-height:1.8;">
+            <!-- Dinámico -->
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-op);">
+          <svg class="svg-canvas" viewBox="-130 -130 260 260" id="svg_trozos">
+            <!-- Trazado de trozos con puntos abiertos/cerrados -->
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: EXPONENCIAL VS LOGARÍTMICA ================= -->
+    <div id="tab_exp_log" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-purple);">
+        <div class="explanation-badge" style="color:var(--accent-purple);">Funciones Inversas y Simetría Espejo</div>
+        <div class="explanation-text">
+          La función exponencial <strong>f(x) = a<sup>x</sup></strong> y la función logarítmica <strong>g(x) = log<sub>a</sub>(x)</strong> son funciones inversas mutuas. Por esa razón, sus gráficas son exactamente simétricas respecto a la recta bisectriz <strong>y = x</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Base de la Función (a &gt; 0, a ≠ 1)</div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-purple);">Base (a):</label>
+            <input type="range" id="sl_base" min="0.2" max="4" step="0.1" value="2" oninput="updateExpLog()">
+            <span class="val-badge" id="v_base">2.0</span>
+          </div>
+
+          <div style="display:flex; gap:0.5rem; margin-top:0.3rem;">
+            <button class="eq-btn active" id="btn_base_2" onclick="setBase(2)">Base a = 2</button>
+            <button class="eq-btn" id="btn_base_e" onclick="setBase(2.718)">Base e (Natural)</button>
+            <button class="eq-btn" id="btn_base_half" onclick="setBase(0.5)">Base a = 0.5 (Decay)</button>
+          </div>
+
+          <!-- COMPARATIVA DE PROPIEDADES -->
+          <div class="props-grid" style="margin-top:0.5rem;">
+            <div class="prop-item" style="border-left:3px solid var(--accent-blue);">
+              <span class="prop-name">Exponencial f(x) = aˣ</span>
+              <div>• Dominio: <strong>ℝ</strong></div>
+              <div>• Recorrido: <strong>(0, +∞)</strong></div>
+              <div>• Asíntota Horizontal: <strong>y = 0</strong></div>
+              <div>• Punto de corte fijo: <strong>(0, 1)</strong></div>
+            </div>
+
+            <div class="prop-item" style="border-left:3px solid var(--accent-gold);">
+              <span class="prop-name">Logarítmica g(x) = logₐ(x)</span>
+              <div>• Dominio: <strong>(0, +∞)</strong></div>
+              <div>• Recorrido: <strong>ℝ</strong></div>
+              <div>• Asíntota Vertical: <strong>x = 0</strong></div>
+              <div>• Punto de corte fijo: <strong>(1, 0)</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-purple);">
+          <svg class="svg-canvas" viewBox="-130 -130 260 260" id="svg_explog">
+            <!-- Curvas exponencial, logarítmica y eje y=x -->
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 5: TALLER DE ECUACIONES ================= -->
+    <div id="tab_taller" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="explanation-badge" style="color:var(--accent-gold);">Taller de Resolución Paso a Paso</div>
+        <div class="explanation-text">
+          Las ecuaciones exponenciales y logarítmicas se resuelven mediante técnicas analíticas específicas: igualar bases, cambio de variable a ecuación de segundo grado, o condensar argumentos con las propiedades logarítmicas antes de verificar las soluciones válidas.
+        </div>
+      </div>
+
+      <div class="panel-box">
+        <div class="panel-title">Selecciona el Tipo de Ecuación</div>
+
+        <div class="eq-selector">
+          <button class="eq-btn active" id="btn_eq_exp1" onclick="loadEquation('exp1')">Exp: Misma Base</button>
+          <button class="eq-btn" id="btn_eq_exp2" onclick="loadEquation('exp2')">Exp: Cambio de Variable</button>
+          <button class="eq-btn" id="btn_eq_log1" onclick="loadEquation('log1')">Log: Suma de Logaritmos</button>
+          <button class="eq-btn" id="btn_eq_log2" onclick="loadEquation('log2')">Log: Definición y Filtro</button>
+        </div>
+
+        <div class="math-formula" id="taller_enunciado" style="font-size:1.3rem; color:var(--accent-gold);">
+          <!-- Ecuación activa -->
+        </div>
+
+        <div id="taller_pasos" style="display:flex; flex-direction:column; gap:0.9rem;">
+          <!-- Pasos detallados generados dinámicamente -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // =========================================================================
+    // NAVEGACIÓN ENTRE PESTAÑAS
+    // =========================================================================
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+
+      if (tabId === 'tab_inversa') updateInversa();
+      if (tabId === 'tab_radical') updateRadical();
+      if (tabId === 'tab_trozos') updateTrozos();
+      if (tabId === 'tab_exp_log') updateExpLog();
+      if (tabId === 'tab_taller') loadEquation('exp1');
+    }
+
+    // GENERADOR UNIVERSAL DE REJILLA CARTESIANA SVG
+    function drawCartesianGrid(scale, maxRange = 6) {
+      let lines = `
+        <line x1="-125" y1="0" x2="125" y2="0" stroke="#475569" stroke-width="1.4" />
+        <line x1="0" y1="-125" x2="0" y2="125" stroke="#475569" stroke-width="1.4" />
+        <text x="115" y="14" fill="#64748b" font-size="8.5" font-family="monospace">X</text>
+        <text x="5" y="-115" fill="#64748b" font-size="8.5" font-family="monospace">Y</text>
+      `;
+      for (let i = -maxRange; i <= maxRange; i++) {
+        if (i === 0) continue;
+        const p = i * scale;
+        lines += `
+          <line x1="${p}" y1="-125" x2="${p}" y2="125" stroke="rgba(255,255,255,0.04)" stroke-width="1" />
+          <line x1="-125" y1="${p}" x2="125" y2="${p}" stroke="rgba(255,255,255,0.04)" stroke-width="1" />
+          <line x1="${p}" y1="-3" x2="${p}" y2="3" stroke="#64748b" stroke-width="1.2" />
+          <line x1="-3" y1="${p}" x2="3" y2="${p}" stroke="#64748b" stroke-width="1.2" />
+        `;
+      }
+      return lines;
+    }
+
+    // =========================================================================
+    // 1. PROPORCIONALIDAD INVERSA
+    // =========================================================================
+    function updateInversa() {
+      const k = parseFloat(document.getElementById('sl_inv_k').value);
+      const a = parseFloat(document.getElementById('sl_inv_a').value);
+      const b = parseFloat(document.getElementById('sl_inv_b').value);
+
+      document.getElementById('v_inv_k').innerText = k;
+      document.getElementById('v_inv_a').innerText = a;
+      document.getElementById('v_inv_b').innerText = b;
+
+      const signA = a >= 0 ? `− ${a}` : `+ ${Math.abs(a)}`;
+      const signB = b >= 0 ? `+ ${b}` : `− ${Math.abs(b)}`;
+      document.getElementById('formula_inversa').innerHTML = `
+        f(x) = <span class="fraction-vertical"><span class="num">${k}</span><span class="den">x ${signA}</span></span> ${signB}
+      `;
+
+      document.getElementById('inv_dom').innerText = `ℝ \\ {${a}}`;
+      document.getElementById('inv_rec').innerText = `ℝ \\ {${b}}`;
+      document.getElementById('inv_av').innerText = `x = ${a}`;
+      document.getElementById('inv_ah').innerText = `y = ${b}`;
+      document.getElementById('inv_centro').innerText = `(${a}, ${b})`;
+      document.getElementById('inv_mono').innerText = k > 0 ? "Decreciente en todo su dominio" : (k < 0 ? "Creciente en todo su dominio" : "Constante f(x) = b");
+
+      const sc = 18; // 1 unidad = 18 px
+      const svg = document.getElementById('svg_inversa');
+
+      // Trazado de ramas de hipérbola evitando x = a
+      let pathLeft = "";
+      let pathRight = "";
+      const step = 0.08;
+
+      if (k !== 0) {
+        // Rama izquierda (de x = a - 8 hasta a - 0.15)
+        for (let x = a - 7; x <= a - 0.15; x += step) {
+          const y = k / (x - a) + b;
+          if (Math.abs(y) <= 8) {
+            const px = x * sc;
+            const py = -y * sc;
+            pathLeft += (pathLeft === "" ? `M ${px} ${py}` : ` L ${px} ${py}`);
+          }
+        }
+
+        // Rama derecha (de x = a + 0.15 hasta a + 8)
+        for (let x = a + 0.15; x <= a + 7; x += step) {
+          const y = k / (x - a) + b;
+          if (Math.abs(y) <= 8) {
+            const px = x * sc;
+            const py = -y * sc;
+            pathRight += (pathRight === "" ? `M ${px} ${py}` : ` L ${px} ${py}`);
+          }
+        }
+      }
+
+      svg.innerHTML = `
+        <defs>
+          <clipPath id="inv-clip">
+            <rect x="-125" y="-125" width="250" height="250" rx="8" />
+          </clipPath>
+        </defs>
+        <g clip-path="url(#inv-clip)">
+          ${drawCartesianGrid(sc, 6)}
+
+          <!-- Asíntota Vertical x = a -->
+          <line x1="${a * sc}" y1="-125" x2="${a * sc}" y2="125" stroke="var(--accent-op)" stroke-width="2" stroke-dasharray="4" />
+          <text x="${a * sc + 5}" y="-110" fill="var(--accent-op)" font-size="8.5" font-family="monospace">x = ${a}</text>
+
+          <!-- Asíntota Horizontal y = b -->
+          <line x1="-125" y1="${-b * sc}" x2="125" y2="${-b * sc}" stroke="var(--accent-gold)" stroke-width="2" stroke-dasharray="4" />
+          <text x="-115" y="${-b * sc - 6}" fill="var(--accent-gold)" font-size="8.5" font-family="monospace">y = ${b}</text>
+
+          <!-- Ramas curvas -->
+          <path d="${pathLeft}" fill="none" stroke="var(--accent-blue)" stroke-width="2.5" />
+          <path d="${pathRight}" fill="none" stroke="var(--accent-blue)" stroke-width="2.5" />
+
+          <!-- Centro de simetría -->
+          <circle cx="${a * sc}" cy="${-b * sc}" r="4" fill="#fff" stroke="var(--accent-blue)" stroke-width="1.5" />
+        </g>
+      `;
+    }
+
+    // =========================================================================
+    // 2. FUNCIÓN RADICAL
+    // =========================================================================
+    function updateRadical() {
+      const a = parseFloat(document.getElementById('sl_rad_a').value);
+      const b = parseFloat(document.getElementById('sl_rad_b').value);
+      const c = parseFloat(document.getElementById('sl_rad_c').value);
+      const d = parseFloat(document.getElementById('sl_rad_d').value);
+
+      document.getElementById('v_rad_a').innerText = a;
+      document.getElementById('v_rad_b').innerText = b;
+      document.getElementById('v_rad_c').innerText = c;
+      document.getElementById('v_rad_d').innerText = d;
+
+      const signC = c >= 0 ? `+ ${c}` : `− ${Math.abs(c)}`;
+      const signD = d >= 0 ? `+ ${d}` : `− ${Math.abs(d)}`;
+      document.getElementById('formula_radical').innerHTML = `
+        f(x) = ${a} · √(${b}x ${signC}) ${signD}
+      `;
+
+      // Cálculo de dominio b*x + c >= 0
+      let vX = 0;
+      let domStr = "";
+      let recStr = "";
+
+      if (b === 0) {
+        vX = 0;
+        domStr = c >= 0 ? "ℝ (Constante)" : "∅ (No existe)";
+      } else if (b > 0) {
+        vX = -c / b;
+        domStr = `[${vX.toFixed(1)}, +∞)`;
+      } else {
+        vX = -c / b;
+        domStr = `(−∞, ${vX.toFixed(1)}]`;
+      }
+
+      if (a >= 0) {
+        recStr = `[${d.toFixed(1)}, +∞)`;
+      } else {
+        recStr = `(−∞, ${d.toFixed(1)}]`;
+      }
+
+      document.getElementById('rad_vertice').innerText = `(${vX.toFixed(1)}, ${d.toFixed(1)})`;
+      document.getElementById('rad_dom').innerText = domStr;
+      document.getElementById('rad_rec').innerText = recStr;
+      
+      let mono = "";
+      if (a * b > 0) mono = "Estrictamente Creciente";
+      else if (a * b < 0) mono = "Estrictamente Decreciente";
+      else mono = "Constante";
+      document.getElementById('rad_mono').innerText = mono;
+
+      const sc = 18;
+      const svg = document.getElementById('svg_radical');
+
+      let pathD = "";
+      const step = 0.08;
+
+      if (b > 0) {
+        for (let x = vX; x <= vX + 9; x += step) {
+          const val = b * x + c;
+          if (val >= 0) {
+            const y = a * Math.sqrt(val) + d;
+            if (Math.abs(y) <= 8) {
+              const px = x * sc;
+              const py = -y * sc;
+              pathD += (pathD === "" ? `M ${px} ${py}` : ` L ${px} ${py}`);
+            }
+          }
+        }
+      } else if (b < 0) {
+        for (let x = vX; x >= vX - 9; x -= step) {
+          const val = b * x + c;
+          if (val >= 0) {
+            const y = a * Math.sqrt(val) + d;
+            if (Math.abs(y) <= 8) {
+              const px = x * sc;
+              const py = -y * sc;
+              pathD += (pathD === "" ? `M ${px} ${py}` : ` L ${px} ${py}`);
+            }
+          }
+        }
+      }
+
+      svg.innerHTML = `
+        <defs>
+          <clipPath id="rad-clip">
+            <rect x="-125" y="-125" width="250" height="250" rx="8" />
+          </clipPath>
+        </defs>
+        <g clip-path="url(#rad-clip)">
+          ${drawCartesianGrid(sc, 6)}
+
+          <!-- Curva radical -->
+          <path d="${pathD}" fill="none" stroke="var(--accent-success)" stroke-width="2.8" />
+
+          <!-- Vértice inicial cerrado -->
+          <circle cx="${vX * sc}" cy="${-d * sc}" r="5" fill="var(--accent-gold)" stroke="#fff" stroke-width="1.5" />
+          <text x="${vX * sc + 8}" y="${-d * sc - 8}" fill="var(--accent-gold)" font-size="8.5" font-weight="bold" font-family="monospace">
+            V(${vX.toFixed(1)}, ${d.toFixed(1)})
+          </text>
+        </g>
+      `;
+    }
+
+    // =========================================================================
+    // 3. FUNCIONES DEFINIDAS A TROZOS (CONTINUIDAD)
+    // =========================================================================
+    function updateTrozos() {
+      const c = parseFloat(document.getElementById('sl_trz_c').value);
+      const m = parseFloat(document.getElementById('sl_trz_m').value);
+      const n = parseFloat(document.getElementById('sl_trz_n').value);
+      const k = parseFloat(document.getElementById('sl_trz_k').value);
+
+      document.getElementById('v_trz_c').innerText = c;
+      document.getElementById('v_trz_m').innerText = m;
+      document.getElementById('v_trz_n').innerText = n;
+      document.getElementById('v_trz_k').innerText = k;
+
+      // Límites laterales en x = c
+      const limIzq = m * c + n; // Tramo 1 (recta x < c)
+      const limDer = k;         // Tramo 2 en x = c: -(c - c)^2 + k = k
+
+      const esContinua = Math.abs(limIzq - limDer) < 0.001;
+      const salto = Math.abs(limDer - limIzq);
+
+      const diag = document.getElementById('trz_diagnostico');
+      if (esContinua) {
+        diag.innerHTML = `
+          <strong style="color:var(--accent-success);">✓ FUNCIÓN CONTINUA EN TODO ℝ:</strong><br>
+          • Límite por la izquierda: lim<sub>x→${c}⁻</sub> (${m}x + ${n}) = <strong>${limIzq.toFixed(2)}</strong><br>
+          • Límite por la derecha / f(${c}): <strong>${limDer.toFixed(2)}</strong><br>
+          Como ambos límites coinciden, no hay salto y los tramos empalman perfectamente.
+        `;
+      } else {
+        diag.innerHTML = `
+          <strong style="color:var(--accent-op);">✗ DISCONTINUIDAD DE SALTO FINITO EN x = ${c}:</strong><br>
+          • Límite por la izquierda (x &lt; ${c}): <strong>${limIzq.toFixed(2)}</strong> (Punto abierto ○)<br>
+          • Límite por la derecha y f(${c}): <strong>${limDer.toFixed(2)}</strong> (Punto cerrado ●)<br>
+          Longitud del salto: <strong>|${limDer.toFixed(2)} − ${limIzq.toFixed(2)}| = ${salto.toFixed(2)} u</strong>
+        `;
+      }
+
+      const sc = 18;
+      const svg = document.getElementById('svg_trozos');
+
+      // Trazado Tramo 1: Recta desde x = -7 hasta x = c
+      const x1_start = -7, y1_start = m * x1_start + n;
+      const x1_end = c,   y1_end = limIzq;
+
+      // Trazado Tramo 2: Parábola desde x = c hasta x = 7
+      let pathParabola = "";
+      for (let x = c; x <= 7; x += 0.1) {
+        const y = -Math.pow(x - c, 2) + k;
+        if (y >= -8 && y <= 8) {
+          const px = x * sc;
+          const py = -y * sc;
+          pathParabola += (pathParabola === "" ? `M ${px} ${py}` : ` L ${px} ${py}`);
+        }
+      }
+
+      svg.innerHTML = `
+        <defs>
+          <clipPath id="trz-clip">
+            <rect x="-125" y="-125" width="250" height="250" rx="8" />
+          </clipPath>
+        </defs>
+        <g clip-path="url(#trz-clip)">
+          ${drawCartesianGrid(sc, 6)}
+
+          <!-- Frontera vertical x = c -->
+          <line x1="${c * sc}" y1="-125" x2="${c * sc}" y2="125" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3" />
+          <text x="${c * sc + 5}" y="120" fill="#94a3b8" font-size="8.5" font-family="monospace">c = ${c}</text>
+
+          <!-- Tramo 1: Recta -->
+          <line x1="${x1_start * sc}" y1="${-y1_start * sc}" x2="${x1_end * sc}" y2="${-y1_end * sc}" stroke="var(--accent-blue)" stroke-width="2.5" />
+
+          <!-- Tramo 2: Parábola -->
+          <path d="${pathParabola}" fill="none" stroke="var(--accent-success)" stroke-width="2.5" />
+
+          <!-- Puntos en la frontera -->
+          <!-- Punto de la recta en c: ABIERTO si no es continua, o FUSIONADO si es continua -->
+          ${esContinua ? `
+            <circle cx="${c * sc}" cy="${-limDer * sc}" r="5" fill="var(--accent-gold)" stroke="#fff" stroke-width="1.5" />
+          ` : `
+            <!-- Abierto (círculo hueco) en la recta -->
+            <circle cx="${c * sc}" cy="${-limIzq * sc}" r="5" fill="#090d16" stroke="var(--accent-blue)" stroke-width="2.5" />
+            <!-- Cerrado (círculo relleno) en la parábola -->
+            <circle cx="${c * sc}" cy="${-limDer * sc}" r="5" fill="var(--accent-success)" stroke="#fff" stroke-width="1.5" />
+          `}
+        </g>
+      `;
+    }
+
+    // =========================================================================
+    // 4. EXPONENCIAL VS LOGARÍTMICA
+    // =========================================================================
+    function setBase(val) {
+      document.getElementById('sl_base').value = val;
+      document.querySelectorAll('.eq-btn').forEach(b => b.classList.remove('active'));
+      if (val === 2) document.getElementById('btn_base_2').classList.add('active');
+      if (val === 2.718) document.getElementById('btn_base_e').classList.add('active');
+      if (val === 0.5) document.getElementById('btn_base_half').classList.add('active');
+      updateExpLog();
+    }
+
+    function updateExpLog() {
+      const a = parseFloat(document.getElementById('sl_base').value);
+      document.getElementById('v_base').innerText = a.toFixed(1);
+
+      const sc = 18;
+      const svg = document.getElementById('svg_explog');
+
+      // Trazado de Exponencial: y = a^x
+      let pathExp = "";
+      for (let x = -7; x <= 5; x += 0.08) {
+        const y = Math.pow(a, x);
+        if (y <= 8 && y >= -8) {
+          const px = x * sc;
+          const py = -y * sc;
+          pathExp += (pathExp === "" ? `M ${px} ${py}` : ` L ${px} ${py}`);
+        }
+      }
+
+      // Trazado de Logarítmica: y = log_a(x) = ln(x) / ln(a)
+      let pathLog = "";
+      const lnA = Math.log(a);
+      for (let x = 0.04; x <= 7; x += 0.08) {
+        const y = Math.log(x) / lnA;
+        if (y <= 8 && y >= -8) {
+          const px = x * sc;
+          const py = -y * sc;
+          pathLog += (pathLog === "" ? `M ${px} ${py}` : ` L ${px} ${py}`);
+        }
+      }
+
+      svg.innerHTML = `
+        <defs>
+          <clipPath id="explog-clip">
+            <rect x="-125" y="-125" width="250" height="250" rx="8" />
+          </clipPath>
+        </defs>
+        <g clip-path="url(#explog-clip)">
+          ${drawCartesianGrid(sc, 6)}
+
+          <!-- Eje de simetría y = x -->
+          <line x1="-125" y1="125" x2="125" y2="-125" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3" />
+          <text x="95" y="-100" fill="#64748b" font-size="8.5" font-family="monospace">y = x</text>
+
+          <!-- Exponencial -->
+          <path d="${pathExp}" fill="none" stroke="var(--accent-blue)" stroke-width="2.8" />
+          <circle cx="0" cy="${-1 * sc}" r="4.5" fill="var(--accent-blue)" stroke="#fff" stroke-width="1.5" />
+          <text x="8" y="${-1 * sc + 3}" fill="var(--accent-blue)" font-size="8" font-family="monospace">(0, 1)</text>
+
+          <!-- Logarítmica -->
+          <path d="${pathLog}" fill="none" stroke="var(--accent-gold)" stroke-width="2.8" />
+          <circle cx="${1 * sc}" cy="0" r="4.5" fill="var(--accent-gold)" stroke="#fff" stroke-width="1.5" />
+          <text x="${1 * sc - 8}" y="-8" fill="var(--accent-gold)" font-size="8" font-family="monospace">(1, 0)</text>
+        </g>
+      `;
+    }
+
+    // =========================================================================
+    // 5. TALLER DE ECUACIONES EXPONENCIALES Y LOGARÍTMICAS
+    // =========================================================================
+    const equationsData = {
+      exp1: {
+        title: "2²ˣ⁺¹ = 32",
+        steps: [
+          {
+            num: "Paso 1: Descomponer en factores primos la misma base",
+            desc: "Identificamos que 32 es una potencia de 2: <code>32 = 2⁵</code>. Reescribimos la igualdad:<br><strong>2²ˣ⁺¹ = 2⁵</strong>"
+          },
+          {
+            num: "Paso 2: Igualar exponentes (inyectividad)",
+            desc: "Como las bases son idénticas y positivas (2 = 2), los exponentes deben ser iguales:<br><strong>2x + 1 = 5</strong>"
+          },
+          {
+            num: "Paso 3: Resolver la ecuación lineal resultante",
+            desc: "2x = 5 − 1 ➔ 2x = 4 ➔ <strong style='color:var(--accent-success); font-size:1.1rem;'>x = 2</strong><br><em>Comprobación: 2²⁽²⁾⁺¹ = 2⁵ = 32 ✓</em>"
+          }
+        ]
+      },
+      exp2: {
+        title: "2²ˣ − 5·2ˣ + 4 = 0",
+        steps: [
+          {
+            num: "Paso 1: Detectar estructura cuadrática y cambio de variable",
+            desc: "Por propiedades de las potencias: <code>2²ˣ = (2ˣ)²</code>. La ecuación es: <code>(2ˣ)² − 5·(2ˣ) + 4 = 0</code>.<br>Hacemos el cambio de variable: <strong style='color:var(--accent-purple);'>t = 2ˣ</strong>."
+          },
+          {
+            num: "Paso 2: Resolver la ecuación de segundo grado en t",
+            desc: "<strong>t² − 5t + 4 = 0</strong> ➔ (t − 4)(t − 1) = 0<br>Obtenemos dos soluciones auxiliares: <strong>t₁ = 4</strong> &nbsp;y&nbsp; <strong>t₂ = 1</strong>."
+          },
+          {
+            num: "Paso 3: Deshacer el cambio de variable para hallar x",
+            desc: "• Para t₁ = 4: 2ˣ = 4 ➔ 2ˣ = 2² ➔ <strong style='color:var(--accent-success); font-size:1.1rem;'>x₁ = 2</strong><br>• Para t₂ = 1: 2ˣ = 1 ➔ 2ˣ = 2⁰ ➔ <strong style='color:var(--accent-success); font-size:1.1rem;'>x₂ = 0</strong>"
+          }
+        ]
+      },
+      log1: {
+        title: "log(x) + log(x + 3) = 1",
+        steps: [
+          {
+            num: "Paso 1: Aplicar propiedad de suma de logaritmos",
+            desc: "La suma de logaritmos en base 10 es el logaritmo del producto: <code>log(A) + log(B) = log(A · B)</code>.<br><strong>log[ x · (x + 3) ] = 1</strong>"
+          },
+          {
+            num: "Paso 2: Aplicar la definición del logaritmo (Base 10)",
+            desc: "log₁₀[ x(x + 3) ] = 1 ⟺ <strong>x(x + 3) = 10¹</strong><br>Desarrollamos: <strong>x² + 3x − 10 = 0</strong>"
+          },
+          {
+            num: "Paso 3: Resolver y filtrar soluciones válidas (Argumento > 0)",
+            desc: "Factorizamos: (x + 5)(x − 2) = 0 ➔ Candidatas: <strong>x = −5</strong> y <strong>x = 2</strong>.<br>• <strong>x = −5:</strong> Se descarta (log(−5) no existe en ℝ).<br>• <strong>x = 2:</strong> Válida ➔ <strong style='color:var(--accent-success); font-size:1.1rem;'>x = 2</strong> (log(2) + log(5) = log(10) = 1 ✓)"
+          }
+        ]
+      },
+      log2: {
+        title: "log₂(x² − 1) = 3",
+        steps: [
+          {
+            num: "Paso 1: Aplicar la definición directa del logaritmo",
+            desc: "Por definición: <code>log_b(A) = c ⟺ bᶜ = A</code>.<br><strong>x² − 1 = 2³</strong>"
+          },
+          {
+            num: "Paso 2: Resolver la ecuación en x",
+            desc: "x² − 1 = 8 ➔ x² = 9 ➔ <strong>x = ±3</strong>"
+          },
+          {
+            num: "Paso 3: Verificación de argumentos positivos",
+            desc: "Comprobamos el argumento para ambas soluciones:<br>• Para x = 3: (3)² − 1 = 8 &gt; 0 ➔ <strong style='color:var(--accent-success); font-size:1.1rem;'>x₁ = 3</strong><br>• Para x = −3: (−3)² − 1 = 8 &gt; 0 ➔ <strong style='color:var(--accent-success); font-size:1.1rem;'>x₂ = −3</strong><br>Ambas son soluciones plenamente válidas."
+          }
+        ]
+      }
+    };
+
+    function loadEquation(type) {
+      document.querySelectorAll('.eq-selector .eq-btn').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.getElementById(`btn_eq_${type}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const data = equationsData[type];
+      document.getElementById('taller_enunciado').innerHTML = data.title;
+
+      let stepsHtml = "";
+      data.steps.forEach(s => {
+        stepsHtml += `
+          <div class="step-box">
+            <span class="step-num">${s.num}</span>
+            <div>${s.desc}</div>
+          </div>
+        `;
+      });
+      document.getElementById('taller_pasos').innerHTML = stepsHtml;
+    }
+
+    // Inicializar visualmente
+    updateInversa();
+    updateRadical();
+    updateTrozos();
+    updateExpLog();
+    loadEquation('exp1');
+  </script>
+</body>
+</html>

@@ -1,23 +1,54 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <script>
+    // Recuperar tema previo al cargar (evita el parpadeo blanco/negro)
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MatesLab ESO | Plataforma Visual e Interactiva de Matemáticas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MATH LAB | Plataforma Visual e Interactiva de Matemáticas</title>
   
-  <!-- PWA Y APP NATIVA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0b1120">
   
-  <!-- Configuración especial para iPhones (iOS) -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="MatesLab">
+  <meta name="apple-mobile-web-app-title" content="MATH LAB">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="stylesheet" href="estilos.css">
 
   <style>
-    /* ESTILOS ESPECÍFICOS DEL INDEX / PORTADA */
+    /* PREVENIR DESPLAZAMIENTO HORIZONTAL EN MÓVIL */
+    html, body {
+      max-width: 100vw;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* VARIABLES DE COLOR POR NIVEL */
+    :root {
+      --color-tablas: #2dd4bf;
+      --color-tablas-bg: rgba(45, 212, 191, 0.04);
+      --color-tablas-border: rgba(45, 212, 191, 0.25);
+
+      --color-ciclo1: #38bdf8;
+      --color-ciclo1-bg: rgba(56, 189, 248, 0.04);
+      --color-ciclo1-border: rgba(56, 189, 248, 0.25);
+
+      --color-ciclo2: #10b981;
+      --color-ciclo2-bg: rgba(16, 185, 129, 0.04);
+      --color-ciclo2-border: rgba(16, 185, 129, 0.25);
+
+      --color-bach: #f59e0b;
+      --color-bach-bg: rgba(245, 158, 11, 0.04);
+      --color-bach-border: rgba(245, 158, 11, 0.25);
+    }
+
+    /* HEADER Y LOGO */
     .top-header {
       background: #090d16;
       border-bottom: 1px solid var(--border-color);
@@ -26,62 +57,103 @@
       z-index: 100;
       backdrop-filter: blur(12px);
     }
+    
     .nav-container {
-      max-width: 1200px;
+      max-width: 1250px;
       margin: 0 auto;
-      padding: 1rem 1.5rem;
+      padding: 0.8rem 1.25rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 1rem;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
     }
-    .logo-brand {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      text-decoration: none;
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: #fff;
-    }
-    .logo-brand span { color: var(--accent-blue); }
     
-    .nav-links {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-    }
-    .nav-link-btn {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.95rem;
-      padding: 0.5rem 0.8rem;
-      border-radius: 6px;
-      transition: all 0.2s;
-    }
-    .nav-link-btn:hover, .nav-link-btn.active {
-      color: #fff;
-      background: rgba(255, 255, 255, 0.05);
+    .brand-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      text-decoration: none !important;
     }
 
-    /* BARRA DE FILTRO Y BÚSQUEDA */
+    .radical-logo {
+      display: inline-flex;
+      align-items: flex-start;
+      text-decoration: none !important;
+      color: #fff;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+    .radical-symbol {
+      font-family: Arial, sans-serif;
+      font-size: 2.2rem;
+      line-height: 0.85;
+      margin-top: 3px;
+      color: var(--accent-blue);
+      user-select: none;
+    }
+    .radical-content {
+      border-top: 3px solid var(--accent-blue);
+      padding: 4px 6px 0 3px;
+      margin-top: 5px;
+      font-size: 1.45rem;
+      letter-spacing: 2px;
+      display: flex;
+      gap: 0.35rem;
+    }
+    .radical-content span { color: var(--accent-blue); }
+
+    .author-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-family: monospace;
+      letter-spacing: 0.5px;
+      margin-left: 1.5rem;
+      margin-top: 1px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .nav-link-btn {
+      text-decoration: none !important;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 0.45rem 0.8rem;
+      border-radius: 8px;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .nav-btn-tablas { color: var(--color-tablas); border-color: rgba(45, 212, 191, 0.3); background: rgba(45, 212, 191, 0.08); }
+    .nav-btn-tablas:hover { background: var(--color-tablas); color: #042f2e; }
+    
+    .nav-btn-c1 { color: var(--color-ciclo1); border-color: rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.08); }
+    .nav-btn-c1:hover { background: var(--color-ciclo1); color: #082f49; }
+
+    .nav-btn-c2 { color: var(--color-ciclo2); border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.08); }
+    .nav-btn-c2:hover { background: var(--color-ciclo2); color: #022c22; }
+
+    .nav-btn-bach { color: var(--color-bach); border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.08); }
+    .nav-btn-bach:hover { background: var(--color-bach); color: #451a03; }
+
+    /* FILTROS Y BÚSQUEDA */
     .filter-section {
-      max-width: 1200px;
+      max-width: 1250px;
       margin: 1.5rem auto 0;
-      padding: 0 1.5rem;
+      padding: 0 1.25rem;
       display: flex;
       flex-direction: column;
       gap: 1.2rem;
     }
-    .search-bar-wrap {
-      position: relative;
-      width: 100%;
-    }
+    .search-bar-wrap { position: relative; width: 100%; }
     .search-input {
       width: 100%;
-      padding: 0.85rem 1.2rem 0.85rem 2.8rem;
+      padding: 0.85rem 2.8rem;
       background: var(--bg-primary);
       border: 1px solid var(--border-color);
       border-radius: 10px;
@@ -103,40 +175,64 @@
       font-size: 1.1rem;
     }
 
+    .clear-search-btn {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .clear-search-btn:hover {
+      background: var(--accent-op);
+      color: #fff;
+      border-color: var(--accent-op);
+    }
+
     .pill-filters {
       display: flex;
       gap: 0.5rem;
       overflow-x: auto;
       padding-bottom: 0.5rem;
+      -webkit-overflow-scrolling: touch;
     }
     .filter-chip {
-      padding: 0.5rem 1.1rem;
+      padding: 0.5rem 1rem;
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 20px;
       color: var(--text-muted);
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       cursor: pointer;
       white-space: nowrap;
       transition: all 0.2s;
     }
     .filter-chip:hover { color: var(--text-main); border-color: var(--accent-blue); }
-    .filter-chip.active {
-      background: var(--accent-blue);
-      color: #042f2e;
-      border-color: var(--accent-blue);
-      font-weight: bold;
-    }
+    .filter-chip.active { background: var(--accent-blue); color: #042f2e; border-color: var(--accent-blue); }
+    
+    .filter-chip-fav { border-color: rgba(251, 191, 36, 0.4); color: var(--accent-gold); }
+    .filter-chip-fav.active { background: var(--accent-gold) !important; color: #042f2e !important; border-color: var(--accent-gold) !important; }
 
-    /* SECCIONES Y ENCABEZADOS DE CICLO */
+    /* SECCIONES Y ENCABEZADOS */
     .catalog-wrapper {
-      max-width: 1200px;
+      max-width: 1250px;
       margin: 2rem auto;
-      padding: 0 1.5rem;
+      padding: 0 1.25rem;
       display: flex;
       flex-direction: column;
-      gap: 3rem;
+      gap: 3.5rem;
+      width: 100%;
     }
     .cycle-header {
       border-bottom: 2px solid var(--border-color);
@@ -145,26 +241,38 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
     .cycle-title {
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: 800;
-      color: #fff;
       display: flex;
       align-items: center;
       gap: 0.6rem;
     }
     .cycle-badge {
-      font-size: 0.8rem;
-      background: rgba(56, 189, 248, 0.15);
-      color: var(--accent-blue);
-      padding: 0.2rem 0.6rem;
+      font-size: 0.78rem;
+      padding: 0.25rem 0.65rem;
       border-radius: 12px;
-      border: 1px solid var(--accent-blue);
+      font-weight: bold;
+      border: 1px solid;
     }
 
+    .header-tablas { border-bottom-color: var(--color-tablas); }
+    .badge-tablas { background: var(--color-tablas-bg); color: var(--color-tablas); border-color: var(--color-tablas); }
+
+    .header-ciclo1 { border-bottom-color: var(--color-ciclo1); }
+    .badge-ciclo1 { background: var(--color-ciclo1-bg); color: var(--color-ciclo1); border-color: var(--color-ciclo1); }
+
+    .header-ciclo2 { border-bottom-color: var(--color-ciclo2); }
+    .badge-ciclo2 { background: var(--color-ciclo2-bg); color: var(--color-ciclo2); border-color: var(--color-ciclo2); }
+
+    .header-bach { border-bottom-color: var(--color-bach); }
+    .badge-bach { background: var(--color-bach-bg); color: var(--color-bach); border-color: var(--color-bach); }
+
     .branch-subheading {
-      font-size: 1.15rem;
+      font-size: 1.05rem;
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 1.5px;
@@ -174,31 +282,39 @@
       gap: 0.5rem;
     }
 
-    /* TARJETAS CON MINI-EJEMPLO VISUAL */
+    /* GRID Y TARJETAS */
     .topics-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 1.3rem;
     }
     .topic-card {
-      background: var(--bg-primary);
-      border: 1px solid var(--border-color);
       border-radius: 12px;
       padding: 1.25rem;
-      text-decoration: none;
+      text-decoration: none !important;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       transition: all 0.3s ease;
       position: relative;
-      overflow: hidden;
     }
     .topic-card:hover {
-      border-color: var(--accent-blue);
       transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
     }
-    
+
+    .card-tablas { background: var(--color-tablas-bg); border: 1px solid var(--color-tablas-border); border-left: 5px solid var(--color-tablas); }
+    .card-tablas:hover { border-color: var(--color-tablas); }
+
+    .card-c1 { background: var(--color-ciclo1-bg); border: 1px solid var(--color-ciclo1-border); border-left: 5px solid var(--color-ciclo1); }
+    .card-c1:hover { border-color: var(--color-ciclo1); }
+
+    .card-c2 { background: var(--color-ciclo2-bg); border: 1px solid var(--color-ciclo2-border); border-left: 5px solid var(--color-ciclo2); }
+    .card-c2:hover { border-color: var(--color-ciclo2); }
+
+    .card-bach { background: var(--color-bach-bg); border: 1px solid var(--color-bach-border); border-left: 5px solid var(--color-bach); }
+    .card-bach:hover { border-color: var(--color-bach); }
+
     .card-top {
       display: flex;
       justify-content: space-between;
@@ -206,12 +322,13 @@
       margin-bottom: 0.6rem;
     }
     .branch-tag {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
       padding: 0.2rem 0.55rem;
       border-radius: 4px;
       text-transform: uppercase;
     }
+    .tag-tablas { background: rgba(45, 212, 191, 0.15); color: var(--color-tablas); }
     .tag-aritmetica { background: rgba(251, 191, 36, 0.15); color: var(--accent-gold); }
     .tag-algebra { background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); }
     .tag-geometria { background: rgba(16, 185, 129, 0.15); color: var(--accent-success); }
@@ -220,18 +337,15 @@
 
     .topic-name {
       font-size: 1.15rem;
-      color: #fff;
       font-weight: 700;
       margin-bottom: 0.4rem;
     }
     .topic-desc {
       font-size: 0.88rem;
-      color: var(--text-muted);
       line-height: 1.45;
       margin-bottom: 1rem;
     }
 
-    /* MINI PREVIEW VISUAL DE CADA TEMA */
     .mini-preview {
       background: #090d16;
       border: 1px solid var(--border-color);
@@ -247,9 +361,28 @@
       margin-top: auto;
     }
 
-    @media (max-width: 600px) {
+    .fav-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 1.25rem;
+      color: #64748b;
+      line-height: 1;
+      padding: 0.2rem;
+      margin-left: 0.4rem;
+      transition: transform 0.2s ease, color 0.2s ease;
+      user-select: none;
+      z-index: 10;
+    }
+    .fav-btn:hover { transform: scale(1.25); }
+    .fav-btn.is-favorite { color: var(--accent-gold); text-shadow: 0 0 10px rgba(251, 191, 36, 0.5); }
+
+    @media (max-width: 700px) {
       .topics-grid { grid-template-columns: 1fr; }
-      .nav-container { flex-direction: column; align-items: stretch; }
+      .nav-container { flex-wrap: wrap; }
+      .nav-links { display: none; } /* Ocultamos los links en móvil para que quepa el logo y el botón Sol */
+      .radical-content { font-size: 1.3rem; }
+      .radical-symbol { font-size: 2rem; }
     }
   </style>
 </head>
@@ -258,619 +391,765 @@
   <!-- HEADER NAVEGABLE PRINCIPAL -->
   <header class="top-header">
     <div class="nav-container">
-      <a href="index.html" class="logo-brand">
-        <span>📐</span> Mates<span>Lab</span> ESO
-      </a>
-      <nav class="nav-links">
-        <a href="#ciclo1" class="nav-link-btn active">1r Ciclo (1º-2º)</a>
-        <a href="#ciclo2" class="nav-link-btn">2º Ciclo (3º-4º)</a>
-        <a href="#" class="nav-link-btn" onclick="alert('Próximamente: Colección de ejercicios y retos interactivos.')">Ejercicios 🚀</a>
-      </nav>
+      
+      <div style="display:flex; align-items:center; gap:1.5rem;">
+        <div class="brand-wrap">
+          <a href="index.html" class="radical-logo">
+            <span class="radical-symbol">√</span>
+            <span class="radical-content">MATH <span>LAB</span></span>
+          </a>
+          <span class="author-sub">por Xavi Profe</span>
+        </div>
+
+        <nav class="nav-links">
+          <a href="#tablas-rapidas" class="nav-link-btn nav-btn-tablas">📋 Tablas Rápidas</a>
+          <a href="#ciclo1" class="nav-link-btn nav-btn-c1">🌱 1r Ciclo</a>
+          <a href="#ciclo2" class="nav-link-btn nav-btn-c2">🌿 2º Ciclo</a>
+          <a href="#bachillerato" class="nav-link-btn nav-btn-bach">🎓 Bachillerato</a>
+        </nav>
+      </div>
+
+      <!-- BOTÓN FIJO EN LA ESQUINA DERECHA -->
+      <button id="theme-toggle" onclick="toggleTheme()" title="Cambiar tema" style="flex-shrink:0; background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; cursor:pointer; padding:0.55rem 0.85rem; font-size:1.15rem; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.1); color: var(--text-main);">
+        <span id="theme-icon">☀️</span>
+      </button>
+
     </div>
   </header>
 
-  <!-- SECCIÓN HERO DE BIENVENIDA -->
+  <!-- SECCIÓN HERO -->
   <section class="app-header" style="padding: 2.5rem 1.5rem 1rem;">
-    <h1>Laboratorio Visual de Matemáticas</h1>
-    <p>Aprende matemáticas de secundaria entendiendo el porqué de las cosas mediante manipulativos dinámicos, deslizadores y animaciones vectoriales.</p>
+    <h1>Laboratorio Visual e Interactivo de Matemáticas</h1>
+    <p>Aprende secundaria y bachillerato comprendiendo los conceptos mediante manipulativos gráficos, deslizadores en tiempo real y chuletas imprimibles.</p>
   </section>
 
   <!-- BUSCADOR Y FILTROS POR TEMÁTICA -->
   <div class="filter-section">
     <div class="search-bar-wrap">
       <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" class="search-input" placeholder="Buscar cualquier tema: Pitágoras, Ecuaciones, Fracciones, Funciones..." oninput="filterTopics()">
+      <input type="text" id="searchInput" class="search-input" placeholder="Buscar cualquier tema: Derivadas, Pitágoras, Factorial, Fracciones..." oninput="handleSearchInput()">
+      <button id="clearSearch" class="clear-search-btn" onclick="clearSearchInput()" title="Limpiar búsqueda">✕</button>
     </div>
 
     <div class="pill-filters">
       <button class="filter-chip active" onclick="setFilter('all', this)">Todos los temas</button>
+      <button class="filter-chip filter-chip-fav" onclick="setFilter('favoritos', this)">⭐ Mis Favoritos (<span id="favCount">0</span>)</button>
+      <button class="filter-chip" onclick="setFilter('tablas', this)">📋 Tablas y Chuletas PDF</button>
       <button class="filter-chip" onclick="setFilter('aritmetica', this)">Aritmética y Números</button>
       <button class="filter-chip" onclick="setFilter('algebra', this)">Álgebra y Ecuaciones</button>
-      <button class="filter-chip" onclick="setFilter('geometria', this)">Geometría 2D y 3D</button>
+      <button class="filter-chip" onclick="setFilter('geometria', this)">Geometría y Vectores</button>
       <button class="filter-chip" onclick="setFilter('estadistica', this)">Estadística y Azar</button>
       <button class="filter-chip" onclick="setFilter('funciones', this)">Funciones y Análisis</button>
     </div>
   </div>
 
-  <!-- CATÁLOGO GENERAL DE TEMAS -->
+  <!-- CATÁLOGO GENERAL -->
   <main class="catalog-wrapper">
 
-    <!-- ========================================================================= -->
-    <!-- 1r CICLO DE LA ESO (1º Y 2º DE ESO) -->
-    <!-- ========================================================================= -->
-    <section id="ciclo1" class="cycle-block">
-      <div class="cycle-header">
+    <!-- TABLAS RÁPIDAS -->
+    <section id="tablas-rapidas" class="cycle-block">
+      <div class="cycle-header header-tablas">
         <div class="cycle-title">
-          <span>🌱 1r Ciclo de la ESO</span>
-          <span class="cycle-badge">1º y 2º ESO</span>
+          <span>📋 Tablas Rápidas y Formularios</span>
+          <span class="cycle-badge badge-tablas">Fichas A4</span>
         </div>
-        <span style="font-size:0.9rem; color:var(--text-muted);">Los cimientos matemáticos</span>
       </div>
-
-      <!-- ARITMÉTICA 1r CICLO -->
-      <div class="branch-group" data-branch="aritmetica">
-        <div class="branch-subheading">🔢 Aritmética y Sistema Numérico</div>
+      <div class="branch-group" data-branch="tablas">
         <div class="topics-grid">
-                    
-          <a href="aritmetica/operaciones.html" class="topic-card" data-title="naturales operaciones basicas suma resta multiplicacion division algoritmo">
+          
+          <a href="tablas/tabla_derivadas.html" class="topic-card card-tablas" data-title="tabla derivadas calculo diferencial regla cadena">
             <div class="card-top">
-              <span class="branch-tag tag-aritmetica">Aritmética</span>
-              <span style="font-size:1.3rem;">🧮</span>
+              <span class="branch-tag tag-tablas">Formulario</span>
             </div>
-            <div class="topic-name">Operaciones Básicas (Naturales ℕ)</div>
-            <div class="topic-desc">Los cimientos: suma, resta, multiplicación como área y división entera (D = d · c + r).</div>
-            <div class="mini-preview">
-              <span>25 = <strong>4 · 6 + 1</strong> (Resto 1)</span>
-            </div>
+            <div class="topic-name">Tabla de Derivadas</div>
+            <div class="topic-desc">Álgebra de derivadas, funciones simples y compuestas con regla de la cadena.</div>
+            <div class="mini-preview"><span>(u·v)' = u'v + uv'</span></div>
           </a>
 
-          <a href="aritmetica/enteros.html" class="topic-card" data-title="enteros signos recta negativos positivos">
+          <a href="tablas/tabla_integrales.html" class="topic-card card-tablas" data-title="tabla integrales primitivas bachillerato">
             <div class="card-top">
-              <span class="branch-tag tag-aritmetica">Aritmética</span>
-              <span style="font-size:1.3rem;">🌡️</span>
+              <span class="branch-tag tag-tablas">Formulario</span>
             </div>
-            <div class="topic-name">Números Enteros (ℤ)</div>
-            <div class="topic-desc">Termómetro, ascensor y la recta numérica interactiva con la regla de los signos explicada.</div>
-            <div class="mini-preview">
-              <span style="color:var(--accent-op);">-4</span> + <span style="color:var(--accent-blue);">+7</span> = <span style="color:var(--accent-success); font-weight:bold;">+3</span>
-            </div>
+            <div class="topic-name">Tabla de Integrales Inmediatas</div>
+            <div class="topic-desc">Primitivas inmediatas, formas compuestas y tipos arco para imprimir.</div>
+            <div class="mini-preview"><span>∫(u'/u)dx = ln|u|+C</span></div>
           </a>
 
-          <a href="aritmetica/fracciones.html" class="topic-card" data-title="fracciones pizza equivalentes suma amplificar simplificar">
+          <a href="tablas/identidades_trigonometricas.html" class="topic-card card-tablas" data-title="identidades trigonometricas suma resta doble mitad">
             <div class="card-top">
-              <span class="branch-tag tag-aritmetica">Aritmética</span>
-              <span style="font-size:1.3rem;">🍕</span>
+              <span class="branch-tag tag-tablas">Formulario</span>
             </div>
-            <div class="topic-name">Fracciones Visuales</div>
-            <div class="topic-desc">La pizza interactiva: porciones, fracciones equivalentes y suma visual con distinto denominador.</div>
-            <div class="mini-preview">
-              <span>1/2 + 1/4 = <strong>3/4</strong></span>
-            </div>
+            <div class="topic-name">Identidades Trigonométricas</div>
+            <div class="topic-desc">Suma y resta, ángulo doble, ángulo mitad y transformación a productos.</div>
+            <div class="mini-preview"><span>sen(2α) = 2·senα·cosα</span></div>
           </a>
 
-          <a href="aritmetica/combinadas.html" class="topic-card" data-title="combinadas jerarquia operaciones pemdas parentesis">
+          <a href="tablas/geometria_vectorial.html" class="topic-card card-tablas" data-title="geometria vectorial producto escalar mixto">
             <div class="card-top">
-              <span class="branch-tag tag-aritmetica">Aritmética</span>
-              <span style="font-size:1.3rem;">🧱</span>
+              <span class="branch-tag tag-tablas">Formulario</span>
+            </div>
+            <div class="topic-name">Geometría Vectorial en ℝ³</div>
+            <div class="topic-desc">Producto escalar, vectorial y mixto, ortogonalidad y áreas/volúmenes.</div>
+            <div class="mini-preview"><span>Vol = ⅙·|[u,v,w]|</span></div>
+          </a>
+
+          <a href="tablas/tabla_trigonometria.html" class="topic-card card-tablas" data-title="tabla trigonometria basica razones notables">
+            <div class="card-top">
+              <span class="branch-tag tag-tablas">Formulario</span>
+            </div>
+            <div class="topic-name">Trigonometría Básica</div>
+            <div class="topic-desc">Razones en triángulos, fórmulas fundamentales y valores de 0º a 90º.</div>
+            <div class="mini-preview"><span>sen 30º = 1/2</span></div>
+          </a>
+
+          <a href="tablas/identidades_notables.html" class="topic-card card-tablas" data-title="identidades notables binomios cuadrado">
+            <div class="card-top">
+              <span class="branch-tag tag-tablas">Formulario</span>
+            </div>
+            <div class="topic-name">Identidades Notables</div>
+            <div class="topic-desc">Sintético de los 3 productos notables esenciales.</div>
+            <div class="mini-preview"><span>(a ± b)² = a² ± 2ab + b²</span></div>
+          </a>
+
+          <a href="tablas/geometria_formulas.html" class="topic-card card-tablas" data-title="geometria formulas areas perimetros volumenes">
+            <div class="card-top">
+              <span class="branch-tag tag-tablas">Formulario</span>
+            </div>
+            <div class="topic-name">Áreas, Perímetros y Volúmenes</div>
+            <div class="topic-desc">Catálogo completo de fórmulas para figuras 2D y cuerpos 3D.</div>
+            <div class="mini-preview"><span>V = (4/3)·π·r³</span></div>
+          </a>
+
+          <a href="tablas/potencias_radicales.html" class="topic-card card-tablas" data-title="potencias radicales leyes exponentes">
+            <div class="card-top">
+              <span class="branch-tag tag-tablas">Formulario</span>
+            </div>
+            <div class="topic-name">Potencias y Radicales</div>
+            <div class="topic-desc">Leyes de exponentes, operaciones con raíces y racionalización.</div>
+            <div class="mini-preview"><span>(aⁿ)ᵐ = aⁿᵐ</span></div>
+          </a>
+
+          <a href="tablas/progresiones.html" class="topic-card card-tablas" data-title="progresiones aritmeticas geometricas">
+            <div class="card-top">
+              <span class="branch-tag tag-tablas">Formulario</span>
+            </div>
+            <div class="topic-name">Progresiones Aritméticas y Geométricas</div>
+            <div class="topic-desc">Término general, sumas finitas y series infinitas.</div>
+            <div class="mini-preview"><span>aₙ = a₁+(n−1)d</span></div>
+          </a>
+
+          <a href="tablas/jerarquia_operaciones.html" class="topic-card card-tablas" data-title="jerarquia operaciones pemdas">
+            <div class="card-top">
+              <span class="branch-tag tag-tablas">Formulario</span>
             </div>
             <div class="topic-name">Jerarquía de Operaciones</div>
-            <div class="topic-desc">El orden estricto de las operaciones: paréntesis, potencias, multiplicaciones y sumas.</div>
-            <div class="mini-preview">
-              <span>2 + 3 · 4 = <strong>14</strong> (no 20)</span>
-            </div>
+            <div class="topic-desc">Guía de prioridades PEMDAS: ( ), potencias, × / y + −.</div>
+            <div class="mini-preview"><span>( ) ➔ xⁿ ➔ · / ➔ + −</span></div>
           </a>
 
-          <a href="aritmetica/mcm_mcd.html" class="topic-card" data-title="mcm mcd divisibilidad factores primos multiplos divisores">
+          <a href="tablas/signos_enteros.html" class="topic-card card-tablas" data-title="signos enteros regla de signos">
             <div class="card-top">
-              <span class="branch-tag tag-aritmetica">Aritmética</span>
-              <span style="font-size:1.3rem;">⚙️</span>
+              <span class="branch-tag tag-tablas">Formulario</span>
             </div>
-            <div class="topic-name">MCM y MCD</div>
-            <div class="topic-desc">Descomposición en factores primos y diagramas de Venn para encontrar múltiplos y divisores comunes.</div>
-            <div class="mini-preview">
-              <span>MCD(12, 18) = <strong>6</strong></span>
-            </div>
+            <div class="topic-name">Regla de los Signos (Enteros)</div>
+            <div class="topic-desc">Sumas y restas con mismo/distinto signo y producto/cociente.</div>
+            <div class="mini-preview"><span>(−) · (−) = +</span></div>
           </a>
 
-          <a href="aritmetica/unitats.html" class="topic-card" data-title="canvis unitats sistema metric decimal metres litres gram">
+          <a href="tablas/tabla_pitagorica.html" class="topic-card card-tablas" data-title="tabla pitagorica multiplicar">
             <div class="card-top">
-              <span class="branch-tag tag-aritmetica">Aritmética</span>
-              <span style="font-size:1.3rem;">🪜</span>
+              <span class="branch-tag tag-tablas">Formulario</span>
             </div>
-            <div class="topic-name">Canvis d'Unitats (Mètric)</div>
-            <div class="topic-desc">L'escala de longitud, superfície (m²), volum (m³) i el pont màgic 1 L = 1 dm³ = 1 kg.</div>
-            <div class="mini-preview">
-              <span>1 m³ = <strong>1.000 Litres</strong></span>
-            </div>
-          </a>
-
-          <a href="aritmetica/generatriz.html" class="topic-card" data-title="fraccion generatriz decimal periodico exacto puro mixto">
-            <div class="card-top">
-              <span class="branch-tag tag-aritmetica">Aritmética</span>
-              <span style="font-size:1.3rem;">🔄</span>
-            </div>
-            <div class="topic-name">Fracción Generatriz</div>
-            <div class="topic-desc">Cómo atrapar decimales periódicos puros y mixtos para convertirlos en fracciones exactas.</div>
-            <div class="mini-preview">
-              <span>0,333... = <strong>1/3</strong></span>
-            </div>
-          </a>
-
-          <a href="aritmetica/notacion_cientifica.html" class="topic-card" data-title="notacion cientifica exponentes coma operaciones">
-            <div class="card-top">
-              <span class="branch-tag tag-aritmetica">Aritmética</span>
-              <span style="font-size:1.3rem;">🔬</span>
-            </div>
-            <div class="topic-name">Notación Científica</div>
-            <div class="topic-desc">Maneja números astronómicos o microscópicos y aprende a sumar, restar y multiplicar con potencias de 10.</div>
-            <div class="mini-preview">
-              <span>3·10⁴ + 2·10⁴ = <strong>5·10⁴</strong></span>
-            </div>
-          </a>
-
-        </div>
-      </div>
-          
-      <!-- ÁLGEBRA 1r CICLO -->
-      <div class="branch-group" data-branch="algebra">
-        <div class="branch-subheading">🔤 Álgebra Básica y Ecuaciones</div>
-        <div class="topics-grid">
-          
-          <a href="monomios.html" class="topic-card" data-title="monomios polinomios letras coeficientes grado">
-            <div class="card-top">
-              <span class="branch-tag tag-algebra">Álgebra</span>
-              <span style="font-size:1.3rem;">🧩</span>
-            </div>
-            <div class="topic-name">Introducción a los Monomios</div>
-            <div class="topic-desc">El lenguaje de las letras: coeficientes, partes literales, grado y suma de términos semejantes.</div>
-            <div class="mini-preview">
-              <span>3x² + 5x² = <strong>8x²</strong></span>
-            </div>
-          </a>
-
-          <a href="algebra/balanzaecuaciones.html" class="topic-card" data-title="balanza ecuaciones primer grado despejar">
-            <div class="card-top">
-              <span class="branch-tag tag-algebra">Álgebra</span>
-              <span style="font-size:1.3rem;">⚖️</span>
-            </div>
-            <div class="topic-name">Ecuaciones: La Balanza</div>
-            <div class="topic-desc">Aprende a despejar la incógnita quitando o añadiendo pesas iguales a ambos lados en equilibrio.</div>
-            <div class="mini-preview">
-              <span>2x + 3 = 7 ➔ <strong>x = 2</strong></span>
-            </div>
-          </a>
-
-          <a href="algebra/funciones_concepto.html" class="topic-card" data-title="funciones concepto maquina coordenadas graficas">
-            <div class="card-top">
-              <span class="branch-tag tag-algebra">Álgebra</span>
-              <span style="font-size:1.3rem;">⚙️</span>
-            </div>
-            <div class="topic-name">Concepto de Función</div>
-            <div class="topic-desc">La máquina de transformar entradas (x) en salidas (y), tablas de valores y análisis de gráficas reales.</div>
-            <div class="mini-preview">
-              <span>f(x) = 2x + 1 ➔ <strong>(2, 5)</strong></span>
-            </div>
-          </a>
-
-          <a href="FuncionesLineales.html" class="topic-card" data-title="funciones lineales rectas pendiente constante">
-            <div class="card-top">
-              <span class="branch-tag tag-algebra">Álgebra</span>
-              <span style="font-size:1.3rem;">📈</span>
-            </div>
-            <div class="topic-name">Funciones Lineales (y = mx + n)</div>
-            <div class="topic-desc">Manipula la pendiente (m) para ver la inclinación de la recta y la ordenada en el origen (n).</div>
-            <div class="mini-preview">
-              <span>m = pendiente ➔ <strong>y = 2x - 1</strong></span>
-            </div>
-          </a>
-
-        </div>
-      </div>
-
-      <!-- GEOMETRÍA 1r CICLO -->
-      <div class="branch-group" data-branch="geometria">
-        <div class="branch-subheading">📐 Geometría Plana y del Espacio</div>
-        <div class="topics-grid">
-          
-          <a href="geometria/coordenadas.html" class="topic-card" data-title="coordenadas cartesianas ejes simetria puntos dibujo">
-            <div class="card-top">
-              <span class="branch-tag tag-geometria">Geometría</span>
-              <span style="font-size:1.3rem;">🧭</span>
-            </div>
-            <div class="topic-name">Sistema de Coordenadas</div>
-            <div class="topic-desc">Los 4 cuadrantes, cómo colocar puntos P(x, y), simetrías en espejo y dibujo secreto uniendo puntos.</div>
-            <div class="mini-preview">
-              <span>P(<span style="color:var(--accent-blue);">3</span>, <span style="color:var(--accent-gold);">2</span>) en Cuadrante I</span>
-            </div>
-          </a>
-
-          <a href="geometria/elements_planols.html" class="topic-card" data-title="elements pla angles triangles quadrilaters transportador">
-            <div class="card-top">
-              <span class="branch-tag tag-geometria">Geometría</span>
-              <span style="font-size:1.3rem;">📐</span>
-            </div>
-            <div class="topic-name">Elements del Pla i Figures</div>
-            <div class="topic-desc">Transportador d'angles interactiu, classificació visual de triangles, quadrilàters i punts notables.</div>
-            <div class="mini-preview">
-              <span>Agut (&lt;90º) &nbsp;|&nbsp; Recte (90º)</span>
-            </div>
-          </a>
-
-          <a href="geometria/poligonos.html" class="topic-card" data-title="poligonos lados regulares concavo convexo">
-            <div class="card-top">
-              <span class="branch-tag tag-geometria">Geometría</span>
-              <span style="font-size:1.3rem;">🔷</span>
-            </div>
-            <div class="topic-name">Los Polígonos</div>
-            <div class="topic-desc">Clasificación interactiva del triángulo al dodecágono, regulares vs. irregulares y truco de cóncavos.</div>
-            <div class="mini-preview">
-              <span>Suma = (n - 2) · <strong>180º</strong></span>
-            </div>
-          </a>
-
-          <a href="geometria/nombre_pi.html" class="topic-card" data-title="nombre pi circunferencia diametro longitud rueda">
-            <div class="card-top">
-              <span class="branch-tag tag-geometria">Geometría</span>
-              <span style="font-size:1.3rem;">🎡</span>
-            </div>
-            <div class="topic-name">El Número π y la Rueda</div>
-            <div class="topic-desc">Despliega una rueda giratoria sobre el suelo y comprueba que la vuelta mide exactamente 3,1415 diámetros.</div>
-            <div class="mini-preview">
-              <span>L / d = <strong>3,14159...</strong></span>
-            </div>
-          </a>
-
-          <a href="geometria/areas_perimetros.html" class="topic-card" data-title="areas perimetros rectangulo triangulo trapecio rombo">
-            <div class="card-top">
-              <span class="branch-tag tag-geometria">Geometría</span>
-              <span style="font-size:1.3rem;">🔲</span>
-            </div>
-            <div class="topic-name">Perímetros y Áreas Planas</div>
-            <div class="topic-desc">La valla vs. el césped, baldosas unitarias de 1 cm² y demostración de por qué el triángulo se divide entre 2.</div>
-            <div class="mini-preview">
-              <span>A = (b · h) / 2 ➔ <strong>cm²</strong></span>
-            </div>
-          </a>
-
-          <a href="geometria/pitagoras.html" class="topic-card" data-title="pitagoras hipotenusa catetos ternas altura figuras">
-            <div class="card-top">
-              <span class="branch-tag tag-geometria">Geometría</span>
-              <span style="font-size:1.3rem;">📐</span>
-            </div>
-            <div class="topic-name">Teorema de Pitágoras</div>
-            <div class="topic-desc">Demostración geométrica de áreas, ternas pitagóricas enteras (3-4-5) y cálculo de alturas ocultas.</div>
-            <div class="mini-preview">
-              <span>a² + b² = <strong>c²</strong></span>
-            </div>
-          </a>
-
-          <a href="geometria/cuerpos_geometricos.html" class="topic-card" data-title="cuerpos geometricos poliedros euler platonicos volumenes desarrollo">
-            <div class="card-top">
-              <span class="branch-tag tag-geometria">Geometría</span>
-              <span style="font-size:1.3rem;">🧊</span>
-            </div>
-            <div class="topic-name">Cuerpos Geométricos 3D</div>
-            <div class="topic-desc">Los 5 sólidos platónicos, desarrollo plano plegable con slider, cuerpos de revolución y volúmenes.</div>
-            <div class="mini-preview">
-              <span>Euler: C + V = <strong>A + 2</strong></span>
-            </div>
-          </a>
-
-        </div>
-      </div>
-
-      <!-- ESTADÍSTICA Y AZAR 1r CICLO -->
-      <div class="branch-group" data-branch="estadistica">
-        <div class="branch-subheading">📊 Estadística y Probabilidad</div>
-        <div class="topics-grid">
-          
-          <a href="estadistica/estadistica_basica.html" class="topic-card" data-title="estadistica muestra poblacion frecuencias media mediana moda">
-            <div class="card-top">
-              <span class="branch-tag tag-estadistica">Estadística</span>
-              <span style="font-size:1.3rem;">📊</span>
-            </div>
-            <div class="topic-name">Estadística Descriptiva</div>
-            <div class="topic-desc">Simulador visual de población y muestra, tablas de frecuencias completas y cálculo en vivo de Media, Mediana y Moda.</div>
-            <div class="mini-preview">
-              <span>Media x̄ = <strong>(Σxᵢ) / N</strong></span>
-            </div>
-          </a>
-
-          <a href="estadistica/probabilidad.html" class="topic-card" data-title="probabilidad laplace dados arbol ley grandes numeros">
-            <div class="card-top">
-              <span class="branch-tag tag-estadistica">Estadística</span>
-              <span style="font-size:1.3rem;">🎲</span>
-            </div>
-            <div class="topic-name">Probabilidad y Azar</div>
-            <div class="topic-desc">Urna interactiva con regla de Laplace, diagramas de árbol y simulación de la Ley de los Grandes Números con dados.</div>
-            <div class="mini-preview">
-              <span>P = Favorables / <strong>Posibles</strong></span>
-            </div>
+            <div class="topic-name">Tabla Pitagórica (1 al 12)</div>
+            <div class="topic-desc">Matriz de multiplicación para detectar patrones y múltiplos.</div>
+            <div class="mini-preview"><span>Diagonal = Cuadrados perfectos</span></div>
           </a>
 
         </div>
       </div>
     </section>
 
-    <!-- ========================================================================= -->
-    <!-- 2º CICLO DE LA ESO (3º Y 4º DE ESO) -->
-    <!-- ========================================================================= -->
-    <section id="ciclo2" class="cycle-block">
-      <div class="cycle-header">
+    <!-- 1r CICLO DE LA ESO -->
+    <section id="ciclo1" class="cycle-block">
+      <div class="cycle-header header-ciclo1">
         <div class="cycle-title">
-          <span>🚀 2º Ciclo de la ESO</span>
-          <span class="cycle-badge" style="background:rgba(251,191,36,0.15); color:var(--accent-gold); border-color:var(--accent-gold);">3º y 4º ESO</span>
+          <span>🌱 1r Ciclo de la ESO</span>
+          <span class="cycle-badge badge-ciclo1">1º y 2º ESO</span>
         </div>
-        <span style="font-size:0.9rem; color:var(--text-muted);">Álgebra avanzada, geometría analítica y análisis</span>
       </div>
 
-      <!-- ARITMÉTICA 2º CICLO -->
+      <div class="branch-group" data-branch="aritmetica">
+        <div class="branch-subheading">🔢 Aritmética</div>
+        <div class="topics-grid">
+          
+          <a href="aritmetica/operaciones.html" class="topic-card card-c1" data-title="naturales operaciones suma resta multiplicacion">
+            <div class="card-top"><span class="branch-tag tag-aritmetica">Aritmética</span></div>
+            <div class="topic-name">Operaciones Básicas</div>
+            <div class="topic-desc">Suma, resta, multiplicación como área y división entera.</div>
+            <div class="mini-preview"><span>25 = 4·6 + 1</span></div>
+          </a>
+
+          <a href="aritmetica/enteros.html" class="topic-card card-c1" data-title="enteros recta negativos positivos">
+            <div class="card-top"><span class="branch-tag tag-aritmetica">Aritmética</span></div>
+            <div class="topic-name">Números Enteros (ℤ)</div>
+            <div class="topic-desc">Termómetro, ascensor y recta numérica.</div>
+            <div class="mini-preview"><span>-4 + 7 = 3</span></div>
+          </a>
+
+          <a href="aritmetica/fracciones.html" class="topic-card card-c1" data-title="fracciones pizza equivalentes suma">
+            <div class="card-top"><span class="branch-tag tag-aritmetica">Aritmética</span></div>
+            <div class="topic-name">Fracciones Visuales</div>
+            <div class="topic-desc">Pizza interactiva, fracciones equivalentes y sumas.</div>
+            <div class="mini-preview"><span>1/2 + 1/4 = 3/4</span></div>
+          </a>
+
+          <a href="aritmetica/combinadas.html" class="topic-card card-c1" data-title="combinadas jerarquia pemdas">
+            <div class="card-top"><span class="branch-tag tag-aritmetica">Aritmética</span></div>
+            <div class="topic-name">Operaciones Combinadas</div>
+            <div class="topic-desc">El orden estricto de las operaciones.</div>
+            <div class="mini-preview"><span>2 + 3·4 = 14</span></div>
+          </a>
+
+          <a href="aritmetica/potencias.html" class="topic-card card-c1" data-title="potencias propiedades exponentes">
+            <div class="card-top"><span class="branch-tag tag-aritmetica">Aritmética</span></div>
+            <div class="topic-name">Potencias y Exponentes</div>
+            <div class="topic-desc">Propiedades básicas y exponente negativo.</div>
+            <div class="mini-preview"><span>2³ = 8</span></div>
+          </a>
+
+          <a href="aritmetica/mcm_mcd.html" class="topic-card card-c1" data-title="mcm mcd divisores multiplos">
+            <div class="card-top"><span class="branch-tag tag-aritmetica">Aritmética</span></div>
+            <div class="topic-name">MCM y MCD</div>
+            <div class="topic-desc">Descomposición factorial y diagramas de Venn.</div>
+            <div class="mini-preview"><span>MCD(12, 18) = 6</span></div>
+          </a>
+
+          <a href="aritmetica/unitats.html" class="topic-card card-c1" data-title="cambio unidades sistema metrico">
+            <div class="card-top"><span class="branch-tag tag-aritmetica">Aritmética</span></div>
+            <div class="topic-name">Cambio de Unidades</div>
+            <div class="topic-desc">La escala métrica y el puente 1 L = 1 dm³.</div>
+            <div class="mini-preview"><span>1 m³ = 1000 L</span></div>
+          </a>
+
+          <a href="aritmetica/generatriz.html" class="topic-card card-c1" data-title="fraccion generatriz decimal">
+            <div class="card-top"><span class="branch-tag tag-aritmetica">Aritmética</span></div>
+            <div class="topic-name">Fracción Generatriz</div>
+            <div class="topic-desc">Atrapa decimales periódicos para convertirlos en fracciones.</div>
+            <div class="mini-preview"><span>0,333... = 1/3</span></div>
+          </a>
+
+          <a href="aritmetica/notacion_cientifica.html" class="topic-card card-c1" data-title="notacion cientifica astronomia">
+            <div class="card-top"><span class="branch-tag tag-aritmetica">Aritmética</span></div>
+            <div class="topic-name">Notación Científica</div>
+            <div class="topic-desc">Maneja números astronómicos o microscópicos.</div>
+            <div class="mini-preview"><span>3·10⁴ + 2·10⁴ = 5·10⁴</span></div>
+          </a>
+
+        </div>
+      </div>
+
+      <div class="branch-group" data-branch="algebra">
+        <div class="branch-subheading">🔤 Álgebra Básica</div>
+        <div class="topics-grid">
+          
+          <a href="algebra/monomios.html" class="topic-card card-c1" data-title="monomios letras grados">
+            <div class="card-top"><span class="branch-tag tag-algebra">Álgebra</span></div>
+            <div class="topic-name">Introducción Monomios</div>
+            <div class="topic-desc">El lenguaje de las letras, coeficientes y grado.</div>
+            <div class="mini-preview"><span>3x² + 5x² = 8x²</span></div>
+          </a>
+
+          <a href="algebra/balanzaecuaciones.html" class="topic-card card-c1" data-title="balanza ecuaciones primer grado">
+            <div class="card-top"><span class="branch-tag tag-algebra">Álgebra</span></div>
+            <div class="topic-name">Ecuaciones: La Balanza</div>
+            <div class="topic-desc">Despeja la incógnita manteniendo el equilibrio.</div>
+            <div class="mini-preview"><span>2x + 3 = 7 ➔ x = 2</span></div>
+          </a>
+
+          <a href="algebra/funciones_concepto.html" class="topic-card card-c1" data-title="funciones maquinas">
+            <div class="card-top"><span class="branch-tag tag-algebra">Álgebra</span></div>
+            <div class="topic-name">Concepto de Función</div>
+            <div class="topic-desc">La máquina de transformar entradas (x) en salidas (y).</div>
+            <div class="mini-preview"><span>f(x) = 2x+1</span></div>
+          </a>
+
+          <a href="FuncionesLineales.html" class="topic-card card-c1" data-title="funciones lineales rectas">
+            <div class="card-top"><span class="branch-tag tag-algebra">Álgebra</span></div>
+            <div class="topic-name">Funciones Lineales</div>
+            <div class="topic-desc">Manipula la pendiente (m) y la ordenada en el origen (n).</div>
+            <div class="mini-preview"><span>y = mx + n</span></div>
+          </a>
+
+        </div>
+      </div>
+
+      <div class="branch-group" data-branch="geometria">
+        <div class="branch-subheading">📐 Geometría Plana</div>
+        <div class="topics-grid">
+          
+          <a href="geometria/coordenadas.html" class="topic-card card-c1" data-title="coordenadas plano cartesiano">
+            <div class="card-top"><span class="branch-tag tag-geometria">Geometría</span></div>
+            <div class="topic-name">Coordenadas Cartesianas</div>
+            <div class="topic-desc">Los cuadrantes, simetrías y puntos en el plano.</div>
+            <div class="mini-preview"><span>P(3, 2)</span></div>
+          </a>
+
+          <a href="geometria/elements_planols.html" class="topic-card card-c1" data-title="angulos triangulos transportador">
+            <div class="card-top"><span class="branch-tag tag-geometria">Geometría</span></div>
+            <div class="topic-name">Elementos del Plano</div>
+            <div class="topic-desc">Transportador interactivo y clasificación de triángulos.</div>
+            <div class="mini-preview"><span>Recto = 90º</span></div>
+          </a>
+
+          <a href="geometria/poligonos.html" class="topic-card card-c1" data-title="poligonos concavos regulares">
+            <div class="card-top"><span class="branch-tag tag-geometria">Geometría</span></div>
+            <div class="topic-name">Polígonos</div>
+            <div class="topic-desc">Regulares e irregulares, suma de ángulos interiores.</div>
+            <div class="mini-preview"><span>(n-2)·180º</span></div>
+          </a>
+
+          <a href="geometria/nombre_pi.html" class="topic-card card-c1" data-title="pi circunferencia rueda">
+            <div class="card-top"><span class="branch-tag tag-geometria">Geometría</span></div>
+            <div class="topic-name">El Número π y la Rueda</div>
+            <div class="topic-desc">Despliega la rueda y comprueba que mide 3,1415 diámetros.</div>
+            <div class="mini-preview"><span>L = π·d</span></div>
+          </a>
+
+          <a href="geometria/areas_perimetros.html" class="topic-card card-c1" data-title="areas perimetros rectangulos">
+            <div class="card-top"><span class="branch-tag tag-geometria">Geometría</span></div>
+            <div class="topic-name">Perímetros y Áreas</div>
+            <div class="topic-desc">Deduce por qué el área de un triángulo se divide por 2.</div>
+            <div class="mini-preview"><span>A = b·h / 2</span></div>
+          </a>
+
+          <a href="geometria/pitagoras.html" class="topic-card card-c1" data-title="pitagoras hipotenusa">
+            <div class="card-top"><span class="branch-tag tag-geometria">Geometría</span></div>
+            <div class="topic-name">Teorema de Pitágoras</div>
+            <div class="topic-desc">Demostración con cuadrados, ternas pitagóricas y cálculo de alturas.</div>
+            <div class="mini-preview"><span>a² + b² = c²</span></div>
+          </a>
+
+          <a href="geometria/cuerpos_geometricos.html" class="topic-card card-c1" data-title="cuerpos geometricos volumenes platonicos">
+            <div class="card-top"><span class="branch-tag tag-geometria">Geometría</span></div>
+            <div class="topic-name">Cuerpos Geométricos 3D</div>
+            <div class="topic-desc">Sólidos platónicos, desarrollos de prismas y volúmenes.</div>
+            <div class="mini-preview"><span>C + V = A + 2</span></div>
+          </a>
+
+        </div>
+      </div>
+
+      <div class="branch-group" data-branch="estadistica">
+        <div class="branch-subheading">📊 Estadística y Azar</div>
+        <div class="topics-grid">
+          
+          <a href="estadistica/estadistica_basica.html" class="topic-card card-c1" data-title="estadistica media moda mediana">
+            <div class="card-top"><span class="branch-tag tag-estadistica">Estadística</span></div>
+            <div class="topic-name">Estadística Descriptiva</div>
+            <div class="topic-desc">Tablas de frecuencias, Media, Mediana y Moda en vivo.</div>
+            <div class="mini-preview"><span>x̄ = Media</span></div>
+          </a>
+
+          <a href="estadistica/probabilidad.html" class="topic-card card-c1" data-title="probabilidad laplace azar">
+            <div class="card-top"><span class="branch-tag tag-estadistica">Estadística</span></div>
+            <div class="topic-name">Probabilidad y Azar</div>
+            <div class="topic-desc">Ley de Laplace, diagramas de árbol y dados virtuales.</div>
+            <div class="mini-preview"><span>P = Fav/Tot</span></div>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 2º CICLO DE LA ESO -->
+    <section id="ciclo2" class="cycle-block">
+      <div class="cycle-header header-ciclo2">
+        <div class="cycle-title">
+          <span>🌿 2º Ciclo de la ESO</span>
+          <span class="cycle-badge badge-ciclo2">3º y 4º ESO</span>
+        </div>
+      </div>
+
       <div class="branch-group" data-branch="aritmetica">
         <div class="branch-subheading">🔢 Aritmética Avanzada</div>
         <div class="topics-grid">
-          <a href="aritmetica/reales_radicales.html" class="topic-card" data-title="numeros reales irracionales radicales extraccion raiz propiedades pi racionalizacion">
-            <div class="card-top">
-              <span class="branch-tag tag-aritmetica">Aritmética</span>
-              <span style="font-size:1.3rem;">🌌</span>
-            </div>
-            <div class="topic-name">Números Reales y Radicales</div>
-            <div class="topic-desc">Clasifica números en bolsas infinitas, asimila a los irracionales, opera con raíces y racionaliza denominadores.</div>
-            <div class="mini-preview">
-              <span>ℕ ⊂ ℤ ⊂ ℚ ⊂ <strong>ℝ</strong> &nbsp;|&nbsp; √x³ = <strong>x√x</strong></span>
-            </div>
+          <a href="aritmetica/reales_radicales.html" class="topic-card card-c2" data-title="numeros reales radicales racionalizacion">
+            <div class="card-top"><span class="branch-tag tag-aritmetica">Aritmética</span></div>
+            <div class="topic-name">Reales y Radicales</div>
+            <div class="topic-desc">Irracionales, operaciones con raíces y racionalización de denominadores.</div>
+            <div class="mini-preview"><span>ℝ = ℚ ∪ 𝕀</span></div>
           </a>
         </div>
       </div>
 
-      <!-- ÁLGEBRA 2º CICLO -->
       <div class="branch-group" data-branch="algebra">
-        <div class="branch-subheading">🔤 Álgebra Avanzada y Polinomios</div>
+        <div class="branch-subheading">🔤 Álgebra Avanzada</div>
         <div class="topics-grid">
           
-          <a href="algebra/notables.html" class="topic-card" data-title="identidades notables binomio cuadrado suma diferencia">
-            <div class="card-top">
-              <span class="branch-tag tag-algebra">Álgebra</span>
-              <span style="font-size:1.3rem;">🔲</span>
-            </div>
+          <a href="algebra/notables.html" class="topic-card card-c2" data-title="identidades notables cuadrado binomio">
+            <div class="card-top"><span class="branch-tag tag-algebra">Álgebra</span></div>
             <div class="topic-name">Identidades Notables</div>
-            <div class="topic-desc">Demostración geométrica con áreas de colores: cuadrado de una suma, cuadrado de una diferencia y suma por diferencia.</div>
-            <div class="mini-preview">
-              <span>(a + b)² = <strong>a² + 2ab + b²</strong></span>
-            </div>
+            <div class="topic-desc">Desarrollos visuales del cuadrado de sumas y diferencias.</div>
+            <div class="mini-preview"><span>(a+b)² = a²+2ab+b²</span></div>
           </a>
 
-          <a href="algebra/segundo_grado.html" class="topic-card" data-title="segundo grado ecuaciones formula parabola discriminante">
-            <div class="card-top">
-              <span class="branch-tag tag-algebra">Álgebra</span>
-              <span style="font-size:1.3rem;">🎯</span>
-            </div>
+          <a href="algebra/segundo_grado.html" class="topic-card card-c2" data-title="ecuaciones segundo grado parabola">
+            <div class="card-top"><span class="branch-tag tag-algebra">Álgebra</span></div>
             <div class="topic-name">Ecuaciones de 2º Grado</div>
-            <div class="topic-desc">La fórmula cuadrática general, el discriminante (Δ) y su relación visual con los cortes de la parábola.</div>
-            <div class="mini-preview">
-              <span>x = (-b ± <strong>√Δ</strong>) / 2a</span>
-            </div>
+            <div class="topic-desc">Fórmula general, el discriminante y cortes de la parábola.</div>
+            <div class="mini-preview"><span>x = (-b ± √Δ)/2a</span></div>
           </a>
 
-          <a href="algebra/polinomios_avanzados.html" class="topic-card" data-title="polinomios avanzados fracciones algebraicas division caja factor comun simplificar">
-            <div class="card-top">
-              <span class="branch-tag tag-algebra">Álgebra</span>
-              <span style="font-size:1.3rem;">➗</span>
-            </div>
+          <a href="algebra/polinomios_avanzados.html" class="topic-card card-c2" data-title="polinomios division factor comun">
+            <div class="card-top"><span class="branch-tag tag-algebra">Álgebra</span></div>
             <div class="topic-name">Polinomios Avanzados</div>
-            <div class="topic-desc">Fracciones algebraicas, división tradicional por caja ("galera"), sacar factor común paso a paso y simplificación.</div>
-            <div class="mini-preview">
-              <span>P(x) / D(x) = C(x) + R(x)</span>
-            </div>
+            <div class="topic-desc">División por caja, factor común y fracciones algebraicas.</div>
+            <div class="mini-preview"><span>P(x) / D(x)</span></div>
           </a>
 
-          <a href="algebra/ruffini_raices.html" class="topic-card" data-title="ruffini raices factorizar ecuaciones polinomicas producto cero">
-            <div class="card-top">
-              <span class="branch-tag tag-algebra">Álgebra</span>
-              <span style="font-size:1.3rem;">🎯</span>
-            </div>
-            <div class="topic-name">Regla de Ruffini y Raíces</div>
-            <div class="topic-desc">Entiende qué es una raíz, aplica la regla de Ruffini paso a paso en su tablero y resuelve ecuaciones factorizadas.</div>
-            <div class="mini-preview">
-              <span>(x - 2)(x + 3) = 0 ➔ <strong>x = 2</strong></span>
-            </div>
+          <a href="algebra/ruffini_raices.html" class="topic-card card-c2" data-title="ruffini raices factorizar">
+            <div class="card-top"><span class="branch-tag tag-algebra">Álgebra</span></div>
+            <div class="topic-name">Ruffini y Factorización</div>
+            <div class="topic-desc">Resuelve polinomios de grado 3 o superior bajando grados.</div>
+            <div class="mini-preview"><span>(x-1)(x+2)=0</span></div>
           </a>
 
-          <a href="algebra/sistemas_ecuaciones.html" class="topic-card" data-title="sistemas de ecuaciones reduccion sustitucion igualacion grafico lineal">
-            <div class="card-top">
-              <span class="branch-tag tag-algebra">Álgebra</span>
-              <span style="font-size:1.3rem;">⚔️</span>
-            </div>
+          <a href="algebra/sistemas_ecuaciones.html" class="topic-card card-c2" data-title="sistemas ecuaciones reduccion">
+            <div class="card-top"><span class="branch-tag tag-algebra">Álgebra</span></div>
             <div class="topic-name">Sistemas de Ecuaciones</div>
-            <div class="topic-desc">Resuelve sistemas de dos incógnitas aplicando la deducción visual, los tres métodos analíticos y su cruce gráfico.</div>
-            <div class="mini-preview">
-              <span>x + y = 5 | 2x - y = 4 ➔ <strong>(3, 2)</strong></span>
-            </div>
+            <div class="topic-desc">Métodos analíticos y su correspondiente cruce gráfico de dos rectas.</div>
+            <div class="mini-preview"><span>Corte = (x, y)</span></div>
           </a>
 
-          <a href="algebra/sucesiones.html" class="topic-card" data-title="sucesiones progresiones aritmeticas geometricas termino general series infinito gauss">
-            <div class="card-top">
-              <span class="branch-tag tag-algebra">Álgebra</span>
-              <span style="font-size:1.3rem;">🚀</span>
-            </div>
+          <a href="algebra/sucesiones.html" class="topic-card card-c2" data-title="sucesiones progresiones">
+            <div class="card-top"><span class="branch-tag tag-algebra">Álgebra</span></div>
             <div class="topic-name">Sucesiones y Progresiones</div>
-            <div class="topic-desc">Descubre el término general, domina las progresiones aritméticas y geométricas, y asómate al concepto de infinito sumando series.</div>
-            <div class="mini-preview">
-              <span>aₙ = a₁ + (n-1)·d</span>
-            </div>
+            <div class="topic-desc">Término general y suma de series infinitas geométricas.</div>
+            <div class="mini-preview"><span>aₙ = a₁+(n-1)d</span></div>
           </a>
 
-          <a href="algebra/fibonacci.html" class="topic-card" data-title="fibonacci sucesion proporcion aurea numero phi espiral naturaleza">
-            <div class="card-top">
-              <span class="branch-tag tag-algebra">Álgebra</span>
-              <span style="font-size:1.3rem;">🐚</span>
-            </div>
-            <div class="topic-name">Fibonacci y el Número de Oro</div>
-            <div class="topic-desc">Descubre cómo una simple suma esconde el código de la belleza (Φ = 1.618), construye la Espiral Áurea y búscalo en la naturaleza.</div>
-            <div class="mini-preview">
-              <span>1, 1, 2, 3, 5, 8, 13...</span>
-            </div>
+          <a href="algebra/fibonacci.html" class="topic-card card-c2" data-title="fibonacci proporcion aurea phi">
+            <div class="card-top"><span class="branch-tag tag-algebra">Álgebra</span></div>
+            <div class="topic-name">Fibonacci y Proporción Áurea</div>
+            <div class="topic-desc">La espiral áurea y el código oculto en la naturaleza.</div>
+            <div class="mini-preview"><span>Φ = 1.618...</span></div>
           </a>
 
-          <a href="algebra/inecuaciones.html" class="topic-card" data-title="inecuaciones sistemas intervalos regiones factibles plano">
-            <div class="card-top">
-              <span class="branch-tag tag-algebra">Álgebra</span>
-              <span style="font-size:1.3rem;">🗺️</span>
-            </div>
-            <div class="topic-name">Inecuaciones y Regiones</div>
-            <div class="topic-desc">Domina la recta real con intervalos, la regla del cambio de signo, y pinta regiones factibles en sistemas bidimensionales.</div>
-            <div class="mini-preview">
-              <span>x < 2 ➔ <strong>(-∞, 2)</strong></span>
-            </div>
+          <a href="algebra/inecuaciones.html" class="topic-card card-c2" data-title="inecuaciones intervalos regiones">
+            <div class="card-top"><span class="branch-tag tag-algebra">Álgebra</span></div>
+            <div class="topic-name">Inecuaciones</div>
+            <div class="topic-desc">Resolución con intervalos y regiones factibles bidimensionales.</div>
+            <div class="mini-preview"><span>x ∈ (-∞, 2]</span></div>
           </a>
 
         </div>
       </div>
 
-      <!-- GEOMETRÍA 2º CICLO -->
       <div class="branch-group" data-branch="geometria">
-        <div class="branch-subheading">📐 Geometría y Vectores</div>
+        <div class="branch-subheading">📐 Geometría Analítica y Trigonometría</div>
         <div class="topics-grid">
           
-          <a href="geometria/tales.html" class="topic-card" data-title="tales teorema semejanza sombras proporciones">
-            <div class="card-top">
-              <span class="branch-tag tag-geometria">Geometría</span>
-              <span style="font-size:1.3rem;">☀️</span>
-            </div>
+          <a href="geometria/tales.html" class="topic-card card-c2" data-title="teorema tales semejanza sombras">
+            <div class="card-top"><span class="branch-tag tag-geometria">Geometría</span></div>
             <div class="topic-name">Teorema de Tales</div>
-            <div class="topic-desc">Rectas paralelas que cortan secantes, semejanza geométrica y cómo Tales midió la Gran Pirámide con su sombra.</div>
-            <div class="mini-preview">
-              <span>A / B = <strong>A' / B'</strong></span>
-            </div>
+            <div class="topic-desc">Semejanza de triángulos y proporciones de sombras.</div>
+            <div class="mini-preview"><span>A/B = A'/B'</span></div>
           </a>
 
-          <a href="geometria/vectores.html" class="topic-card" data-title="vectores modulo pitagoras suma escalar producto escalar">
-            <div class="card-top">
-              <span class="branch-tag tag-geometria">Geometría</span>
-              <span style="font-size:1.3rem;">↗️</span>
-            </div>
+          <a href="geometria/vectores.html" class="topic-card card-c2" data-title="vectores plano modulo direccion">
+            <div class="card-top"><span class="branch-tag tag-geometria">Geometría</span></div>
             <div class="topic-name">Vectores en el Plano</div>
-            <div class="topic-desc">Aprende las partes de una flecha, calcula su módulo con Pitágoras, súmalas visualmente y descubre el producto escalar.</div>
-            <div class="mini-preview">
-              <span>|v| = √(vx² + vy²)</span>
-            </div>
+            <div class="topic-desc">Módulo, operaciones y producto escalar básico.</div>
+            <div class="mini-preview"><span>|v| = √(x²+y²)</span></div>
+          </a>
+
+          <a href="geometria/trigonometria.html" class="topic-card card-c2" data-title="trigonometria sohcahtoa seno coseno">
+            <div class="card-top"><span class="branch-tag tag-geometria">Geometría</span></div>
+            <div class="topic-name">Trigonometría Básica</div>
+            <div class="topic-desc">SOH-CAH-TOA, razones y circunferencia goniométrica.</div>
+            <div class="mini-preview"><span>sen²α + cos²α = 1</span></div>
+          </a>
+
+          <a href="geometria/geometria_analitica_rectas.html" class="topic-card card-c2" data-title="geometria analitica rectas ecuaciones">
+            <div class="card-top"><span class="branch-tag tag-geometria">Geometría</span></div>
+            <div class="topic-name">Geometría Analítica</div>
+            <div class="topic-desc">Vector director, deducción de las 6 ecuaciones de la recta y corte.</div>
+            <div class="mini-preview"><span>Ax + By + C = 0</span></div>
           </a>
 
         </div>
       </div>
 
-      <!-- ESTADÍSTICA 2º CICLO -->
       <div class="branch-group" data-branch="estadistica">
-        <div class="branch-subheading">📊 Estadística Avanzada</div>
+        <div class="branch-subheading">📊 Probabilidad y Estadística</div>
         <div class="topics-grid">
-          <a href="estadistica/estadistica_avanzada.html" class="topic-card" data-title="estadistica analitica dispersion cuartiles varianza desviacion pearson bivariante">
-            <div class="card-top">
-              <span class="branch-tag tag-estadistica">Estadística</span>
-              <span style="font-size:1.3rem;">📉</span>
-            </div>
+          
+          <a href="estadistica/estadistica_avanzada.html" class="topic-card card-c2" data-title="estadistica cuartiles varianza desviacion">
+            <div class="card-top"><span class="branch-tag tag-estadistica">Estadística</span></div>
             <div class="topic-name">Estadística Analítica</div>
-            <div class="topic-desc">Medidas de Posición (Cuartiles), Dispersión visual (Desviación Típica) y un avance a Bachillerato con la Correlación Bidimensional (r).</div>
-            <div class="mini-preview">
-              <span>σ = √Varianza &nbsp;|&nbsp; <strong>r = ±1</strong></span>
-            </div>
+            <div class="topic-desc">Cuartiles, Varianza, Desviación típica y Correlación (r).</div>
+            <div class="mini-preview"><span>σ = √Varianza</span></div>
           </a>
+
+          <a href="estadistica/probabilidad_combinatoria.html" class="topic-card card-c2" data-title="probabilidad bayes combinatoria venn">
+            <div class="card-top"><span class="branch-tag tag-estadistica">Estadística</span></div>
+            <div class="topic-name">Probabilidad Compuesta</div>
+            <div class="topic-desc">Álgebra de Venn, Teorema de Bayes y diagramas condicionales.</div>
+            <div class="mini-preview"><span>P(A∩B) = P(A)·P(B|A)</span></div>
+          </a>
+
+          <a href="estadistica/factoriales.html" class="topic-card card-c2" data-title="factoriales combinatoria 0!">
+            <div class="card-top"><span class="branch-tag tag-estadistica">Estadística</span></div>
+            <div class="topic-name">El Número Factorial (n!)</div>
+            <div class="topic-desc">Multiplicación en cascada y por qué 0! es igual a 1.</div>
+            <div class="mini-preview"><span>0! = 1</span></div>
+          </a>
+
         </div>
       </div>
 
-      <!-- FUNCIONES 2º CICLO -->
       <div class="branch-group" data-branch="funciones">
         <div class="branch-subheading">📈 Funciones y Análisis</div>
         <div class="topics-grid">
-          <a href="funciones/analisis_funciones.html" class="topic-card" data-title="funciones dominio recorrido crecimiento maximos minimos continuidad simetria limites">
-            <div class="card-top">
-              <span class="branch-tag tag-funciones">Funciones</span>
-              <span style="font-size:1.3rem;">📈</span>
-            </div>
+          
+          <a href="funciones/analisis_funciones.html" class="topic-card card-c2" data-title="funciones dominio recorrido maximos">
+            <div class="card-top"><span class="branch-tag tag-funciones">Funciones</span></div>
             <div class="topic-name">Análisis de Funciones</div>
-            <div class="topic-desc">Aprende a leer gráficas explorando el dominio, recorrido, crecimiento, extremos, continuidad y el concepto visual de límite.</div>
-            <div class="mini-preview">
-              <span>Dominio &nbsp;|&nbsp; <strong>lim x→2 f(x)</strong></span>
-            </div>
+            <div class="topic-desc">Dominio, recorrido, continuidad, extremos y límites.</div>
+            <div class="mini-preview"><span>lim f(x)</span></div>
           </a>
+
+          <a href="funciones/funciones_avanzadas.html" class="topic-card card-c2" data-title="funciones hiperbolas exponenciales logaritmos">
+            <div class="card-top"><span class="branch-tag tag-funciones">Funciones</span></div>
+            <div class="topic-name">Funciones Avanzadas</div>
+            <div class="topic-desc">Proporcionalidad inversa, exponenciales y logaritmos.</div>
+            <div class="mini-preview"><span>y = aˣ ⟷ logₐ(x)</span></div>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- BACHILLERATO -->
+    <section id="bachillerato" class="cycle-block">
+      <div class="cycle-header header-bach">
+        <div class="cycle-title">
+          <span>🎓 Bachillerato</span>
+          <span class="cycle-badge badge-bach">1º y 2º Bach</span>
         </div>
       </div>
 
+      <div class="branch-group" data-branch="geometria">
+        <div class="branch-subheading">📐 Geometría y Vectores en ℝ³</div>
+        <div class="topics-grid">
+          
+          <a href="geometria/trigonometria_avanzada.html" class="topic-card card-bach" data-title="trigonometria seno coseno triangulos">
+            <div class="card-top"><span class="branch-tag tag-geometria">Geometría</span></div>
+            <div class="topic-name">Trigonometría Avanzada</div>
+            <div class="topic-desc">Teoremas del Seno y Coseno, cuadrantes y doble observación.</div>
+            <div class="mini-preview"><span>a² = b²+c²-2bc·cosA</span></div>
+          </a>
+
+          <a href="tablas/geometria_vectorial.html" class="topic-card card-bach" data-title="geometria vectorial producto mixto areas 3d">
+            <div class="card-top"><span class="branch-tag tag-geometria">Geometría</span></div>
+            <div class="topic-name">Geometría Vectorial ℝ³</div>
+            <div class="topic-desc">Productos en el espacio, áreas y volúmenes de poliedros.</div>
+            <div class="mini-preview"><span>Vol = ⅙|[u,v,w]|</span></div>
+          </a>
+
+        </div>
+      </div>
+
+      <div class="branch-group" data-branch="funciones">
+        <div class="branch-subheading">📈 Cálculo Infinitesimal</div>
+        <div class="topics-grid">
+          
+          <a href="tablas/tabla_derivadas.html" class="topic-card card-bach" data-title="derivadas regla cadena">
+            <div class="card-top"><span class="branch-tag tag-funciones">Análisis</span></div>
+            <div class="topic-name">Derivadas y Regla de la Cadena</div>
+            <div class="topic-desc">Formulario operativo para derivar funciones simples y compuestas.</div>
+            <div class="mini-preview"><span>(eᵘ)' = u'·eᵘ</span></div>
+          </a>
+
+          <a href="tablas/tabla_integrales.html" class="topic-card card-bach" data-title="integrales inmediatas areas primitivas">
+            <div class="card-top"><span class="branch-tag tag-funciones">Análisis</span></div>
+            <div class="topic-name">Cálculo de Primitivas</div>
+            <div class="topic-desc">Tabla de integración inmediata y casi inmediata con ajuste.</div>
+            <div class="mini-preview"><span>∫u'·eᵘ = eᵘ+C</span></div>
+          </a>
+
+        </div>
+      </div>
     </section>
 
   </main>
 
   <footer style="text-align:center; padding:3rem 1.5rem; color:var(--text-muted); font-size:0.9rem; border-top:1px solid var(--border-color); margin-top:2rem;">
-    MatesLab ESO &copy; Plataforma de Aprendizaje Visual e Interactivo de Matemáticas.
+    <strong>MATH LAB</strong> &copy; Plataforma de Aprendizaje Visual e Interactivo de Matemáticas.
+    <div style="font-size:0.8rem; margin-top:0.4rem; color:#64748b;">Diseñado con rigor pedagógico por Xavi Profe.</div>
   </footer>
 
   <script>
-    // FILTRADO RÁPIDO MEDIANTE EL BUSCADOR
+    // =========================================================================
+    // 1. TEMA CLARO / OSCURO GLOBAL
+    // =========================================================================
+    function toggleTheme() {
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      const icon = document.getElementById('theme-icon');
+      
+      if (isLight) {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('mathlab_theme', 'dark');
+        if (icon) icon.textContent = '☀️';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('mathlab_theme', 'light');
+        if (icon) icon.textContent = '🌙';
+      }
+    }
+
+    // =========================================================================
+    // 2. BUSCADOR Y BOTÓN LIMPIAR
+    // =========================================================================
+    function handleSearchInput() {
+      const input = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('clearSearch');
+      if (input.value.length > 0) {
+        clearBtn.style.display = 'inline-flex';
+      } else {
+        clearBtn.style.display = 'none';
+      }
+      filterTopics();
+    }
+
+    function clearSearchInput() {
+      const input = document.getElementById('searchInput');
+      input.value = "";
+      document.getElementById('clearSearch').style.display = 'none';
+      input.focus();
+      filterTopics();
+    }
+
+    // =========================================================================
+    // 3. FAVORITOS Y FILTRADO
+    // =========================================================================
+    function getFavorites() {
+      try { return JSON.parse(localStorage.getItem('mathlab_favs')) || []; }
+      catch (e) { return []; }
+    }
+
+    function saveFavorites(favs) {
+      localStorage.setItem('mathlab_favs', JSON.stringify(favs));
+      updateFavCounter();
+    }
+
+    function toggleFavorite(e, href) {
+      e.preventDefault();
+      e.stopPropagation();
+      let favs = getFavorites();
+      const index = favs.indexOf(href);
+      if (index === -1) favs.push(href);
+      else favs.splice(index, 1);
+      
+      saveFavorites(favs);
+      renderFavoriteStates();
+      
+      const favFilterBtn = document.querySelector('.filter-chip-fav');
+      if (favFilterBtn && favFilterBtn.classList.contains('active')) filterTopics();
+    }
+
+    function updateFavCounter() {
+      const countEl = document.getElementById('favCount');
+      if (countEl) countEl.textContent = getFavorites().length;
+    }
+
+    function setupFavoriteButtons() {
+      const cards = document.querySelectorAll('.topic-card');
+      const favs = getFavorites();
+
+      cards.forEach(card => {
+        const href = card.getAttribute('href');
+        const cardTop = card.querySelector('.card-top');
+
+        if (cardTop && !cardTop.querySelector('.fav-btn')) {
+          const btn = document.createElement('button');
+          btn.className = 'fav-btn';
+          btn.title = 'Guardar en Favoritos';
+          const isFav = favs.includes(href);
+          btn.textContent = isFav ? '★' : '☆';
+          if (isFav) btn.classList.add('is-favorite');
+
+          btn.addEventListener('click', (e) => toggleFavorite(e, href));
+          cardTop.appendChild(btn);
+        }
+      });
+      updateFavCounter();
+    }
+
+    function renderFavoriteStates() {
+      const favs = getFavorites();
+      document.querySelectorAll('.topic-card').forEach(card => {
+        const btn = card.querySelector('.fav-btn');
+        if (btn) {
+          const isFav = favs.includes(card.getAttribute('href'));
+          btn.textContent = isFav ? '★' : '☆';
+          btn.classList.toggle('is-favorite', isFav);
+        }
+      });
+    }
+
+    let currentFilterBranch = 'all';
+
     function filterTopics() {
       const q = document.getElementById('searchInput').value.toLowerCase().trim();
       const cards = document.querySelectorAll('.topic-card');
+      const favs = getFavorites();
 
       cards.forEach(card => {
-        const title = card.getAttribute('data-title') || "";
+        const title = (card.getAttribute('data-title') || "").toLowerCase();
         const text = card.innerText.toLowerCase();
-        if (title.includes(q) || text.includes(q)) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
+        const href = card.getAttribute('href');
+        const matchesQuery = q === "" || title.includes(q) || text.includes(q);
+
+        let matchesBranch = true;
+        if (currentFilterBranch === 'favoritos') {
+          matchesBranch = favs.includes(href);
+        } else if (currentFilterBranch !== 'all') {
+          const cardBranch = card.getAttribute('data-branch') || card.closest('.branch-group')?.getAttribute('data-branch');
+          matchesBranch = (cardBranch === currentFilterBranch);
         }
+
+        card.style.display = (matchesQuery && matchesBranch) ? 'flex' : 'none';
       });
 
-      // Ocultar cabeceras de ramas si no tienen tarjetas visibles
       document.querySelectorAll('.branch-group').forEach(group => {
         const visibleCards = group.querySelectorAll('.topic-card[style*="display: flex"]');
-        const allCards = group.querySelectorAll('.topic-card');
-        if (q !== "" && visibleCards.length === 0 && allCards.length > 0) {
-          group.style.display = 'none';
-        } else {
-          group.style.display = 'block';
-        }
+        group.style.display = (visibleCards.length > 0) ? 'block' : 'none';
+      });
+
+      document.querySelectorAll('.cycle-block').forEach(section => {
+        const visibleCards = section.querySelectorAll('.topic-card[style*="display: flex"]');
+        section.style.display = (visibleCards.length > 0) ? 'block' : 'none';
       });
     }
 
-    // FILTRADO POR PASTILLAS (CHIPS) DE RAMAS
     function setFilter(branch, btn) {
       document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
       btn.classList.add('active');
-
-      const cards = document.querySelectorAll('.topic-card');
-      const groups = document.querySelectorAll('.branch-group');
-      const search = document.getElementById('searchInput');
-      search.value = ""; // Limpiar buscador al pulsar filtro
-
-      if (branch === 'all') {
-        cards.forEach(c => c.style.display = 'flex');
-        groups.forEach(g => g.style.display = 'block');
-        return;
-      }
-
-      groups.forEach(group => {
-        if (group.getAttribute('data-branch') === branch) {
-          group.style.display = 'block';
-        } else {
-          group.style.display = 'none';
-        }
-      });
-
-      cards.forEach(card => {
-        const cardBranch = card.getAttribute('data-branch') || card.closest('.branch-group')?.getAttribute('data-branch');
-        if (cardBranch === branch) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
-        }
-      });
+      currentFilterBranch = branch;
+      filterTopics();
     }
-  </script>
-  <script>
-    // Registro del Service Worker para convertir en PWA
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      const icon = document.getElementById('theme-icon');
+      if (icon) icon.textContent = isLight ? '🌙' : '☀️';
+      setupFavoriteButtons();
+    });
+
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-          .then(reg => console.log('App instalable lista'))
-          .catch(err => console.log('Error en PWA: ', err));
+        navigator.serviceWorker.register('sw.js').catch(() => {});
       });
     }
   </script>

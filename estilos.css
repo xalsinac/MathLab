@@ -3,7 +3,7 @@
    ======================================================== */
 
 :root {
-  /* Paleta cromática principal */
+  /* Paleta cromática principal (Modo Oscuro por defecto) */
   --bg-primary: #0f172a;       /* Fondo general oscuro */
   --bg-card: #1e293b;          /* Fondo de tarjetas y paneles */
   --bg-plate: #334155;         /* Elementos interactivos / bandejas */
@@ -18,8 +18,76 @@
   --accent-op: #f43f5e;        /* Operación destacada / acción clave (rojo/rosa) */
   --accent-gold: #fbbf24;      /* Reglas, avisos y etiquetas (amarillo/dorado) */
   --accent-success: #10b981;   /* Solución final / acierto (verde) */
+  --accent-purple: #c084fc;
 }
 
+/* ==========================================================================
+   TEMA CLARO (LIGHT THEME)
+   ========================================================================== */
+[data-theme="light"] {
+  /* Fondos principales */
+  --bg-primary: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-plate: #e2e8f0;
+  --border-color: #cbd5e1;
+
+  /* Textos */
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+
+  /* Ajuste de contraste para fondo blanco */
+  --accent-blue: #0284c7;
+  --accent-gold: #d97706;
+  --accent-success: #059669;
+  --accent-op: #e11d48;
+  --accent-purple: #9333ea;
+
+  /* Ajustes cromáticos en los fondos de las tarjetas de Index */
+  --color-tablas-bg: rgba(45, 212, 191, 0.08);
+  --color-ciclo1-bg: rgba(56, 189, 248, 0.08);
+  --color-ciclo2-bg: rgba(16, 185, 129, 0.08);
+  --color-bach-bg: rgba(245, 158, 11, 0.08);
+
+  /* Cajas oscuras internas */
+  #prob_steps, 
+  .cascade-box, 
+  .math-formula, 
+  .soh-card, 
+  .step-block {
+    background: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+  }
+
+  /* Lienzos SVG */
+  .svg-canvas {
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  /* Forzado de color oscuro para los títulos en el modo claro */
+  .topic-name,
+  .cycle-title,
+  h1, h2, h3,
+  .logo-brand,
+  .radical-logo {
+    color: #0f172a !important;
+  }
+
+  .mini-preview {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    color: #1e293b !important;
+  }
+
+  .topic-desc {
+    color: #475569 !important;
+  }
+}
+
+/* ========================================================
+   ESTILOS BASE COMUNES (YA CORREGIDO)
+   ======================================================== */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -120,12 +188,6 @@ header.app-header p {
   line-height: 1.5;
 }
 
-.explanation-card .highlight-label {
-  font-size: 0.95rem;
-  color: var(--accent-gold);
-  font-weight: 600;
-}
-
 /* Botones estándar */
 .btn {
   padding: 0.75rem 1.5rem;
@@ -150,25 +212,7 @@ header.app-header p {
   transform: translateY(-1px);
 }
 
-.btn-secondary {
-  background: var(--bg-plate);
-  color: var(--text-main);
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: #475569;
-}
-
-.btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-/* =========================================
-   TIPOGRAFÍA MATEMÁTICA VISUAL REUTILIZABLE
-   ========================================= */
-
-/* Fracción vertical */
+/* Tipografía Fracciones */
 .frac {
   display: inline-flex;
   flex-direction: column;
@@ -188,26 +232,25 @@ header.app-header p {
   padding: 2px 3px 0 3px;
   display: block;
 }
+/* FORZAR QUE LOS ENLACES NO SE VUELVAN MORADOS AL VISITARLOS */
+    .topic-card,
+    .topic-card:visited {
+      color: inherit;
+      text-decoration: none !important;
+    }
 
-/* Raíz cuadrada continua */
-.sqrt {
-  display: inline-flex;
-  align-items: stretch;
-  vertical-align: middle;
-  margin: 0 2px;
-}
+    /* COLOR DEL TÍTULO EN MODO OSCURO (BLANCO BRILLANTE) */
+    .topic-name {
+      font-size: 1.15rem;
+      color: var(--text-main);
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
 
-.sqrt .radical-symbol {
-  font-size: 1.3em;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  padding-right: 1px;
-}
-
-.sqrt .radicand {
-  border-top: 2.5px solid currentColor;
-  padding: 3px 6px 1px 4px;
-  display: inline-block;
-  margin-left: -1px;
-}
+    /* COLOR DE LA DESCRIPCIÓN EN MODO OSCURO (GRIS CLARO) */
+    .topic-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 1rem;
+    }

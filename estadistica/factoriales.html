@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+  // Aplica el tema guardado al cargar la página antes de dibujar el DOM
+  if (localStorage.getItem('mathlab_theme') === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El Número Factorial (n!) | MatesLab</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 0.5rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* CONTROLES SLIDER */
+    .slider-row { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.8rem; flex-wrap: wrap; }
+    .slider-row label { width: 120px; font-weight: 600; font-family: monospace; font-size: 0.92rem; }
+    .val-badge { width: 45px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.1rem; color: var(--text-main); }
+
+    /* FÓRMULAS Y FRACCIONES */
+    .fraction-vertical {
+      display: inline-flex; flex-direction: column; vertical-align: middle;
+      text-align: center; margin: 0 0.2rem; line-height: 1.1; font-size: 0.9em;
+    }
+    .fraction-vertical .num { border-bottom: 2px solid currentColor; padding: 0 0.2rem 1px 0.2rem; }
+    .fraction-vertical .den { padding: 1px 0.2rem 0 0.2rem; }
+
+    /* CADENA DE MULTIPLICACIÓN */
+    .cascade-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      align-items: center;
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      min-height: 55px;
+    }
+    .cascade-pill {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 6px;
+      padding: 0.2rem 0.55rem;
+      font-weight: bold;
+    }
+
+    /* SVG CANVAS */
+    .svg-canvas {
+      width: 100%;
+      height: 380px;
+      background: #090d16;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      display: block;
+    }
+
+    /* ESTILO TACHADO EN CANCELACIÓN */
+    .canceled {
+      text-decoration: line-through;
+      color: #64748b;
+      opacity: 0.6;
+    }
+
+    @media (max-width: 850px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>El Número Factorial (n!)</h1>
+    <p>El operador del crecimiento explosivo: definición, la justificación de por qué 0! = 1, simplificación algebraica de fracciones y aplicaciones reales.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('tab_que_es', this)">❗ 1. Definición y Cascada</button>
+      <button class="tab-btn" onclick="switchTab('tab_cero', this)">❓ 2. ¿Por qué 0! = 1?</button>
+      <button class="tab-btn" onclick="switchTab('tab_algebra', this)">✂️ 3. Álgebra y Fracciones</button>
+      <button class="tab-btn" onclick="switchTab('tab_usos', this)">🃏 4. Casos de Uso Reales</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: DEFINICIÓN ================= -->
+    <div id="tab_que_es" class="tab-content active">
+      
+      <!-- CABECERA DE IMPACTO VISUAL -->
+      <div style="display:flex; align-items:center; gap:1.5rem; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:12px; padding:1.25rem 1.5rem; margin-bottom:0.5rem;">
+        <div style="font-size:3.5rem; font-weight:900; color:var(--accent-gold); font-family:monospace; line-height:1; text-shadow:0 0 20px rgba(251,191,36,0.25);">
+          n!
+        </div>
+        <div>
+          <div style="font-size:1.15rem; font-weight:800; color:#fff; margin-bottom:0.25rem;">
+            Se lee: «Factorial de n» (o «n factorial»)
+          </div>
+          <div style="font-size:0.9rem; color:var(--text-muted); line-height:1.4;">
+            El signo de exclamación no significa que grites el número: es un operador matemático que ordena hacer una cuenta atrás multiplicando.
+          </div>
+        </div>
+      </div>
+
+      <!-- EXPLICACIÓN SENCILLA (SIN RODEOS) -->
+      <div style="background:rgba(56,189,248,0.06); border:1px solid rgba(56,189,248,0.25); border-left:4px solid var(--accent-blue); border-radius:8px; padding:1rem 1.25rem;">
+        <div style="font-weight:800; color:var(--accent-blue); font-size:0.95rem; margin-bottom:0.35rem; display:flex; align-items:center; gap:0.4rem;">
+          <span>💡</span> En palabras muy sencillas: ¿Qué es?
+        </div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6; color:#e2e8f0;">
+          Un factorial es simplemente <strong>empezar en ese número y multiplicar hacia atrás todos los enteros hasta llegar al 1</strong>. Sin saltarse ninguno.
+        </p>
+        <div style="margin-top:0.6rem; font-family:monospace; font-size:1.05rem; color:#fff; background:#090d16; padding:0.6rem 0.9rem; border-radius:6px; display:inline-block; border:1px solid var(--border-color);">
+          • <strong>3!</strong> = 3 · 2 · 1 = <strong style="color:var(--accent-gold);">6</strong><br>
+          • <strong>4!</strong> = 4 · 3 · 2 · 1 = <strong style="color:var(--accent-gold);">24</strong><br>
+          • <strong>5!</strong> = 5 · 4 · 3 · 2 · 1 = <strong style="color:var(--accent-gold);">120</strong>
+        </div>
+      </div>
+
+      <!-- DEFINICIÓN FORMAL -->
+      <div class="explanation-card">
+        <div class="badge">Multiplicación en Cuenta Atrás</div>
+        <div class="content-text">
+          <p style="margin: 0; line-height: 1.6;">
+            El <strong>factorial</strong> de un entero positivo <em>n</em> (escrito como <strong>n!</strong>) es el producto de todos los números enteros positivos desde <em>n</em> hasta el 1: <strong>n! = n · (n − 1) · (n − 2) · ... · 2 · 1</strong>.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Calculadora de Cascada</div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-gold);">Selecciona n:</label>
+            <input type="range" id="sl_n" min="1" max="15" value="4" oninput="updateFactorial()">
+            <span class="val-badge" id="v_n" style="color:var(--accent-gold);">4</span>
+          </div>
+
+          <div style="margin-top:0.6rem; color:var(--text-muted); font-size:0.88rem;">Desarrollo multiplicativo completo:</div>
+          <div class="cascade-box" id="box_cascade">
+            <!-- Rellenado por JS -->
+          </div>
+
+          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.15rem; line-height:1.8; margin-top:1rem;">
+            Resultado: <strong style="color:var(--accent-gold); font-size:1.35rem;" id="txt_fact_result">24</strong>
+            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:0.3rem;" id="txt_num_digits">
+              Tiene 2 dígitos
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-blue);">
+          <svg class="svg-canvas" viewBox="0 0 260 220" id="svg_arbol">
+            <!-- Visualizador adaptativo dinámico -->
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: POR QUÉ 0! = 1 ================= -->
+    <div id="tab_cero" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">La Paradoja de Cero Factorial</div>
+        <div class="content-text">
+          <p style="margin: 0; line-height: 1.6;">
+            A primera vista parece que multiplicar hasta 0 debería dar 0, pero en matemáticas <strong>0! = 1</strong> por necesidad de coherencia. La fórmula recurrente universal es <strong>(n − 1)! = n! / n</strong>. Si retrocedemos dividiendo paso a paso, el resultado es inevitable.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">El Patrón hacia Atrás (División Sucesiva)</div>
+
+          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.95rem; line-height:2.1;">
+            <div>• 4! = 24</div>
+            <div>• 3! = 24 / 4 = <strong>6</strong></div>
+            <div>• 2! = 6 / 3 = <strong>2</strong></div>
+            <div>• 1! = 2 / 2 = <strong>1</strong></div>
+            <div style="border-top:1px dashed var(--border-color); padding-top:0.4rem; margin-top:0.4rem; color:var(--accent-gold);">
+              • <strong>0! = 1 / 1 = 1</strong> 🎯
+            </div>
+          </div>
+
+          <div style="margin-top:1rem; font-size:0.9rem; line-height:1.6; color:var(--text-muted);">
+            <strong style="color:#fff;">Razón combinatoria:</strong><br>
+            ¿De cuántas formas puedes ordenar 0 elementos en una fila? Solo de <strong>1 forma</strong>: dejando el conjunto completamente vacío.
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-gold);">
+          <svg class="svg-canvas" viewBox="0 0 260 220" id="svg_patron">
+            <!-- Escalera gráfica descendente -->
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: ÁLGEBRA Y SIMPLIFICACIÓN ================= -->
+    <div id="tab_algebra" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">Simplificar sin calcular números gigantes</div>
+        <div class="content-text">
+          <p style="margin: 0; line-height: 1.6;">
+            En exámenes de combinatoria y límites nunca se calculan factoriales gigantescos a mano. Se aplica la propiedad <strong>n! = n · (n − 1)!</strong> para cancelar factores idénticos en el numerador y denominador.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Laboratorio de Cancelación</div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-blue);">Numerador (n):</label>
+            <input type="range" id="sl_num" min="4" max="12" value="8" oninput="updateSimplificacion()">
+            <span class="val-badge" id="v_num" style="color:var(--accent-blue);">8</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-op);">Denominador (k):</label>
+            <input type="range" id="sl_den" min="2" max="11" value="5" oninput="updateSimplificacion()">
+            <span class="val-badge" id="v_den" style="color:var(--accent-op);">5</span>
+          </div>
+
+          <!-- PASO A PASO ANALÍTICO -->
+          <div id="box_simpl_steps" style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1rem; line-height:2; margin-top:0.8rem;">
+            <!-- Generado dinámicamente -->
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Ejemplo Algebraico con Letras</div>
+          <div style="font-size:0.92rem; line-height:1.7; color:var(--text-muted);">
+            ¿Cómo se resuelve una fracción con incógnita <em>n</em>?
+          </div>
+
+          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.02rem; line-height:2.2; margin-top:0.8rem;">
+            <div style="color:var(--accent-gold);">
+              <span class="fraction-vertical"><span class="num">(n + 2)!</span><span class="den">n!</span></span> = ?
+            </div>
+            <div>
+              1. Descomponemos el mayor hasta llegar a n!:<br>
+              = <span class="fraction-vertical"><span class="num">(n + 2) · (n + 1) · <span class="canceled">n!</span></span><span class="den"><span class="canceled">n!</span></span></span>
+            </div>
+            <div style="color:var(--accent-success); font-weight:bold;">
+              = (n + 2) · (n + 1) = n² + 3n + 2
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: CASOS DE USO REALES ================= -->
+    <div id="tab_usos" class="tab-content">
+      <div class="explanation-card" style="border-left-color: #c084fc;">
+        <div class="badge" style="color: #c084fc;">Aplicaciones en la Vida Real</div>
+        <div class="content-text">
+          <p style="margin: 0; line-height: 1.6;">
+            Los factoriales miden las <strong>permutaciones</strong>: el número total de formas en que un grupo de elementos distintos puede ordenarse en fila.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Baraja de Cartas Española (40!)</div>
+          <div style="font-size:0.92rem; line-height:1.6; color:var(--text-muted); margin-bottom:1rem;">
+            Cada vez que barajas a fondo un mazo de 40 cartas, obtienes una ordenación que, con una certeza casi absoluta, <strong>jamás ha existido en la historia del universo</strong>:
+          </div>
+
+          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.05rem; line-height:1.8; color:var(--accent-gold); word-break:break-all;">
+            40! = 815.915.283.247.897.734.345.611.269.596.115.894.272.000.000.000
+          </div>
+
+          <div style="font-size:0.85rem; color:var(--text-muted); margin-top:0.8rem;">
+            Un número con <strong>48 dígitos</strong>. Para comparar: ¡la Tierra solo tiene unos 10<sup>50</sup> átomos en total!
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">¿Dónde más se utilizan?</div>
+          <div style="display:flex; flex-direction:column; gap:0.6rem; font-size:0.92rem; line-height:1.5;">
+            <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:6px; padding:0.8rem;">
+              <strong style="color:var(--accent-blue);">1. Números Combinatorios:</strong><br>
+              C(n, k) = n! / [k! · (n − k)!] para calcular probabilidades de lotería y el Binomio de Newton.
+            </div>
+            <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:6px; padding:0.8rem;">
+              <strong style="color:var(--accent-success);">2. Series de Taylor (Bachillerato / Cálculo):</strong><br>
+              Aproximar funciones como sen(x), cos(x) o e<sup>x</sup> sumando polinomios divididos por factoriales.
+            </div>
+            <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:6px; padding:0.8rem;">
+              <strong style="color:var(--accent-op);">3. Algoritmia y Criptografía:</strong><br>
+              La complejidad O(n!) indica que un problema no puede resolverse por fuerza bruta cuando n crece.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+
+      if (tabId === 'tab_que_es') updateFactorial();
+      if (tabId === 'tab_cero') drawZeroProof();
+      if (tabId === 'tab_algebra') updateSimplificacion();
+    }
+
+    // =========================================================================
+    // 1. DEFINICIÓN Y CASCADA
+    // =========================================================================
+    function updateFactorial() {
+      const n = parseInt(document.getElementById('sl_n').value);
+      document.getElementById('v_n').innerText = n;
+
+      let result = 1n;
+      let pillsHtml = '';
+
+      for (let i = n; i >= 1; i--) {
+        result *= BigInt(i);
+        pillsHtml += `<span class="cascade-pill">${i}</span>`;
+        if (i > 1) pillsHtml += `<span style="color:#64748b;">·</span>`;
+      }
+
+      document.getElementById('box_cascade').innerHTML = pillsHtml;
+      
+      const resStr = result.toLocaleString('es-ES');
+      document.getElementById('txt_fact_result').innerText = resStr;
+      
+      const numDigits = result.toString().length;
+      document.getElementById('txt_num_digits').innerText = `Tiene ${numDigits} dígito${numDigits > 1 ? 's' : ''}`;
+
+      drawTree(n);
+    }
+
+    function drawTree(n) {
+      const svg = document.getElementById('svg_arbol');
+      let html = '';
+
+      if (n === 1) {
+        html = `
+          <text x="130" y="30" fill="#94a3b8" font-size="9.5" font-family="monospace" text-anchor="middle">
+            1 elemento en fila (A)
+          </text>
+          <circle cx="130" cy="100" r="18" fill="var(--accent-blue)" />
+          <text x="130" y="105" fill="#042f2e" font-weight="bold" font-size="14" font-family="monospace" text-anchor="middle">A</text>
+          <text x="130" y="150" fill="#fff" font-size="11" font-family="monospace" text-anchor="middle">1 camino posible: A</text>
+          <text x="130" y="175" fill="var(--accent-gold)" font-weight="bold" font-size="12" font-family="monospace" text-anchor="middle">1! = 1</text>
+        `;
+      } else if (n === 2) {
+        html = `
+          <text x="130" y="25" fill="#94a3b8" font-size="9.5" font-family="monospace" text-anchor="middle">
+            Ordenar 2 elementos (A, B)
+          </text>
+          <circle cx="130" cy="45" r="5" fill="#fff" />
+          <line x1="130" y1="45" x2="80" y2="100" stroke="var(--accent-blue)" stroke-width="2" />
+          <line x1="130" y1="45" x2="180" y2="100" stroke="var(--accent-gold)" stroke-width="2" />
+          
+          <circle cx="80" cy="100" r="12" fill="var(--accent-blue)" />
+          <text x="80" y="104" fill="#042f2e" font-weight="bold" font-size="10" font-family="monospace" text-anchor="middle">A</text>
+          
+          <circle cx="180" cy="100" r="12" fill="var(--accent-gold)" />
+          <text x="180" y="104" fill="#042f2e" font-weight="bold" font-size="10" font-family="monospace" text-anchor="middle">B</text>
+
+          <line x1="80" y1="112" x2="80" y2="145" stroke="#64748b" stroke-width="1.5" />
+          <line x1="180" y1="112" x2="180" y2="145" stroke="#64748b" stroke-width="1.5" />
+
+          <text x="80" y="160" fill="#fff" font-size="10.5" font-family="monospace" text-anchor="middle">A ➔ B</text>
+          <text x="180" y="160" fill="#fff" font-size="10.5" font-family="monospace" text-anchor="middle">B ➔ A</text>
+
+          <text x="130" y="195" fill="var(--accent-gold)" font-weight="bold" font-size="12" font-family="monospace" text-anchor="middle">2 · 1 = 2 formas (2! = 2)</text>
+        `;
+      } else if (n === 3) {
+        html = `
+          <text x="130" y="22" fill="#94a3b8" font-size="9.5" font-family="monospace" text-anchor="middle">
+            Ordenar 3 elementos (A, B, C)
+          </text>
+          <circle cx="130" cy="40" r="4" fill="#fff" />
+          
+          <line x1="130" y1="40" x2="55" y2="85" stroke="var(--accent-blue)" stroke-width="2" />
+          <line x1="130" y1="40" x2="130" y2="85" stroke="var(--accent-gold)" stroke-width="2" />
+          <line x1="130" y1="40" x2="205" y2="85" stroke="var(--accent-op)" stroke-width="2" />
+
+          <circle cx="55" cy="85" r="9" fill="var(--accent-blue)" />
+          <text x="55" y="88" fill="#042f2e" font-weight="bold" font-size="8.5" font-family="monospace" text-anchor="middle">A</text>
+          
+          <circle cx="130" cy="85" r="9" fill="var(--accent-gold)" />
+          <text x="130" y="88" fill="#042f2e" font-weight="bold" font-size="8.5" font-family="monospace" text-anchor="middle">B</text>
+
+          <circle cx="205" cy="85" r="9" fill="var(--accent-op)" />
+          <text x="205" y="88" fill="#042f2e" font-weight="bold" font-size="8.5" font-family="monospace" text-anchor="middle">C</text>
+
+          <line x1="55" y1="94" x2="35" y2="135" stroke="#64748b" stroke-width="1.2" />
+          <line x1="55" y1="94" x2="75" y2="135" stroke="#64748b" stroke-width="1.2" />
+          <text x="35" y="150" fill="#94a3b8" font-size="7.5" font-family="monospace" text-anchor="middle">ABC</text>
+          <text x="75" y="150" fill="#94a3b8" font-size="7.5" font-family="monospace" text-anchor="middle">ACB</text>
+
+          <line x1="130" y1="94" x2="110" y2="135" stroke="#64748b" stroke-width="1.2" />
+          <line x1="130" y1="94" x2="150" y2="135" stroke="#64748b" stroke-width="1.2" />
+          <text x="110" y="150" fill="#94a3b8" font-size="7.5" font-family="monospace" text-anchor="middle">BAC</text>
+          <text x="150" y="150" fill="#94a3b8" font-size="7.5" font-family="monospace" text-anchor="middle">BCA</text>
+
+          <line x1="205" y1="94" x2="185" y2="135" stroke="#64748b" stroke-width="1.2" />
+          <line x1="205" y1="94" x2="225" y2="135" stroke="#64748b" stroke-width="1.2" />
+          <text x="185" y="150" fill="#94a3b8" font-size="7.5" font-family="monospace" text-anchor="middle">CAB</text>
+          <text x="225" y="150" fill="#94a3b8" font-size="7.5" font-family="monospace" text-anchor="middle">CBA</text>
+
+          <text x="130" y="195" fill="var(--accent-gold)" font-weight="bold" font-size="12" font-family="monospace" text-anchor="middle">3 · 2 · 1 = 6 ramas (3! = 6)</text>
+        `;
+      } else {
+        html = `
+          <text x="130" y="24" fill="#94a3b8" font-size="9.5" font-family="monospace" text-anchor="middle">
+            Regla del producto en ${n} elecciones:
+          </text>
+          <text x="130" y="42" fill="#64748b" font-size="8" font-family="monospace" text-anchor="middle">
+            (Imposible dibujar ${n}! ramas en pantalla)
+          </text>
+
+          <rect x="25" y="65" width="45" height="50" rx="6" fill="rgba(56,189,248,0.12)" stroke="var(--accent-blue)" stroke-width="1.5" />
+          <text x="47" y="95" fill="var(--accent-blue)" font-size="14" font-weight="bold" font-family="monospace" text-anchor="middle">${n}</text>
+          <text x="47" y="130" fill="#94a3b8" font-size="7.5" font-family="monospace" text-anchor="middle">1ª opción</text>
+
+          <text x="77" y="93" fill="#fff" font-size="14" font-family="monospace">·</text>
+
+          <rect x="85" y="65" width="45" height="50" rx="6" fill="rgba(251,191,36,0.12)" stroke="var(--accent-gold)" stroke-width="1.5" />
+          <text x="107" y="95" fill="var(--accent-gold)" font-size="14" font-weight="bold" font-family="monospace" text-anchor="middle">${n-1}</text>
+          <text x="107" y="130" fill="#94a3b8" font-size="7.5" font-family="monospace" text-anchor="middle">2ª opción</text>
+
+          <text x="137" y="93" fill="#fff" font-size="14" font-family="monospace">·</text>
+
+          <rect x="145" y="65" width="45" height="50" rx="6" fill="rgba(244,63,94,0.12)" stroke="var(--accent-op)" stroke-width="1.5" />
+          <text x="167" y="95" fill="var(--accent-op)" font-size="14" font-weight="bold" font-family="monospace" text-anchor="middle">${n-2}</text>
+          <text x="167" y="130" fill="#94a3b8" font-size="7.5" font-family="monospace" text-anchor="middle">3ª opción</text>
+
+          <text x="197" y="93" fill="#fff" font-size="12" font-family="monospace">···</text>
+
+          <rect x="215" y="65" width="30" height="50" rx="6" fill="rgba(16,185,129,0.12)" stroke="var(--accent-success)" stroke-width="1.5" />
+          <text x="230" y="95" fill="var(--accent-success)" font-size="13" font-weight="bold" font-family="monospace" text-anchor="middle">1</text>
+          <text x="230" y="130" fill="#94a3b8" font-size="7" font-family="monospace" text-anchor="middle">Final</text>
+
+          <path d="M 30 150 L 230 150" stroke="#334155" stroke-width="1.5" stroke-dasharray="4" />
+          
+          <text x="130" y="175" fill="#e2e8f0" font-size="9" font-family="monospace" text-anchor="middle">
+            Cada elección agota 1 elemento disponible
+          </text>
+          <text x="130" y="198" fill="var(--accent-gold)" font-weight="bold" font-size="11" font-family="monospace" text-anchor="middle">
+            Total caminos = ${n}!
+          </text>
+        `;
+      }
+
+      svg.innerHTML = html;
+    }
+
+    // =========================================================================
+    // 2. PATRÓN DESCENDENTE (0! = 1)
+    // =========================================================================
+    function drawZeroProof() {
+      const svg = document.getElementById('svg_patron');
+      svg.innerHTML = `
+        <line x1="30" y1="190" x2="230" y2="190" stroke="#475569" stroke-width="1.5" />
+        
+        <rect x="50" y="40" width="35" height="150" fill="rgba(56,189,248,0.2)" stroke="var(--accent-blue)" stroke-width="1.5" />
+        <text x="67" y="30" fill="var(--accent-blue)" font-size="9" font-family="monospace" text-anchor="middle">4! = 24</text>
+        
+        <text x="95" y="70" fill="#94a3b8" font-size="8" font-family="monospace">÷4</text>
+
+        <rect x="100" y="90" width="30" height="100" fill="rgba(251,191,36,0.2)" stroke="var(--accent-gold)" stroke-width="1.5" />
+        <text x="115" y="82" fill="var(--accent-gold)" font-size="9" font-family="monospace" text-anchor="middle">3! = 6</text>
+
+        <text x="140" y="115" fill="#94a3b8" font-size="8" font-family="monospace">÷3</text>
+
+        <rect x="145" y="130" width="25" height="60" fill="rgba(16,185,129,0.2)" stroke="var(--accent-success)" stroke-width="1.5" />
+        <text x="157" y="122" fill="var(--accent-success)" font-size="9" font-family="monospace" text-anchor="middle">2! = 2</text>
+
+        <text x="178" y="145" fill="#94a3b8" font-size="8" font-family="monospace">÷2</text>
+
+        <rect x="185" y="160" width="20" height="30" fill="rgba(244,63,94,0.2)" stroke="var(--accent-op)" stroke-width="1.5" />
+        <text x="195" y="152" fill="var(--accent-op)" font-size="9" font-family="monospace" text-anchor="middle">1! = 1</text>
+
+        <text x="212" y="168" fill="#94a3b8" font-size="8" font-family="monospace">÷1</text>
+
+        <rect x="220" y="160" width="20" height="30" fill="rgba(192,132,252,0.4)" stroke="#c084fc" stroke-width="2" />
+        <text x="230" y="152" fill="#c084fc" font-size="9" font-weight="bold" font-family="monospace" text-anchor="middle">0! = 1</text>
+      `;
+    }
+
+    // =========================================================================
+    // 3. SIMPLIFICACIÓN DE FRACCIONES
+    // =========================================================================
+    function updateSimplificacion() {
+      const n = parseInt(document.getElementById('sl_num').value);
+      let k = parseInt(document.getElementById('sl_den').value);
+
+      if (k >= n) {
+        k = n - 1;
+        document.getElementById('sl_den').value = k;
+      }
+
+      document.getElementById('v_num').innerText = n;
+      document.getElementById('v_den').innerText = k;
+
+      let remainingFactors = [];
+      let product = 1;
+
+      for (let i = n; i > k; i--) {
+        remainingFactors.push(i);
+        product *= i;
+      }
+
+      const factorsStr = remainingFactors.join(' · ');
+
+      const box = document.getElementById('box_simpl_steps');
+      box.innerHTML = `
+        <div>
+          <strong>Fracción a calcular:</strong> 
+          <span class="fraction-vertical"><span class="num">${n}!</span><span class="den">${k}!</span></span>
+        </div>
+        <div style="margin-top:0.4rem;">
+          <strong>1. Desarrollamos el numerador hasta ${k}!:</strong><br>
+          = <span class="fraction-vertical"><span class="num">${factorsStr} · <span class="canceled">${k}!</span></span><span class="den"><span class="canceled">${k}!</span></span></span>
+        </div>
+        <div style="margin-top:0.4rem; color:var(--accent-success);">
+          <strong>2. Cancelamos ${k}! en ambos lados:</strong><br>
+          = ${factorsStr} = <strong style="font-size:1.2rem; color:var(--accent-gold);">${product.toLocaleString('es-ES')}</strong>
+        </div>
+      `;
+    }
+
+    // Inicializar primera pestaña
+    updateFactorial();
+  </script>
+</body>
+</html>

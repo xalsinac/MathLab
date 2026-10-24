@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <script>
+  // Aplica el tema guardado al cargar la página antes de dibujar el DOM
+  if (localStorage.getItem('mathlab_theme') === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Álgebra: Ecuaciones de 2º Grado</title>

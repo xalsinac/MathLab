@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fórmulas de Geometría 2D y 3D | MatesLab</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    .table-page-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+    }
+
+    .print-btn {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border: none;
+      font-weight: 800;
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .print-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* GRID DE FIGURAS */
+    .geo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .geo-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1rem;
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .geo-svg {
+      width: 90px;
+      height: 90px;
+      background: #090d16;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      display: block;
+    }
+
+    .geo-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .geo-name {
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: #fff;
+    }
+
+    .formula-row {
+      font-family: monospace;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .formula-row strong {
+      color: #fff;
+    }
+
+    .tag-p { color: var(--accent-blue); font-weight: bold; }
+    .tag-a { color: var(--accent-gold); font-weight: bold; }
+    .tag-v { color: var(--accent-success); font-weight: bold; }
+
+    /* ESTILOS DE IMPRESIÓN (PDF A4) */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .nav-bar, .app-header, .action-bar, footer {
+        display: none !important;
+      }
+      .table-page-wrap {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        gap: 1rem !important;
+      }
+      .print-header {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      .print-header h1 {
+        font-size: 1.7rem;
+        margin-bottom: 0.2rem;
+        color: #000;
+      }
+      .section-title {
+        color: #000 !important;
+        border-bottom: 2px solid #000 !important;
+        font-size: 1.1rem !important;
+        margin-bottom: 0.6rem !important;
+      }
+      .geo-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.6rem !important;
+      }
+      .geo-card {
+        background: #fff !important;
+        border: 1px solid #333 !important;
+        padding: 0.6rem !important;
+        break-inside: avoid;
+      }
+      .geo-svg {
+        background: #f8fafc !important;
+        border: 1px solid #ccc !important;
+      }
+      .geo-name {
+        color: #000 !important;
+        font-size: 0.95rem !important;
+      }
+      .formula-row {
+        color: #333 !important;
+        font-size: 0.85rem !important;
+      }
+      .formula-row strong {
+        color: #000 !important;
+      }
+      .tag-p, .tag-a, .tag-v {
+        color: #000 !important;
+      }
+      svg text {
+        fill: #000 !important;
+      }
+      svg line, svg rect, svg circle, svg polygon, svg path {
+        stroke: #000 !important;
+      }
+      svg rect, svg circle, svg polygon, svg path {
+        fill: #e2e8f0 !important;
+      }
+    }
+
+    .print-header { display: none; }
+
+    @media (max-width: 700px) {
+      .geo-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Fórmulas de Geometría (2D y 3D)</h1>
+    <p>Formulario directo de consulta rápida. Todas las figuras planas y cuerpos del espacio con sus cotas, perímetros, áreas y volúmenes.</p>
+  </header>
+
+  <main class="table-page-wrap">
+
+    <div class="print-header">
+      <h1>Ficha Resumen: Perímetros, Áreas y Volúmenes</h1>
+      <p>MatesLab • Formulario de geometría básica</p>
+    </div>
+
+    <div class="action-bar">
+      <div style="font-size:0.9rem; color:var(--text-muted);">
+        <span class="tag-p">P</span> = Perímetro &nbsp;|&nbsp; 
+        <span class="tag-a">A</span> = Área (2D) / Superficie Total (3D) &nbsp;|&nbsp; 
+        <span class="tag-v">V</span> = Volumen
+      </div>
+      <button class="print-btn" onclick="window.print()">
+        <span>🖨️</span> Imprimir / Guardar PDF
+      </button>
+    </div>
+
+    <!-- ================= BLOQUE 1: FIGURAS PLANAS 2D ================= -->
+    <section>
+      <div class="section-title">
+        <span>📐</span> Figuras Planas (2D)
+      </div>
+
+      <div class="geo-grid">
+
+        <!-- CUADRADO -->
+        <div class="geo-card">
+          <svg class="geo-svg" viewBox="0 0 80 80">
+            <rect x="20" y="20" width="40" height="40" fill="rgba(56,189,248,0.15)" stroke="var(--accent-blue)" stroke-width="2" />
+            <text x="40" y="15" fill="#94a3b8" font-size="9" font-family="monospace" text-anchor="middle">l</text>
+            <text x="65" y="43" fill="#94a3b8" font-size="9" font-family="monospace">l</text>
+          </svg>
+          <div class="geo-info">
+            <span class="geo-name">Cuadrado</span>
+            <span class="formula-row"><span class="tag-p">P</span> = <strong>4 · l</strong></span>
+            <span class="formula-row"><span class="tag-a">A</span> = <strong>l²</strong></span>
+          </div>
+        </div>
+
+        <!-- RECTÁNGULO -->
+        <div class="geo-card">
+          <svg class="geo-svg" viewBox="0 0 80 80">
+            <rect x="12" y="25" width="56" height="30" fill="rgba(56,189,248,0.15)" stroke="var(--accent-blue)" stroke-width="2" />
+            <text x="40" y="20" fill="#94a3b8" font-size="9" font-family="monospace" text-anchor="middle">b</text>
+            <text x="72" y="43" fill="#94a3b8" font-size="9" font-family="monospace">h</text>
+          </svg>
+          <div class="geo-info">
+            <span class="geo-name">Rectángulo</span>
+            <span class="formula-row"><span class="tag-p">P</span> = <strong>2·b + 2·h</strong></span>
+            <span class="formula-row"><span class="tag-a">A</span> = <strong>b · h</strong></span>
+          </div>
+        </div>
+
+        <!-- TRIÁNGULO -->
+        <div class="geo-card">
+          <svg class="geo-svg" viewBox="0 0 80 80">
+            <polygon points="15,60 65,60 40,20" fill="rgba(56,189,248,0.15)" stroke="var(--accent-blue)" stroke-width="2" />
+            <line x1="40" y1="20" x2="40" y2="60" stroke="#f43f5e" stroke-width="1.5" stroke-dasharray="3" />
+            <text x="40" y="70" fill="#94a3b8" font-size="9" font-family="monospace" text-anchor="middle">b</text>
+            <text x="44" y="42" fill="#f43f5e" font-size="8" font-family="monospace">h</text>
+          </svg>
+          <div class="geo-info">
+            <span class="geo-name">Triángulo</span>
+            <span class="formula-row"><span class="tag-p">P</span> = <strong>a + b + c</strong></span>
+            <span class="formula-row"><span class="tag-a">A</span> = <strong>(b · h) / 2</strong></span>
+          </div>
+        </div>
+
+        <!-- ROMBO -->
+        <div class="geo-card">
+          <svg class="geo-svg" viewBox="0 0 80 80">
+            <polygon points="40,15 68,40 40,65 12,40" fill="rgba(56,189,248,0.15)" stroke="var(--accent-blue)" stroke-width="2" />
+            <line x1="12" y1="40" x2="68" y2="40" stroke="#94a3b8" stroke-width="1" stroke-dasharray="2" />
+            <line x1="40" y1="15" x2="40" y2="65" stroke="#f43f5e" stroke-width="1" stroke-dasharray="2" />
+            <text x="43" y="32" fill="#f43f5e" font-size="8" font-family="monospace">D</text>
+            <text x="56" y="49" fill="#94a3b8" font-size="8" font-family="monospace">d</text>
+          </svg>
+          <div class="geo-info">
+            <span class="geo-name">Rombo</span>
+            <span class="formula-row"><span class="tag-p">P</span> = <strong>4 · l</strong></span>
+            <span class="formula-row"><span class="tag-a">A</span> = <strong>(D · d) / 2</strong></span>
+          </div>
+        </div>
+
+        <!-- TRAPECIO -->
+        <div class="geo-card">
+          <svg class="geo-svg" viewBox="0 0 80 80">
+            <polygon points="25,25 55,25 68,60 12,60" fill="rgba(56,189,248,0.15)" stroke="var(--accent-blue)" stroke-width="2" />
+            <line x1="25" y1="25" x2="25" y2="60" stroke="#f43f5e" stroke-width="1.5" stroke-dasharray="3" />
+            <text x="40" y="20" fill="#94a3b8" font-size="8" font-family="monospace" text-anchor="middle">b</text>
+            <text x="40" y="70" fill="#94a3b8" font-size="8" font-family="monospace" text-anchor="middle">B</text>
+            <text x="29" y="45" fill="#f43f5e" font-size="8" font-family="monospace">h</text>
+          </svg>
+          <div class="geo-info">
+            <span class="geo-name">Trapecio</span>
+            <span class="formula-row"><span class="tag-p">P</span> = <strong>Suma lados</strong></span>
+            <span class="formula-row"><span class="tag-a">A</span> = <strong>[(B + b) · h] / 2</strong></span>
+          </div>
+        </div>
+
+        <!-- CÍRCULO -->
+        <div class="geo-card">
+          <svg class="geo-svg" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="26" fill="rgba(56,189,248,0.15)" stroke="var(--accent-blue)" stroke-width="2" />
+            <line x1="40" y1="40" x2="66" y2="40" stroke="#f43f5e" stroke-width="1.5" />
+            <circle cx="40" cy="40" r="2" fill="#fff" />
+            <text x="52" y="36" fill="#f43f5e" font-size="8" font-family="monospace">r</text>
+          </svg>
+          <div class="geo-info">
+            <span class="geo-name">Círculo</span>
+            <span class="formula-row"><span class="tag-p">P (Long.)</span> = <strong>2 · π · r</strong></span>
+            <span class="formula-row"><span class="tag-a">A</span> = <strong>π · r²</strong></span>
+          </div>
+        </div>
+
+        <!-- POLÍGONO REGULAR -->
+        <div class="geo-card">
+          <svg class="geo-svg" viewBox="0 0 80 80">
+            <!-- Hexágono regular con base horizontal abajo -->
+            <polygon points="26,18 54,18 68,42 54,66 26,66 12,42" fill="rgba(56,189,248,0.15)" stroke="var(--accent-blue)" stroke-width="2" />
+            
+            <!-- Centro del polígono -->
+            <circle cx="40" cy="42" r="2" fill="#fff" />
+            
+            <!-- Apotema: segmento perpendicular directo al punto medio del lado inferior (40, 66) -->
+            <line x1="40" y1="42" x2="40" y2="66" stroke="#f43f5e" stroke-width="2" />
+            
+            <!-- Símbolo de perpendicularidad (90º) en la base -->
+            <path d="M 40 60 L 46 60 L 46 66" fill="none" stroke="#f43f5e" stroke-width="1" />
+            
+            <!-- Etiquetas -->
+            <text x="44" y="55" fill="#f43f5e" font-size="8" font-family="monospace" font-weight="bold">ap</text>
+            <text x="40" y="75" fill="#94a3b8" font-size="9" font-family="monospace" text-anchor="middle">l</text>
+          </svg>
+          <div class="geo-info">
+            <span class="geo-name">Polígono Regular</span>
+            <span class="formula-row"><span class="tag-p">P</span> = <strong>nº lados · l</strong></span>
+            <span class="formula-row"><span class="tag-a">A</span> = <strong>(P · ap) / 2</strong></span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= BLOQUE 2: CUERPOS GEOMÉTRICOS 3D ================= -->
+    <section>
+      <div class="section-title">
+        <span>🧊</span> Cuerpos Geométricos (3D)
+      </div>
+
+      <div class="geo-grid">
+
+        <!-- CUBO -->
+        <div class="geo-card">
+          <svg class="geo-svg" viewBox="0 0 80 80">
+            <rect x="18" y="28" width="34" height="34" fill="rgba(16,185,129,0.15)" stroke="var(--accent-success)" stroke-width="1.5" />
+            <polygon points="18,28 32,16 66,16 52,28" fill="rgba(16,185,129,0.25)" stroke="var(--accent-success)" stroke-width="1.5" />
+            <polygon points="52,28 66,16 66,50 52,62" fill="rgba(16,185,129,0.35)" stroke="var(--accent-success)" stroke-width="1.5" />
+            <text x="35" y="71" fill="#94a3b8" font-size="9" font-family="monospace">a</text>
+          </svg>
+          <div class="geo-info">
+            <span class="geo-name">Cubo (Hexaedro)</span>
+            <span class="formula-row"><span class="tag-a">A. Total</span> = <strong>6 · a²</strong></span>
+            <span class="formula-row"><span class="tag-v">V</span> = <strong>a³</strong></span>
+          </div>
+        </div>
+
+        <!-- ORTOEDRO / PRISMA RECTANGULAR -->
+        <div class="geo-card">
+          <svg class="geo-svg" viewBox="0 0 80 80">
+            <rect x="15" y="32" width="40" height="28" fill="rgba(16,185,129,0.15)" stroke="var(--accent-success)" stroke-width="1.5" />
+            <polygon points="15,32 28,18 68,18 55,32" fill="rgba(16,185,129,0.25)" stroke="var(--accent-success)" stroke-width="1.5" />
+            <polygon points="55,32 68,18 68,46 55,60" fill="rgba(16,185,129,0.35)" stroke="var(--accent-success)" stroke-width="1.5" />
+            <text x="35" y="69" fill="#94a3b8" font-size="8" font-family="monospace">a</text>
+            <text x="63" y="58" fill="#94a3b8" font-size="8" font-family="monospace">b</text>
+            <text x="7" y="48" fill="#94a3b8" font-size="8" font-family="monospace">c</text>
+          </svg>
+          <div class="geo-info">
+            <span class="geo-name">Ortoedro (Prisma)</span>
+            <span class="formula-row"><span class="tag-a">A</span> = <strong>2(ab + ac + bc)</strong></span>
+            <span class="formula-row"><span class="tag-v">V</span> = <strong>a · b · c</strong> (Abase · h)</span>
+          </div>
+        </div>
+
+        <!-- CILINDRO -->
+        <div class="geo-card">
+          <svg class="geo-svg" viewBox="0 0 80 80">
+            <ellipse cx="40" cy="22" rx="22" ry="8" fill="rgba(16,185,129,0.25)" stroke="var(--accent-success)" stroke-width="1.5" />
+            <path d="M 18 22 L 18 58 A 22 8 0 0 0 62 58 L 62 22" fill="rgba(16,185,129,0.15)" stroke="var(--accent-success)" stroke-width="1.5" />
+            <line x1="40" y1="22" x2="62" y2="22" stroke="#f43f5e" stroke-width="1.2" />
+            <text x="50" y="19" fill="#f43f5e" font-size="7" font-family="monospace">r</text>
+            <text x="68" y="42" fill="#94a3b8" font-size="8" font-family="monospace">h</text>
+          </svg>
+          <div class="geo-info">
+            <span class="geo-name">Cilindro</span>
+            <span class="formula-row"><span class="tag-a">A. Total</span> = <strong>2πr(h + r)</strong></span>
+            <span class="formula-row"><span class="tag-v">V</span> = <strong>π · r² · h</strong></span>
+          </div>
+        </div>
+
+        <!-- CONO -->
+        <div class="geo-card">
+          <svg class="geo-svg" viewBox="0 0 80 80">
+            <path d="M 18 58 L 40 18 L 62 58" fill="rgba(16,185,129,0.15)" stroke="var(--accent-success)" stroke-width="1.5" />
+            <ellipse cx="40" cy="58" rx="22" ry="7" fill="rgba(16,185,129,0.25)" stroke="var(--accent-success)" stroke-width="1.5" />
+            <line x1="40" y1="18" x2="40" y2="58" stroke="#f43f5e" stroke-width="1" stroke-dasharray="2" />
+            <text x="43" y="38" fill="#f43f5e" font-size="7" font-family="monospace">h</text>
+            <text x="56" y="38" fill="#94a3b8" font-size="7" font-family="monospace">g</text>
+          </svg>
+          <div class="geo-info">
+            <span class="geo-name">Cono</span>
+            <span class="formula-row"><span class="tag-a">A. Total</span> = <strong>π · r · (g + r)</strong></span>
+            <span class="formula-row"><span class="tag-v">V</span> = <strong>(π · r² · h) / 3</strong></span>
+          </div>
+        </div>
+
+        <!-- ESFERA -->
+        <div class="geo-card">
+          <svg class="geo-svg" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="26" fill="rgba(16,185,129,0.15)" stroke="var(--accent-success)" stroke-width="1.5" />
+            <ellipse cx="40" cy="40" rx="26" ry="8" fill="none" stroke="var(--accent-success)" stroke-width="1" stroke-dasharray="3" />
+            <line x1="40" y1="40" x2="66" y2="40" stroke="#f43f5e" stroke-width="1.5" />
+            <circle cx="40" cy="40" r="1.5" fill="#fff" />
+            <text x="53" y="36" fill="#f43f5e" font-size="8" font-family="monospace">r</text>
+          </svg>
+          <div class="geo-info">
+            <span class="geo-name">Esfera</span>
+            <span class="formula-row"><span class="tag-a">Superficie</span> = <strong>4 · π · r²</strong></span>
+            <span class="formula-row"><span class="tag-v">V</span> = <strong>(4/3) · π · r³</strong></span>
+          </div>
+        </div>
+
+        <!-- PIRÁMIDE -->
+        <div class="geo-card">
+          <svg class="geo-svg" viewBox="0 0 80 80">
+            <polygon points="40,16 16,56 46,64" fill="rgba(16,185,129,0.25)" stroke="var(--accent-success)" stroke-width="1.5" />
+            <polygon points="40,16 46,64 66,54" fill="rgba(16,185,129,0.35)" stroke="var(--accent-success)" stroke-width="1.5" />
+            <line x1="40" y1="16" x2="40" y2="56" stroke="#f43f5e" stroke-width="1" stroke-dasharray="2" />
+            <text x="43" y="40" fill="#f43f5e" font-size="7" font-family="monospace">h</text>
+          </svg>
+          <div class="geo-info">
+            <span class="geo-name">Pirámide</span>
+            <span class="formula-row"><span class="tag-a">A. Total</span> = <strong>Abase + Alateral</strong></span>
+            <span class="formula-row"><span class="tag-v">V</span> = <strong>(Abase · h) / 3</strong></span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+</body>
+</html>

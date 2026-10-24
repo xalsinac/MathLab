@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geometría Analítica: Puntos y Rectas | MatesLab</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 0.5rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: start; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* CONTROLES SLIDER */
+    .slider-row { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.8rem; flex-wrap: wrap; }
+    .slider-row label { width: 120px; font-weight: 600; font-family: monospace; font-size: 0.92rem; }
+    .val-badge { width: 45px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.1rem; color: var(--text-main); }
+
+    /* FÓRMULAS */
+    .math-formula {
+      font-family: 'Courier New', Courier, monospace; font-size: 1.15rem; font-weight: bold;
+      background: #090d16; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
+      text-align: center; display: inline-block; margin: 0.5rem auto; color: #fff; width: 100%;
+    }
+
+    .fraction-vertical {
+      display: inline-flex; flex-direction: column; vertical-align: middle;
+      text-align: center; margin: 0 0.2rem; line-height: 1.1; font-size: 0.9em;
+    }
+    .fraction-vertical .num { border-bottom: 2px solid currentColor; padding: 0 0.2rem 1px 0.2rem; }
+    .fraction-vertical .den { padding: 1px 0.2rem 0 0.2rem; }
+
+    /* TARJETAS DE ECUACIONES */
+    .eq-card {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.45rem;
+      font-family: monospace;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .eq-label { color: var(--text-muted); font-size: 0.85rem; font-family: system-ui, sans-serif; font-weight: 600; }
+    .eq-expr { color: #fff; font-size: 1rem; font-weight: bold; }
+
+    /* SECCIÓN EXPLICATIVA PASO A PASO */
+    .steps-section {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .step-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+    .step-header {
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1rem;
+    }
+
+    /* SVG CANVAS */
+    .svg-canvas {
+      width: 100%;
+      height: 380px;
+      background: #090d16;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      display: block;
+    }
+
+    @media (max-width: 850px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Geometría Analítica: Puntos y Rectas en el Plano</h1>
+    <p>Conecta el álgebra y la geometría: distancia entre puntos, punto medio, deducción rigurosa de las 6 ecuaciones de la recta y análisis de posiciones relativas.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('tab_segmento', this)">📍 1. Segmento y Punto Medio</button>
+      <button class="tab-btn" onclick="switchTab('tab_vector', this)">🧭 2. Vector Director y Pendiente</button>
+      <button class="tab-btn" onclick="switchTab('tab_ecuaciones', this)">📝 3. Ecuaciones de la Recta</button>
+      <button class="tab-btn" onclick="switchTab('tab_posiciones', this)">⚔️ 4. Posición Relativa</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: PUNTO MEDIO Y DISTANCIA ================= -->
+    <div id="tab_segmento" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">Segmentos en el Plano</div>
+        <div class="content-text">
+          Dados dos puntos A(x<sub>1</sub>, y<sub>1</sub>) y B(x<sub>2</sub>, y<sub>2</sub>), el <strong>punto medio M</strong> se calcula como la media aritmética de sus coordenadas. La <strong>distancia d(A, B)</strong> se deduce aplicando el Teorema de Pitágoras sobre los incrementos horizontal (Δx = x<sub>2</sub> − x<sub>1</sub>) y vertical (Δy = y<sub>2</sub> − y<sub>1</sub>).
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Coordenadas de los Extremos</div>
+
+          <div style="font-weight:bold; color:var(--accent-blue); margin-bottom:0.4rem;">Punto A (x₁, y₁):</div>
+          <div class="slider-row">
+            <label>X₁:</label>
+            <input type="range" id="sl_ax" min="-6" max="6" value="-4" oninput="updateSegmento()">
+            <span class="val-badge" id="v_ax">-4</span>
+            <label style="margin-left:0.5rem;">Y₁:</label>
+            <input type="range" id="sl_ay" min="-6" max="6" value="-2" oninput="updateSegmento()">
+            <span class="val-badge" id="v_ay">-2</span>
+          </div>
+
+          <div style="font-weight:bold; color:var(--accent-op); margin-top:0.6rem; margin-bottom:0.4rem;">Punto B (x₂, y₂):</div>
+          <div class="slider-row">
+            <label>X₂:</label>
+            <input type="range" id="sl_bx" min="-6" max="6" value="4" oninput="updateSegmento()">
+            <span class="val-badge" id="v_bx">4</span>
+            <label style="margin-left:0.5rem;">Y₂:</label>
+            <input type="range" id="sl_by" min="-6" max="6" value="4" oninput="updateSegmento()">
+            <span class="val-badge" id="v_by">4</span>
+          </div>
+
+          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.95rem; line-height:2; margin-top:1rem;">
+            <div>
+              • <strong>Punto Medio M:</strong> (<span class="fraction-vertical"><span class="num">x₁ + x₂</span><span class="den">2</span></span>, <span class="fraction-vertical"><span class="num">y₁ + y₂</span><span class="den">2</span></span>) = 
+              <strong style="color:var(--accent-gold); font-size:1.1rem;" id="txt_m_coords">(0.0, 1.0)</strong>
+            </div>
+            <div>
+              • <strong>Vector AB:</strong> B − A = (<span id="txt_ab_x">8</span>, <span id="txt_ab_y">6</span>)
+            </div>
+            <div>
+              • <strong>Distancia d(A,B):</strong> √[(Δx)² + (Δy)²] = √[<span id="txt_dx2">64</span> + <span id="txt_dy2">36</span>] = 
+              <strong style="color:var(--accent-success); font-size:1.15rem;" id="txt_dist">10.00 u</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-blue);">
+          <svg class="svg-canvas" viewBox="-125 -125 250 250" id="svg_segmento">
+            <!-- Render dinámico -->
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: VECTOR DIRECTOR Y PENDIENTE ================= -->
+    <div id="tab_vector" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">Inclinación y Dirección</div>
+        <div class="content-text">
+          Una recta queda determinada por un punto y una dirección. El <strong>vector director v = (v<sub>1</sub>, v<sub>2</sub>)</strong> indica su sentido de traslación. La <strong>pendiente (m)</strong> cuantifica cuánto asciende o desciende la recta por cada unidad de avance horizontal: <strong>m = v<sub>2</sub> / v<sub>1</sub> = tg(α)</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Componentes del Vector Director</div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-blue);">Avance X (v₁):</label>
+            <input type="range" id="sl_v1" min="-6" max="6" value="4" oninput="updateVectorPendiente()">
+            <span class="val-badge" id="v_v1" style="color:var(--accent-blue);">4</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-op);">Desplazamiento Y (v₂):</label>
+            <input type="range" id="sl_v2" min="-6" max="6" value="3" oninput="updateVectorPendiente()">
+            <span class="val-badge" id="v_v2" style="color:var(--accent-op);">3</span>
+          </div>
+
+          <div class="math-formula" style="border-color:var(--accent-gold); font-size:1.15rem;">
+            Vector: v = (<span id="txt_v1_f">4</span>, <span id="txt_v2_f">3</span>) &nbsp;➔&nbsp; 
+            Pendiente: m = <span class="fraction-vertical"><span class="num" id="txt_v2_num">3</span><span class="den" id="txt_v1_den">4</span></span> = <span style="color:var(--accent-gold);" id="txt_m_val">0.75</span>
+          </div>
+
+          <div id="box_pendiente_desc" style="background:#090d16; padding:1.1rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.92rem; line-height:1.7; color:var(--text-muted);">
+            <!-- Explicación analítica dinámica -->
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-gold);">
+          <svg class="svg-canvas" viewBox="-125 -125 250 250" id="svg_vector">
+            <!-- Render dinámico -->
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: LAS 6 ECUACIONES DE LA RECTA ================= -->
+    <div id="tab_ecuaciones" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">Las 6 Formas de una Misma Recta</div>
+        <div class="content-text">
+          Una misma recta en el plano admite 6 expresiones analíticas distintas. Modifica el punto P y el vector director v para ver cómo se transforman simultáneamente en tiempo real.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Parámetros Iniciales: Punto P y Vector v</div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-gold);">Punto Px:</label>
+            <input type="range" id="sl_px" min="-5" max="5" value="1" oninput="updateEcuaciones()">
+            <span class="val-badge" id="v_px">1</span>
+            <label style="color:var(--accent-gold); margin-left:0.5rem;">Py:</label>
+            <input type="range" id="sl_py" min="-5" max="5" value="2" oninput="updateEcuaciones()">
+            <span class="val-badge" id="v_py">2</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-blue);">Vector v₁:</label>
+            <input type="range" id="sl_eq_v1" min="-5" max="5" value="2" oninput="updateEcuaciones()">
+            <span class="val-badge" id="v_eq_v1">2</span>
+            <label style="color:var(--accent-blue); margin-left:0.5rem;">Vector v₂:</label>
+            <input type="range" id="sl_eq_v2" min="-5" max="5" value="3" oninput="updateEcuaciones()">
+            <span class="val-badge" id="v_eq_v2">3</span>
+          </div>
+
+          <!-- TARJETAS DE LAS 6 FORMAS -->
+          <div style="margin-top:0.8rem; display:flex; flex-direction:column; gap:0.4rem;">
+            <div class="eq-card">
+              <span class="eq-label">1. Vectorial:</span>
+              <span class="eq-expr" id="eq_vectorial">(x, y) = (1, 2) + t·(2, 3)</span>
+            </div>
+            <div class="eq-card">
+              <span class="eq-label">2. Paramétricas:</span>
+              <span class="eq-expr" id="eq_param">x = 1 + 2t  |  y = 2 + 3t</span>
+            </div>
+            <div class="eq-card">
+              <span class="eq-label">3. Continua:</span>
+              <span class="eq-expr" id="eq_continua">(x − 1)/2 = (y − 2)/3</span>
+            </div>
+            <div class="eq-card">
+              <span class="eq-label">4. Punto-Pendiente:</span>
+              <span class="eq-expr" id="eq_ptopen">y − 2 = 1.5·(x − 1)</span>
+            </div>
+            <div class="eq-card">
+              <span class="eq-label">5. Explícita (y = mx + n):</span>
+              <span class="eq-expr" style="color:var(--accent-gold);" id="eq_explicita">y = 1.5x + 0.5</span>
+            </div>
+            <div class="eq-card">
+              <span class="eq-label">6. General (Ax + By + C = 0):</span>
+              <span class="eq-expr" style="color:var(--accent-success);" id="eq_general">3x − 2y + 1 = 0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-success);">
+          <svg class="svg-canvas" viewBox="-125 -125 250 250" id="svg_ecuaciones">
+            <!-- Recta dibujada dinámicamente -->
+          </svg>
+        </div>
+      </div>
+
+      <!-- SECCIÓN PASO A PASO: CÓMO SE PASA DE UNA A OTRA -->
+      <div class="steps-section">
+        <div class="panel-title" style="margin-bottom:0.5rem; color:#fff;">
+          📐 Procedimiento Paso a Paso: Deducción de cada Ecuación
+        </div>
+
+        <div class="step-block" style="border-left-color: #38bdf8;">
+          <div class="step-header">
+            <span>Paso 1:</span> De la Ecuación Vectorial a las Paramétricas
+          </div>
+          <div>
+            Partimos de <code>(x, y) = (p₁, p₂) + t·(v₁, v₂)</code>. Se igualan las componentes por separado:
+            <br>
+            • Primera componente: <code>x = p₁ + v₁·t</code>
+            <br>
+            • Segunda componente: <code>y = p₂ + v₂·t</code> (donde <em>t</em> es el parámetro libre en ℝ).
+          </div>
+        </div>
+
+        <div class="step-block" style="border-left-color: #fbbf24;">
+          <div class="step-header">
+            <span>Paso 2:</span> De las Paramétricas a la Ecuación Continua
+          </div>
+          <div>
+            Despejamos el parámetro <code>t</code> en ambas ecuaciones:
+            <br>
+            <code>t = (x − p₁) / v₁</code> &nbsp;&nbsp;y&nbsp;&nbsp; <code>t = (y − p₂) / v₂</code>
+            <br>
+            Como el valor de <em>t</em> es el mismo, se igualan: <strong>(x − p₁) / v₁ = (y − p₂) / v₂</strong>.
+          </div>
+        </div>
+
+        <div class="step-block" style="border-left-color: #f43f5e;">
+          <div class="step-header">
+            <span>Paso 3:</span> De la Continua a la Punto-Pendiente
+          </div>
+          <div>
+            Pasamos el denominador <code>v₂</code> multiplicando al miembro izquierdo:
+            <br>
+            <code>y − p₂ = (v₂ / v₁) · (x − p₁)</code>
+            <br>
+            Como la pendiente es <strong>m = v₂ / v₁</strong>, sustituimos directamente y obtenemos: <strong>y − p₂ = m·(x − p₁)</strong>.
+          </div>
+        </div>
+
+        <div class="step-block" style="border-left-color: #a855f7;">
+          <div class="step-header">
+            <span>Paso 4:</span> De la Punto-Pendiente a la Explícita (y = mx + n)
+          </div>
+          <div>
+            Desarrollamos el producto de la derecha y aislamos la incógnita <code>y</code>:
+            <br>
+            <code>y = m·x − m·p₁ + p₂</code> ➔ Llamamos <strong>n = p₂ − m·p₁</strong> (la ordenada en el origen, punto donde corta al eje Y).
+            <br>
+            Forma final: <strong>y = m·x + n</strong>.
+          </div>
+        </div>
+
+        <div class="step-block" style="border-left-color: #10b981;">
+          <div class="step-header">
+            <span>Paso 5:</span> De la Continua a la General o Implícita (Ax + By + C = 0)
+          </div>
+          <div>
+            Multiplicamos en cruz la ecuación continua: <code>v₂·(x − p₁) = v₁·(y − p₂)</code>
+            <br>
+            Desarrollamos: <code>v₂·x − v₂·p₁ = v₁·y − v₁·p₂</code>
+            <br>
+            Pasamos todo al miembro izquierdo: <code>v₂·x − v₁·y + (v₁·p₂ − v₂·p₁) = 0</code>
+            <br>
+            Definimos <strong>A = v₂</strong>, <strong>B = −v₁</strong> y <strong>C = v₁·p₂ − v₂·p₁</strong>. Obtenemos: <strong>A·x + B·y + C = 0</strong>.
+            <br>
+            <em>Propiedad clave: El vector normal (perpendicular) a la recta es directamente <strong>n⃗ = (A, B)</strong>.</em>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: POSICIÓN RELATIVA ================= -->
+    <div id="tab_posiciones" class="tab-content">
+      <div class="explanation-card" style="border-left-color: #c084fc;">
+        <div class="badge" style="color: #c084fc;">Posiciones Relativas en el Plano</div>
+        <div class="content-text">
+          Dos rectas r<sub>1</sub> y r<sub>2</sub> pueden ser: <strong>Secantes</strong> (se cortan en un punto único al resolver el sistema), <strong>Paralelas</strong> (tienen idéntica inclinación pero distinta ordenada en el origen) o <strong>Coincidentes</strong> (son la misma recta). Son <strong>perpendiculares</strong> cuando sus pendientes verifican <strong>m<sub>1</sub> · m<sub>2</sub> = −1</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Compara Dos Rectas Explícitas</div>
+
+          <div style="font-weight:bold; color:var(--accent-blue); margin-bottom:0.4rem;">Recta r₁: y = m₁·x + n₁</div>
+          <div class="slider-row">
+            <label>m₁ (pendiente):</label>
+            <input type="range" id="sl_r1_m" min="-4" max="4" step="0.5" value="1" oninput="updatePosiciones()">
+            <span class="val-badge" id="v_r1_m">1</span>
+            <label style="margin-left:0.5rem;">n₁ (corte Y):</label>
+            <input type="range" id="sl_r1_n" min="-4" max="4" value="1" oninput="updatePosiciones()">
+            <span class="val-badge" id="v_r1_n">1</span>
+          </div>
+
+          <div style="font-weight:bold; color:var(--accent-op); margin-top:0.6rem; margin-bottom:0.4rem;">Recta r₂: y = m₂·x + n₂</div>
+          <div class="slider-row">
+            <label>m₂ (pendiente):</label>
+            <input type="range" id="sl_r2_m" min="-4" max="4" step="0.5" value="-1" oninput="updatePosiciones()">
+            <span class="val-badge" id="v_r2_m">-1</span>
+            <label style="margin-left:0.5rem;">n₂ (corte Y):</label>
+            <input type="range" id="sl_r2_n" min="-4" max="4" value="3" oninput="updatePosiciones()">
+            <span class="val-badge" id="v_r2_n">3</span>
+          </div>
+
+          <div id="pos_diagnostico" style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.95rem; line-height:1.9; margin-top:0.8rem;">
+            <!-- Diagnóstico algebraico dinámico -->
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:#c084fc;">
+          <svg class="svg-canvas" viewBox="-125 -125 250 250" id="svg_posiciones">
+            <!-- Rectas r1 y r2 con punto de corte -->
+          </svg>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+
+      // Forzar renderizado visual al activar la pestaña
+      if (tabId === 'tab_segmento') updateSegmento();
+      if (tabId === 'tab_vector') updateVectorPendiente();
+      if (tabId === 'tab_ecuaciones') updateEcuaciones();
+      if (tabId === 'tab_posiciones') updatePosiciones();
+    }
+
+    // Dibuja una rejilla de fondo en un SVG
+    function drawGrid(scale) {
+      let lines = `
+        <line x1="-120" y1="0" x2="120" y2="0" stroke="#475569" stroke-width="1.5" />
+        <line x1="0" y1="-120" x2="0" y2="120" stroke="#475569" stroke-width="1.5" />
+        <text x="110" y="14" fill="#64748b" font-size="8" font-family="monospace">X</text>
+        <text x="4" y="-110" fill="#64748b" font-size="8" font-family="monospace">Y</text>
+      `;
+      for (let i = -6; i <= 6; i++) {
+        if (i === 0) continue;
+        const p = i * scale;
+        lines += `
+          <line x1="${p}" y1="-120" x2="${p}" y2="120" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
+          <line x1="-120" y1="${p}" x2="120" y2="${p}" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
+          <line x1="${p}" y1="-3" x2="${p}" y2="3" stroke="#64748b" stroke-width="1.2" />
+          <line x1="-3" y1="${p}" x2="3" y2="${p}" stroke="#64748b" stroke-width="1.2" />
+        `;
+      }
+      return lines;
+    }
+
+    // =========================================================================
+    // 1. SEGMENTO Y PUNTO MEDIO
+    // =========================================================================
+    function updateSegmento() {
+      const ax = parseInt(document.getElementById('sl_ax').value);
+      const ay = parseInt(document.getElementById('sl_ay').value);
+      const bx = parseInt(document.getElementById('sl_bx').value);
+      const by = parseInt(document.getElementById('sl_by').value);
+
+      document.getElementById('v_ax').innerText = ax;
+      document.getElementById('v_ay').innerText = ay;
+      document.getElementById('v_bx').innerText = bx;
+      document.getElementById('v_by').innerText = by;
+
+      const mx = (ax + bx) / 2;
+      const my = (ay + by) / 2;
+
+      const dx = bx - ax;
+      const dy = by - ay;
+      const dist = Math.hypot(dx, dy);
+
+      document.getElementById('txt_m_coords').innerText = `(${mx.toFixed(1)}, ${my.toFixed(1)})`;
+      document.getElementById('txt_ab_x').innerText = dx;
+      document.getElementById('txt_ab_y').innerText = dy;
+      document.getElementById('txt_dx2').innerText = dx * dx;
+      document.getElementById('txt_dy2').innerText = dy * dy;
+      document.getElementById('txt_dist').innerText = `${dist.toFixed(2)} u`;
+
+      const sc = 17;
+      const pax = ax * sc, pay = -ay * sc;
+      const pbx = bx * sc, pby = -by * sc;
+      const pmx = mx * sc, pmy = -my * sc;
+
+      const svg = document.getElementById('svg_segmento');
+      svg.innerHTML = `
+        ${drawGrid(sc)}
+        
+        <!-- Triángulo rectángulo de Pitágoras -->
+        <polygon points="${pax},${pay} ${pbx},${pay} ${pbx},${pby}" fill="rgba(56,189,248,0.06)" stroke="none" />
+        <line x1="${pax}" y1="${pay}" x2="${pbx}" y2="${pay}" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3" />
+        <line x1="${pbx}" y1="${pay}" x2="${pbx}" y2="${pby}" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3" />
+
+        <!-- Segmento AB -->
+        <line x1="${pax}" y1="${pay}" x2="${pbx}" y2="${pby}" stroke="#fff" stroke-width="2.5" />
+
+        <!-- Puntos A, B y M -->
+        <circle cx="${pax}" cy="${pay}" r="4.5" fill="var(--accent-blue)" />
+        <text x="${pax - 8}" y="${pay - 8}" fill="var(--accent-blue)" font-size="8.5" font-family="monospace">A(${ax},${ay})</text>
+
+        <circle cx="${pbx}" cy="${pby}" r="4.5" fill="var(--accent-op)" />
+        <text x="${pbx + 8}" y="${pby - 8}" fill="var(--accent-op)" font-size="8.5" font-family="monospace">B(${bx},${by})</text>
+
+        <circle cx="${pmx}" cy="${pmy}" r="5" fill="var(--accent-gold)" />
+        <text x="${pmx + 6}" y="${pmy + 14}" fill="var(--accent-gold)" font-weight="bold" font-size="8.5" font-family="monospace">M(${mx.toFixed(1)},${my.toFixed(1)})</text>
+      `;
+    }
+
+    // =========================================================================
+    // 2. VECTOR DIRECTOR Y PENDIENTE
+    // =========================================================================
+    function updateVectorPendiente() {
+      const v1 = parseInt(document.getElementById('sl_v1').value);
+      const v2 = parseInt(document.getElementById('sl_v2').value);
+
+      document.getElementById('v_v1').innerText = v1;
+      document.getElementById('v_v2').innerText = v2;
+
+      document.getElementById('txt_v1_f').innerText = v1;
+      document.getElementById('txt_v2_f').innerText = v2;
+      document.getElementById('txt_v2_num').innerText = v2;
+      document.getElementById('txt_v1_den').innerText = v1;
+
+      const descBox = document.getElementById('box_pendiente_desc');
+      if (v1 === 0) {
+        document.getElementById('txt_m_val').innerText = '∄ (Vertical)';
+        descBox.innerHTML = `
+          <strong style="color:var(--accent-op);">Recta Vertical (v₁ = 0):</strong><br>
+          La pendiente no existe (tiende a ±∞) porque la división por cero no está definida en ℝ. La recta es perpendicular al eje X y paralela al eje Y (ecuación de tipo <code>x = k</code>).
+        `;
+      } else {
+        const m = v2 / v1;
+        document.getElementById('txt_m_val').innerText = m.toFixed(2);
+        const angDeg = (Math.atan(m) * 180 / Math.PI).toFixed(1);
+        
+        let sentido = m > 0 ? "Creciente ↗" : (m < 0 ? "Decreciente ↘" : "Horizontal ➔");
+        descBox.innerHTML = `
+          <strong>Comportamiento:</strong> <span style="color:var(--accent-gold); font-weight:bold;">${sentido}</span><br>
+          • Por cada unidad que avanza a la derecha en el eje X, asciende o desciende <code>${m.toFixed(2)}</code> unidades en el eje Y.<br>
+          • Ángulo de inclinación medido desde el eje X positivo: <code>α = arctg(m) = ${angDeg}º</code>.
+        `;
+      }
+
+      const sc = 17;
+      const px = v1 * sc, py = -v2 * sc;
+      const svg = document.getElementById('svg_vector');
+
+      svg.innerHTML = `
+        ${drawGrid(sc)}
+        
+        <!-- Componentes horizontal y vertical -->
+        <line x1="0" y1="0" x2="${px}" y2="0" stroke="var(--accent-blue)" stroke-width="2.5" />
+        <line x1="${px}" y1="0" x2="${px}" y2="${py}" stroke="var(--accent-op)" stroke-width="2.5" />
+        
+        <!-- Vector v -->
+        <line x1="0" y1="0" x2="${px}" y2="${py}" stroke="var(--accent-gold)" stroke-width="3" />
+        <circle cx="${px}" cy="${py}" r="4.5" fill="var(--accent-gold)" />
+
+        <text x="${px/2}" y="${py >= 0 ? -8 : 14}" fill="var(--accent-blue)" font-size="8.5" font-family="monospace" text-anchor="middle">v₁ = ${v1}</text>
+        <text x="${px >= 0 ? px + 8 : px - 28}" y="${py/2}" fill="var(--accent-op)" font-size="8.5" font-family="monospace">v₂ = ${v2}</text>
+      `;
+    }
+
+    // =========================================================================
+    // 3. LAS 6 ECUACIONES DE LA RECTA
+    // =========================================================================
+    function updateEcuaciones() {
+      const px = parseInt(document.getElementById('sl_px').value);
+      const py = parseInt(document.getElementById('sl_py').value);
+      let v1 = parseInt(document.getElementById('sl_eq_v1').value);
+      let v2 = parseInt(document.getElementById('sl_eq_v2').value);
+
+      if (v1 === 0 && v2 === 0) { v1 = 1; } // Evitar vector nulo
+
+      document.getElementById('v_px').innerText = px;
+      document.getElementById('v_py').innerText = py;
+      document.getElementById('v_eq_v1').innerText = v1;
+      document.getElementById('v_eq_v2').innerText = v2;
+
+      // 1. Vectorial
+      document.getElementById('eq_vectorial').innerText = `(x, y) = (${px}, ${py}) + t·(${v1}, ${v2})`;
+
+      // 2. Paramétricas
+      const signV1 = v1 >= 0 ? `+ ${v1}t` : `− ${Math.abs(v1)}t`;
+      const signV2 = v2 >= 0 ? `+ ${v2}t` : `− ${Math.abs(v2)}t`;
+      document.getElementById('eq_param').innerText = `x = ${px} ${signV1}  |  y = ${py} ${signV2}`;
+
+      // 3. Continua
+      const p1Sign = px >= 0 ? `x − ${px}` : `x + ${Math.abs(px)}`;
+      const p2Sign = py >= 0 ? `y − ${py}` : `y + ${Math.abs(py)}`;
+      document.getElementById('eq_continua').innerText = `(${p1Sign}) / ${v1} = (${p2Sign}) / ${v2}`;
+
+      // 4. Punto-Pendiente & Explícita
+      if (v1 !== 0) {
+        const m = v2 / v1;
+        const n = py - m * px;
+        document.getElementById('eq_ptopen').innerText = `y − (${py}) = ${m.toFixed(2)}·(x − (${px}))`;
+        document.getElementById('eq_explicita').innerText = `y = ${m.toFixed(2)}x ${n >= 0 ? '+ ' + n.toFixed(2) : '− ' + Math.abs(n).toFixed(2)}`;
+      } else {
+        document.getElementById('eq_ptopen').innerText = `x = ${px} (Vertical)`;
+        document.getElementById('eq_explicita').innerText = `x = ${px} (No definida)`;
+      }
+
+      // 6. General: A·x + B·y + C = 0
+      const A = v2;
+      const B = -v1;
+      const C = v1 * py - v2 * px;
+      const signB = B >= 0 ? `+ ${B}y` : `− ${Math.abs(B)}y`;
+      const signC = C >= 0 ? `+ ${C}` : `− ${Math.abs(C)}`;
+      document.getElementById('eq_general').innerText = `${A}x ${signB} ${signC} = 0`;
+
+      // SVG
+      const sc = 17;
+      const svg = document.getElementById('svg_ecuaciones');
+
+      // Calcular dos puntos extremos para trazar la recta
+      const tMin = -15, tMax = 15;
+      const x1 = (px + v1 * tMin) * sc;
+      const y1 = -(py + v2 * tMin) * sc;
+      const x2 = (px + v1 * tMax) * sc;
+      const y2 = -(py + v2 * tMax) * sc;
+
+      svg.innerHTML = `
+        <!-- Máscara de recorte para que la recta no desborde el canvas -->
+        <defs>
+          <clipPath id="canvas-clip">
+            <rect x="-120" y="-120" width="240" height="240" rx="8" />
+          </clipPath>
+        </defs>
+
+        <g clip-path="url(#canvas-clip)">
+          ${drawGrid(sc)}
+          
+          <!-- Recta trazada -->
+          <line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--accent-success)" stroke-width="2.5" />
+
+          <!-- Punto P -->
+          <circle cx="${px * sc}" cy="${-py * sc}" r="4.5" fill="var(--accent-gold)" />
+          <text x="${px * sc + 7}" y="${-py * sc - 7}" fill="var(--accent-gold)" font-size="8.5" font-family="monospace">P(${px},${py})</text>
+
+          <!-- Vector director aplicado en P -->
+          <line x1="${px * sc}" y1="${-py * sc}" x2="${(px + v1) * sc}" y2="${-(py + v2) * sc}" stroke="var(--accent-blue)" stroke-width="3" />
+          <circle cx="${(px + v1) * sc}" cy="${-(py + v2) * sc}" r="3.5" fill="var(--accent-blue)" />
+        </g>
+      `;
+    }
+
+    // =========================================================================
+    // 4. POSICIÓN RELATIVA DE DOS RECTAS
+    // =========================================================================
+    function updatePosiciones() {
+      const m1 = parseFloat(document.getElementById('sl_r1_m').value);
+      const n1 = parseFloat(document.getElementById('sl_r1_n').value);
+      const m2 = parseFloat(document.getElementById('sl_r2_m').value);
+      const n2 = parseFloat(document.getElementById('sl_r2_n').value);
+
+      document.getElementById('v_r1_m').innerText = m1;
+      document.getElementById('v_r1_n').innerText = n1;
+      document.getElementById('v_r2_m').innerText = m2;
+      document.getElementById('v_r2_n').innerText = n2;
+
+      const box = document.getElementById('pos_diagnostico');
+      let corteX = null, corteY = null;
+      let posText = "";
+
+      if (Math.abs(m1 - m2) < 0.0001) {
+        if (Math.abs(n1 - n2) < 0.0001) {
+          posText = `
+            <strong style="color:var(--accent-gold);">RECTAS COINCIDENTES:</strong><br>
+            Tienen la misma pendiente (<code>m₁ = m₂ = ${m1}</code>) y la misma ordenada en el origen (<code>n₁ = n₂ = ${n1}</code>). Representan la misma recta; el sistema es <strong>Compatible Indeterminado</strong> (infinitas soluciones).
+          `;
+        } else {
+          posText = `
+            <strong style="color:var(--accent-blue);">RECTAS PARALELAS:</strong><br>
+            Tienen la misma inclinación (<code>m₁ = m₂ = ${m1}</code>) pero cortan al eje Y a distinta altura (<code>${n1} ≠ ${n2}</code>). No se intersecan en ningún punto; el sistema es <strong>Incompatible</strong> (0 soluciones).
+          `;
+        }
+      } else {
+        // Secantes: m1·x + n1 = m2·x + n2  =>  x = (n2 - n1) / (m1 - m2)
+        corteX = (n2 - n1) / (m1 - m2);
+        corteY = m1 * corteX + n1;
+
+        const esPerpendicular = Math.abs(m1 * m2 + 1) < 0.01;
+        const perpBadge = esPerpendicular ? `<strong style="color:var(--accent-success);">¡Son Perpendiculares (forman 90º)!</strong> (m₁ · m₂ = −1)<br>` : "";
+
+        posText = `
+          <strong style="color:#c084fc;">RECTAS SECANTES:</strong><br>
+          Pendientes distintas (<code>${m1} ≠ ${m2}</code>). Se cortan en un único punto; el sistema es <strong>Compatible Determinado</strong>.<br>
+          ${perpBadge}
+          • Punto de corte P: <strong style="color:#fff; font-size:1.1rem;">(${corteX.toFixed(2)}, ${corteY.toFixed(2)})</strong>
+        `;
+      }
+
+      box.innerHTML = posText;
+
+      const sc = 17;
+      const svg = document.getElementById('svg_posiciones');
+
+      // Trazar rectas completas
+      const r1_x1 = -10, r1_y1 = m1 * r1_x1 + n1;
+      const r1_x2 = 10,  r1_y2 = m1 * r1_x2 + n1;
+
+      const r2_x1 = -10, r2_y1 = m2 * r2_x1 + n2;
+      const r2_x2 = 10,  r2_y2 = m2 * r2_x2 + n2;
+
+      let corteCircle = "";
+      if (corteX !== null && Math.abs(corteX) <= 7 && Math.abs(corteY) <= 7) {
+        corteCircle = `
+          <circle cx="${corteX * sc}" cy="${-corteY * sc}" r="5" fill="#fff" stroke="#c084fc" stroke-width="2" />
+          <text x="${corteX * sc + 7}" y="${-corteY * sc - 7}" fill="#fff" font-size="8.5" font-weight="bold" font-family="monospace">P(${corteX.toFixed(1)},${corteY.toFixed(1)})</text>
+        `;
+      }
+
+      svg.innerHTML = `
+        <defs>
+          <clipPath id="pos-clip">
+            <rect x="-120" y="-120" width="240" height="240" rx="8" />
+          </clipPath>
+        </defs>
+
+        <g clip-path="url(#pos-clip)">
+          ${drawGrid(sc)}
+          
+          <!-- Recta r1 -->
+          <line x1="${r1_x1 * sc}" y1="${-r1_y1 * sc}" x2="${r1_x2 * sc}" y2="${-r1_y2 * sc}" stroke="var(--accent-blue)" stroke-width="2.5" />
+
+          <!-- Recta r2 -->
+          <line x1="${r2_x1 * sc}" y1="${-r2_y1 * sc}" x2="${r2_x2 * sc}" y2="${-r2_y2 * sc}" stroke="var(--accent-op)" stroke-width="2.5" />
+
+          ${corteCircle}
+        </g>
+      `;
+    }
+
+    // Inicializar todas las pestañas al cargar el script para que los SVGs estén listos
+    updateSegmento();
+    updateVectorPendiente();
+    updateEcuaciones();
+    updatePosiciones();
+  </script>
+</body>
+</html>

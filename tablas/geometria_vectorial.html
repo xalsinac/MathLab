@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geometría Vectorial en ℝ³ | MatesLab</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    .table-page-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+    }
+
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+    }
+
+    .print-btn {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border: none;
+      font-weight: 800;
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .print-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* GRID DE PRODUCTOS */
+    .vector-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .vector-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.6rem;
+    }
+    .vector-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .vector-badge {
+      font-family: monospace;
+      font-size: 0.82rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+    .badge-scalar { background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); }
+    .badge-vectorial { background: rgba(244, 63, 94, 0.15); color: var(--accent-op); }
+    .badge-mixto { background: rgba(16, 185, 129, 0.15); color: var(--accent-success); }
+
+    .vector-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .info-subcard {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+    .info-subcard strong {
+      color: #fff;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 0.88rem;
+    }
+
+    .math-code {
+      font-family: monospace;
+      font-size: 1.02rem;
+      color: var(--accent-gold);
+    }
+
+    /* MATRIZ / DETERMINANTE */
+    .det-bracket {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      font-family: monospace;
+      border-left: 2px solid #fff;
+      border-right: 2px solid #fff;
+      padding: 0 0.4rem;
+      margin: 0 0.2rem;
+      line-height: 1.3;
+      text-align: center;
+      font-size: 0.88em;
+    }
+
+    .fraction-vertical {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      margin: 0 0.2rem;
+      line-height: 1.1;
+      font-size: 0.9em;
+    }
+    .fraction-vertical .num { border-bottom: 2px solid currentColor; padding: 0 0.2rem 1px 0.2rem; }
+    .fraction-vertical .den { padding: 1px 0.2rem 0 0.2rem; }
+
+    /* ESTILOS DE IMPRESIÓN (PDF A4) */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .nav-bar, .app-header, .action-bar, footer {
+        display: none !important;
+      }
+      .table-page-wrap {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        gap: 0.6rem !important;
+      }
+      .print-header {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 0.6rem;
+      }
+      .print-header h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.1rem;
+        color: #000;
+      }
+      .vector-card {
+        background: #fff !important;
+        border: 1px solid #000 !important;
+        padding: 0.6rem 0.8rem !important;
+        gap: 0.5rem !important;
+        break-inside: avoid;
+        margin-bottom: 0.5rem;
+      }
+      .vector-title { color: #000 !important; font-size: 1rem !important; }
+      .vector-badge {
+        border: 1px solid #000 !important;
+        background: #f1f5f9 !important;
+        color: #000 !important;
+      }
+      .info-subcard {
+        background: #fff !important;
+        border: 1px solid #ccc !important;
+        padding: 0.4rem 0.6rem !important;
+        color: #000 !important;
+      }
+      .info-subcard strong { color: #000 !important; }
+      .math-code { color: #000 !important; font-weight: bold; }
+      .det-bracket { border-color: #000 !important; }
+    }
+
+    .print-header { display: none; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Geometría Vectorial en ℝ³</h1>
+    <p>Formulario analítico de vectores en el espacio: producto escalar, vectorial y mixto con cálculo de ángulos, áreas de polígonos y volúmenes de poliedros.</p>
+  </header>
+
+  <main class="table-page-wrap">
+
+    <div class="print-header">
+      <h1>Formulario de Geometría Vectorial en ℝ³</h1>
+      <p>MatesLab • Ficha de referencia para 2º de Bachillerato y EBAU / Selectividad</p>
+    </div>
+
+    <div class="action-bar">
+      <div style="font-size:0.9rem; color:var(--text-muted);">
+        📋 Consideramos los vectores coordenados <code>u = (u₁, u₂, u₃)</code>, <code>v = (v₁, v₂, v₃)</code> y <code>w = (w₁, w₂, w₃)</code>.
+      </div>
+      <button class="print-btn" onclick="window.print()">
+        <span>🖨️</span> Imprimir / Guardar PDF
+      </button>
+    </div>
+
+    <!-- ================= 1. PRODUCTO ESCALAR ================= -->
+    <div class="vector-card">
+      <div class="vector-header">
+        <div class="vector-title">
+          <span>🔵</span> 1. Producto Escalar (u · v)
+        </div>
+        <span class="vector-badge badge-scalar">Resultado = NÚMERO (Escalar)</span>
+      </div>
+
+      <div class="vector-grid">
+        <div class="info-subcard">
+          <strong>Definición Geométrica y Analítica:</strong>
+          <span class="math-code">u · v = |u| · |v| · cos(α)</span>
+          <span class="math-code">u · v = u₁·v₁ + u₂·v₂ + u₃·v₃</span>
+        </div>
+
+        <div class="info-subcard">
+          <strong>Condición de Perpendicularidad (Ortogonalidad):</strong>
+          <span class="math-code">u ⊥ v ⟺ u · v = 0</span>
+          <span style="font-size:0.82rem; color:var(--text-muted);">Dos vectores no nulos son perpendiculares si y solo si su producto escalar es nulo.</span>
+        </div>
+
+        <div class="info-subcard">
+          <strong>Módulo y Ángulo entre dos vectores:</strong>
+          <span class="math-code">|u| = √(u₁² + u₂² + u₃²)</span>
+          <span class="math-code">
+            cos(α) = <span class="fraction-vertical"><span class="num">|u · v|</span><span class="den">|u| · |v|</span></span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 2. PRODUCTO VECTORIAL ================= -->
+    <div class="vector-card">
+      <div class="vector-header">
+        <div class="vector-title">
+          <span>🔴</span> 2. Producto Vectorial (u × v)
+        </div>
+        <span class="vector-badge badge-vectorial">Resultado = VECTOR Perpendicular</span>
+      </div>
+
+      <div class="vector-grid">
+        <div class="info-subcard">
+          <strong>Cálculo mediante Determinante Canónico:</strong>
+          <div class="math-code" style="margin-top:0.2rem;">
+            u × v = 
+            <span class="det-bracket">
+              i &nbsp; j &nbsp; k<br>
+              u₁ u₂ u₃<br>
+              v₁ v₂ v₃
+            </span>
+          </div>
+          <span style="font-size:0.8rem; color:var(--text-muted); margin-top:0.2rem;">Vector normal y ortogonal al plano que forman u y v. Anticonmutativo: <code>u × v = −(v × u)</code>.</span>
+        </div>
+
+        <div class="info-subcard">
+          <strong>Módulo y Condición de Paralelismo:</strong>
+          <span class="math-code">|u × v| = |u| · |v| · sen(α)</span>
+          <span class="math-code">u ∥ v ⟺ u × v = 0</span>
+          <span style="font-size:0.82rem; color:var(--text-muted);">Dos vectores son paralelos si sus coordenadas son proporcionales o su producto cruz da el vector nulo.</span>
+        </div>
+
+        <div class="info-subcard" style="border-left:3px solid var(--accent-op);">
+          <strong>Aplicación Geométrica: ÁREAS</strong>
+          <div>
+            • <strong>Área del Paralelogramo:</strong><br>
+            <span class="math-code">Área = |u × v|</span>
+          </div>
+          <div style="margin-top:0.3rem;">
+            • <strong>Área del Triángulo (formado por u y v):</strong><br>
+            <span class="math-code">Área = <span class="fraction-vertical"><span class="num">1</span><span class="den">2</span></span> · |u × v|</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 3. PRODUCTO MIXTO ================= -->
+    <div class="vector-card">
+      <div class="vector-header">
+        <div class="vector-title">
+          <span>🟢</span> 3. Producto Mixto [u, v, w]
+        </div>
+        <span class="vector-badge badge-mixto">Resultado = NÚMERO (Escalar)</span>
+      </div>
+
+      <div class="vector-grid">
+        <div class="info-subcard">
+          <strong>Definición y Determinante 3×3:</strong>
+          <span class="math-code">[u, v, w] = u · (v × w)</span>
+          <div class="math-code" style="margin-top:0.3rem;">
+            [u, v, w] = 
+            <span class="det-bracket">
+              u₁ u₂ u₃<br>
+              v₁ v₂ v₃<br>
+              w₁ w₂ w₃
+            </span>
+          </div>
+        </div>
+
+        <div class="info-subcard">
+          <strong>Condición de Coplanariedad:</strong>
+          <span class="math-code">[u, v, w] = 0 ⟺ u, v, w son coplanarios</span>
+          <span style="font-size:0.82rem; color:var(--text-muted);">Pertenecen al mismo plano o son linealmente dependientes (rango menor que 3).</span>
+        </div>
+
+        <div class="info-subcard" style="border-left:3px solid var(--accent-success);">
+          <strong>Aplicación Geométrica: VOLÚMENES</strong>
+          <div>
+            • <strong>Volumen del Paralelepípedo:</strong><br>
+            <span class="math-code">Volumen = |[u, v, w]|</span>
+          </div>
+          <div style="margin-top:0.3rem;">
+            • <strong>Volumen del Tetraedro:</strong><br>
+            <span class="math-code">Volumen = <span class="fraction-vertical"><span class="num">1</span><span class="den">6</span></span> · |[u, v, w]|</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+</body>
+</html>

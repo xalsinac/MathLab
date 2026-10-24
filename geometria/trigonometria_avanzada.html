@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trigonometría Avanzada (Bachillerato) | MatesLab</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* NAVEGACIÓN Y PESTAÑAS */
+    .tabs-container {
+      background: #0b1120;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; padding: 1.2rem 0.5rem; background: transparent; border: none;
+      color: var(--text-muted); font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+    .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* PANELES Y ESTRUCTURA */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .panel-box {
+      background: var(--bg-primary); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+    }
+    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+
+    /* CONTROLES SLIDER */
+    .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .slider-row label { width: 150px; font-weight: 600; font-family: monospace; font-size: 0.95rem; }
+    .val-badge { width: 65px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.15rem; color: var(--text-main); }
+
+    /* FÓRMULAS MATEMÁTICAS */
+    .math-formula {
+      font-family: 'Courier New', Courier, monospace; font-size: 1.25rem; font-weight: bold;
+      background: #090d16; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
+      text-align: center; display: inline-block; margin: 0.5rem auto; color: #fff; width: 100%;
+    }
+
+    .fraction-vertical {
+      display: inline-flex; flex-direction: column; vertical-align: middle;
+      text-align: center; margin: 0 0.3rem; line-height: 1.1; font-size: 0.9em;
+    }
+    .fraction-vertical .num { border-bottom: 2px solid currentColor; padding: 0 0.2rem 1px 0.2rem; }
+    .fraction-vertical .den { padding: 1px 0.2rem 0 0.2rem; }
+
+    /* SVG CANVAS */
+    .svg-canvas {
+      width: 100%; height: 350px; background: #090d16; border-radius: 8px;
+      border: 1px solid var(--border-color); display: block;
+    }
+
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Trigonometría Avanzada (Bachillerato)</h1>
+    <p>Resolución rigurosa de triángulos no rectángulos, reducción analítica de ángulos asociados y cálculo topográfico por doble observación.</p>
+  </header>
+
+  <main class="app-container">
+    
+    <nav class="tabs-container">
+      <button class="tab-btn active" onclick="switchTab('seno', this)">📐 1. Teorema del Seno</button>
+      <button class="tab-btn" onclick="switchTab('coseno', this)">🎯 2. Teorema del Coseno</button>
+      <button class="tab-btn" onclick="switchTab('asociados', this)">🔄 3. Ángulos Asociados</button>
+      <button class="tab-btn" onclick="switchTab('doble_obs', this)">🔭 4. Doble Observación</button>
+    </nav>
+
+    <!-- ================= PESTAÑA 1: TEOREMA DEL SENO ================= -->
+    <div id="seno" class="tab-content active">
+      <div class="explanation-card">
+        <div class="badge">Triángulos Oblicuángulos</div>
+        <div class="content-text">
+          En cualquier triángulo (sea acutángulo u obtusángulo), la razón entre la longitud de cada lado y el seno del ángulo opuesto es <strong>estrictamente constante</strong>, e igual al diámetro de su circunferencia circunscrita (<strong>2R</strong>):
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Constante de Proporcionalidad</div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-gold);">Vértice C (Altura):</label>
+            <input type="range" id="sl_sen_cy" min="20" max="80" value="50" oninput="updateTeoremaSeno()">
+            <span class="val-badge" id="v_sl_sen_cy">50</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-blue);">Vértice C (X):</label>
+            <input type="range" id="sl_sen_cx" min="20" max="80" value="40" oninput="updateTeoremaSeno()">
+            <span class="val-badge" id="v_sl_sen_cx">40</span>
+          </div>
+
+          <div class="math-formula" style="border-color:var(--accent-blue); font-size:1.1rem;">
+            <span class="fraction-vertical"><span class="num">a</span><span class="den">sen(A)</span></span> = 
+            <span class="fraction-vertical"><span class="num">b</span><span class="den">sen(B)</span></span> = 
+            <span class="fraction-vertical"><span class="num">c</span><span class="den">sen(C)</span></span> = 
+            <strong style="color:var(--accent-gold);" id="txt_sen_cte">10.4</strong>
+          </div>
+
+          <div style="background:#090d16; padding:1.1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.92rem; line-height:1.9;">
+            <div>• a / sen(A) = <span id="sen_val_a">6.3</span> / sen(<span id="sen_ang_A">37.4º</span>) = <strong id="sen_res_a" style="color:var(--accent-gold);">10.4</strong></div>
+            <div>• b / sen(B) = <span id="sen_val_b">8.2</span> / sen(<span id="sen_ang_B">51.9º</span>) = <strong id="sen_res_b" style="color:var(--accent-gold);">10.4</strong></div>
+            <div>• c / sen(C) = <span id="sen_val_c">10.0</span> / sen(<span id="sen_ang_C">90.7º</span>) = <strong id="sen_res_c" style="color:var(--accent-gold);">10.4</strong></div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-blue);">
+          <svg class="svg-canvas" viewBox="-15 -10 160 120" id="svg_sen">
+            <!-- Triángulo interactivo -->
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 2: TEOREMA DEL COSENO ================= -->
+    <div id="coseno" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+        <div class="badge" style="color: var(--accent-gold);">El Teorema de Pitágoras Generalizado</div>
+        <div class="content-text">
+          Si el ángulo de un triángulo no es recto (90º), el Teorema de Pitágoras no se cumple directamente: necesita un término corrector de ajuste: <strong>−2bc · cos(A)</strong>. Si <strong>A = 90º</strong>, dado que <strong>cos(90º) = 0</strong>, se recupera con exactitud la igualdad <strong>a² = b² + c²</strong>.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Laboratorio del Término Corrector</div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-gold);">Ángulo A:</label>
+            <input type="range" id="sl_cos_A" min="20" max="150" value="90" oninput="updateTeoremaCoseno()">
+            <span class="val-badge" id="v_sl_cos_A" style="color:var(--accent-gold);">90º</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-blue);">Lado b:</label>
+            <input type="range" id="sl_cos_b" min="4" max="10" value="6" oninput="updateTeoremaCoseno()">
+            <span class="val-badge" id="v_sl_cos_b">6</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-success);">Lado c:</label>
+            <input type="range" id="sl_cos_c" min="4" max="10" value="8" oninput="updateTeoremaCoseno()">
+            <span class="val-badge" id="v_sl_cos_c">8</span>
+          </div>
+
+          <div class="math-formula" style="border-color:var(--accent-gold); font-size:1.1rem;">
+            a² = b² + c² − 2bc·cos(A)
+          </div>
+
+          <div style="background:#090d16; padding:1.1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.95rem; line-height:1.9;">
+            <div>b² + c² = <span id="cos_b2">36</span> + <span id="cos_c2">64</span> = <strong id="cos_sum2">100</strong></div>
+            <div>Corrector: −2·(<span id="cos_val_b">6</span>)·(<span id="cos_val_c">8</span>)·cos(<span id="cos_val_A">90</span>º) = <strong id="cos_corr" style="color:var(--accent-op);">0.00</strong></div>
+            <div style="margin-top:0.4rem; padding-top:0.4rem; border-top:1px dashed var(--border-color); font-size:1.1rem;">
+              a² = <span id="cos_a2">100.0</span> ➔ <strong style="color:var(--accent-gold);">a = <span id="cos_res_a">10.00</span></strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-gold);">
+          <svg class="svg-canvas" viewBox="-20 -20 180 140" id="svg_cos">
+            <!-- Triángulo dinámico -->
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 3: ÁNGULOS ASOCIADOS ================= -->
+    <div id="asociados" class="tab-content">
+      <div class="explanation-card" style="border-left-color: var(--accent-success);">
+        <div class="badge" style="color: var(--accent-success);">Reducción al Primer Cuadrante</div>
+        <div class="content-text">
+          No es necesario memorizar las razones trigonométricas de todos los ángulos hasta 360º. Mediante simetrías directas en la circunferencia goniométrica, cualquier ángulo se reduce a su ángulo equivalente del primer cuadrante (<strong>α</strong>).
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Relaciones de Simetría</div>
+
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;">
+            <button class="tool-btn active" id="btn_asoc_sup" onclick="setAsocMode('sup')" style="flex:1;">180º − α (Suplementarios)</button>
+            <button class="tool-btn" id="btn_asoc_dif" onclick="setAsocMode('dif')" style="flex:1;">180º + α (Difieren 180º)</button>
+            <button class="tool-btn" id="btn_asoc_op" onclick="setAsocMode('op')" style="flex:1;">−α / 360º − α (Opuestos)</button>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-gold);">Ángulo base (α):</label>
+            <input type="range" id="sl_asoc_ang" min="15" max="75" value="30" oninput="updateAsociados()">
+            <span class="val-badge" id="v_sl_asoc_ang" style="color:var(--accent-gold);">30º</span>
+          </div>
+
+          <div id="asoc_formulas" style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.05rem; line-height:2;">
+            <!-- Fórmulas y valores calculados dinámicamente -->
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:var(--accent-success);">
+          <svg class="svg-canvas" viewBox="-125 -125 250 250" id="svg_asoc">
+            <!-- Circunferencia y simetrías -->
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= PESTAÑA 4: DOBLE OBSERVACIÓN ================= -->
+    <div id="doble_obs" class="tab-content">
+      <div class="explanation-card" style="border-left-color: #c084fc;">
+        <div class="badge" style="color: #c084fc;">Topografía y Geodesia</div>
+        <div class="content-text">
+          ¿Cómo calcular la altura de una montaña o una torre si su base es inaccesible (por ejemplo, al otro lado de un río)? Midiendo el ángulo de elevación desde dos puntos separados una distancia conocida en línea recta y resolviendo un sistema de dos ecuaciones con tangentes.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel-box">
+          <div class="panel-title">Parámetros Topográficos</div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-gold);">Distancia (d):</label>
+            <input type="range" id="sl_dob_d" min="10" max="60" value="25" oninput="updateDobleObs()">
+            <span class="val-badge" id="v_sl_dob_d">25 m</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-blue);">Ángulo lejano (α):</label>
+            <input type="range" id="sl_dob_a1" min="15" max="40" value="28" oninput="updateDobleObs()">
+            <span class="val-badge" id="v_sl_dob_a1" style="color:var(--accent-blue);">28º</span>
+          </div>
+
+          <div class="slider-row">
+            <label style="color:var(--accent-success);">Ángulo cercano (β):</label>
+            <input type="range" id="sl_dob_a2" min="45" max="75" value="56" oninput="updateDobleObs()">
+            <span class="val-badge" id="v_sl_dob_a2" style="color:var(--accent-success);">56º</span>
+          </div>
+
+          <div style="background:#090d16; padding:1.1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.92rem; line-height:1.9;">
+            <div><strong>Sistema Planteado:</strong></div>
+            <div>1) tg(<span id="dob_txt_a2">56</span>º) = h / x &nbsp;➔&nbsp; h = x · tg(β)</div>
+            <div>2) tg(<span id="dob_txt_a1">28</span>º) = h / (x + <span id="dob_txt_d">25</span>)</div>
+            <div style="margin-top:0.4rem; padding-top:0.4rem; border-top:1px dashed var(--border-color);">
+              <strong>Igualación:</strong> x · tg(β) = (x + d) · tg(α)<br>
+              x · [tg(β) − tg(α)] = d · tg(α)<br>
+              x = <strong style="color:var(--accent-blue);" id="dob_res_x">13.8 m</strong><br>
+              h = x · tg(β) = <strong style="color:#c084fc; font-size:1.2rem;" id="dob_res_h">20.5 m</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:0; border-color:#c084fc;">
+          <svg class="svg-canvas" viewBox="-15 -10 180 130" id="svg_doble">
+            <!-- Gráfico topográfico de la doble observación -->
+          </svg>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+
+      if (tabId === 'seno') updateTeoremaSeno();
+      if (tabId === 'coseno') updateTeoremaCoseno();
+      if (tabId === 'asociados') updateAsociados();
+      if (tabId === 'doble_obs') updateDobleObs();
+    }
+
+    // =========================================================================
+    // 1. TEOREMA DEL SENO
+    // =========================================================================
+    function updateTeoremaSeno() {
+      const cy = parseInt(document.getElementById('sl_sen_cy').value);
+      const cx = parseInt(document.getElementById('sl_sen_cx').value);
+      document.getElementById('v_sl_sen_cy').innerText = cy;
+      document.getElementById('v_sl_sen_cx').innerText = cx;
+
+      // Vértices del triángulo: A(10, 95), B(110, 95), C(10 + cx, 95 - cy)
+      const ax = 10, ay = 95;
+      const bx = 110, by = 95;
+      const px = ax + cx, py = ay - cy;
+
+      // Longitudes de los lados
+      const c = 100; // lado c (AB)
+      const a = Math.hypot(px - bx, py - by); // lado a (BC)
+      const b = Math.hypot(px - ax, py - ay); // lado b (AC)
+
+      // Ángulos por el teorema del coseno
+      const angA_rad = Math.acos((b*b + c*c - a*a) / (2 * b * c));
+      const angB_rad = Math.acos((a*a + c*c - b*b) / (2 * a * c));
+      const angC_rad = Math.PI - (angA_rad + angB_rad);
+
+      const angA_deg = (angA_rad * 180) / Math.PI;
+      const angB_deg = (angB_rad * 180) / Math.PI;
+      const angC_deg = (angC_rad * 180) / Math.PI;
+
+      // Escala para unidades visuales
+      const sc = 10;
+      const a_u = a / sc;
+      const b_u = b / sc;
+      const c_u = c / sc;
+
+      const ratioA = a_u / Math.sin(angA_rad);
+      const ratioB = b_u / Math.sin(angB_rad);
+      const ratioC = c_u / Math.sin(angC_rad);
+
+      document.getElementById('txt_sen_cte').innerText = ratioA.toFixed(2);
+      document.getElementById('sen_val_a').innerText = a_u.toFixed(1);
+      document.getElementById('sen_val_b').innerText = b_u.toFixed(1);
+      document.getElementById('sen_val_c').innerText = c_u.toFixed(1);
+
+      document.getElementById('sen_ang_A').innerText = `${angA_deg.toFixed(1)}º`;
+      document.getElementById('sen_ang_B').innerText = `${angB_deg.toFixed(1)}º`;
+      document.getElementById('sen_ang_C').innerText = `${angC_deg.toFixed(1)}º`;
+
+      document.getElementById('sen_res_a').innerText = ratioA.toFixed(2);
+      document.getElementById('sen_res_b').innerText = ratioB.toFixed(2);
+      document.getElementById('sen_res_c').innerText = ratioC.toFixed(2);
+
+      // Render SVG
+      const svg = document.getElementById('svg_sen');
+      svg.innerHTML = `
+        <polygon points="${ax},${ay} ${bx},${by} ${px},${py}" fill="rgba(56,189,248,0.12)" stroke="var(--accent-blue)" stroke-width="2" />
+        
+        <!-- Vértices -->
+        <circle cx="${ax}" cy="${ay}" r="3" fill="#fff" />
+        <circle cx="${bx}" cy="${by}" r="3" fill="#fff" />
+        <circle cx="${px}" cy="${py}" r="4" fill="var(--accent-gold)" />
+
+        <text x="${ax - 5}" y="${ay + 12}" fill="#fff" font-size="8" font-family="monospace">A</text>
+        <text x="${bx + 2}" y="${by + 12}" fill="#fff" font-size="8" font-family="monospace">B</text>
+        <text x="${px}" y="${py - 8}" fill="var(--accent-gold)" font-size="8.5" font-family="monospace" text-anchor="middle">C</text>
+
+        <!-- Lados con nombres -->
+        <text x="${(ax+bx)/2}" y="${ay + 14}" fill="var(--accent-blue)" font-size="7.5" font-family="monospace" text-anchor="middle">c = ${c_u.toFixed(1)}</text>
+        <text x="${(ax+px)/2 - 10}" y="${(ay+py)/2}" fill="var(--accent-gold)" font-size="7.5" font-family="monospace">b = ${b_u.toFixed(1)}</text>
+        <text x="${(bx+px)/2 + 8}" y="${(by+py)/2}" fill="var(--accent-success)" font-size="7.5" font-family="monospace">a = ${a_u.toFixed(1)}</text>
+      `;
+    }
+
+    // =========================================================================
+    // 2. TEOREMA DEL COSENO
+    // =========================================================================
+    function updateTeoremaCoseno() {
+      const angA_deg = parseInt(document.getElementById('sl_cos_A').value);
+      const b = parseInt(document.getElementById('sl_cos_b').value);
+      const c = parseInt(document.getElementById('sl_cos_c').value);
+
+      document.getElementById('v_sl_cos_A').innerText = `${angA_deg}º`;
+      document.getElementById('v_sl_cos_b').innerText = b;
+      document.getElementById('v_sl_cos_c').innerText = c;
+
+      const angA_rad = (angA_deg * Math.PI) / 180;
+      const cosA = Math.cos(angA_rad);
+
+      const b2 = b * b;
+      const c2 = c * c;
+      const sum2 = b2 + c2;
+      const corr = 2 * b * c * cosA;
+      const a2 = sum2 - corr;
+      const a = Math.sqrt(Math.max(0.01, a2));
+
+      document.getElementById('cos_b2').innerText = b2;
+      document.getElementById('cos_c2').innerText = c2;
+      document.getElementById('cos_sum2').innerText = sum2;
+      document.getElementById('cos_val_b').innerText = b;
+      document.getElementById('cos_val_c').innerText = c;
+      document.getElementById('cos_val_A').innerText = angA_deg;
+      document.getElementById('cos_corr').innerText = (-corr).toFixed(2);
+      document.getElementById('cos_a2').innerText = a2.toFixed(2);
+      document.getElementById('cos_res_a').innerText = a.toFixed(2);
+
+      // SVG: Vértice A en (20, 100). Lado c horizontal hacia la derecha. Lado b gira ángulo A
+      const scale = 8.5;
+      const ax = 25, ay = 100;
+      const bx = ax + c * scale, by = ay;
+      const cx = ax + b * scale * Math.cos(angA_rad);
+      const cy = ay - b * scale * Math.sin(angA_rad);
+
+      const svg = document.getElementById('svg_cos');
+      const arcR = 20;
+      const arcEndX = ax + arcR * Math.cos(angA_rad);
+      const arcEndY = ay - arcR * Math.sin(angA_rad);
+
+      svg.innerHTML = `
+        <polygon points="${ax},${ay} ${bx},${by} ${cx},${cy}" fill="rgba(251,191,36,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" />
+        
+        <!-- Arco ángulo A -->
+        <path d="M ${ax} ${ay} L ${ax+arcR} ${ay} A ${arcR} ${arcR} 0 ${angA_deg > 180 ? 1 : 0} 0 ${arcEndX} ${arcEndY} Z" fill="rgba(251,191,36,0.25)" stroke="var(--accent-gold)" stroke-width="1.5" />
+        <text x="${ax + 28}" y="${ay - 8}" fill="var(--accent-gold)" font-size="8.5" font-family="monospace">A = ${angA_deg}º</text>
+
+        <!-- Lados -->
+        <line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="var(--accent-success)" stroke-width="3" />
+        <line x1="${ax}" y1="${ay}" x2="${cx}" y2="${cy}" stroke="var(--accent-blue)" stroke-width="3" />
+        <line x1="${bx}" y1="${by}" x2="${cx}" y2="${cy}" stroke="var(--accent-gold)" stroke-width="3.5" />
+
+        <text x="${(ax+bx)/2}" y="${ay + 14}" fill="var(--accent-success)" font-size="8" font-family="monospace" text-anchor="middle">c = ${c}</text>
+        <text x="${(ax+cx)/2 - 12}" y="${(ay+cy)/2}" fill="var(--accent-blue)" font-size="8" font-family="monospace">b = ${b}</text>
+        <text x="${(bx+cx)/2 + 8}" y="${(by+cy)/2}" fill="var(--accent-gold)" font-size="8.5" font-weight="bold" font-family="monospace">a = ${a.toFixed(2)}</text>
+      `;
+    }
+
+    // =========================================================================
+    // 3. ÁNGULOS ASOCIADOS
+    // =========================================================================
+    let currentAsocMode = 'sup';
+
+    function setAsocMode(mode) {
+      currentAsocMode = mode;
+      document.getElementById('btn_asoc_sup').classList.toggle('active', mode === 'sup');
+      document.getElementById('btn_asoc_dif').classList.toggle('active', mode === 'dif');
+      document.getElementById('btn_asoc_op').classList.toggle('active', mode === 'op');
+      updateAsociados();
+    }
+
+    function updateAsociados() {
+      const a_deg = parseInt(document.getElementById('sl_asoc_ang').value);
+      document.getElementById('v_sl_asoc_ang').innerText = `${a_deg}º`;
+
+      const a_rad = (a_deg * Math.PI) / 180;
+      const sen_a = Math.sin(a_rad);
+      const cos_a = Math.cos(a_rad);
+
+      let b_deg = 0;
+      let title = "";
+      let sen_b = 0, cos_b = 0;
+      let textHtml = "";
+
+      if (currentAsocMode === 'sup') {
+        b_deg = 180 - a_deg;
+        sen_b = sen_a;
+        cos_b = -cos_a;
+        textHtml = `
+          <strong style="color:var(--accent-blue);">Ángulos Suplementarios (180º − α):</strong><br>
+          • sen(${b_deg}º) = sen(180º − ${a_deg}º) = <strong>sen(${a_deg}º) = +${sen_a.toFixed(2)}</strong><br>
+          • cos(${b_deg}º) = cos(180º − ${a_deg}º) = <strong style="color:var(--accent-op);">−cos(${a_deg}º) = ${cos_b.toFixed(2)}</strong><br>
+          • tg(${b_deg}º) = <strong style="color:var(--accent-op);">−tg(${a_deg}º)</strong>
+        `;
+      } else if (currentAsocMode === 'dif') {
+        b_deg = 180 + a_deg;
+        sen_b = -sen_a;
+        cos_b = -cos_a;
+        textHtml = `
+          <strong style="color:var(--accent-blue);">Difieren en 180º (180º + α):</strong><br>
+          • sen(${b_deg}º) = sen(180º + ${a_deg}º) = <strong style="color:var(--accent-op);">−sen(${a_deg}º) = ${sen_b.toFixed(2)}</strong><br>
+          • cos(${b_deg}º) = cos(180º + ${a_deg}º) = <strong style="color:var(--accent-op);">−cos(${a_deg}º) = ${cos_b.toFixed(2)}</strong><br>
+          • tg(${b_deg}º) = <strong style="color:var(--accent-success);">+tg(${a_deg}º)</strong> &nbsp;<span style="color:var(--text-muted); font-size:0.85em;">(− entre − es +)</span>
+        `;
+      } else {
+        b_deg = 360 - a_deg;
+        sen_b = -sen_a;
+        cos_b = cos_a;
+        textHtml = `
+          <strong style="color:var(--accent-blue);">Ángulos Opuestos (−α o 360º − α):</strong><br>
+          • sen(−${a_deg}º) = <strong style="color:var(--accent-op);">−sen(${a_deg}º) = ${sen_b.toFixed(2)}</strong><br>
+          • cos(−${a_deg}º) = <strong>cos(${a_deg}º) = +${cos_a.toFixed(2)}</strong><br>
+          • tg(−${a_deg}º) = <strong style="color:var(--accent-op);">−tg(${a_deg}º)</strong>
+        `;
+      }
+
+      document.getElementById('asoc_formulas').innerHTML = textHtml;
+
+      // SVG Goniométrica con simetrías
+      const r = 80;
+      const p1x = Math.cos(a_rad) * r;
+      const p1y = -Math.sin(a_rad) * r;
+
+      const b_rad = (b_deg * Math.PI) / 180;
+      const p2x = Math.cos(b_rad) * r;
+      const p2y = -Math.sin(b_rad) * r;
+
+      const svg = document.getElementById('svg_asoc');
+      svg.innerHTML = `
+        <line x1="-120" y1="0" x2="120" y2="0" stroke="#475569" stroke-width="1.5" />
+        <line x1="0" y1="-120" x2="0" y2="120" stroke="#475569" stroke-width="1.5" />
+        <circle cx="0" cy="0" r="80" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" />
+
+        <!-- Radio 1 (alfa) -->
+        <line x1="0" y1="0" x2="${p1x}" y2="${p1y}" stroke="var(--accent-gold)" stroke-width="2" />
+        <circle cx="${p1x}" cy="${p1y}" r="4" fill="var(--accent-gold)" />
+        <line x1="${p1x}" y1="0" x2="${p1x}" y2="${p1y}" stroke="var(--accent-op)" stroke-width="2" />
+        <line x1="0" y1="0" x2="${p1x}" y2="0" stroke="var(--accent-blue)" stroke-width="2" />
+        <text x="${p1x + 8}" y="${p1y - 4}" fill="var(--accent-gold)" font-size="8.5" font-family="monospace">${a_deg}º</text>
+
+        <!-- Radio 2 (asociado) -->
+        <line x1="0" y1="0" x2="${p2x}" y2="${p2y}" stroke="#c084fc" stroke-width="2" />
+        <circle cx="${p2x}" cy="${p2y}" r="4" fill="#c084fc" />
+        <line x1="${p2x}" y1="0" x2="${p2x}" y2="${p2y}" stroke="var(--accent-op)" stroke-width="2" stroke-dasharray="3" />
+        <line x1="0" y1="0" x2="${p2x}" y2="0" stroke="var(--accent-blue)" stroke-width="2" stroke-dasharray="3" />
+        <text x="${p2x < 0 ? p2x - 30 : p2x + 8}" y="${p2y + 12}" fill="#c084fc" font-size="8.5" font-family="monospace">${b_deg}º</text>
+
+        <!-- Línea simetría en espejo -->
+        <line x1="${p1x}" y1="${p1y}" x2="${p2x}" y2="${p2y}" stroke="#64748b" stroke-width="1" stroke-dasharray="4" />
+      `;
+    }
+
+    // =========================================================================
+    // 4. DOBLE OBSERVACIÓN
+    // =========================================================================
+    function updateDobleObs() {
+      const d = parseInt(document.getElementById('sl_dob_d').value);
+      const a1_deg = parseInt(document.getElementById('sl_dob_a1').value);
+      const a2_deg = parseInt(document.getElementById('sl_dob_a2').value);
+
+      document.getElementById('v_sl_dob_d').innerText = `${d} m`;
+      document.getElementById('v_sl_dob_a1').innerText = `${a1_deg}º`;
+      document.getElementById('v_sl_dob_a2').innerText = `${a2_deg}º`;
+
+      document.getElementById('dob_txt_d').innerText = d;
+      document.getElementById('dob_txt_a1').innerText = a1_deg;
+      document.getElementById('dob_txt_a2').innerText = a2_deg;
+
+      const tg1 = Math.tan((a1_deg * Math.PI) / 180);
+      const tg2 = Math.tan((a2_deg * Math.PI) / 180);
+
+      // x = (d * tg1) / (tg2 - tg1)
+      const x = (d * tg1) / (tg2 - tg1);
+      const h = x * tg2;
+
+      document.getElementById('dob_res_x').innerText = `${x.toFixed(1)} m`;
+      document.getElementById('dob_res_h').innerText = `${h.toFixed(1)} m`;
+
+      // SVG
+      const svg = document.getElementById('svg_doble');
+      const totalWidth = d + x;
+      const scaleX = 130 / totalWidth;
+      const scaleY = 75 / h;
+      const scale = Math.min(scaleX, scaleY);
+
+      const groundY = 100;
+      const towerX = 15 + totalWidth * scale;
+      const towerTopY = groundY - h * scale;
+      const obs1X = 15;
+      const obs2X = 15 + d * scale;
+
+      svg.innerHTML = `
+        <!-- Suelo -->
+        <line x1="5" y1="${groundY}" x2="165" y2="${groundY}" stroke="#475569" stroke-width="2" />
+
+        <!-- Torre -->
+        <line x1="${towerX}" y1="${groundY}" x2="${towerX}" y2="${towerTopY}" stroke="#c084fc" stroke-width="4" />
+        <circle cx="${towerX}" cy="${towerTopY}" r="3" fill="#c084fc" />
+        <text x="${towerX + 6}" y="${(groundY + towerTopY)/2}" fill="#c084fc" font-size="8.5" font-weight="bold" font-family="monospace">h = ${h.toFixed(1)}m</text>
+
+        <!-- Rayos visuales -->
+        <line x1="${obs1X}" y1="${groundY}" x2="${towerX}" y2="${towerTopY}" stroke="var(--accent-blue)" stroke-width="2" stroke-dasharray="3" />
+        <line x1="${obs2X}" y1="${groundY}" x2="${towerX}" y2="${towerTopY}" stroke="var(--accent-success)" stroke-width="2" stroke-dasharray="3" />
+
+        <!-- Observadores -->
+        <circle cx="${obs1X}" cy="${groundY}" r="3.5" fill="var(--accent-blue)" />
+        <circle cx="${obs2X}" cy="${groundY}" r="3.5" fill="var(--accent-success)" />
+
+        <text x="${obs1X}" y="${groundY - 6}" fill="var(--accent-blue)" font-size="7.5" font-family="monospace">${a1_deg}º</text>
+        <text x="${obs2X + 3}" y="${groundY - 6}" fill="var(--accent-success)" font-size="7.5" font-family="monospace">${a2_deg}º</text>
+
+        <!-- Cotas -->
+        <line x1="${obs1X}" y1="${groundY + 12}" x2="${obs2X}" y2="${groundY + 12}" stroke="#94a3b8" stroke-width="1" />
+        <text x="${(obs1X + obs2X)/2}" y="${groundY + 20}" fill="#94a3b8" font-size="7" font-family="monospace" text-anchor="middle">d = ${d}m</text>
+
+        <line x1="${obs2X}" y1="${groundY + 12}" x2="${towerX}" y2="${groundY + 12}" stroke="var(--accent-blue)" stroke-width="1" />
+        <text x="${(obs2X + towerX)/2}" y="${groundY + 20}" fill="var(--accent-blue)" font-size="7" font-family="monospace" text-anchor="middle">x = ${x.toFixed(1)}m</text>
+      `;
+    }
+
+    // Inicializar
+    updateTeoremaSeno();
+    updateTeoremaCoseno();
+    setAsocMode('sup');
+    updateDobleObs();
+  </script>
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Propiedades de Potencias y Radicales | MatesLab</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    .table-page-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+    }
+
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+    }
+
+    .print-btn {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border: none;
+      font-weight: 800;
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .print-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* TABLA RESUMEN */
+    .rules-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: monospace;
+      font-size: 1.05rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .rules-table th, 
+    .rules-table td {
+      padding: 0.9rem 1.1rem;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+    }
+
+    .rules-table th {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .rules-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .rule-name {
+      color: var(--text-muted);
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      width: 28%;
+    }
+
+    .rule-formula {
+      color: #fff;
+      font-weight: bold;
+      width: 36%;
+    }
+
+    .rule-example {
+      color: var(--accent-gold);
+      width: 36%;
+    }
+
+    .fraction-vertical {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      margin: 0 0.3rem;
+      line-height: 1.1;
+      font-size: 0.9em;
+    }
+    .fraction-vertical .num { border-bottom: 2px solid currentColor; padding: 0 0.2rem 1px 0.2rem; }
+    .fraction-vertical .den { padding: 1px 0.2rem 0 0.2rem; }
+
+    .radical-box { display: inline-flex; align-items: flex-start; vertical-align: middle; }
+    .radical-box .rad-index { font-size: 0.6em; margin-right: -0.1em; margin-top: -0.2em; color: var(--accent-gold); font-weight: bold; }
+    .radical-box .rad-symbol { font-family: Arial, sans-serif; font-size: 1.25em; line-height: 0.7; margin-top: 2px; margin-right: -1px; }
+    .radical-box .rad-content { border-top: 2px solid currentColor; padding: 2px 3px 0 2px; margin-top: 2px; }
+
+    /* ESTILOS DE IMPRESIÓN (PDF A4) */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .nav-bar, .app-header, .action-bar, footer {
+        display: none !important;
+      }
+      .table-page-wrap {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        gap: 1rem !important;
+      }
+      .print-header {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      .print-header h1 {
+        font-size: 1.7rem;
+        margin-bottom: 0.2rem;
+        color: #000;
+      }
+      .section-title {
+        color: #000 !important;
+        border-bottom: 2px solid #000 !important;
+        font-size: 1.05rem !important;
+        margin-bottom: 0.4rem !important;
+      }
+      .rules-table {
+        background: #fff !important;
+        border: 1px solid #000 !important;
+        font-size: 0.95rem !important;
+        margin-bottom: 0.8rem;
+      }
+      .rules-table th {
+        background: #f1f5f9 !important;
+        color: #000 !important;
+        border-bottom: 1px solid #000 !important;
+      }
+      .rules-table td {
+        border-bottom: 1px solid #ccc !important;
+        color: #000 !important;
+        padding: 0.55rem 0.8rem !important;
+      }
+      .rule-name { color: #333 !important; }
+      .rule-formula { color: #000 !important; }
+      .rule-example { color: #000 !important; font-weight: bold; }
+    }
+
+    .print-header { display: none; }
+
+    @media (max-width: 750px) {
+      .rules-table th, .rules-table td { padding: 0.7rem 0.6rem; font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Propiedades de Potencias y Radicales</h1>
+    <p>Formulario directo con todas las leyes de los exponentes, potencias de base idéntica o exponente idéntico, y operaciones con radicales.</p>
+  </header>
+
+  <main class="table-page-wrap">
+
+    <div class="print-header">
+      <h1>Ficha Resumen: Potencias y Radicales</h1>
+      <p>MatesLab • Formulario de cálculo y álgebra</p>
+    </div>
+
+    <div class="action-bar">
+      <div style="font-size:0.9rem; color:var(--text-muted);">
+        📋 Guía completa de reglas de exponentes para 2º Ciclo de ESO y Bachillerato.
+      </div>
+      <button class="print-btn" onclick="window.print()">
+        <span>🖨️</span> Imprimir / Guardar PDF
+      </button>
+    </div>
+
+    <!-- ================= SECCIÓN 1: POTENCIAS ================= -->
+    <section>
+      <div class="section-title">
+        <span>⚡</span> 1. Leyes de los Exponentes (Potencias)
+      </div>
+
+      <table class="rules-table">
+        <thead>
+          <tr>
+            <th>Propiedad</th>
+            <th>Fórmula General</th>
+            <th>Ejemplo Práctico</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="rule-name">Exponente Cero</td>
+            <td class="rule-formula">a⁰ = 1 &nbsp;<span style="font-size:0.8em; color:var(--text-muted);">(a ≠ 0)</span></td>
+            <td class="rule-example">7⁰ = 1</td>
+          </tr>
+          <tr>
+            <td class="rule-name">Exponente Uno</td>
+            <td class="rule-formula">a¹ = a</td>
+            <td class="rule-example">9¹ = 9</td>
+          </tr>
+          <tr>
+            <td class="rule-name">Producto (Misma Base)</td>
+            <td class="rule-formula">aᵐ · aⁿ = aᵐ⁺ⁿ</td>
+            <td class="rule-example">2³ · 2⁴ = 2³⁺⁴ = 2⁷ = 128</td>
+          </tr>
+          <tr>
+            <td class="rule-name">Cociente (Misma Base)</td>
+            <td class="rule-formula">aᵐ : aⁿ = aᵐ⁻ⁿ</td>
+            <td class="rule-example">5⁶ : 5² = 5⁶⁻² = 5⁴ = 625</td>
+          </tr>
+          <tr>
+            <td class="rule-name">Potencia de una Potencia</td>
+            <td class="rule-formula">(aᵐ)ⁿ = aᵐ · ⁿ</td>
+            <td class="rule-example">(3²)³ = 3²·³ = 3⁶ = 729</td>
+          </tr>
+          <tr>
+            <td class="rule-name">Producto (Mismo Exponente)</td>
+            <td class="rule-formula">aⁿ · bⁿ = (a · b)ⁿ</td>
+            <td class="rule-example">2³ · 5³ = (2 · 5)³ = 10³ = 1000</td>
+          </tr>
+          <tr>
+            <td class="rule-name">Cociente (Mismo Exponente)</td>
+            <td class="rule-formula">aⁿ : bⁿ = (a : b)ⁿ</td>
+            <td class="rule-example">8² : 4² = (8 : 4)² = 2² = 4</td>
+          </tr>
+          <tr>
+            <td class="rule-name">Exponente Negativo</td>
+            <td class="rule-formula">a⁻ⁿ = <span class="fraction-vertical"><span class="num">1</span><span class="den">aⁿ</span></span></td>
+            <td class="rule-example">3⁻² = <span class="fraction-vertical"><span class="num">1</span><span class="den">3²</span></span> = <span class="fraction-vertical"><span class="num">1</span><span class="den">9</span></span></td>
+          </tr>
+          <tr>
+            <td class="rule-name">Fracción a Exp. Negativo</td>
+            <td class="rule-formula">(<span class="fraction-vertical"><span class="num">a</span><span class="den">b</span></span>)⁻ⁿ = (<span class="fraction-vertical"><span class="num">b</span><span class="den">a</span></span>)ⁿ</td>
+            <td class="rule-example">(<span class="fraction-vertical"><span class="num">2</span><span class="den">3</span></span>)⁻² = (<span class="fraction-vertical"><span class="num">3</span><span class="den">2</span></span>)² = <span class="fraction-vertical"><span class="num">9</span><span class="den">4</span></span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ================= SECCIÓN 2: RADICALES ================= -->
+    <section>
+      <div class="section-title">
+        <span>√</span> 2. Reglas de los Radicales
+      </div>
+
+      <table class="rules-table">
+        <thead>
+          <tr>
+            <th>Propiedad</th>
+            <th>Fórmula General</th>
+            <th>Ejemplo Práctico</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="rule-name">Exponente Fraccionario</td>
+            <td class="rule-formula">
+              <span class="radical-box"><span class="rad-index">n</span><span class="rad-symbol">√</span><span class="rad-content">aᵐ</span></span> = 
+              a<sup class="fraction-vertical" style="font-size:0.65em;"><span class="num">m</span><span class="den">n</span></sup>
+            </td>
+            <td class="rule-example">
+              <span class="radical-box"><span class="rad-index">3</span><span class="rad-symbol">√</span><span class="rad-content">8²</span></span> = 8<sup class="fraction-vertical" style="font-size:0.65em;"><span class="num">2</span><span class="den">3</span></sup> = (2³)<sup class="fraction-vertical" style="font-size:0.65em;"><span class="num">2</span><span class="den">3</span></sup> = 2² = 4
+            </td>
+          </tr>
+          <tr>
+            <td class="rule-name">Producto de Raíces</td>
+            <td class="rule-formula">
+              <span class="radical-box"><span class="rad-index">n</span><span class="rad-symbol">√</span><span class="rad-content">a</span></span> · 
+              <span class="radical-box"><span class="rad-index">n</span><span class="rad-symbol">√</span><span class="rad-content">b</span></span> = 
+              <span class="radical-box"><span class="rad-index">n</span><span class="rad-symbol">√</span><span class="rad-content">a · b</span></span>
+            </td>
+            <td class="rule-example">
+              <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">2</span></span> · 
+              <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">8</span></span> = 
+              <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">16</span></span> = 4
+            </td>
+          </tr>
+          <tr>
+            <td class="rule-name">Cociente de Raíces</td>
+            <td class="rule-formula">
+              <span class="radical-box"><span class="rad-index">n</span><span class="rad-symbol">√</span><span class="rad-content">a</span></span> : 
+              <span class="radical-box"><span class="rad-index">n</span><span class="rad-symbol">√</span><span class="rad-content">b</span></span> = 
+              <span class="radical-box"><span class="rad-index">n</span><span class="rad-symbol">√</span><span class="rad-content">a : b</span></span>
+            </td>
+            <td class="rule-example">
+              <span class="radical-box"><span class="rad-index">3</span><span class="rad-symbol">√</span><span class="rad-content">54</span></span> : 
+              <span class="radical-box"><span class="rad-index">3</span><span class="rad-symbol">√</span><span class="rad-content">2</span></span> = 
+              <span class="radical-box"><span class="rad-index">3</span><span class="rad-symbol">√</span><span class="rad-content">27</span></span> = 3
+            </td>
+          </tr>
+          <tr>
+            <td class="rule-name">Potencia de una Raíz</td>
+            <td class="rule-formula">
+              (<span class="radical-box"><span class="rad-index">n</span><span class="rad-symbol">√</span><span class="rad-content">a</span></span>)ᵐ = 
+              <span class="radical-box"><span class="rad-index">n</span><span class="rad-symbol">√</span><span class="rad-content">aᵐ</span></span>
+            </td>
+            <td class="rule-example">
+              (<span class="radical-box"><span class="rad-index">3</span><span class="rad-symbol">√</span><span class="rad-content">5</span></span>)² = 
+              <span class="radical-box"><span class="rad-index">3</span><span class="rad-symbol">√</span><span class="rad-content">25</span></span>
+            </td>
+          </tr>
+          <tr>
+            <td class="rule-name">Raíz de una Raíz</td>
+            <td class="rule-formula">
+              <span class="radical-box"><span class="rad-index">m</span><span class="rad-symbol">√</span><span class="rad-content"><span class="radical-box" style="margin-left:0;"><span class="rad-index">n</span><span class="rad-symbol">√</span><span class="rad-content">a</span></span></span></span> = 
+              <span class="radical-box"><span class="rad-index">m · n</span><span class="rad-symbol">√</span><span class="rad-content">a</span></span>
+            </td>
+            <td class="rule-example">
+              <span class="radical-box"><span class="rad-index">3</span><span class="rad-symbol">√</span><span class="rad-content"><span class="radical-box" style="margin-left:0;"><span class="rad-symbol">√</span><span class="rad-content">64</span></span></span></span> = 
+              <span class="radical-box"><span class="rad-index">6</span><span class="rad-symbol">√</span><span class="rad-content">64</span></span> = 2
+            </td>
+          </tr>
+          <tr>
+            <td class="rule-name">Simplificación de Índices</td>
+            <td class="rule-formula">
+              <span class="radical-box"><span class="rad-index">n · k</span><span class="rad-symbol">√</span><span class="rad-content">aᵐ · ᵏ</span></span> = 
+              <span class="radical-box"><span class="rad-index">n</span><span class="rad-symbol">√</span><span class="rad-content">aᵐ</span></span>
+            </td>
+            <td class="rule-example">
+              <span class="radical-box"><span class="rad-index">6</span><span class="rad-symbol">√</span><span class="rad-content">5⁴</span></span> = 
+              <span class="radical-box"><span class="rad-index">3</span><span class="rad-symbol">√</span><span class="rad-content">5²</span></span> = 
+              <span class="radical-box"><span class="rad-index">3</span><span class="rad-symbol">√</span><span class="rad-content">25</span></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+</body>
+</html>

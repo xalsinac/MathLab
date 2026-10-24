@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabla de Integrales Inmediatas | MatesLab</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    .table-page-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+    }
+
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+    }
+
+    .print-btn {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border: none;
+      font-weight: 800;
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .print-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* TABLA RESUMEN */
+    .integral-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: monospace;
+      font-size: 1.02rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .integral-table th, 
+    .integral-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+    }
+
+    .integral-table th {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .integral-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .col-tipo {
+      color: var(--text-muted);
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      width: 20%;
+    }
+
+    .col-simple {
+      color: var(--accent-blue);
+      font-weight: bold;
+      width: 26%;
+    }
+
+    .col-compuesta {
+      color: #fff;
+      font-weight: bold;
+      width: 29%;
+    }
+
+    .col-ejemplo {
+      color: var(--accent-gold);
+      width: 25%;
+      font-size: 0.95em;
+    }
+
+    .fraction-vertical {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      margin: 0 0.2rem;
+      line-height: 1.1;
+      font-size: 0.9em;
+    }
+    .fraction-vertical .num { border-bottom: 2px solid currentColor; padding: 0 0.2rem 1px 0.2rem; }
+    .fraction-vertical .den { padding: 1px 0.2rem 0 0.2rem; }
+
+    .radical-box { display: inline-flex; align-items: flex-start; vertical-align: middle; }
+    .radical-box .rad-symbol { font-family: Arial, sans-serif; font-size: 1.25em; line-height: 0.7; margin-top: 2px; margin-right: -1px; }
+    .radical-box .rad-content { border-top: 2px solid currentColor; padding: 2px 3px 0 2px; margin-top: 2px; }
+
+    /* ESTILOS DE IMPRESIÓN (PDF A4) */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .nav-bar, .app-header, .action-bar, footer {
+        display: none !important;
+      }
+      .table-page-wrap {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        gap: 0.6rem !important;
+      }
+      .print-header {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 0.6rem;
+      }
+      .print-header h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.1rem;
+        color: #000;
+      }
+      .section-title {
+        color: #000 !important;
+        border-bottom: 2px solid #000 !important;
+        font-size: 0.95rem !important;
+        margin-bottom: 0.3rem !important;
+      }
+      .integral-table {
+        background: #fff !important;
+        border: 1px solid #000 !important;
+        font-size: 0.82rem !important;
+        margin-bottom: 0.5rem;
+      }
+      .integral-table th {
+        background: #f1f5f9 !important;
+        color: #000 !important;
+        border-bottom: 1px solid #000 !important;
+        padding: 0.35rem 0.5rem !important;
+      }
+      .integral-table td {
+        border-bottom: 1px solid #ccc !important;
+        color: #000 !important;
+        padding: 0.35rem 0.5rem !important;
+      }
+      .col-tipo { color: #333 !important; }
+      .col-simple { color: #000 !important; font-weight: normal; }
+      .col-compuesta { color: #000 !important; font-weight: bold; }
+      .col-ejemplo { color: #000 !important; font-weight: normal; }
+    }
+
+    .print-header { display: none; }
+
+    @media (max-width: 750px) {
+      .integral-table th, .integral-table td { padding: 0.6rem 0.4rem; font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Tabla de Integrales Inmediatas</h1>
+    <p>Formulario de cálculo integral indefinido: propiedades de linealidad, integrales simples y formas compuestas con ajuste de constante.</p>
+  </header>
+
+  <main class="table-page-wrap">
+
+    <div class="print-header">
+      <h1>Tabla de Integrales Inmediatas y Compuestas</h1>
+      <p>MatesLab • Formulario de Cálculo Integral (Bachillerato)</p>
+    </div>
+
+    <div class="action-bar">
+      <div style="font-size:0.9rem; color:var(--text-muted);">
+        📋 <strong>Constante de integración:</strong> Toda integral indefinida finaliza con <code>+ C</code> (donde C ∈ ℝ).
+      </div>
+      <button class="print-btn" onclick="window.print()">
+        <span>🖨️</span> Imprimir / Guardar PDF
+      </button>
+    </div>
+
+    <!-- ================= SECCIÓN 1: PROPIEDADES DE LINEALIDAD ================= -->
+    <section>
+      <div class="section-title">
+        <span>⚙️</span> 1. Propiedades Fundamentales (Linealidad)
+      </div>
+
+      <table class="integral-table">
+        <thead>
+          <tr>
+            <th style="width:25%;">Propiedad</th>
+            <th style="width:45%;">Fórmula</th>
+            <th style="width:30%;">Significado Práctico</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-tipo">Constante que multiplica</td>
+            <td class="col-compuesta">∫ k · f(x) dx = k · ∫ f(x) dx</td>
+            <td class="col-ejemplo">Los números multiplicando entran y salen</td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Suma / Resta</td>
+            <td class="col-compuesta">∫ [f(x) ± g(x)] dx = ∫ f(x) dx ± ∫ g(x) dx</td>
+            <td class="col-ejemplo">La integral de una suma es suma de integrales</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ================= SECCIÓN 2: POTENCIALES, EXPONENCIALES Y RACIONALES ================= -->
+    <section>
+      <div class="section-title">
+        <span>📈</span> 2. Potenciales, Racionales y Exponenciales
+      </div>
+
+      <table class="integral-table">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Forma Simple (x)</th>
+            <th>Forma Compuesta (u)</th>
+            <th>Ejemplo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-tipo">Constante</td>
+            <td class="col-simple">∫ k dx = k·x + C</td>
+            <td class="col-compuesta">—</td>
+            <td class="col-ejemplo">∫ 4 dx = 4x + C</td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Potencial<br><span style="font-size:0.8em; color:var(--text-muted);">(n ≠ −1)</span></td>
+            <td class="col-simple">
+              ∫ xⁿ dx = 
+              <span class="fraction-vertical"><span class="num">xⁿ⁺¹</span><span class="den">n + 1</span></span> + C
+            </td>
+            <td class="col-compuesta">
+              ∫ u' · uⁿ dx = 
+              <span class="fraction-vertical"><span class="num">uⁿ⁺¹</span><span class="den">n + 1</span></span> + C
+            </td>
+            <td class="col-ejemplo">
+              ∫ 2x(x²+1)³ dx = 
+              <span class="fraction-vertical"><span class="num">(x²+1)⁴</span><span class="den">4</span></span> + C
+            </td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Logarítmica<br><span style="font-size:0.8em; color:var(--text-muted);">(n = −1)</span></td>
+            <td class="col-simple">
+              ∫ <span class="fraction-vertical"><span class="num">1</span><span class="den">x</span></span> dx = ln|x| + C
+            </td>
+            <td class="col-compuesta">
+              ∫ <span class="fraction-vertical"><span class="num">u'</span><span class="den">u</span></span> dx = ln|u| + C
+            </td>
+            <td class="col-ejemplo">
+              ∫ <span class="fraction-vertical"><span class="num">2x</span><span class="den">x²+5</span></span> dx = ln|x²+5| + C
+            </td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Exponencial e</td>
+            <td class="col-simple">∫ eˣ dx = eˣ + C</td>
+            <td class="col-compuesta">∫ u' · eᵘ dx = eᵘ + C</td>
+            <td class="col-ejemplo">∫ 3x²·eˣ³ dx = eˣ³ + C</td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Exponencial base a</td>
+            <td class="col-simple">
+              ∫ aˣ dx = 
+              <span class="fraction-vertical"><span class="num">aˣ</span><span class="den">ln(a)</span></span> + C
+            </td>
+            <td class="col-compuesta">
+              ∫ u' · aᵘ dx = 
+              <span class="fraction-vertical"><span class="num">aᵘ</span><span class="den">ln(a)</span></span> + C
+            </td>
+            <td class="col-ejemplo">
+              ∫ 2ˣ dx = 
+              <span class="fraction-vertical"><span class="num">2ˣ</span><span class="den">ln(2)</span></span> + C
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ================= SECCIÓN 3: TRIGONOMÉTRICAS Y TIPO ARCO ================= -->
+    <section>
+      <div class="section-title">
+        <span>📐</span> 3. Trigonométricas y Formas Tipo Arco
+      </div>
+
+      <table class="integral-table">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Forma Simple (x)</th>
+            <th>Forma Compuesta (u)</th>
+            <th>Ejemplo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-tipo">Seno</td>
+            <td class="col-simple">∫ cos x dx = sen x + C</td>
+            <td class="col-compuesta">∫ u' · cos u dx = sen u + C</td>
+            <td class="col-ejemplo">∫ 3·cos(3x) dx = sen(3x) + C</td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Coseno</td>
+            <td class="col-simple">∫ sen x dx = −cos x + C</td>
+            <td class="col-compuesta">∫ u' · sen u dx = −cos u + C</td>
+            <td class="col-ejemplo">∫ 2x·sen(x²) dx = −cos(x²) + C</td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Tangente</td>
+            <td class="col-simple">
+              ∫ (1 + tg² x) dx = tg x + C<br>
+              ∫ <span class="fraction-vertical"><span class="num">1</span><span class="den">cos² x</span></span> dx = tg x + C
+            </td>
+            <td class="col-compuesta">
+              ∫ u' · (1 + tg² u) dx = tg u + C<br>
+              ∫ <span class="fraction-vertical"><span class="num">u'</span><span class="den">cos² u</span></span> dx = tg u + C
+            </td>
+            <td class="col-ejemplo">
+              ∫ <span class="fraction-vertical"><span class="num">4</span><span class="den">cos²(4x)</span></span> dx = tg(4x) + C
+            </td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Arcoseno</td>
+            <td class="col-simple">
+              ∫ <span class="fraction-vertical"><span class="num">1</span><span class="den"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">1 − x²</span></span></span></span> dx = arcsen x + C
+            </td>
+            <td class="col-compuesta">
+              ∫ <span class="fraction-vertical"><span class="num">u'</span><span class="den"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">1 − u²</span></span></span></span> dx = arcsen u + C
+            </td>
+            <td class="col-ejemplo">
+              ∫ <span class="fraction-vertical"><span class="num">3</span><span class="den"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">1 − 9x²</span></span></span></span> dx = arcsen(3x) + C
+            </td>
+          </tr>
+          <tr>
+            <td class="col-tipo">Arcotangente</td>
+            <td class="col-simple">
+              ∫ <span class="fraction-vertical"><span class="num">1</span><span class="den">1 + x²</span></span> dx = arctg x + C
+            </td>
+            <td class="col-compuesta">
+              ∫ <span class="fraction-vertical"><span class="num">u'</span><span class="den">1 + u²</span></span> dx = arctg u + C
+            </td>
+            <td class="col-ejemplo">
+              ∫ <span class="fraction-vertical"><span class="num">2x</span><span class="den">1 + x⁴</span></span> dx = arctg(x²) + C
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+</body>
+</html>

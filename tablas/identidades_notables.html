@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Identidades Notables Básicas y Avanzadas | MatesLab</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    .table-page-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+    }
+
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+    }
+
+    .print-btn {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border: none;
+      font-weight: 800;
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .print-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* TABLA RESUMEN */
+    .notables-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: monospace;
+      font-size: 1.05rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .notables-table th, 
+    .notables-table td {
+      padding: 0.85rem 1.1rem;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+    }
+
+    .notables-table th {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .notables-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .col-name {
+      color: var(--text-muted);
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      width: 28%;
+    }
+
+    .col-formula {
+      color: #fff;
+      font-weight: bold;
+      width: 42%;
+    }
+
+    .col-example {
+      color: var(--accent-gold);
+      width: 30%;
+    }
+
+    /* CAJA PASCAL */
+.pascal-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      align-items: center;
+      overflow-x: auto;
+    }
+
+    .pascal-tier {
+      display: grid;
+      grid-template-columns: 80px 1fr 220px;
+      align-items: center;
+      width: 100%;
+      max-width: 680px;
+      gap: 0.5rem;
+    }
+
+    .pascal-tag {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      font-family: monospace;
+    }
+
+    .pascal-numbers {
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+    }
+
+    .pascal-node {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: #fff;
+      font-family: monospace;
+      font-size: 0.95rem;
+      font-weight: 800;
+    }
+
+    .pascal-expansion {
+      font-family: monospace;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* ESTILOS DE IMPRESIÓN (PDF A4) */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .nav-bar, .app-header, .action-bar, footer {
+        display: none !important;
+      }
+      .table-page-wrap {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        gap: 0.8rem !important;
+      }
+      .print-header {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 0.8rem;
+      }
+      .print-header h1 {
+        font-size: 1.6rem;
+        margin-bottom: 0.2rem;
+        color: #000;
+      }
+      .section-title {
+        color: #000 !important;
+        border-bottom: 2px solid #000 !important;
+        font-size: 1rem !important;
+        margin-bottom: 0.4rem !important;
+      }
+      .notables-table {
+        background: #fff !important;
+        border: 1px solid #000 !important;
+        font-size: 0.9rem !important;
+        margin-bottom: 0.6rem;
+      }
+      .notables-table th {
+        background: #f1f5f9 !important;
+        color: #000 !important;
+        border-bottom: 1px solid #000 !important;
+      }
+      .notables-table td {
+        border-bottom: 1px solid #ccc !important;
+        color: #000 !important;
+        padding: 0.45rem 0.6rem !important;
+      }
+      .col-name { color: #333 !important; }
+      .col-formula { color: #000 !important; }
+      .col-example { color: #000 !important; font-weight: bold; }
+      .pascal-card {
+        background: #fff !important;
+        border: 1px solid #000 !important;
+        color: #000 !important;
+        padding: 0.8rem !important;
+      }
+      .pascal-row { color: #000 !important; }
+      .pascal-badge { color: #555 !important; }
+    }
+
+    .print-header { display: none; }
+
+    @media (max-width: 750px) {
+      .notables-table th, .notables-table td { padding: 0.6rem 0.5rem; font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Identidades Notables Básicas y Avanzadas</h1>
+    <p>Formulario de consulta directa: binomios al cuadrado, al cubo, suma y resta de cubos, trinomios y el Triángulo de Pascal.</p>
+  </header>
+
+  <main class="table-page-wrap">
+
+    <div class="print-header">
+      <h1>Ficha Resumen: Identidades Notables y Factorización</h1>
+      <p>MatesLab • Formulario de álgebra (ESO y Bachillerato)</p>
+    </div>
+
+    <div class="action-bar">
+      <div style="font-size:0.9rem; color:var(--text-muted);">
+        📋 Fórmulas para desarrollo rápido y factorización de polinomios sin pasar por multiplicaciones largas.
+      </div>
+      <button class="print-btn" onclick="window.print()">
+        <span>🖨️</span> Imprimir / Guardar PDF
+      </button>
+    </div>
+
+    <!-- ================= SECCIÓN 1: LAS 3 BÁSICAS (2º GRADO) ================= -->
+    <section>
+      <div class="section-title">
+        <span>🔲</span> 1. Las 3 Clásicas (Cuadrados de Binomios)
+      </div>
+
+      <table class="notables-table">
+        <thead>
+          <tr>
+            <th>Identidad</th>
+            <th>Fórmula General</th>
+            <th>Ejemplo Práctico</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-name">Cuadrado de una Suma</td>
+            <td class="col-formula">(a + b)² = a² + 2ab + b²</td>
+            <td class="col-example">(x + 3)² = x² + 6x + 9</td>
+          </tr>
+          <tr>
+            <td class="col-name">Cuadrado de una Diferencia</td>
+            <td class="col-formula">(a − b)² = a² − 2ab + b²</td>
+            <td class="col-example">(2x − 5)² = 4x² − 20x + 25</td>
+          </tr>
+          <tr>
+            <td class="col-name">Suma por Diferencia</td>
+            <td class="col-formula">(a + b)(a − b) = a² − b²</td>
+            <td class="col-example">(3x + 4)(3x − 4) = 9x² − 16</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ================= SECCIÓN 2: AVANZADAS DE 3er GRADO (CUBOS) ================= -->
+    <section>
+      <div class="section-title">
+        <span>🧊</span> 2. Cubos de Binomios y Factorización de Cubos
+      </div>
+
+      <table class="notables-table">
+        <thead>
+          <tr>
+            <th>Identidad</th>
+            <th>Fórmula General</th>
+            <th>Ejemplo Práctico</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-name">Cubo de una Suma</td>
+            <td class="col-formula">(a + b)³ = a³ + 3a²b + 3ab² + b³</td>
+            <td class="col-example">(x + 2)³ = x³ + 6x² + 12x + 8</td>
+          </tr>
+          <tr>
+            <td class="col-name">Cubo de una Diferencia</td>
+            <td class="col-formula">(a − b)³ = a³ − 3a²b + 3ab² − b³</td>
+            <td class="col-example">(x − 1)³ = x³ − 3x² + 3x − 1</td>
+          </tr>
+          <tr>
+            <td class="col-name">Suma de Cubos</td>
+            <td class="col-formula">a³ + b³ = (a + b)(a² − ab + b²)</td>
+            <td class="col-example">x³ + 8 = (x + 2)(x² − 2x + 4)</td>
+          </tr>
+          <tr>
+            <td class="col-name">Diferencia de Cubos</td>
+            <td class="col-formula">a³ − b³ = (a − b)(a² + ab + b²)</td>
+            <td class="col-example">x³ − 27 = (x − 3)(x² + 3x + 9)</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ================= SECCIÓN 3: TRINOMIOS Y OTRAS IDENTIDADES ================= -->
+    <section>
+      <div class="section-title">
+        <span>⭐</span> 3. Trinomios y Simplificación Rápida
+      </div>
+
+      <table class="notables-table">
+        <thead>
+          <tr>
+            <th>Identidad</th>
+            <th>Fórmula General</th>
+            <th>Ejemplo Práctico</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-name">Cuadrado de un Trinomio</td>
+            <td class="col-formula">(a + b + c)² = a² + b² + c² + 2ab + 2ac + 2bc</td>
+            <td class="col-example">(x + y + 2)² = x² + y² + 4 + 2xy + 4x + 4y</td>
+          </tr>
+          <tr>
+            <td class="col-name">Identidad de Legendre</td>
+            <td class="col-formula">(a + b)² + (a − b)² = 2(a² + b²)</td>
+            <td class="col-example">(x + 3)² + (x − 3)² = 2(x² + 9) = 2x² + 18</td>
+          </tr>
+          <tr>
+            <td class="col-name">Identidad de Legendre (Resta)</td>
+            <td class="col-formula">(a + b)² − (a − b)² = 4ab</td>
+            <td class="col-example">(x + 2)² − (x − 2)² = 4 · x · 2 = 8x</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ================= SECCIÓN 4: TRIÁNGULO DE PASCAL ================= -->
+    <section>
+      <div class="section-title">
+        <span>🔺</span> 4. Triángulo de Pascal (Coeficientes de (a + b)ⁿ)
+      </div>
+
+      <div class="pascal-card">
+        <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.4rem; text-align:center;">
+          Cada número es la suma de los dos que tiene justo encima. Da los coeficientes de cualquier binomio elevado a <em>n</em>:
+        </div>
+
+        <div class="pascal-row"><span class="pascal-badge">n = 0:</span> 1</div>
+        <div class="pascal-row"><span class="pascal-badge">n = 1:</span> 1 &nbsp;&nbsp; 1</div>
+        <div class="pascal-row"><span class="pascal-badge">n = 2:</span> 1 &nbsp;&nbsp; 2 &nbsp;&nbsp; 1 &nbsp;&nbsp;<span style="color:var(--text-muted); font-size:0.8rem;">➔ a² + 2ab + b²</span></div>
+        <div class="pascal-row"><span class="pascal-badge">n = 3:</span> 1 &nbsp;&nbsp; 3 &nbsp;&nbsp; 3 &nbsp;&nbsp; 1 &nbsp;&nbsp;<span style="color:var(--text-muted); font-size:0.8rem;">➔ a³ + 3a²b + 3ab² + b³</span></div>
+        <div class="pascal-row"><span class="pascal-badge">n = 4:</span> 1 &nbsp;&nbsp; 4 &nbsp;&nbsp; 6 &nbsp;&nbsp; 4 &nbsp;&nbsp; 1 &nbsp;&nbsp;<span style="color:var(--text-muted); font-size:0.8rem;">➔ a⁴ + 4a³b + 6a²b² + 4ab³ + b⁴</span></div>
+      </div>
+    </section>
+
+  </main>
+
+</body>
+</html>

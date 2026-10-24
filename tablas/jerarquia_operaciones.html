@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jerarquía de Operaciones (PEMDAS) | MatesLab</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    .table-page-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+    }
+
+    .print-btn {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border: none;
+      font-weight: 800;
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .print-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .grid-board {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    /* PIRÁMIDE DE JERARQUÍA */
+    .pyramid-container {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .step-box {
+      width: 100%;
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid;
+      transition: transform 0.2s;
+    }
+    .step-box:hover {
+      transform: scale(1.01);
+    }
+
+    .step-1 { width: 60%; background: rgba(236, 72, 153, 0.12); border-color: #f472b6; color: #f472b6; }
+    .step-2 { width: 73%; background: rgba(168, 85, 247, 0.12); border-color: #c084fc; color: #c084fc; }
+    .step-3 { width: 86%; background: rgba(56, 189, 248, 0.12); border-color: var(--accent-blue); color: var(--accent-blue); }
+    .step-4 { width: 100%; background: rgba(16, 185, 129, 0.12); border-color: var(--accent-success); color: var(--accent-success); }
+
+    .step-badge {
+      font-weight: 900;
+      font-size: 1.15rem;
+      font-family: monospace;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .step-info {
+      text-align: right;
+      font-size: 0.85rem;
+      color: var(--text-main);
+    }
+    .step-info strong {
+      display: block;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    /* TARJETA DE REGLA DE DESEMPATE */
+    .rule-card {
+      background: rgba(251, 191, 36, 0.08);
+      border: 1px dashed var(--accent-gold);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .rule-card strong { color: var(--accent-gold); }
+
+    /* PANEL LATERAL DE EJEMPLOS */
+    .detail-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .example-flow {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      line-height: 2;
+    }
+    .example-flow .highlight {
+      background: rgba(56, 189, 248, 0.2);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      color: var(--accent-blue);
+      font-weight: bold;
+    }
+    .example-flow .result {
+      color: var(--accent-success);
+      font-weight: 900;
+      font-size: 1.2rem;
+    }
+
+    /* ESTILOS DE IMPRESIÓN (PDF A4) */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .nav-bar, .app-header, .action-bar, footer {
+        display: none !important;
+      }
+      .table-page-wrap {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+      }
+      .print-header {
+        display: block !important;
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .print-header h1 {
+        font-size: 1.9rem;
+        margin-bottom: 0.2rem;
+        color: #000;
+      }
+      .grid-board {
+        display: block !important;
+      }
+      .pyramid-container, .detail-card, .rule-card {
+        background: #fff !important;
+        border: 1px solid #333 !important;
+        color: #000 !important;
+        margin-bottom: 1.2rem !important;
+      }
+      .step-box {
+        background: #f8fafc !important;
+        border: 1px solid #475569 !important;
+        color: #000 !important;
+        margin-bottom: 0.5rem;
+      }
+      .step-info {
+        color: #333 !important;
+      }
+      .step-info strong {
+        color: #000 !important;
+      }
+      .example-flow {
+        background: #fff !important;
+        border: 1px solid #ccc !important;
+        color: #000 !important;
+      }
+      .example-flow .highlight {
+        background: #e2e8f0 !important;
+        color: #000 !important;
+      }
+      .example-flow .result {
+        color: #000 !important;
+      }
+    }
+
+    .print-header { display: none; }
+
+    @media (max-width: 850px) {
+      .grid-board { grid-template-columns: 1fr; }
+      .step-1, .step-2, .step-3, .step-4 { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav-bar">
+    <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+  </nav>
+
+  <header class="app-header">
+    <h1>Jerarquía de Operaciones (PEMDAS)</h1>
+    <p>El orden universal e inmutable que evita la ambigüedad en el cálculo. Aprende qué se resuelve primero y qué regla desempata los niveles idénticos.</p>
+  </header>
+
+  <main class="table-page-wrap">
+
+    <div class="print-header">
+      <h1>Guía Rápida: Jerarquía de Operaciones</h1>
+      <p>MatesLab • Ficha de consulta de aritmética y álgebra</p>
+    </div>
+
+    <div class="action-bar">
+      <div style="font-size:0.9rem; color:var(--text-muted);">
+        Acrónimo: <strong>P</strong>aréntesis • <strong>E</strong>xponentes • <strong>M</strong>ultiplicación / <strong>D</strong>ivisión • <strong>A</strong>dición / <strong>S</strong>ustracción
+      </div>
+      <button class="print-btn" onclick="window.print()">
+        <span>🖨️</span> Imprimir / Guardar PDF
+      </button>
+    </div>
+
+    <div class="grid-board">
+      
+      <!-- PIRÁMIDE DE JERARQUÍA -->
+      <div class="pyramid-container">
+        
+        <!-- NIVEL 1 -->
+        <div class="step-box step-1">
+          <div class="step-badge">
+            <span>1º</span> ( &nbsp; )
+          </div>
+          <div class="step-info">
+            <strong>Paréntesis y Corchetes</strong>
+            De dentro hacia fuera: ( ), [ ], { }
+          </div>
+        </div>
+
+        <!-- NIVEL 2 -->
+        <div class="step-box step-2">
+          <div class="step-badge">
+            <span>2º</span> xⁿ &nbsp; √
+          </div>
+          <div class="step-info">
+            <strong>Potencias y Raíces</strong>
+            Exponentes y radicales asociados
+          </div>
+        </div>
+
+        <!-- NIVEL 3 -->
+        <div class="step-box step-3">
+          <div class="step-badge">
+            <span>3º</span> × &nbsp; ÷
+          </div>
+          <div class="step-info">
+            <strong>Multiplicaciones y Divisiones</strong>
+            Mismo rango de prioridad
+          </div>
+        </div>
+
+        <!-- NIVEL 4 -->
+        <div class="step-box step-4">
+          <div class="step-badge">
+            <span>4º</span> + &nbsp; −
+          </div>
+          <div class="step-info">
+            <strong>Sumas y Restas</strong>
+            Último paso del cálculo
+          </div>
+        </div>
+
+        <!-- REGLA DE ORO DE DESEMPATE -->
+        <div class="rule-card" style="width:100%; margin-top:0.5rem;">
+          <strong>↔️ Regla de desempate (Izquierda a Derecha):</strong><br>
+          Cuando dos operaciones comparten exactamente el mismo escalón (por ejemplo, una multiplicación y una división consecutivas, como en <code>12 ÷ 3 × 2</code>), se resuelven estrictamente <strong>en el orden en que se leen, de izquierda a derecha</strong>: primero <code>12 ÷ 3 = 4</code> y luego <code>4 × 2 = 8</code>.
+        </div>
+
+      </div>
+
+      <!-- DESGLOSE PASO A PASO -->
+      <div class="detail-card">
+        <div class="panel-title" style="margin-bottom:0;">Desglose Paso a Paso</div>
+        
+        <p style="font-size:0.85rem; color:var(--text-muted); margin:0;">
+          Resolución completa aplicando los niveles de la pirámide:
+        </p>
+
+        <div class="example-flow">
+          5 + 2 × <span class="highlight">(3² − 5)</span> ÷ 4<br>
+          ↓ <em>1º: Potencia dentro del paréntesis</em><br>
+          5 + 2 × (<span class="highlight">9 − 5</span>) ÷ 4<br>
+          ↓ <em>2º: Resta para cerrar paréntesis</em><br>
+          5 + <span class="highlight">2 × 4</span> ÷ 4<br>
+          ↓ <em>3º: Multiplicación (gana por orden L→R)</em><br>
+          5 + <span class="highlight">8 ÷ 4</span><br>
+          ↓ <em>4º: División restante</em><br>
+          <span class="highlight">5 + 2</span><br>
+          ↓ <em>5º: Suma final</em><br>
+          = <span class="result">7</span>
+        </div>
+
+        <div style="background:rgba(244,63,94,0.08); border:1px solid var(--accent-op); border-radius:8px; padding:0.8rem; font-size:0.85rem; line-height:1.45; color:var(--text-muted);">
+          <strong style="color:var(--accent-op);">Error clásico de examen:</strong><br>
+          En <code>2 + 3 × 4</code>, nunca sumes <code>2 + 3</code> primero. La multiplicación tiene rango prioritario: <code>2 + 12 = 14</code>.
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+</body>
+</html>

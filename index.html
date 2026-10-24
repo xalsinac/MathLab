@@ -48,24 +48,25 @@
       --color-bach-border: rgba(245, 158, 11, 0.25);
     }
 
-    /* HEADER Y LOGO */
+  /* HEADER Y LOGO */
     .top-header {
-      background: #090d16;
+      background: var(--bg-primary); /* <--- USA EL MISMO FONDO DE LA PÁGINA */
       border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
       z-index: 100;
       backdrop-filter: blur(12px);
+      width: 100%;
     }
     
     .nav-container {
-      max-width: 1250px;
+      max-width: 1700px; /* <--- PASA DE 1250px A 1700px */
       margin: 0 auto;
-      padding: 0.8rem 1.25rem;
+      padding: 0.85rem 2rem; /* <--- AIRE LATERAL */
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 1rem;
+      gap: 1.5rem;
       flex-wrap: nowrap;
     }
     
@@ -143,9 +144,9 @@
 
     /* FILTROS Y BÚSQUEDA */
     .filter-section {
-      max-width: 1250px;
+      max-width: 1700px;
       margin: 1.5rem auto 0;
-      padding: 0 1.25rem;
+      padding: 0 2rem;
       display: flex;
       flex-direction: column;
       gap: 1.2rem;
@@ -226,9 +227,9 @@
 
     /* SECCIONES Y ENCABEZADOS */
     .catalog-wrapper {
-      max-width: 1250px;
+      max-width: 1700px;
       margin: 2rem auto;
-      padding: 0 1.25rem;
+      padding: 0 2rem;
       display: flex;
       flex-direction: column;
       gap: 3.5rem;
@@ -282,12 +283,20 @@
       gap: 0.5rem;
     }
 
-    /* GRID Y TARJETAS */
+  /* GRID Y TARJETAS */
     .topics-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 1.3rem;
     }
+
+    /* En pantallas Full HD, 2K o de 29" equilibra el ancho de cada tarjeta */
+    @media (min-width: 1440px) {
+      .topics-grid {
+        grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      }
+    }
+
     .topic-card {
       border-radius: 12px;
       padding: 1.25rem;

@@ -1,0 +1,73 @@
+/* Tema claro compartido por todas las páginas de MathLab. */
+html[data-theme="light"] {
+  color-scheme: light;
+  --bg-primary: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-plate: #e2e8f0;
+  --border-color: #cbd5e1;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --accent-blue: #0284c7;
+  --accent-gold: #d97706;
+  --accent-success: #059669;
+  --accent-op: #e11d48;
+  --accent-purple: #9333ea;
+  --color-tablas-bg: rgba(45, 212, 191, 0.08);
+  --color-ciclo1-bg: rgba(56, 189, 248, 0.08);
+  --color-ciclo2-bg: rgba(16, 185, 129, 0.08);
+  --color-bach-bg: rgba(245, 158, 11, 0.08);
+}
+
+html[data-theme="light"] body {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-main) !important;
+}
+
+html[data-theme="light"] :is(.app-container, .panel-box, .panel, .card, .tab-content,
+  .tabs-container, .subtabs-container, .control-panel, .slider-group,
+  .equation-display, .values-table, .explanation-card, .lesson-header,
+  .lesson-nav, .topic-card, .search-input, .filter-chip) {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color);
+  color: var(--text-main);
+}
+
+html[data-theme="light"] :is(.canvas-container, .mini-preview, .expression-box,
+  .step-box, .formula-box, .info-box, .content-box) {
+  background-color: var(--bg-plate) !important;
+  border-color: var(--border-color);
+  color: var(--text-main);
+}
+
+/* Fondos oscuros declarados en línea en algunas lecciones. */
+html[data-theme="light"] [style*="#0b1120"],
+html[data-theme="light"] [style*="#0f172a"],
+html[data-theme="light"] [style*="#1e293b"],
+html[data-theme="light"] [style*="#090d16"] {
+  background-color: var(--bg-plate) !important;
+  color: var(--text-main);
+}
+
+html[data-theme="light"] :is(h1, h2, h3, .topic-name, .cycle-title, .radical-logo) {
+  color: var(--text-main);
+}
+
+.mathlab-theme-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.55rem 0.8rem;
+  background: var(--bg-card);
+  color: var(--text-main);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+.mathlab-theme-toggle:focus-visible {
+  outline: 3px solid var(--accent-blue);
+  outline-offset: 2px;
+}

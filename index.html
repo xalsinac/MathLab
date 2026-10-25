@@ -393,7 +393,132 @@
       .radical-content { font-size: 1.3rem; }
       .radical-symbol { font-size: 2rem; }
     }
+  
+
+    .nav-container { position: relative; }
+    .nav-links {
+      position: absolute; left: 50%; top: 50%;
+      transform: translate(-50%, -50%); flex-wrap: nowrap;
+      justify-content: center; width: max-content;
+    }
+    .nav-btn-cursos { color: var(--accent-blue); border-color: rgba(56, 189, 248, .3); background: rgba(56, 189, 248, .08); }
+    .nav-btn-practicar { color: var(--accent-gold); border-color: rgba(245, 158, 11, .35); background: rgba(245, 158, 11, .08); }
+    .nav-btn-favoritos { color: var(--accent-op); border-color: rgba(244, 63, 94, .3); background: rgba(244, 63, 94, .08); cursor: pointer; font-family: inherit; }
+    .nav-btn-favoritos span { display: inline-flex; align-items: center; justify-content: center; min-width: 1.2rem; height: 1.2rem; margin-left: .15rem; border-radius: 999px; background: rgba(244, 63, 94, .18); font-size: .72rem; }
+    .favorites-overlay { position: fixed; inset: 0; z-index: 1100; display: grid; place-items: center; padding: 1rem; background: rgba(2, 6, 23, .72); backdrop-filter: blur(5px); }
+    .favorites-dialog { width: min(100%, 620px); max-height: min(80vh, 760px); overflow-y: auto; padding: 1.35rem; border: 1px solid var(--border-color); border-radius: 16px; background: var(--bg-card); color: var(--text-main); box-shadow: 0 24px 70px rgba(0,0,0,.35); }
+    .favorites-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+    .favorites-header h2 { margin-top: .2rem; color: var(--text-main); }
+    .favorites-count { color: var(--accent-blue); font-size: .9em; }
+    .favorites-note, .favorites-empty { color: var(--text-muted); line-height: 1.5; margin: .75rem 0 1rem; }
+    .favorites-close { border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-primary); color: var(--text-main); font-size: 1.4rem; line-height: 1; padding: .35rem .65rem; cursor: pointer; }
+    .favorites-list { display: grid; gap: .65rem; }
+    .favorite-row { display: flex; align-items: stretch; gap: .5rem; }
+    .favorite-link { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .2rem; padding: .85rem 1rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-primary); color: var(--text-main); text-decoration: none; }
+    .favorite-link:hover { border-color: var(--accent-blue); }
+    .favorite-link strong { font-size: .98rem; }
+    .favorite-link span { color: var(--text-muted); font-size: .84rem; line-height: 1.4; }
+    .favorite-remove { align-self: center; border: 0; background: transparent; color: var(--text-muted); padding: .55rem; font-size: 1.2rem; cursor: pointer; }
+    .favorite-remove:hover { color: var(--accent-op); }
+    .favorites-footer { display: flex; justify-content: flex-end; border-top: 1px solid var(--border-color); margin-top: 1rem; padding-top: .8rem; }
+    @media (max-width: 780px) {
+      .nav-container { flex-wrap: wrap; justify-content: center; padding: .75rem .75rem .55rem; }
+      .brand-wrap { margin: 0 auto; }
+      .nav-links { position: static; transform: none; order: 3; width: 100%; display: flex; gap: .15rem; overflow-x: auto; justify-content: center; padding-top: .35rem; }
+      .nav-link-btn { font-size: .74rem; padding: .4rem .42rem; gap: .2rem; }
+      #theme-toggle { position: absolute; right: .75rem; top: .65rem; }
+      .favorites-dialog { padding: 1rem; }
+    }
+    @media (max-width: 360px) {
+      .nav-links { justify-content: flex-start; }
+      .nav-link-btn { font-size: .7rem; padding: .4rem .35rem; }
+    }
+
+    [hidden] { display: none !important; }
+    .home-hub, .course-view-controls {
+      width: min(calc(100% - 2rem), 1180px);
+      margin: 2.5rem auto;
+    }
+    .home-intro { margin-bottom: 2.25rem; }
+    .home-eyebrow {
+      color: var(--accent-blue); font-size: .78rem; font-weight: 800;
+      letter-spacing: .14em; text-transform: uppercase;
+    }
+    .home-intro h1 {
+      color: var(--text-main); font-size: clamp(2rem, 4vw, 3rem);
+      margin: .45rem 0 .6rem;
+    }
+    .home-intro p, .course-note {
+      color: var(--text-muted); font-size: 1rem; line-height: 1.6;
+      max-width: 760px;
+    }
+    .hub-section-heading {
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: 1rem; margin-bottom: 1rem;
+    }
+    .hub-section-heading h2 { color: var(--text-main); font-size: 1.25rem; }
+    .heading-note { color: var(--text-muted); font-size: .84rem; }
+    .course-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem;
+    }
+    .course-card, .quick-card {
+      color: var(--text-main); background: var(--bg-card);
+      border: 1px solid var(--border-color); border-radius: 14px;
+      text-align: left; text-decoration: none; transition: transform .18s ease,
+      border-color .18s ease, box-shadow .18s ease;
+    }
+    .course-card {
+      display: flex; flex-direction: column; align-items: flex-start;
+      min-height: 174px; padding: 1.2rem 1.35rem; cursor: pointer;
+      border-top: 3px solid var(--course-accent, var(--accent-blue));
+    }
+    .course-c1 { --course-accent: #10b981; }
+    .course-c2 { --course-accent: #38bdf8; }
+    .course-bach1 { --course-accent: #a78bfa; }
+    .course-bach2 { --course-accent: #f59e0b; }
+    .course-card:hover, .quick-card:hover {
+      transform: translateY(-3px); border-color: var(--course-accent, var(--accent-blue));
+      box-shadow: 0 12px 28px rgba(0,0,0,.18);
+    }
+    .course-card:focus-visible, .quick-card:focus-visible, .back-to-courses:focus-visible {
+      outline: 3px solid var(--accent-blue); outline-offset: 3px;
+    }
+    .course-icon { font-size: 1.35rem; margin-bottom: .55rem; }
+    .course-title, .quick-title { font-size: 1.08rem; font-weight: 800; }
+    .course-description, .quick-description {
+      color: var(--text-muted); line-height: 1.5; margin-top: .35rem;
+    }
+    .course-arrow {
+      color: var(--course-accent, var(--accent-blue)); font-size: .88rem;
+      font-weight: 700; margin-top: auto; padding-top: .75rem;
+    }
+    .course-note { font-size: .82rem; margin: .75rem 0 0; }
+    .quick-section { margin-top: 2.5rem; }
+    .quick-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .quick-card { display: flex; flex-direction: column; min-height: 158px; padding: 1.2rem 1.35rem; }
+    .quick-formulas { --course-accent: var(--accent-blue); }
+    .quick-practice { --course-accent: var(--accent-gold); }
+    .quick-icon { color: var(--course-accent); font-size: 1.45rem; margin-bottom: .45rem; }
+    .course-view-controls { margin-top: 1.5rem; margin-bottom: .5rem; }
+    .course-view-controls h1 { color: var(--text-main); font-size: 1.65rem; margin-top: .8rem; }
+    .course-view-controls p { color: var(--text-muted); margin-top: .25rem; }
+    .back-to-courses {
+      background: transparent; color: var(--accent-blue); border: 0; padding: .4rem 0;
+      font-weight: 700; font-size: .95rem; cursor: pointer;
+    }
+    @media (max-width: 680px) {
+      .home-hub { width: min(calc(100% - 1.25rem), 1180px); margin: 1.5rem auto; }
+      .home-intro { margin-bottom: 1.5rem; }
+      .course-grid, .quick-grid { grid-template-columns: 1fr; gap: .75rem; }
+      .course-card { min-height: 150px; }
+      .quick-card { min-height: 140px; }
+      .hub-section-heading { align-items: flex-start; flex-direction: column; gap: .2rem; }
+      .heading-note { display: none; }
+    }
+
   </style>
+  <link rel="stylesheet" href="tema.css">
+  <script src="tema.js"></script>
 </head>
 <body>
 
@@ -401,24 +526,20 @@
   <header class="top-header">
     <div class="nav-container">
       
-      <div style="display:flex; align-items:center; gap:1.5rem;">
-        <div class="brand-wrap">
-          <a href="index.html" class="radical-logo">
-            <span class="radical-symbol">√</span>
-            <span class="radical-content">MATH <span>LAB</span></span>
-          </a>
-          <span class="author-sub">por Xavi Profe</span>
-        </div>
-
-        <nav class="nav-links">
-          <a href="#tablas-rapidas" class="nav-link-btn nav-btn-tablas">📋 Tablas Rápidas</a>
-          <a href="#ciclo1" class="nav-link-btn nav-btn-c1">🌱 1r Ciclo</a>
-          <a href="#ciclo2" class="nav-link-btn nav-btn-c2">🌿 2º Ciclo</a>
-          <a href="#bachillerato" class="nav-link-btn nav-btn-bach">🎓 Bachillerato</a>
-          <!-- ENLACE AL ENTRENADOR -->
-          <a href="ejercicios/entrenador.html" class="nav-link-btn" style="color:var(--accent-gold); border-color:rgba(251,191,36,0.3); background:rgba(251,191,36,0.08);">Ejercicios 🚀</a>
-        </nav>
+      <div class="brand-wrap">
+        <a href="index.html" class="radical-logo">
+          <span class="radical-symbol">√</span>
+          <span class="radical-content">MATH <span>LAB</span></span>
+        </a>
+        <span class="author-sub">por Xavi Profe</span>
       </div>
+
+      <nav class="nav-links" aria-label="Navegación principal">
+        <a href="#homeHub" class="nav-link-btn nav-btn-cursos" onclick="returnToCourses(); return false;">📚 Cursos</a>
+        <a href="tablas/index.html" class="nav-link-btn nav-btn-tablas">📋 Fórmulas</a>
+        <a href="ejercicios/entrenador.html" class="nav-link-btn nav-btn-practicar">🎯 Practicar</a>
+        <button type="button" class="nav-link-btn nav-btn-favoritos" onclick="openFavorites()">⭐ Favoritos <span id="headerFavCount">0</span></button>
+      </nav>
 
       <!-- BOTÓN FIJO EN LA ESQUINA DERECHA -->
       <button id="theme-toggle" onclick="toggleTheme()" title="Cambiar tema" style="flex-shrink:0; background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; cursor:pointer; padding:0.55rem 0.85rem; font-size:1.15rem; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.1); color: var(--text-main);">
@@ -428,14 +549,95 @@
     </div>
   </header>
 
+  <div class="favorites-overlay" id="favoritesOverlay" hidden onclick="if(event.target===this) closeFavorites()">
+    <section class="favorites-dialog" role="dialog" aria-modal="true" aria-labelledby="favoritesTitle">
+      <header class="favorites-header">
+        <div>
+          <span class="home-eyebrow">TU ESPACIO DE REPASO</span>
+          <h2 id="favoritesTitle">Mis favoritos <span class="favorites-count" id="favoritesCount">0</span></h2>
+        </div>
+        <button type="button" class="favorites-close" aria-label="Cerrar favoritos" onclick="closeFavorites()">×</button>
+      </header>
+      <p class="favorites-note">Se guardan en este navegador y dispositivo.</p>
+      <div class="favorites-list" id="favoritesList"></div>
+      <p class="favorites-empty" id="favoritesEmpty" hidden>Aún no has guardado ninguna lección. Marca la estrella ☆ en un tema para tenerlo a mano.</p>
+      <div class="favorites-footer">
+        <button type="button" class="back-to-courses" onclick="closeFavorites(); returnToCourses()">Explorar cursos</button>
+      </div>
+    </section>
+  </div>
+
   <!-- SECCIÓN HERO -->
-  <section class="app-header" style="padding: 2.5rem 1.5rem 1rem;">
-    <h1>Laboratorio Visual e Interactivo de Matemáticas</h1>
-    <p>Aprende secundaria y bachillerato comprendiendo los conceptos mediante manipulativos gráficos, deslizadores en tiempo real y chuletas imprimibles.</p>
+  <section class="home-hub" id="homeHub" aria-labelledby="homeTitle">
+    <div class="home-intro">
+      <span class="home-eyebrow">MATH LAB · APRENDER PASO A PASO</span>
+      <h1 id="homeTitle">¿Qué necesitas hoy?</h1>
+      <p>Elige tu curso para encontrar las lecciones adecuadas. También puedes ir directamente a una fórmula o practicar.</p>
+    </div>
+
+    <section aria-labelledby="courseHeading">
+      <div class="hub-section-heading">
+        <h2 id="courseHeading">Elige tu curso</h2>
+        <span class="heading-note">Lecciones organizadas por nivel</span>
+      </div>
+      <div class="course-grid">
+        <button class="course-card course-c1" type="button" onclick="openCourse('ciclo1')">
+          <span class="course-icon" aria-hidden="true">🌱</span>
+          <span class="course-title">1.º–2.º ESO</span>
+          <span class="course-description">Números, fracciones, operaciones y primeros conceptos de álgebra.</span>
+          <span class="course-arrow" aria-hidden="true">Explorar curso →</span>
+        </button>
+        <button class="course-card course-c2" type="button" onclick="openCourse('ciclo2')">
+          <span class="course-icon" aria-hidden="true">📐</span>
+          <span class="course-title">3.º–4.º ESO</span>
+          <span class="course-description">Álgebra, funciones, geometría, estadística y probabilidad.</span>
+          <span class="course-arrow" aria-hidden="true">Explorar curso →</span>
+        </button>
+        <button class="course-card course-bach1" type="button" onclick="openCourse('bach1')">
+          <span class="course-icon" aria-hidden="true">📈</span>
+          <span class="course-title">1.º Bachillerato</span>
+          <span class="course-description">Trigonometría, geometría, límites y primeras derivadas.</span>
+          <span class="course-arrow" aria-hidden="true">Explorar curso →</span>
+        </button>
+        <button class="course-card course-bach2" type="button" onclick="openCourse('bach2')">
+          <span class="course-icon" aria-hidden="true">🎓</span>
+          <span class="course-title">2.º Bachillerato</span>
+          <span class="course-description">Matrices, cálculo, integrales, probabilidad e inferencia.</span>
+          <span class="course-arrow" aria-hidden="true">Explorar curso →</span>
+        </button>
+      </div>
+      <p class="course-note">La organización de Bachillerato es orientativa; el programa puede variar según el centro.</p>
+    </section>
+
+    <section class="quick-section" aria-labelledby="quickHeading">
+      <div class="hub-section-heading">
+        <h2 id="quickHeading">¿Solo necesitas repasar algo?</h2>
+        <span class="heading-note">Acceso directo</span>
+      </div>
+      <div class="quick-grid">
+        <a class="quick-card quick-formulas" href="tablas/index.html">
+          <span class="quick-icon" aria-hidden="true">▤</span>
+          <span class="quick-title">Tablas y chuletas</span>
+          <span class="quick-description">Encuentra e imprime una fórmula o ficha de consulta.</span>
+          <span class="course-arrow">Ver fórmulas →</span>
+        </a>
+        <a class="quick-card quick-practice" href="ejercicios/entrenador.html">
+          <span class="quick-icon" aria-hidden="true">◎</span>
+          <span class="quick-title">Practicar</span>
+          <span class="quick-description">Resuelve un reto, pide una pista y revisa los pasos.</span>
+          <span class="course-arrow">Ir al entrenador →</span>
+        </a>
+      </div>
+    </section>
   </section>
+  <div class="course-view-controls" id="courseViewControls" hidden>
+    <button type="button" class="back-to-courses" onclick="returnToCourses()">← Cambiar de curso</button>
+    <h1 id="courseViewTitle"></h1>
+    <p id="courseViewNote"></p>
+  </div>
 
   <!-- BUSCADOR Y FILTROS POR TEMÁTICA -->
-  <div class="filter-section">
+  <div class="filter-section" id="filterSection" hidden>
     <div class="search-bar-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" class="search-input" placeholder="Buscar cualquier tema: Derivadas, Pitágoras, Factorial, Fracciones..." oninput="handleSearchInput()">
@@ -455,7 +657,7 @@
   </div>
 
   <!-- CATÁLOGO GENERAL -->
-  <main class="catalog-wrapper">
+  <main class="catalog-wrapper" id="catalogWrapper" hidden>
 
     <!-- TABLAS RÁPIDAS -->
     <section id="tablas-rapidas" class="cycle-block">
@@ -966,7 +1168,7 @@
             </div>
           </a>
 
-          <a href="algebra/sistemas_lineales.html" class="topic-card card-bach" data-title="sistemas ecuaciones lineales rouche frobenius gauss cramer homogeneos parametros batxillerat bachillerato">
+          <a href="algebra/sistemas_lineales3.html" class="topic-card card-bach" data-title="sistemas ecuaciones lineales rouche frobenius gauss cramer homogeneos parametros batxillerat bachillerato">
             <div class="card-top">
               <span class="branch-tag tag-algebra">Álgebra</span>
               <span style="font-size:1.3rem;">⚖️</span>
@@ -1023,7 +1225,7 @@
             <div class="mini-preview"><span>Vol = ⅙|[u,v,w]|</span></div>
           </a>
 
-          <a href="geometria/conicas_circunferencia.html" class="topic-card card-bach" data-title="conicas circunferencia centro radio puntos potencia tangencias bachillerato">
+          <a href="geometria/conicas_circumferencia.html" class="topic-card card-bach" data-title="conicas circunferencia centro radio puntos potencia tangencias bachillerato">
             <div class="card-top">
               <span class="branch-tag tag-geometria">Geometría</span>
               <span style="font-size:1.3rem;">⭕</span>
@@ -1066,7 +1268,7 @@
             </div>
           </a>
 
-          <a href="analisis/derivadas_aplicaciones.html" class="topic-card card-bach" data-title="aplicaciones derivadas maximos minimos extremos relativos monotonia curvatura puntos inflexion optimizacion graficas batxillerat bachillerato">
+          <a href="algebra/derivadas_aplicaciones.html" class="topic-card card-bach" data-title="aplicaciones derivadas maximos minimos extremos relativos monotonia curvatura puntos inflexion optimizacion graficas batxillerat bachillerato">
             <div class="card-top">
               <span class="branch-tag tag-funciones">Análisis</span>
               <span style="font-size:1.3rem;">🏔️</span>
@@ -1202,8 +1404,19 @@
     // 3. FAVORITOS Y FILTRADO
     // =========================================================================
     function getFavorites() {
-      try { return JSON.parse(localStorage.getItem('mathlab_favs')) || []; }
-      catch (e) { return []; }
+      try {
+        const saved = JSON.parse(localStorage.getItem('mathlab_favs')) || [];
+        const redirects = {
+          'algebra/sistemas_lineales.html': 'algebra/sistemas_lineales3.html',
+          'geometria/conicas_circunferencia.html': 'geometria/conicas_circumferencia.html',
+          'analisis/derivadas_aplicaciones.html': 'algebra/derivadas_aplicaciones.html'
+        };
+        const normalized = [...new Set(saved.map(href => redirects[href] || href))];
+        if (normalized.length !== saved.length || normalized.some((href, index) => href !== saved[index])) {
+          localStorage.setItem('mathlab_favs', JSON.stringify(normalized));
+        }
+        return normalized;
+      } catch (e) { return []; }
     }
 
     function saveFavorites(favs) {
@@ -1228,8 +1441,78 @@
 
     function updateFavCounter() {
       const countEl = document.getElementById('favCount');
-      if (countEl) countEl.textContent = getFavorites().length;
+      const total = getFavorites().length;
+      if (countEl) countEl.textContent = total;
+      const headerCount = document.getElementById('headerFavCount');
+      if (headerCount) headerCount.textContent = total;
     }
+
+
+    function renderFavorites() {
+      const favorites = getFavorites();
+      const list = document.getElementById('favoritesList');
+      const empty = document.getElementById('favoritesEmpty');
+      const count = document.getElementById('favoritesCount');
+      list.replaceChildren();
+      let shown = 0;
+
+      favorites.forEach(href => {
+        const card = [...document.querySelectorAll('.topic-card')].find(item => item.getAttribute('href') === href);
+        if (!card) return;
+        const title = card.querySelector('.topic-name')?.innerText.trim() || href;
+        const description = card.querySelector('.topic-desc')?.innerText.trim() || 'Abrir lección';
+        const category = card.querySelector('.branch-tag')?.innerText.trim() || 'Lección';
+        const row = document.createElement('div');
+        row.className = 'favorite-row';
+
+        const link = document.createElement('a');
+        link.className = 'favorite-link';
+        link.href = href;
+        const heading = document.createElement('strong');
+        heading.textContent = title;
+        const details = document.createElement('span');
+        details.textContent = category + ' · ' + description;
+        link.append(heading, details);
+
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'favorite-remove';
+        remove.textContent = '×';
+        remove.setAttribute('aria-label', 'Quitar ' + title + ' de favoritos');
+        remove.addEventListener('click', event => {
+          toggleFavorite(event, href);
+          renderFavorites();
+        });
+
+        row.append(link, remove);
+        list.appendChild(row);
+        shown++;
+      });
+
+      count.textContent = shown;
+      empty.hidden = shown > 0;
+      updateFavCounter();
+    }
+
+    function openFavorites() {
+      const overlay = document.getElementById('favoritesOverlay');
+      renderFavorites();
+      overlay.hidden = false;
+      document.body.style.overflow = 'hidden';
+      overlay.querySelector('.favorites-close').focus();
+    }
+
+    function closeFavorites() {
+      document.getElementById('favoritesOverlay').hidden = true;
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !document.getElementById('favoritesOverlay').hidden) {
+        closeFavorites();
+        document.querySelector('.nav-btn-favoritos').focus();
+      }
+    });
 
     function setupFavoriteButtons() {
       const cards = document.querySelectorAll('.topic-card');
@@ -1242,8 +1525,11 @@
         if (cardTop && !cardTop.querySelector('.fav-btn')) {
           const btn = document.createElement('button');
           btn.className = 'fav-btn';
+          btn.type = 'button';
           btn.title = 'Guardar en Favoritos';
           const isFav = favs.includes(href);
+          btn.title = isFav ? 'Quitar de favoritos' : 'Guardar en Favoritos';
+          btn.setAttribute('aria-label', btn.title);
           btn.textContent = isFav ? '★' : '☆';
           if (isFav) btn.classList.add('is-favorite');
 
@@ -1262,11 +1548,105 @@
           const isFav = favs.includes(card.getAttribute('href'));
           btn.textContent = isFav ? '★' : '☆';
           btn.classList.toggle('is-favorite', isFav);
+          btn.title = isFav ? 'Quitar de favoritos' : 'Guardar en Favoritos';
+          btn.setAttribute('aria-label', btn.title);
         }
       });
     }
 
     let currentFilterBranch = 'all';
+
+    const BACHILLERATO_COURSES = {
+      bach1: {
+        title: '1.º Bachillerato',
+        note: 'Contenidos orientativos; el orden puede variar según el programa de tu centro.',
+        hrefs: [
+          'algebra/numeros_complejos.html',
+          'geometria/trigonometria_avanzada.html',
+          'tablas/geometria_vectorial.html',
+          'geometria/conicas_circumferencia.html',
+          'analisis/limites_continuidad.html',
+          'analisis/derivadas_intro.html',
+          'estadistica/probabilidad.html'
+        ]
+      },
+      bach2: {
+        title: '2.º Bachillerato',
+        note: 'Contenidos orientativos; el orden puede variar según el programa de tu centro.',
+        hrefs: [
+          'algebra/sistemas_lineales3.html',
+          'algebra/determinantes.html',
+          'algebra/intro_matrices.html',
+          'algebra/derivadas_aplicaciones.html',
+          'analisis/derivadas_avanzadas.html',
+          'analisis/integrales.html',
+          'analisis/aplicaciones_integrales.html',
+          'estadistica/inferencia.html'
+        ]
+      }
+    };
+    let currentCourseCardSet = null;
+
+    function openCourse(courseId) {
+      const home = document.getElementById('homeHub');
+      const controls = document.getElementById('courseViewControls');
+      const filter = document.getElementById('filterSection');
+      const catalog = document.getElementById('catalogWrapper');
+      const courseSectionId = courseId.startsWith('bach') ? 'bachillerato' : courseId;
+      const courseSection = document.getElementById(courseSectionId);
+      if (!courseSection) return;
+
+      home.hidden = true;
+      controls.hidden = false;
+      filter.hidden = false;
+      catalog.hidden = false;
+
+      document.querySelectorAll('.cycle-block').forEach(section => {
+        section.hidden = section !== courseSection;
+        section.style.display = '';
+      });
+      document.querySelectorAll('.topic-card').forEach(card => { card.style.display = 'flex'; });
+      document.querySelectorAll('.branch-group').forEach(group => { group.style.display = 'block'; });
+
+      const bachCourse = BACHILLERATO_COURSES[courseId];
+      currentCourseCardSet = bachCourse
+        ? new Set(bachCourse.hrefs)
+        : new Set([...courseSection.querySelectorAll('.topic-card')].map(card => card.getAttribute('href')));
+
+      document.getElementById('courseViewTitle').textContent =
+        bachCourse?.title || courseSection.querySelector('.cycle-title').innerText.replace(/\s+/g, ' ').trim();
+      document.getElementById('courseViewNote').textContent =
+        bachCourse?.note || 'Elige una lección o busca un tema dentro de este curso.';
+      document.getElementById('searchInput').value = '';
+      document.getElementById('clearSearch').style.display = 'none';
+      currentFilterBranch = 'all';
+      document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
+      document.querySelector('.filter-chip[onclick*="all"]').classList.add('active');
+      filterTopics();
+      courseSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function returnToCourses() {
+      currentCourseCardSet = null;
+      document.getElementById('homeHub').hidden = false;
+      document.getElementById('courseViewControls').hidden = true;
+      document.getElementById('filterSection').hidden = true;
+      document.getElementById('catalogWrapper').hidden = true;
+      document.querySelectorAll('.cycle-block').forEach(section => {
+        section.hidden = false;
+        section.style.display = '';
+      });
+      document.querySelectorAll('.topic-card').forEach(card => { card.style.display = 'flex'; });
+      document.querySelectorAll('.branch-group').forEach(group => { group.style.display = 'block'; });
+      document.getElementById('searchInput').value = '';
+      document.getElementById('clearSearch').style.display = 'none';
+      currentFilterBranch = 'all';
+      document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
+      document.querySelector('.filter-chip[onclick*="all"]').classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+
 
     function filterTopics() {
       const q = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -1278,6 +1658,7 @@
         const text = card.innerText.toLowerCase();
         const href = card.getAttribute('href');
         const matchesQuery = q === "" || title.includes(q) || text.includes(q);
+        const matchesCourse = !currentCourseCardSet || currentCourseCardSet.has(href);
 
         let matchesBranch = true;
         if (currentFilterBranch === 'favoritos') {
@@ -1287,7 +1668,7 @@
           matchesBranch = (cardBranch === currentFilterBranch);
         }
 
-        card.style.display = (matchesQuery && matchesBranch) ? 'flex' : 'none';
+        card.style.display = (matchesCourse && matchesQuery && matchesBranch) ? 'flex' : 'none';
       });
 
       document.querySelectorAll('.branch-group').forEach(group => {

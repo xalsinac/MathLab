@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tablas y Chuletas de Matemáticas | MATH LAB</title>
+  <meta name="description" content="Consulta e imprime fichas rápidas de fórmulas de aritmética, álgebra, geometría, trigonometría y análisis.">
+  <link rel="stylesheet" href="../estilos.css">
+  <style>
+    [hidden] { display: none !important; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .formulas-page { width: min(calc(100% - 1.5rem), 1180px); margin: 0 auto 3rem; }
+    .formulas-head { text-align: center; max-width: 760px; margin: 0 auto 2rem; }
+    .formulas-head h1 { color: var(--text-main); font-size: clamp(1.8rem, 4vw, 2.6rem); margin: .4rem 0 .65rem; }
+    .formulas-head p { color: var(--text-muted); line-height: 1.6; }
+    .formulas-search { width: 100%; max-width: 700px; margin: 1.4rem auto 0; }
+    .formulas-search input { width: 100%; padding: .9rem 1rem; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font: inherit; }
+    .formula-group { margin-top: 2rem; }
+    .formula-group h2 { color: var(--text-main); font-size: 1.25rem; margin-bottom: .9rem; padding-bottom: .6rem; border-bottom: 1px solid var(--border-color); }
+    .formula-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: .9rem; }
+    .formula-card { display: flex; flex-direction: column; gap: .45rem; min-height: 180px; padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-card); color: var(--text-main); text-decoration: none; transition: transform .18s ease, border-color .18s ease; }
+    .formula-card:hover { transform: translateY(-2px); border-color: var(--accent-blue); }
+    .formula-card:focus-visible { outline: 3px solid var(--accent-blue); outline-offset: 3px; }
+    .formula-label { color: var(--accent-blue); text-transform: uppercase; letter-spacing: .08em; font-size: .72rem; font-weight: 800; }
+    .formula-card h3 { color: var(--text-main); font-size: 1rem; }
+    .formula-card p { color: var(--text-muted); line-height: 1.45; font-size: .88rem; }
+    .formula-preview { padding: .6rem; border: 1px solid var(--border-color); border-radius: 7px; background: var(--bg-primary); color: var(--text-main); font: .84rem/1.4 ui-monospace, monospace; text-align: center; }
+    .formula-link { color: var(--accent-blue); font-size: .85rem; font-weight: 700; margin-top: auto; }
+    .no-results { display: none; text-align: center; padding: 2rem 1rem; color: var(--text-muted); }
+    @media (max-width: 600px) { .formulas-head { text-align: left; } .formula-grid { grid-template-columns: 1fr; } }
+  </style>
+  <link rel="stylesheet" href="../tema.css">
+  <script src="../tema.js"></script>
+</head>
+<body>
+  <nav class="nav-bar"><a class="nav-back-link" href="../index.html">← Volver al inicio</a></nav>
+  <main class="formulas-page">
+    <header class="formulas-head">
+      <span style="color:var(--accent-blue);font-weight:800;letter-spacing:.12em;font-size:.78rem;">CONSULTA RÁPIDA</span>
+      <h1>Tablas y chuletas</h1>
+      <p>Busca una fórmula por nombre o concepto y abre la ficha para consultarla o imprimirla.</p>
+      <label class="formulas-search">
+        <span class="sr-only">Buscar fórmulas</span>
+        <input id="formulaSearch" type="search" placeholder="Por ejemplo: áreas, potencias o derivadas" oninput="filterFormulaCards()">
+      </label>
+    </header>
+    <div id="formulaResults">
+      <section class="formula-group" aria-labelledby="group-0">
+  <h2 id="group-0">Aritmética y álgebra</h2>
+  <div class="formula-grid">
+    <a class="formula-card" href="identidades_notables.html" data-search="identidades notables sintético de los 3 productos notables esenciales. (a ± b)² = a² ± 2ab + b²">
+      <span class="formula-label">Formulario</span>
+      <h3>Identidades Notables</h3>
+      <p>Sintético de los 3 productos notables esenciales.</p>
+      <span class="formula-preview">(a ± b)² = a² ± 2ab + b²</span>
+      <span class="formula-link">Abrir ficha →</span>
+    </a>
+    <a class="formula-card" href="potencias_radicales.html" data-search="potencias y radicales leyes de exponentes, operaciones con raíces y racionalización. (aⁿ)ᵐ = aⁿᵐ">
+      <span class="formula-label">Formulario</span>
+      <h3>Potencias y Radicales</h3>
+      <p>Leyes de exponentes, operaciones con raíces y racionalización.</p>
+      <span class="formula-preview">(aⁿ)ᵐ = aⁿᵐ</span>
+      <span class="formula-link">Abrir ficha →</span>
+    </a>
+    <a class="formula-card" href="progresiones.html" data-search="progresiones aritméticas y geométricas término general, sumas finitas y series infinitas. aₙ = a₁+(n−1)d">
+      <span class="formula-label">Formulario</span>
+      <h3>Progresiones Aritméticas y Geométricas</h3>
+      <p>Término general, sumas finitas y series infinitas.</p>
+      <span class="formula-preview">aₙ = a₁+(n−1)d</span>
+      <span class="formula-link">Abrir ficha →</span>
+    </a>
+    <a class="formula-card" href="jerarquia_operaciones.html" data-search="jerarquía de operaciones guía de prioridades pemdas: ( ), potencias, × / y + −. ( ) ➔ xⁿ ➔ · / ➔ + −">
+      <span class="formula-label">Formulario</span>
+      <h3>Jerarquía de Operaciones</h3>
+      <p>Guía de prioridades PEMDAS: ( ), potencias, × / y + −.</p>
+      <span class="formula-preview">( ) ➔ xⁿ ➔ · / ➔ + −</span>
+      <span class="formula-link">Abrir ficha →</span>
+    </a>
+    <a class="formula-card" href="signos_enteros.html" data-search="regla de los signos (enteros) sumas y restas con mismo/distinto signo y producto/cociente. (−) · (−) = +">
+      <span class="formula-label">Formulario</span>
+      <h3>Regla de los Signos (Enteros)</h3>
+      <p>Sumas y restas con mismo/distinto signo y producto/cociente.</p>
+      <span class="formula-preview">(−) · (−) = +</span>
+      <span class="formula-link">Abrir ficha →</span>
+    </a>
+    <a class="formula-card" href="tabla_pitagorica.html" data-search="tabla pitagórica (1 al 12) matriz de multiplicación para detectar patrones y múltiplos. diagonal = cuadrados perfectos">
+      <span class="formula-label">Formulario</span>
+      <h3>Tabla Pitagórica (1 al 12)</h3>
+      <p>Matriz de multiplicación para detectar patrones y múltiplos.</p>
+      <span class="formula-preview">Diagonal = Cuadrados perfectos</span>
+      <span class="formula-link">Abrir ficha →</span>
+    </a>
+  </div>
+</section>
+<section class="formula-group" aria-labelledby="group-1">
+  <h2 id="group-1">Geometría y trigonometría</h2>
+  <div class="formula-grid">
+    <a class="formula-card" href="identidades_trigonometricas.html" data-search="identidades trigonométricas suma y resta, ángulo doble, ángulo mitad y transformación a productos. sen(2α) = 2·senα·cosα">
+      <span class="formula-label">Formulario</span>
+      <h3>Identidades Trigonométricas</h3>
+      <p>Suma y resta, ángulo doble, ángulo mitad y transformación a productos.</p>
+      <span class="formula-preview">sen(2α) = 2·senα·cosα</span>
+      <span class="formula-link">Abrir ficha →</span>
+    </a>
+    <a class="formula-card" href="geometria_vectorial.html" data-search="geometría vectorial en ℝ³ producto escalar, vectorial y mixto, ortogonalidad y áreas/volúmenes. vol = ⅙·|[u,v,w]|">
+      <span class="formula-label">Formulario</span>
+      <h3>Geometría Vectorial en ℝ³</h3>
+      <p>Producto escalar, vectorial y mixto, ortogonalidad y áreas/volúmenes.</p>
+      <span class="formula-preview">Vol = ⅙·|[u,v,w]|</span>
+      <span class="formula-link">Abrir ficha →</span>
+    </a>
+    <a class="formula-card" href="tabla_trigonometria.html" data-search="trigonometría básica razones en triángulos, fórmulas fundamentales y valores de 0º a 90º. sen 30º = 1/2">
+      <span class="formula-label">Formulario</span>
+      <h3>Trigonometría Básica</h3>
+      <p>Razones en triángulos, fórmulas fundamentales y valores de 0º a 90º.</p>
+      <span class="formula-preview">sen 30º = 1/2</span>
+      <span class="formula-link">Abrir ficha →</span>
+    </a>
+    <a class="formula-card" href="geometria_formulas.html" data-search="áreas, perímetros y volúmenes catálogo completo de fórmulas para figuras 2d y cuerpos 3d. v = (4/3)·π·r³">
+      <span class="formula-label">Formulario</span>
+      <h3>Áreas, Perímetros y Volúmenes</h3>
+      <p>Catálogo completo de fórmulas para figuras 2D y cuerpos 3D.</p>
+      <span class="formula-preview">V = (4/3)·π·r³</span>
+      <span class="formula-link">Abrir ficha →</span>
+    </a>
+  </div>
+</section>
+<section class="formula-group" aria-labelledby="group-2">
+  <h2 id="group-2">Análisis</h2>
+  <div class="formula-grid">
+    <a class="formula-card" href="tabla_derivadas.html" data-search="tabla de derivadas álgebra de derivadas, funciones simples y compuestas con regla de la cadena. (u·v)' = u'v + uv'">
+      <span class="formula-label">Formulario</span>
+      <h3>Tabla de Derivadas</h3>
+      <p>Álgebra de derivadas, funciones simples y compuestas con regla de la cadena.</p>
+      <span class="formula-preview">(u·v)' = u'v + uv'</span>
+      <span class="formula-link">Abrir ficha →</span>
+    </a>
+    <a class="formula-card" href="tabla_integrales.html" data-search="tabla de integrales inmediatas primitivas inmediatas, formas compuestas y tipos arco para imprimir. ∫(u'/u)dx = ln|u|+c">
+      <span class="formula-label">Formulario</span>
+      <h3>Tabla de Integrales Inmediatas</h3>
+      <p>Primitivas inmediatas, formas compuestas y tipos arco para imprimir.</p>
+      <span class="formula-preview">∫(u'/u)dx = ln|u|+C</span>
+      <span class="formula-link">Abrir ficha →</span>
+    </a>
+  </div>
+</section>
+    </div>
+    <p class="no-results" id="noFormulaResults">No hay fichas que coincidan. Prueba con otro término.</p>
+  </main>
+  <script>
+    function filterFormulaCards() {
+      const query = document.getElementById('formulaSearch').value.trim().toLocaleLowerCase('es');
+      let visible = 0;
+      document.querySelectorAll('.formula-group').forEach(group => {
+        let groupVisible = 0;
+        group.querySelectorAll('.formula-card').forEach(card => {
+          const match = !query || card.dataset.search.includes(query);
+          card.hidden = !match;
+          if (match) { visible++; groupVisible++; }
+        });
+        group.hidden = groupVisible === 0;
+      });
+      document.getElementById('noFormulaResults').style.display = visible ? 'none' : 'block';
+    }
+  </script>
+</body>
+</html>

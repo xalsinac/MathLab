@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-primary);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -51,7 +51,7 @@
 
     /* PASO A PASO INTERACTIVO */
     .step-display-box {
-      background: #090d16; border: 1px solid var(--border-color); border-radius: 12px;
+      background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 12px;
       padding: 2rem; min-height: 180px; display: flex; flex-direction: column;
       justify-content: center; align-items: center; text-align: center;
     }
@@ -91,6 +91,35 @@
       .lvl-1, .lvl-2, .lvl-3, .lvl-4 { width: 100%; }
       .math-expr { font-size: 1.6rem; }
     }
+  
+    .step-display-box { background: var(--bg-primary); }
+    .lvl-2 { border-color: var(--accent-purple); color: var(--accent-purple); }
+    .step-counter { color: var(--accent-blue); font-weight: 700; }
+    .step-transition { max-width: 100%; margin: 0 0 1rem; color: var(--text-muted); font-size: .95rem; line-height: 1.5; overflow-wrap: anywhere; }
+    .mini-practice { padding: 1.1rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-primary); }
+    .practice-title { margin-bottom: .45rem; color: var(--text-main); font-weight: 800; }
+    .mini-practice > p { margin: .45rem 0; color: var(--text-muted); }
+    .practice-options { display: flex; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .practice-option, .practice-hint { padding: .65rem .85rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-card); color: var(--text-main); cursor: pointer; }
+    .practice-option:hover:not(:disabled), .practice-hint:hover { border-color: var(--accent-blue); }
+    .practice-option:disabled { opacity: .75; cursor: default; }
+    .practice-option.is-correct { border-color: var(--accent-success); }
+    .practice-option.is-incorrect { border-color: var(--accent-op); }
+    .practice-feedback { min-height: 1.4rem; margin: .6rem 0 0; color: var(--text-main); line-height: 1.5; }
+    .practice-hint-text { margin-top: .5rem; color: var(--accent-gold); line-height: 1.5; }
+    .tab-btn:focus-visible, .btn:focus-visible, .practice-option:focus-visible, .practice-hint:focus-visible { outline: 3px solid var(--accent-gold); outline-offset: 2px; }
+    .tab-content[hidden] { display: none !important; }
+    @media (max-width: 600px) {
+      .tab-btn { flex: 0 0 auto; padding: .85rem .7rem; font-size: .88rem; }
+      .step-display-box { padding: 1rem .6rem; }
+      .math-expr { font-size: clamp(1.25rem, 7vw, 1.6rem); letter-spacing: .03em; overflow-wrap: anywhere; }
+      .practice-options { flex-direction: column; }
+      .practice-option, .practice-hint { width: 100%; text-align: left; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+
   </style>
   <link rel="stylesheet" href="../tema.css">
   <script src="../tema.js"></script>
@@ -108,19 +137,19 @@
 
   <main class="app-container">
     
-    <nav class="tabs-container">
-      <button class="tab-btn active" onclick="switchTab('jerarquia', this)">👑 1. Jerarquía</button>
-      <button class="tab-btn" onclick="switchTab('enteros_comb', this)">🔢 2. Enteros y Corchetes</button>
-      <button class="tab-btn" onclick="switchTab('frac_comb', this)">🍕 3. Con Fracciones</button>
-      <button class="tab-btn" onclick="switchTab('raiz_comb', this)">⚡ 4. Fracciones + Raíz</button>
+    <nav class="tabs-container" role="tablist" aria-label="Apartados de operaciones combinadas">
+      <button type="button" id="tab-jerarquia" class="tab-btn active" role="tab" aria-selected="true" aria-controls="jerarquia" tabindex="0" onclick="switchTab('jerarquia', this)">👑 1. Jerarquía</button>
+      <button type="button" id="tab-enteros_comb" class="tab-btn" role="tab" aria-selected="false" aria-controls="enteros_comb" tabindex="-1" onclick="switchTab('enteros_comb', this)">🔢 2. Enteros y Corchetes</button>
+      <button type="button" id="tab-frac_comb" class="tab-btn" role="tab" aria-selected="false" aria-controls="frac_comb" tabindex="-1" onclick="switchTab('frac_comb', this)">🍕 3. Con Fracciones</button>
+      <button type="button" id="tab-raiz_comb" class="tab-btn" role="tab" aria-selected="false" aria-controls="raiz_comb" tabindex="-1" onclick="switchTab('raiz_comb', this)">⚡ 4. Fracciones + Raíz</button>
     </nav>
 
     <!-- ================= PESTAÑA 1: JERARQUÍA / PRIORIDAD ================= -->
-    <div id="jerarquia" class="tab-content active">
+    <div id="jerarquia" class="tab-content active" role="tabpanel" aria-labelledby="tab-jerarquia">
       <div class="explanation-card">
-        <div class="badge">El Orden Sagrado</div>
+        <div class="badge">Jerarquía de operaciones</div>
         <div class="content-text">
-          Cuando una operación tiene varios signos mezclados, <strong>no se lee simplemente de izquierda a derecha</strong>. Hay operaciones más "fuertes" que deben resolverse primero. Si hay varias del mismo nivel, se resuelven de izquierda a derecha.
+          Cuando una operación tiene varios signos mezclados, <strong>no se lee simplemente de izquierda a derecha</strong>. La jerarquía indica qué operación se resuelve primero. Si hay varias del mismo nivel, se resuelven de izquierda a derecha.
         </div>
       </div>
 
@@ -139,15 +168,15 @@
           <div class="panel-title">Reglas Clave a Recordar</div>
           <ul style="color: var(--text-main); line-height: 1.8; margin-left: 1.2rem; margin-top: 0.5rem;">
             <li><strong>De dentro hacia afuera:</strong> Si hay corchetes y paréntesis anidados como <code>[ ... ( ... ) ... ]</code>, se resuelve primero el paréntesis más interno.</li>
-            <li><strong>Mismo nivel:</strong> Si tienes varias multiplicaciones y divisiones seguidas (ej: <code>12 ÷ 3 · 2</code>), opera de <strong>izquierda a derecha</strong> (12÷3 = 4 $\rightarrow$ 4·2 = 8).</li>
-            <li><strong>Fracciones:</strong> Las sumas y restas con distinto denominador siempre exigen encontrar el <strong>m.c.m.</strong> antes de sumar.</li>
+            <li><strong>Mismo nivel:</strong> Multiplicaciones y divisiones se resuelven de izquierda a derecha; lo mismo ocurre con sumas y restas. Por ejemplo: <code>10 − 4 + 1 = 6 + 1 = 7</code>, pero <code>10 − (4 + 1) = 5</code>.</li>
+            <li><strong>Fracciones:</strong> Para sumar o restar, necesitamos un denominador común. El m.c.m. suele ser la opción más cómoda porque mantiene los números pequeños; cualquier múltiplo común también sirve.</li>
           </ul>
         </div>
       </div>
     </div>
 
     <!-- ================= PESTAÑA 2: ENTEROS Y CORCHETES ================= -->
-    <div id="enteros_comb" class="tab-content">
+    <div id="enteros_comb" class="tab-content" role="tabpanel" aria-labelledby="tab-enteros_comb" hidden>
       <div class="explanation-card" style="border-left-color: var(--accent-op);">
         <div class="badge" style="color: var(--accent-op);">Ejemplo con Doble Paréntesis</div>
         <div class="content-text">
@@ -156,15 +185,56 @@
       </div>
 
       <div class="step-display-box">
-        <div class="math-expr" id="expr_ent"></div>
-        <p id="desc_ent" style="color: var(--text-muted); font-size: 1.1rem; max-width: 600px;"></p>
+        <p id="counter_ent" class="step-counter" aria-live="polite"></p>
+        <p id="transition_ent" class="step-transition" aria-live="polite"></p>
+        <div class="math-expr" id="expr_ent" aria-live="polite"></div>
+        <p id="desc_ent" role="status" aria-live="polite" style="color: var(--text-muted); font-size: 1.1rem; max-width: 600px;"></p>
       </div>
 
       <div class="controls">
-        <button class="btn btn-secondary" id="btn_prev_ent" onclick="prevStepEnt()" disabled>← Paso Anterior</button>
-        <button class="btn btn-primary" id="btn_next_ent" onclick="nextStepEnt()">Siguiente Paso →</button>
+        <button type="button" class="btn btn-secondary" id="btn_prev_ent" onclick="prevStepEnt()" disabled>← Paso Anterior</button>
+        <button type="button" class="btn btn-primary" id="btn_next_ent" onclick="nextStepEnt()">Siguiente Paso →</button>
         <button class="btn btn-secondary" style="background: transparent; border: 1px solid var(--border-color);" onclick="resetEnt()">Reiniciar</button>
       </div>
+
+<section class="mini-practice" data-correct="0" data-hint="Las operaciones dentro del paréntesis más interno se resuelven antes." data-explanation="Correcto: primero resolvemos el grupo más interno, (−4 + 1), y obtenemos −3.">
+        <div class="practice-title">Antes de avanzar: ¿qué resolverías primero?</div>
+        <p>5 − 2 · [3 − (−4 + 1) · 2]</p>
+        <div class="practice-options">
+          <button type="button" class="practice-option">El paréntesis más interno: (−4 + 1)</button>
+          <button type="button" class="practice-option">La resta 5 − 2</button>
+          <button type="button" class="practice-option">La multiplicación por 2</button>
+        </div>
+        <button type="button" class="practice-hint">Ver una pista</button>
+        <p class="practice-hint-text" hidden></p>
+        <p class="practice-feedback" role="status" aria-live="polite"></p>
+      </section>
+
+<section class="mini-practice" data-correct="0" data-hint="Empieza por el paréntesis. Dentro hay una suma, no una multiplicación." data-explanation="Correcto: primero sumamos 2/3 + 1/6 dentro del paréntesis. Después multiplicamos por 1/2 y, al final, restamos a 3/4.">
+        <div class="practice-title">Antes de avanzar: ¿qué resolverías primero?</div>
+        <p>3/4 − 1/2 · (2/3 + 1/6)</p>
+        <div class="practice-options">
+          <button type="button" class="practice-option">La suma dentro del paréntesis</button>
+          <button type="button" class="practice-option">La resta 3/4 − 1/2</button>
+          <button type="button" class="practice-option">La multiplicación 1/2 · 2/3</button>
+        </div>
+        <button type="button" class="practice-hint">Ver una pista</button>
+        <p class="practice-hint-text" hidden></p>
+        <p class="practice-feedback" role="status" aria-live="polite"></p>
+      </section>
+
+<section class="mini-practice" data-correct="1" data-hint="Después de simplificar la raíz y el paréntesis, queda 2 + 3/5 · 2/3." data-explanation="Correcto: primero multiplicamos 3/5 · 2/3 = 2/5. Solo después sumamos 2 + 2/5.">
+        <div class="practice-title">Después de resolver la raíz y el paréntesis, ¿qué sigue?</div>
+        <p>2 + 3/5 · 2/3</p>
+        <div class="practice-options">
+          <button type="button" class="practice-option">Sumar 2 + 3/5</button>
+          <button type="button" class="practice-option">Multiplicar 3/5 · 2/3</button>
+          <button type="button" class="practice-option">Restar los denominadores 5 − 3</button>
+        </div>
+        <button type="button" class="practice-hint">Ver una pista</button>
+        <p class="practice-hint-text" hidden></p>
+        <p class="practice-feedback" role="status" aria-live="polite"></p>
+      </section>
 
       <div class="panel-box">
         <div class="panel-title">Historial de pasos realizados</div>
@@ -173,7 +243,7 @@
     </div>
 
     <!-- ================= PESTAÑA 3: CON FRACCIONES ================= -->
-    <div id="frac_comb" class="tab-content">
+    <div id="frac_comb" class="tab-content" role="tabpanel" aria-labelledby="tab-frac_comb" hidden>
       <div class="explanation-card" style="border-left-color: var(--accent-gold);">
         <div class="badge" style="color: var(--accent-gold);">Combinada de Fracciones + m.c.m.</div>
         <div class="content-text">
@@ -182,13 +252,15 @@
       </div>
 
       <div class="step-display-box">
-        <div class="math-expr" id="expr_frac" style="font-size: 1.8rem;"></div>
-        <p id="desc_frac" style="color: var(--text-muted); font-size: 1.1rem; max-width: 600px;"></p>
+        <p id="counter_frac" class="step-counter" aria-live="polite"></p>
+        <p id="transition_frac" class="step-transition" aria-live="polite"></p>
+        <div class="math-expr" id="expr_frac" style="font-size: 1.8rem;" aria-live="polite"></div>
+        <p id="desc_frac" role="status" aria-live="polite" style="color: var(--text-muted); font-size: 1.1rem; max-width: 600px;"></p>
       </div>
 
       <div class="controls">
-        <button class="btn btn-secondary" id="btn_prev_frac" onclick="prevStepFrac()" disabled>← Paso Anterior</button>
-        <button class="btn btn-primary" id="btn_next_frac" style="background: var(--accent-gold); color: #000;" onclick="nextStepFrac()">Siguiente Paso →</button>
+        <button type="button" class="btn btn-secondary" id="btn_prev_frac" onclick="prevStepFrac()" disabled>← Paso Anterior</button>
+        <button type="button" class="btn btn-primary" id="btn_next_frac" style="background: var(--accent-gold); color: #000;" onclick="nextStepFrac()">Siguiente Paso →</button>
         <button class="btn btn-secondary" style="background: transparent; border: 1px solid var(--border-color);" onclick="resetFrac()">Reiniciar</button>
       </div>
 
@@ -199,7 +271,7 @@
     </div>
 
     <!-- ================= PESTAÑA 4: FRACCIONES + RAÍZ ================= -->
-    <div id="raiz_comb" class="tab-content">
+    <div id="raiz_comb" class="tab-content" role="tabpanel" aria-labelledby="tab-raiz_comb" hidden>
       <div class="explanation-card" style="border-left-color: var(--accent-success);">
         <div class="badge" style="color: var(--accent-success);">Fracciones con Raíz Cuadrada Sencilla</div>
         <div class="content-text">
@@ -208,13 +280,15 @@
       </div>
 
       <div class="step-display-box">
-        <div class="math-expr" id="expr_raiz" style="font-size: 1.8rem;"></div>
-        <p id="desc_raiz" style="color: var(--text-muted); font-size: 1.1rem; max-width: 600px;"></p>
+        <p id="counter_raiz" class="step-counter" aria-live="polite"></p>
+        <p id="transition_raiz" class="step-transition" aria-live="polite"></p>
+        <div class="math-expr" id="expr_raiz" style="font-size: 1.8rem;" aria-live="polite"></div>
+        <p id="desc_raiz" role="status" aria-live="polite" style="color: var(--text-muted); font-size: 1.1rem; max-width: 600px;"></p>
       </div>
 
       <div class="controls">
-        <button class="btn btn-secondary" id="btn_prev_raiz" onclick="prevStepRaiz()" disabled>← Paso Anterior</button>
-        <button class="btn btn-primary" id="btn_next_raiz" style="background: var(--accent-success); color: #fff;" onclick="nextStepRaiz()">Siguiente Paso →</button>
+        <button type="button" class="btn btn-secondary" id="btn_prev_raiz" onclick="prevStepRaiz()" disabled>← Paso Anterior</button>
+        <button type="button" class="btn btn-primary" id="btn_next_raiz" style="background: var(--accent-success); color: #fff;" onclick="nextStepRaiz()">Siguiente Paso →</button>
         <button class="btn btn-secondary" style="background: transparent; border: 1px solid var(--border-color);" onclick="resetRaiz()">Reiniciar</button>
       </div>
 
@@ -229,10 +303,27 @@
   <script>
     // --- NAVEGACIÓN ENTRE PESTAÑAS ---
     function switchTab(tabId, btn) {
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
+      document.querySelectorAll('.tab-btn').forEach(tab => {
+        const active = tab === btn;
+        tab.classList.toggle('active', active);
+        tab.setAttribute('aria-selected', String(active));
+        tab.tabIndex = active ? 0 : -1;
+      });
+      document.querySelectorAll('.tab-content').forEach(panel => {
+        const active = panel.id === tabId;
+        panel.classList.toggle('active', active);
+        panel.hidden = !active;
+      });
+    }
+
+    function updateStepMeta(prefix, steps, index) {
+      document.getElementById('counter_' + prefix).textContent =
+        'Paso ' + (index + 1) + ' de ' + steps.length;
+      const previous = index === 0 ? null : steps[index - 1].hist;
+      const current = steps[index].hist;
+      document.getElementById('transition_' + prefix).textContent = previous
+        ? 'Antes: ' + previous + ' → Ahora: ' + current
+        : current;
     }
 
     // =========================================================================
@@ -270,6 +361,7 @@
     let currentEnt = 0;
     function updateEnt() {
       const s = stepsEnt[currentEnt];
+      updateStepMeta('ent', stepsEnt, currentEnt);
       document.getElementById('expr_ent').innerHTML = s.html;
       document.getElementById('desc_ent').innerHTML = s.text;
 
@@ -336,6 +428,7 @@
     let currentFrac = 0;
     function updateFrac() {
       const s = stepsFrac[currentFrac];
+      updateStepMeta('frac', stepsFrac, currentFrac);
       document.getElementById('expr_frac').innerHTML = s.html;
       document.getElementById('desc_frac').innerHTML = s.text;
 
@@ -397,6 +490,7 @@
     let currentRaiz = 0;
     function updateRaiz() {
       const s = stepsRaiz[currentRaiz];
+      updateStepMeta('raiz', stepsRaiz, currentRaiz);
       document.getElementById('expr_raiz').innerHTML = s.html;
       document.getElementById('desc_raiz').innerHTML = s.text;
 
@@ -417,6 +511,45 @@
     function prevStepRaiz() { if (currentRaiz > 0) { currentRaiz--; updateRaiz(); } }
     function resetRaiz() { currentRaiz = 0; updateRaiz(); }
     updateRaiz();
+
+    document.querySelectorAll('[role="tablist"]').forEach(list => {
+      list.addEventListener('keydown', event => {
+        if (!["ArrowRight", "ArrowLeft", "Home", "End"].includes(event.key)) return;
+        const tabs = [...list.querySelectorAll('[role="tab"]')];
+        const current = tabs.indexOf(document.activeElement);
+        if (current < 0) return;
+        event.preventDefault();
+        const next = event.key === "Home" ? 0 :
+          event.key === "End" ? tabs.length - 1 :
+          event.key === "ArrowRight" ? (current + 1) % tabs.length :
+          (current - 1 + tabs.length) % tabs.length;
+        tabs[next].focus();
+        tabs[next].click();
+      });
+    });
+
+    document.querySelectorAll('.mini-practice').forEach(practice => {
+      const options = [...practice.querySelectorAll('.practice-option')];
+      const feedback = practice.querySelector('.practice-feedback');
+      const hintText = practice.querySelector('.practice-hint-text');
+
+      options.forEach((option, index) => option.addEventListener('click', () => {
+        const correct = index === Number(practice.dataset.correct);
+        options.forEach((choice, choiceIndex) => {
+          choice.classList.toggle('is-correct', correct && choiceIndex === index);
+          choice.classList.toggle('is-incorrect', !correct && choiceIndex === index);
+          if (correct) choice.disabled = true;
+        });
+        feedback.textContent = correct
+          ? '¡Correcto! ' + practice.dataset.explanation
+          : 'Todavía no. ' + practice.dataset.hint;
+      }));
+
+      practice.querySelector('.practice-hint').addEventListener('click', () => {
+        hintText.textContent = 'Pista: ' + practice.dataset.hint;
+        hintText.hidden = false;
+      });
+    });
 
   </script>
 </body>

@@ -170,6 +170,39 @@
       .tab-btn { font-size: 1rem; padding: 1rem; }
     }
   </style>
+<style>
+    .worked-steps { padding: 1.25rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-card); }
+    .worked-steps > h3 { margin: 0 0 .8rem; }
+    .step-legend { display:flex; flex-wrap:wrap; gap:.6rem; margin:0 0 1rem; }
+    .step-legend span { padding:.25rem .65rem; border-radius:999px; font-size:.82rem; font-weight:800; }
+    .legend-p,.term-p { color:var(--accent-blue); }
+    .legend-q,.term-q { color:var(--accent-gold); }
+    .legend-result,.term-result { color:var(--accent-success); }
+    .operation-walkthrough { margin-top:1rem; padding:1rem; border:1px solid var(--border-color); border-radius:10px; background:var(--bg-primary); }
+    .operation-walkthrough h4 { margin:0 0 .8rem; color:var(--text-main); }
+    .coefficient-rows { display:grid; gap:.45rem; overflow-x:auto; }
+    .coefficient-row { display:grid; grid-template-columns: minmax(3.5rem,.7fr) minmax(5rem,1fr) auto minmax(5rem,1fr) auto minmax(6rem,1.15fr); align-items:center; gap:.45rem; min-width:520px; padding:.65rem .75rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-card); font-size:1.05rem; }
+    .degree-label { color:var(--text-muted); font-size:.84rem; font-weight:700; }
+    .math-term { display:inline-flex; align-items:baseline; gap:.06em; white-space:nowrap; font-weight:800; }
+    .math-variable { color:var(--accent-blue); }
+    .math-power { color:var(--accent-gold); font-size:.7em; vertical-align:super; }
+    .math-coef { color:var(--accent-op); }
+    .step-operator { color:var(--text-muted); font-weight:800; text-align:center; }
+    .step-conclusion,.sign-change { margin:.75rem 0 0; padding:.7rem .8rem; border-left:3px solid var(--accent-success); border-radius:4px; background:rgba(16,185,129,.07); line-height:1.6; }
+    .sign-change { border-left-color:var(--accent-gold); background:rgba(251,191,36,.07); }
+    .stage-control { display:grid; grid-template-columns:1fr auto; gap:.25rem .75rem; align-items:center; max-width:540px; color:var(--text-main); font-weight:700; }
+    .stage-control input { grid-column:1/-1; width:100%; accent-color:var(--accent-blue); }
+    .multiplication-stage { min-height:5rem; margin-top:.8rem; }
+    .stage-title { color:var(--text-muted); margin:0 0 .65rem; line-height:1.5; }
+    .product-grid { display:grid; grid-template-columns:repeat(3,minmax(150px,1fr)); gap:.55rem; overflow:auto; }
+    .product-cell { min-width:150px; padding:.7rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-card); line-height:1.6; text-align:center; }
+    .group-rows { display:grid; gap:.5rem; }
+    .group-row { display:flex; flex-wrap:wrap; align-items:center; gap:.4rem; padding:.65rem; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-card); }
+    .group-label { min-width:2.5rem; color:var(--accent-gold); font-weight:900; }
+    .stage-final { font-size:1.45rem; padding:1rem; border:1px solid var(--accent-success); border-radius:9px; background:rgba(16,185,129,.08); text-align:center; }
+    .walkthrough-prompt { color:var(--text-muted); }
+    @media(max-width:700px) { .worked-steps { padding:.75rem; } .operation-walkthrough { padding:.7rem; } .product-grid { grid-template-columns:1fr; } }
+  </style>
   <link rel="stylesheet" href="../tema.css">
   <script src="../tema.js"></script>
 </head>
@@ -376,7 +409,29 @@
         <div class="op-title">Multiplicación: P(x) · Q(x)</div>
         <div class="operation-result" id="resPolyMult"></div>
         <p style="font-size: 0.9rem; color: var(--text-muted); text-align: center;">Propiedad distributiva: cada término de P multiplica a cada término de Q; después agrupamos los semejantes.</p>
-        <div class="worked-steps"><h3>Desarrollo paso a paso</h3><p id="polySumSteps" aria-live="polite"></p><p id="polySubSteps" aria-live="polite"></p><p id="polyMultSteps" aria-live="polite"></p></div>
+        <section class="worked-steps" aria-labelledby="workedStepsTitle">
+          <h3 id="workedStepsTitle">Cómo se transforma cada operación</h3>
+          <p class="step-legend"><span class="legend-p">P(x)</span><span class="legend-q">Q(x)</span><span class="legend-result">Resultado</span></p>
+          <article class="operation-walkthrough">
+            <h4>1. Suma: agrupamos términos semejantes</h4>
+            <div id="polySumSteps" class="coefficient-rows" role="table" aria-label="Suma por coeficientes"></div>
+            <div id="polySumConclusion" class="step-conclusion"></div>
+          </article>
+          <article class="operation-walkthrough">
+            <h4>2. Resta: cambiamos los signos de Q</h4>
+            <p id="polySubSignChange" class="sign-change"></p>
+            <div id="polySubSteps" class="coefficient-rows" role="table" aria-label="Resta por coeficientes"></div>
+            <div id="polySubConclusion" class="step-conclusion"></div>
+          </article>
+          <article class="operation-walkthrough">
+            <h4>3. Multiplicación: aplicamos la distributiva</h4>
+            <p class="walkthrough-prompt">Usa el deslizador para recorrer el desarrollo.</p>
+            <label class="stage-control" for="multStage">Paso de la multiplicación <output id="multStageValue" for="multStage">1 de 4</output>
+              <input type="range" id="multStage" min="0" max="3" step="1" value="0" aria-valuetext="Distribuimos cada término por todos">
+            </label>
+            <div id="polyMultStage" class="multiplication-stage" aria-live="polite"></div>
+          </article>
+        </section>
       </div>
       <section class="panel-box"><div class="panel-title">Comprobación numérica</div><p>Sustituye x por un valor y comprueba que la operación original y la desarrollada coinciden.</p>
         <div class="practice-row"><label for="evalX">Valor de x</label><input type="number" id="evalX" value="2" step="any">
@@ -601,6 +656,60 @@
   </script>
   <script>
     function plainPoly(a){const top=a.length-1,t=[];a.forEach((c,i)=>{if(!c)return;const d=top-i,z=Math.abs(c),v=d===0?"":d===1?"x":"x^"+d;t.push({s:c<0?-1:1,v:v&&z===1?v:z+v});});if(!t.length)return"0";return t.map((x,i)=>i===0?(x.s<0?"−":"")+x.v:(x.s<0?" − ":" + ")+x.v).join("");}
+    function styledTerm(coefficient, degree, role) {
+      const sign=coefficient<0?"−":"";
+      const abs=Math.abs(coefficient);
+      const variable=degree===0?"":`<span class="math-variable">x</span>${degree===1?"":`<sup class="math-power">${degree}</sup>`}`;
+      const coefficientHtml=abs===1&&degree>0?"":`<span class="math-coef">${abs}</span>`;
+      return `<span class="math-term term-${role}">${sign}${coefficientHtml}${variable||(!abs?"0":"")}</span>`;
+    }
+    function operator(text){return `<span class="step-operator">${text}</span>`;}
+    function rowHTML(label,left,op,right,result){
+      return `<div class="coefficient-row" role="row"><span class="degree-label" role="rowheader">${label}</span>${styledTerm(left,label==="x²"?2:label==="x"?1:0,"p")}${operator(op)}${styledTerm(right,label==="x²"?2:label==="x"?1:0,"q")}${operator("=")}${styledTerm(result,label==="x²"?2:label==="x"?1:0,"result")}</div>`;
+    }
+    function renderSumRows(p,q,sum){
+      const degrees=["x²","x","Constante"];
+      polySumSteps.innerHTML=degrees.map((label,i)=>rowHTML(label,p[i],"+",q[i],sum[i])).join("");
+      polySumConclusion.innerHTML=`Sumamos solo coeficientes de la misma potencia y conservamos esa potencia: <strong class="term-result">${buildPolyString(sum)}</strong>.`;
+    }
+    function renderSubRows(p,q,diff){
+      const degrees=["x²","x","Constante"];
+      polySubSignChange.innerHTML=`Primero cambiamos el signo de cada término de Q: Q=${buildPolyString(q)} pasa a −Q=${buildPolyString(q.map(c=>-c))}. Ahora restamos coeficientes por grado:`;
+      polySubSteps.innerHTML=degrees.map((label,i)=>rowHTML(label,p[i],"−",q[i],diff[i])).join("");
+      polySubConclusion.innerHTML=`El resultado es <strong class="term-result">${buildPolyString(diff)}</strong>.`;
+    }
+    function multiplyTerm(coef,degree,role){
+      const sign=coef<0?"−":"",abs=Math.abs(coef);
+      const coeff=abs===1&&degree>0?"":`<span class="math-coef">${abs}</span>`;
+      const variable=degree===0?"":`<span class="math-variable">x</span>${degree===1?"":`<sup class="math-power">${degree}</sup>`}`;
+      return `<span class="math-term term-${role}">${sign}${coeff}${variable}</span>`;
+    }
+    function renderMultiplicationSteps(p,q,result){
+      const stage=Number(multStage.value), box=polyMultStage;
+      multStageValue.textContent=(stage+1)+" de 4";
+      const pTerms=[p[0],p[1],p[2]],pDegrees=[2,1,0],qTerms=[q[0],q[1],q[2]],qDegrees=[2,1,0];
+      if(stage===0){
+        box.innerHTML=`<p class="stage-title">Cada término de P(x) se multiplica por todos los términos de Q(x).</p><div class="product-grid">${pTerms.map((a,i)=>qTerms.map((b,j)=>`<div class="product-cell">${multiplyTerm(a,pDegrees[i],"p")} ${operator("·")} ${multiplyTerm(b,qDegrees[j],"q")}<br>${operator("↓")}<br>${multiplyTerm(a*b,pDegrees[i]+qDegrees[j],"result")}</div>`).join("")).join("")}</div>`;
+      }else if(stage===1){
+        const items=[];
+        pTerms.forEach((a,i)=>qTerms.forEach((b,j)=>items.push(`<div class="product-cell">${multiplyTerm(a,pDegrees[i],"p")} · ${multiplyTerm(b,qDegrees[j],"q")} = ${multiplyTerm(a*b,pDegrees[i]+qDegrees[j],"result")}</div>`)));
+        box.innerHTML=`<p class="stage-title">Multiplicamos coeficientes y sumamos exponentes de la misma base.</p><div class="product-grid">${items.join("")}</div>`;
+      }else if(stage===2){
+        const coeffs=[p[0]*q[0],p[0]*q[1]+p[1]*q[0],p[0]*q[2]+p[1]*q[1]+p[2]*q[0],p[1]*q[2]+p[2]*q[1],p[2]*q[2]];
+        const labels=["x⁴","x³","x²","x","Constante"];
+        const groups=[
+          [`${p[0]}·${q[0]}`],
+          [`${p[0]}·${q[1]}`,`${p[1]}·${q[0]}`],
+          [`${p[0]}·${q[2]}`,`${p[1]}·${q[1]}`,`${p[2]}·${q[0]}`],
+          [`${p[1]}·${q[2]}`,`${p[2]}·${q[1]}`],
+          [`${p[2]}·${q[2]}`]
+        ];
+        box.innerHTML=`<p class="stage-title">Agrupamos los productos que tienen la misma potencia de x.</p><div class="group-rows">${labels.map((label,i)=>`<div class="group-row"><span class="group-label">${label}</span><span class="term-q">${groups[i].join(" + ")}</span>${operator("=")}${multiplyTerm(coeffs[i],4-i,"result")}</div>`).join("")}</div>`;
+      }else{
+        box.innerHTML=`<p class="stage-title">Sumamos los coeficientes de cada grupo y ordenamos de mayor a menor grado.</p><div class="stage-final">${buildPolyString(result)}</div>`;
+      }
+      multStage.setAttribute("aria-valuetext",["Repartimos cada término de P por cada término de Q","Calculamos los nueve productos parciales","Agrupamos términos con la misma potencia","Mostramos el polinomio final"][stage]);
+    }
     function updateOperacionesPolinomios(){
       const p=[+p2.value,+p1.value,+p0.value],q=[+q2.value,+q1.value,+q0.value];
       [vp2,vp1,vp0].forEach((e,i)=>e.textContent=p[i]);[vq2,vq1,vq0].forEach((e,i)=>e.textContent=q[i]);
@@ -608,17 +717,14 @@
       const s=p.map((v,i)=>v+q[i]),d=p.map((v,i)=>v-q[i]);
       const m=[p[0]*q[0],p[0]*q[1]+p[1]*q[0],p[0]*q[2]+p[1]*q[1]+p[2]*q[0],p[1]*q[2]+p[2]*q[1],p[2]*q[2]];
       resPolySuma.innerHTML=buildPolyString(s);resPolyResta.innerHTML=buildPolyString(d);resPolyMult.innerHTML=buildPolyString(m);
-      polySumSteps.textContent=`Suma: x²: ${p[0]}+${q[0]}=${s[0]}; x: ${p[1]}+${q[1]}=${s[1]}; constantes: ${p[2]}+${q[2]}=${s[2]}. Resultado: ${plainPoly(s)}.`;
-      polySubSteps.textContent=`Resta: cambiamos los signos de Q (${q.map(c=>-c).join(", ")}) y agrupamos: ${p[0]}−${q[0]}=${d[0]} en x², ${p[1]}−${q[1]}=${d[1]} en x y ${p[2]}−${q[2]}=${d[2]} en las constantes. Resultado: ${plainPoly(d)}.`;
-      const partials=[
-        `${p[0]}x²·${q[0]}x²=${p[0]*q[0]}x⁴`,`${p[0]}x²·${q[1]}x=${p[0]*q[1]}x³`,`${p[0]}x²·${q[2]}=${p[0]*q[2]}x²`,
-        `${p[1]}x·${q[0]}x²=${p[1]*q[0]}x³`,`${p[1]}x·${q[1]}x=${p[1]*q[1]}x²`,`${p[1]}x·${q[2]}=${p[1]*q[2]}x`,
-        `${p[2]}·${q[0]}x²=${p[2]*q[0]}x²`,`${p[2]}·${q[1]}x=${p[2]*q[1]}x`,`${p[2]}·${q[2]}=${p[2]*q[2]}`
-      ];
-      polyMultSteps.textContent="Productos de la distributiva: "+partials.join("; ")+". Después agrupamos potencias iguales: "+plainPoly(m)+".";
+      renderSumRows(p,q,s);
+      renderSubRows(p,q,d);
+      renderMultiplicationSteps(p,q,m);
 
-      updateCheck();
+      updateMultiplicationStage(); updateCheck();
     }
+    function updateMultiplicationStage(){ const p=[+p2.value,+p1.value,+p0.value],q=[+q2.value,+q1.value,+q0.value]; const m=[p[0]*q[0],p[0]*q[1]+p[1]*q[0],p[0]*q[2]+p[1]*q[1]+p[2]*q[0],p[1]*q[2]+p[2]*q[1],p[2]*q[2]]; renderMultiplicationSteps(p,q,m); }
+    multStage.addEventListener("input",updateMultiplicationStage);
     function updateCheck(){const x=Number(evalX.value),a=+p2.value*x*x + +p1.value*x + +p0.value,b=+q2.value*x*x + +q1.value*x + +q0.value,o=evalOperation.value,r=o==="sum"?a+b:o==="sub"?a-b:a*b,l=o==="sum"?"P(x)+Q(x)":o==="sub"?"P(x)−Q(x)":"P(x)·Q(x)";evalResult.textContent=`Para x=${x}, ${l}=${r}. Coinciden al sustituir en la operación original y en la desarrollada.`;}
     let mt,pt;const su=["","¹","²","³","⁴"];
     function fmt(c,e){if(!c)return"0";return(c<0?"−":"")+(Math.abs(c)===1&&e?"":Math.abs(c))+(e?"x"+(e===1?"":su[e]):"");}

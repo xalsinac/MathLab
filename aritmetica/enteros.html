@@ -170,7 +170,7 @@
       width: 100%;
       border-collapse: collapse;
       text-align: center;
-      background: #090d16;
+      background: var(--bg-primary);
       border-radius: 8px;
       overflow: hidden;
       border: 1px solid var(--border-color);
@@ -636,18 +636,32 @@
 
   <script>
     function switchTab(tabId, btn) {
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
-      if(tabId === 'recta') setTimeout(drawRecta, 10);
+      document.querySelectorAll('.tab-btn').forEach(item => {
+        const active = item === btn;
+        item.classList.toggle('active', active);
+        item.setAttribute('aria-selected', String(active));
+        item.tabIndex = active ? 0 : -1;
+      });
+      document.querySelectorAll('.tab-content').forEach(panel => {
+        const active = panel.id === tabId;
+        panel.classList.toggle('active', active);
+        panel.hidden = !active;
+      });
+      if (tabId === 'recta') setTimeout(drawRecta, 10);
     }
 
     function switchSubTab(tabId, btn) {
-      document.querySelectorAll('.subtab-content').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
+      document.querySelectorAll('.subtab-btn').forEach(item => {
+        const active = item === btn;
+        item.classList.toggle('active', active);
+        item.setAttribute('aria-selected', String(active));
+        item.tabIndex = active ? 0 : -1;
+      });
+      document.querySelectorAll('.subtab-content').forEach(panel => {
+        const active = panel.id === tabId;
+        panel.classList.toggle('active', active);
+        panel.hidden = !active;
+      });
     }
 
     // ================= RECTA NUMÉRICA =================
@@ -679,19 +693,32 @@
 
     function updatePlayerVisual() {
       const percent = ((currentPos - minVal) / (maxVal - minVal)) * 100;
-      player.style.left = `${percent}%`;
-      posDisplay.innerText = currentPos > 0 ? `+${currentPos}` : currentPos;
+      player.style.left = percent + "%";
+      posDisplay.textContent = currentPos > 0 ? "+" + currentPos : currentPos;
       posDisplay.className = currentPos > 0 ? 'pos' : currentPos < 0 ? 'neg' : 'zero';
+      document.querySelector('[onclick="movePlayer(-5)"]').disabled = currentPos - 5 < minVal;
+      document.querySelector('[onclick="movePlayer(-1)"]').disabled = currentPos <= minVal;
+      document.querySelector('[onclick="movePlayer(1)"]').disabled = currentPos >= maxVal;
+      document.querySelector('[onclick="movePlayer(5)"]').disabled = currentPos + 5 > maxVal;
     }
 
+    function signedInteger(value) { return value > 0 ? "+" + value : String(value); }
+
     function movePlayer(amount) {
-      currentPos += amount;
-      if (currentPos > maxVal) currentPos = maxVal;
-      if (currentPos < minVal) currentPos = minVal;
+      const start = currentPos;
+      currentPos = Math.max(minVal, Math.min(maxVal, currentPos + amount));
+      const moved = currentPos - start;
+      document.getElementById('lineEquation').textContent =
+        start + " + (" + signedInteger(moved) + ") = " + currentPos;
       updatePlayerVisual();
     }
 
-    function resetPlayer() { currentPos = 0; updatePlayerVisual(); }
+    function resetPlayer() {
+      currentPos = 0;
+      document.getElementById('lineEquation').textContent = "Empiezas en 0.";
+      updatePlayerVisual();
+    }
+
     drawRecta();
 
     // ================= SUMA Y RESTA =================
@@ -708,30 +735,32 @@
     }
 
     function updateSumaResta() {
-      const a = parseInt(document.getElementById('sr_num1').value);
-      const b = parseInt(document.getElementById('sr_num2').value);
-      document.getElementById('sr_val1').innerText = a;
-      document.getElementById('sr_val2').innerText = b;
-
-      let opSign = b >= 0 ? "+" : ""; 
-      let eqStr = `${formatNum(a)} <span style="color:var(--text-muted)">${opSign}</span> ${formatNum(b)}`;
-      if(b < 0) {
-        eqStr = `${formatNum(a)} <span style="color:var(--text-muted)">+ (</span>${formatNum(b)}<span style="color:var(--text-muted)">)</span>`;
-      }
-      document.getElementById('sr_eq').innerHTML = eqStr;
-      document.getElementById('sr_texto1').innerText = `1º Número: ${getTengoDeboText(a)}`;
-      document.getElementById('sr_texto2').innerText = `2º Número: ${getTengoDeboText(b)}`;
-
-      const res = a + b;
-      let resText = "";
-      if (a > 0 && b > 0) resText = `Agrupamos el dinero: Tengo ${res}€. → <span class="pos">+${res}</span>`;
-      else if (a < 0 && b < 0) resText = `Agrupamos las deudas: Debo ${Math.abs(res)}€. → <span class="neg">${res}</span>`;
-      else if (res === 0) resText = `Pago la deuda y me quedo a cero. → <span class="zero">0</span>`;
-      else if (res > 0) resText = `Pago la deuda y me sobran ${res}€. → <span class="pos">+${res}</span>`;
-      else resText = `Entrego el dinero pero aún debo ${Math.abs(res)}€. → <span class="neg">${res}</span>`;
-
-      document.getElementById('sr_resultado').innerHTML = resText;
+      const a = Number(document.getElementById('sr_num1').value);
+      const b = Number(document.getElementById('sr_num2').value);
+      const subtract = document.getElementById('sr_operation').value === 'subtract';
+      const effectiveB = subtract ? -b : b;
+      const result = a + effectiveB;
+      document.getElementById('sr_val1').textContent = a;
+      document.getElementById('sr_val2').textContent = b;
+      document.getElementById('sr_principle').textContent = subtract
+        ? "Restar un entero equivale a sumar su opuesto: a − b = a + (−b)."
+        : "Sumar es añadir el segundo entero; si es negativo, avanzamos hacia la izquierda.";
+      document.getElementById('sr_eq').innerHTML = subtract
+        ? formatNum(a) + ' <span style="color:var(--text-muted)">− (</span>' + formatNum(b) + '<span style="color:var(--text-muted)">)</span>'
+        : (b < 0
+          ? formatNum(a) + ' <span style="color:var(--text-muted)">+ (</span>' + formatNum(b) + '<span style="color:var(--text-muted)">)</span>'
+          : formatNum(a) + ' <span style="color:var(--text-muted)">+</span> ' + formatNum(b));
+      document.getElementById('sr_texto1').textContent = "Valor inicial: " + getTengoDeboText(a);
+      document.getElementById('sr_texto2').textContent =
+        (subtract ? "Valor que restamos: " : "Segundo entero: ") + getTengoDeboText(b);
+      let explanation;
+      if (result === 0) explanation = "Los valores se compensan y el resultado es 0.";
+      else if (result > 0) explanation = "Resultado: queda un saldo a favor de " + result + "€.";
+      else explanation = "Resultado: queda una deuda de " + Math.abs(result) + "€.";
+      document.getElementById('sr_resultado').innerHTML =
+        explanation + " → " + formatNum(result, true);
     }
+
     updateSumaResta();
 
     // ================= MULTIPLICACIÓN Y DIVISIÓN =================
@@ -785,13 +814,19 @@
     }
 
     function updateAscensor() {
-      let p = parseInt(document.getElementById('a_planta').value);
-      let m = parseInt(document.getElementById('a_mov').value);
-      document.getElementById('v_a_planta').innerText = p; 
-      document.getElementById('v_a_mov').innerText = (m > 0 ? "+" : "") + m;
-      let res = p + m;
-      document.getElementById('a_text').innerText = `Operación: ${p} + (${m}) = Planta ${res}`;
-      let bottomPct = 30 + (res * 5);
+      const p = Number(document.getElementById('a_planta').value);
+      const moveInput = document.getElementById('a_mov');
+      const minFloor = -4, maxFloor = 8;
+      moveInput.min = Math.max(-5, minFloor - p);
+      moveInput.max = Math.min(5, maxFloor - p);
+      const m = Math.max(Number(moveInput.min), Math.min(Number(moveInput.max), Number(moveInput.value)));
+      moveInput.value = m;
+      document.getElementById('v_a_planta').textContent = p;
+      document.getElementById('v_a_mov').textContent = (m > 0 ? "+" : "") + m;
+      const result = p + m;
+      document.getElementById('a_text').textContent =
+        "Operación: " + p + " + (" + m + ") = planta " + result;
+      const bottomPct = 8 + ((result - minFloor) / (maxFloor - minFloor)) * 76;
       document.getElementById('a_avatar').style.bottom = bottomPct + "%";
     }
 
@@ -806,16 +841,21 @@
     }
 
     function updateAnios() {
-      let n = parseInt(document.getElementById('an_nac').value);
-      let m = parseInt(document.getElementById('an_mue').value);
-      if(n > m) { document.getElementById('an_nac').value = m; n = m; }
-      document.getElementById('v_an_nac').innerText = n; 
-      document.getElementById('v_an_mue').innerText = m;
-      let edad = m - n;
-      document.getElementById('an_res').innerHTML = `${m} - (<span class="negative">${n}</span>) = <span class="positive">${edad} años</span>`;
-      let nText = n < 0 ? Math.abs(n)+" a.C." : n+" d.C.";
-      let mText = m < 0 ? Math.abs(m)+" a.C." : m+" d.C.";
-      document.getElementById('an_text').innerText = `Vivió del ${nText} al ${mText}.`;
+      const start = Number(document.getElementById('an_nac').value);
+      const end = Number(document.getElementById('an_mue').value);
+      if (start > end) document.getElementById('an_nac').value = end;
+      const firstYear = Number(document.getElementById('an_nac').value);
+      const lastYear = Number(document.getElementById('an_mue').value);
+      const elapsed = lastYear - firstYear;
+      document.getElementById('v_an_nac').textContent = firstYear;
+      document.getElementById('v_an_mue').textContent = lastYear;
+      document.getElementById('an_res').innerHTML =
+        lastYear + " − (" + '<span class="neg">' + firstYear + "</span>) = " +
+        '<span class="pos">' + elapsed + " años</span>";
+      const yearLabel = value => value > 0 ? "+" + value : String(value);
+      document.getElementById('an_text').textContent =
+        "Desde el año " + yearLabel(firstYear) + " hasta el año " + yearLabel(lastYear) +
+        " transcurren " + elapsed + " años en esta escala matemática.";
     }
 
     updateDeuda(); updateAscensor(); updatePajaro(); updateAnios();

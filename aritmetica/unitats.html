@@ -86,6 +86,17 @@
     .tabs-container { background: var(--bg-card); }
     .tab-content[hidden] { display: none !important; }
     .tab-btn:focus-visible, .conv-input-group select:focus-visible, .conv-input-group input:focus-visible, .practice-controls button:focus-visible { outline: 3px solid var(--accent-gold); outline-offset: 2px; }
+    .place-value-note { color: var(--text-muted); line-height: 1.5; margin: -.25rem 0 1rem; }
+    .common-mistakes { margin-top: .8rem; padding: .8rem; border-left: 3px solid var(--accent-gold); background: rgba(251,191,36,.06); color: var(--text-main); }
+    .common-mistakes ul { margin: .5rem 0 0; padding-left: 1.2rem; color: var(--text-muted); line-height: 1.55; }
+    .context-question { margin-top: .8rem; padding: .8rem 0; border-top: 1px solid var(--border-color); }
+    .context-options { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .55rem; }
+    .context-options button { min-height: 40px; min-width: 4rem; padding: .45rem .8rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-primary); color: var(--text-main); cursor: pointer; }
+    .context-options button:hover { border-color: var(--accent-blue); }
+    .context-options button:focus-visible { outline: 3px solid var(--accent-gold); outline-offset: 2px; }
+    .context-options .context-correct { border-color: var(--accent-success); color: var(--accent-success); }
+    .context-options .context-incorrect { border-color: var(--accent-op); color: var(--accent-op); }
+    .context-feedback { min-height: 1.4rem; margin: .45rem 0 0; color: var(--text-muted); }
     .equivalence-table-wrap { margin-top: 1.25rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-card); }
     .equivalence-table-wrap h3 { margin: 0 0 .75rem; color: var(--text-main); }
     .equivalence-grid { display: grid; grid-template-columns: .7fr .7fr 1.6fr; gap: .4rem; align-items: center; }
@@ -391,6 +402,7 @@
           <div style="font-size:1.5rem; font-weight:bold; color:var(--accent-success); margin-top:0.5rem;" id="calc_step_res" role="status" aria-live="polite"></div>
         </div>
         <div id="unitLadder" class="unit-ladder" aria-label="Escala de unidades"></div>
+        <p id="placeValueNote" class="place-value-note" aria-live="polite"></p>
         <section class="practice-box" aria-labelledby="practiceTitle">
           <div class="panel-title" id="practiceTitle">Ahora inténtalo tú</div>
           <p id="practicePrompt">Pulsa «Nuevo reto» para practicar una conversión.</p>
@@ -403,6 +415,25 @@
             <button type="button" class="btn btn-secondary" id="newPractice">Nuevo reto</button>
           </div>
           <p id="practiceFeedback" role="status" aria-live="polite"></p>
+        </section>
+        <section class="practice-box context-practice" aria-labelledby="contextPracticeTitle">
+          <div class="panel-title" id="contextPracticeTitle">¿Qué unidad elegirías?</div>
+          <p>Elige una unidad razonable para expresar cada medida.</p>
+          <div class="context-question" data-correct="1" data-explanation="El grosor de un cuaderno es pequeño; se expresa cómodamente en milímetros.">
+            <strong>El grosor de un cuaderno</strong>
+            <div class="context-options"><button type="button">km</button><button type="button">mm</button><button type="button">m</button></div>
+            <p class="context-feedback" role="status" aria-live="polite"></p>
+          </div>
+          <div class="context-question" data-correct="2" data-explanation="La distancia entre ciudades suele expresarse en kilómetros.">
+            <strong>La distancia entre dos ciudades</strong>
+            <div class="context-options"><button type="button">cm</button><button type="button">m</button><button type="button">km</button></div>
+            <p class="context-feedback" role="status" aria-live="polite"></p>
+          </div>
+          <div class="context-question" data-correct="1" data-explanation="La capacidad de una botella grande suele expresarse en litros; los mililitros son más cómodos para cantidades pequeñas.">
+            <strong>La capacidad de una botella grande</strong>
+            <div class="context-options"><button type="button">mL</button><button type="button">L</button><button type="button">kL</button></div>
+            <p class="context-feedback" role="status" aria-live="polite"></p>
+          </div>
         </section>
       </div>
     </div>
@@ -545,6 +576,14 @@
         item.append(name, relation);
         ladder.appendChild(item);
       });
+      const exponent = unitsData[type][fromIndex].exp - unitsData[type][toIndex].exp;
+      const note = document.getElementById('placeValueNote');
+      if (exponent === 0) note.textContent = 'La cifra se queda en la misma unidad: no se desplaza.';
+      else note.textContent = 'De ' + unitsData[type][fromIndex].name + ' a ' + unitsData[type][toIndex].name +
+        ': el valor numérico cambia por 10' + (Math.abs(exponent) > 1 ? ' elevado a ' + Math.abs(exponent) : '') +
+        '. Puedes verlo como desplazar la coma ' + Math.abs(exponent) + ' ' +
+        (Math.abs(exponent) === 1 ? 'posición' : 'posiciones') + (exponent > 0 ? ' a la derecha' : ' a la izquierda') +
+        ', completando con ceros cuando haga falta; no los añadas de memoria.';
     }
 
     function createPractice() {
@@ -586,6 +625,25 @@
         feedback.textContent = 'Todavía no. Revisa el número de pasos y la dirección. Puedes corregirlo o pedir una pista.';
       }
     }
+
+    document.querySelectorAll('.context-question').forEach(question => {
+      const feedback = question.querySelector('.context-feedback');
+      const options = Array.from(question.querySelectorAll('.context-options button'));
+      options.forEach((button, index) => button.addEventListener('click', () => {
+        if (question.dataset.completed === 'true') return;
+        options.forEach(option => { option.disabled = true; });
+        if (index === Number(question.dataset.correct)) {
+          button.classList.add('context-correct');
+          feedback.textContent = '¡Correcto! ' + question.dataset.explanation;
+          question.dataset.completed = 'true';
+        } else {
+          button.classList.add('context-incorrect');
+          feedback.textContent = 'No es la opción más cómoda. ' + question.dataset.explanation;
+          options.forEach(option => { option.disabled = false; });
+          button.disabled = true;
+        }
+      }));
+    });
 
     document.getElementById('newPractice').addEventListener('click', createPractice);
     document.getElementById('checkPractice').addEventListener('click', checkPractice);

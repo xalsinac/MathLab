@@ -79,6 +79,95 @@
     }
     .frac-type-card h4 { color: var(--text-main); margin-bottom: 0.5rem; font-size: 1.1rem; }
     .frac-type-card p { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.4; }
+  
+    /* Interacciones didácticas: partes comunes, mixtos y práctica guiada */
+    .mixed-number-panel, .numberline-panel, .common-denominator-panel { margin-top: 1.25rem; }
+    .mixed-controls { display: flex; align-items: end; justify-content: center; gap: .75rem; flex-wrap: wrap; }
+    .mixed-controls label { display: grid; gap: .35rem; color: var(--text-muted); font-weight: 700; }
+    .mixed-controls input, .fraction-input-group input {
+      width: 5.3rem; padding: .55rem .65rem; border: 1px solid var(--border-color);
+      border-radius: 8px; background: var(--bg-primary); color: var(--text-main);
+      font: inherit; font-weight: 700;
+    }
+    .mixed-equation, .common-equation {
+      margin: 1rem 0; padding: .8rem 1rem; border: 1px solid var(--border-color);
+      border-radius: 9px; background: var(--bg-primary); color: var(--text-main);
+      text-align: center; font: 700 1.08rem/1.5 ui-monospace, monospace;
+    }
+    .mixed-units { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: .75rem; }
+    .mixed-unit { padding: .7rem; border: 1px solid var(--border-color); border-radius: 9px; background: var(--bg-primary); }
+    .mixed-unit-label { display: block; color: var(--text-muted); font-size: .82rem; margin-bottom: .45rem; }
+    .fraction-strip {
+      display: grid; grid-template-columns: repeat(var(--fraction-parts), minmax(0, 1fr));
+      width: 100%; height: 1.65rem; gap: 2px; margin: .25rem 0; overflow: hidden;
+    }
+    .fraction-piece { min-width: 0; border: 1px solid var(--border-color); border-radius: 2px; background: var(--bg-card); }
+    .fraction-piece.filled.segment-a { background: var(--accent-blue); border-color: var(--accent-blue); }
+    .fraction-piece.filled.segment-b { background: var(--accent-gold); border-color: var(--accent-gold); }
+    .fraction-piece.filled.segment-mixed { background: var(--accent-success); border-color: var(--accent-success); }
+    .number-line { padding: 1rem .6rem .2rem; }
+    .number-line-track { position: relative; height: 3px; margin: 2.8rem 1.2rem 2.5rem; background: var(--border-color); }
+    .number-line-tick { position: absolute; top: 0; transform: translateX(-50%); height: 100%; }
+    .number-line-tick i { position: absolute; left: 50%; top: -5px; height: 13px; border-left: 1px solid var(--text-muted); }
+    .number-line-tick small { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); color: var(--text-muted); white-space: nowrap; }
+    .number-line-point { position: absolute; top: 50%; transform: translate(-50%, -50%); z-index: 1; }
+    .number-line-point b { display: block; width: 13px; height: 13px; border: 2px solid var(--bg-card); border-radius: 50%; background: var(--accent-blue); box-shadow: 0 0 0 1px var(--accent-blue); }
+    .number-line-point span { position: absolute; left: 50%; transform: translateX(-50%); padding: .13rem .4rem; border-radius: 5px; white-space: nowrap; font-size: .78rem; font-weight: 800; }
+    .point-base span { bottom: 1rem; color: var(--accent-blue); }
+    .point-equivalent span { bottom: 2rem; color: var(--accent-success); }
+    .numberline-caption { text-align: center; color: var(--text-muted); font-size: .9rem; }
+    .common-intro { color: var(--text-muted); line-height: 1.55; margin-bottom: 1rem; }
+    .common-controls { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; gap: .7rem; }
+    .fraction-input-group {
+      display: flex; align-items: center; justify-content: center; gap: .45rem;
+      min-width: 0; margin: 0; padding: .7rem; border: 1px solid var(--border-color);
+      border-radius: 10px; background: var(--bg-primary);
+    }
+    .fraction-input-group legend { padding: 0 .35rem; color: var(--text-main); font-weight: 800; }
+    .fraction-input-group label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .fraction-input-group input { width: 4.3rem; text-align: center; }
+    .common-plus { margin: 0; }
+    .common-help { color: var(--text-muted); font-size: .82rem; margin: .55rem 0; }
+    .preset-example, .mini-hint-button {
+      border: 1px solid var(--border-color); border-radius: 7px; padding: .45rem .7rem;
+      background: var(--bg-primary); color: var(--accent-blue); font: inherit;
+      font-size: .86rem; cursor: pointer;
+    }
+    .preset-example:hover, .mini-hint-button:hover { border-color: var(--accent-blue); }
+    .common-visual-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .85rem; margin-top: 1rem; }
+    .common-visual-card { min-width: 0; padding: .85rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-primary); }
+    .common-visual-card h3 { color: var(--text-main); font-size: .95rem; margin-bottom: .85rem; }
+    .fraction-visual-row { display: grid; grid-template-columns: 3.6rem minmax(0,1fr); align-items: center; gap: .5rem; margin: .7rem 0; }
+    .fraction-visual-label { color: var(--text-main); font: 700 .85rem ui-monospace, monospace; text-align: right; white-space: nowrap; }
+    .bar-caption { color: var(--text-muted); font-size: .78rem; line-height: 1.45; margin-top: .8rem; }
+    .multiples-panel { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .35rem .8rem; padding: .8rem; border-radius: 9px; background: var(--bg-primary); }
+    .multiples-panel p { color: var(--text-muted); font-size: .86rem; line-height: 1.5; }
+    .multiples-panel p:last-child { grid-column: 1 / -1; }
+    .multiples-panel strong { color: var(--text-main); }
+    .common-product-note { padding: .7rem .85rem; border-left: 3px solid var(--accent-gold); background: rgba(245,158,11,.08); color: var(--text-main); line-height: 1.5; font-size: .9rem; }
+    .mini-practice { margin-top: 1.2rem; padding: 1rem; border: 1px solid var(--border-color); border-left: 4px solid var(--accent-success); border-radius: 10px; background: var(--bg-card); }
+    .mini-practice-heading { margin-bottom: .75rem; }
+    .mini-practice-label { color: var(--accent-success); font-size: .72rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+    .mini-practice h3 { color: var(--text-main); font-size: 1rem; margin-top: .2rem; }
+    .mini-practice-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: .55rem; }
+    .mini-practice-options button { min-height: 42px; padding: .55rem .7rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-primary); color: var(--text-main); font: inherit; text-align: left; cursor: pointer; }
+    .mini-practice-options button:hover, .mini-practice-options button:focus-visible { border-color: var(--accent-blue); outline-color: var(--accent-blue); }
+    .mini-hint-button { margin-top: .7rem; }
+    .mini-hint, .mini-feedback { margin: .65rem 0 0; padding: .65rem .75rem; border-radius: 7px; line-height: 1.5; }
+    .mini-hint { color: var(--text-main); background: rgba(245,158,11,.1); }
+    .mini-feedback:empty { display: none; }
+    .mini-feedback.feedback-correct { color: var(--text-main); background: rgba(16,185,129,.12); border: 1px solid var(--accent-success); }
+    .mini-feedback.feedback-retry { color: var(--text-main); background: rgba(244,63,94,.1); border: 1px solid var(--accent-op); }
+    @media (max-width: 680px) {
+      .common-controls, .common-visual-grid { grid-template-columns: 1fr; }
+      .common-plus { line-height: 1; }
+      .fraction-input-group { flex-wrap: wrap; }
+      .multiples-panel { grid-template-columns: 1fr; }
+      .multiples-panel p:last-child { grid-column: auto; }
+      .fraction-visual-row { grid-template-columns: 3rem minmax(0,1fr); }
+      .mixed-units { grid-template-columns: 1fr; }
+    }
+
   </style>
   <link rel="stylesheet" href="../tema.css">
   <script src="../tema.js"></script>
@@ -186,6 +275,35 @@
 
         </div>
       </div>
+      <div class="panel-box mixed-number-panel">
+        <div class="panel-title" style="color: var(--accent-blue);">De fracción impropia a número mixto</div>
+        <p style="color: var(--text-muted); margin-bottom: 1rem;">Agrupa los trozos en unidades completas. El numerador indica cuántos trozos tienes; el denominador, cuántos forman una unidad.</p>
+        <div class="mixed-controls">
+          <label for="mixedNumerator">Numerador
+            <input type="number" id="mixedNumerator" min="1" max="12" value="7" oninput="updateMixedNumber()">
+          </label>
+          <span class="f-sign" aria-hidden="true">/</span>
+          <label for="mixedDenominator">Denominador
+            <input type="number" id="mixedDenominator" min="2" max="8" value="3" oninput="updateMixedNumber()">
+          </label>
+        </div>
+        <p class="mixed-equation" id="mixedEquation" aria-live="polite">7/3 = 2 + 1/3 = 2 1/3</p>
+        <div class="mixed-units" id="mixedUnits" aria-label="Representación de 7 tercios"></div>
+      </div>
+      <div class="mini-practice" data-hint="Separa 5/4 en una unidad completa, 4/4, y el trozo que sobra." data-retry="Pista: ¿cuántos cuartos hacen una unidad completa?">
+        <div class="mini-practice-heading">
+          <span class="mini-practice-label">Prueba rápida</span>
+          <h3>¿Qué cantidad representa 5/4?</h3>
+        </div>
+        <div class="mini-practice-options">
+          <button type="button" data-correct="false" onclick="checkMiniPractice(this)">Menos de una unidad</button>
+          <button type="button" data-correct="true" onclick="checkMiniPractice(this)">1 unidad y 1/4</button>
+          <button type="button" data-correct="false" onclick="checkMiniPractice(this)">Exactamente 1 unidad</button>
+        </div>
+        <button type="button" class="mini-hint-button" onclick="showMiniHint(this)">Pedir una pista</button>
+        <p class="mini-hint" hidden></p>
+        <p class="mini-feedback" role="status" aria-live="polite" data-explanation="Correcto: 5/4 = 4/4 + 1/4 = 1 1/4. Es una fracción impropia porque supera una unidad."></p>
+      </div>
     </div>
 
     <!-- ================= PESTAÑA 2: FRACCIONES EQUIVALENTES (SIMPLIFICAR) ================= -->
@@ -283,6 +401,36 @@
         </div>
       </div>
 
+      <div class="panel-box numberline-panel">
+        <div class="panel-title">Las fracciones equivalentes ocupan el mismo punto</div>
+        <p style="color: var(--text-muted);">Aunque cambie el denominador, la cantidad no se mueve en la recta numérica.</p>
+        <div class="number-line" id="equivNumberLine" role="img" aria-label="Un medio y dos cuartos están en el mismo punto, a mitad de camino entre cero y uno.">
+          <div class="number-line-track">
+            <span class="number-line-tick" style="left:0%"><i></i><small>0</small></span>
+            <span class="number-line-tick" style="left:25%"><i></i><small>1/4</small></span>
+            <span class="number-line-tick" style="left:50%"><i></i><small>1/2</small></span>
+            <span class="number-line-tick" style="left:75%"><i></i><small>3/4</small></span>
+            <span class="number-line-tick" style="left:100%"><i></i><small>1</small></span>
+            <span class="number-line-point point-base" style="left:50%"><b></b><span>1/2</span></span>
+            <span class="number-line-point point-equivalent" style="left:50%"><b></b><span id="equivLineLabel">2/4</span></span>
+          </div>
+        </div>
+        <p class="numberline-caption">Las dos marcas coinciden porque representan la misma cantidad.</p>
+      </div>
+      <div class="mini-practice" data-hint="Una fracción equivalente se obtiene multiplicando el numerador y el denominador por el mismo número." data-retry="Revisa si arriba y abajo se ha multiplicado por el mismo número.">
+        <div class="mini-practice-heading">
+          <span class="mini-practice-label">Prueba rápida</span>
+          <h3>¿Cuál es la forma irreducible de 24/36?</h3>
+        </div>
+        <div class="mini-practice-options">
+          <button type="button" data-correct="true" onclick="checkMiniPractice(this)">2/3</button>
+          <button type="button" data-correct="false" onclick="checkMiniPractice(this)">6/9</button>
+          <button type="button" data-correct="false" onclick="checkMiniPractice(this)">3/2</button>
+        </div>
+        <button type="button" class="mini-hint-button" onclick="showMiniHint(this)">Pedir una pista</button>
+        <p class="mini-hint" hidden></p>
+        <p class="mini-feedback" role="status" aria-live="polite" data-explanation="Correcto: 24 y 36 se dividen entre 12, así que 24/36 = 2/3. La opción 6/9 es equivalente, pero todavía se puede simplificar."></p>
+      </div>
     </div>
 
     <!-- ================= PESTAÑA 3: SUMA Y RESTA ================= -->
@@ -316,48 +464,83 @@
         </div>
       </div>
 
-      <!-- DISTINTO DENOMINADOR -->
-      <div class="panel-box">
-        <div class="panel-title" style="color: var(--accent-op);">2. Con Distinto Denominador (m.c.m.)</div>
-        <p style="color: var(--text-muted); margin-bottom: 1rem;">¡Cuidado! No podemos sumar tercios con quintos (son trozos de diferente tamaño). Primero hay que buscar un denominador común (m.c.m. o multiplicarlos entre sí) para que los trozos sean iguales.</p>
-        
-        <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap;">
-          <div class="frac-block">
-            <div class="f-num">1</div>
-            <div class="f-den">3</div>
-          </div>
-          <div class="f-sign">+</div>
-          <div class="frac-block">
-            <div class="f-num">2</div>
-            <div class="f-den">5</div>
-          </div>
-          
-          <div class="f-sign" style="color: var(--accent-op);">→</div>
-          
-          <div style="display: flex; flex-direction: column; align-items: center; margin: 0 1rem;">
-            <span style="font-size: 0.85rem; color: var(--text-muted);">Común den.: 3×5=15</span>
-            <div style="display: flex; align-items: center;">
-              <div class="frac-block frac-sm">
-                <div class="f-num">5</div>
-                <div class="f-den">15</div>
-              </div>
-              <div class="f-sign">+</div>
-              <div class="frac-block frac-sm">
-                <div class="f-num">6</div>
-                <div class="f-den">15</div>
-              </div>
-            </div>
-          </div>
+      <!-- DENOMINADORES DISTINTOS: REPRESENTACIÓN Y M.C.M. -->
+      <div class="panel-box common-denominator-panel">
+        <div class="panel-title" style="color: var(--accent-op);">2. Denominadores distintos: ¿por qué buscamos el m.c.m.?</div>
+        <p class="common-intro">Una parte de cada fracción puede tener un tamaño distinto. Para sumarlas, necesitamos expresarlas usando partes iguales de la unidad.</p>
 
-          <div class="f-sign">=</div>
-          
-          <div class="frac-block">
-            <div class="f-num" style="color: var(--accent-success);">11</div>
-            <div class="f-den" style="color: var(--accent-success);">15</div>
-          </div>
+        <div class="common-controls" aria-describedby="commonControlsHelp">
+          <fieldset class="fraction-input-group">
+            <legend>Primera fracción</legend>
+            <label for="commonNum1">Numerador</label>
+            <input type="number" id="commonNum1" min="1" max="2" value="1" oninput="updateCommonDenominator()">
+            <span aria-hidden="true">/</span>
+            <label for="commonDen1">Denominador</label>
+            <input type="number" id="commonDen1" min="2" max="8" value="3" oninput="updateCommonDenominator()">
+          </fieldset>
+          <span class="f-sign common-plus" aria-hidden="true">+</span>
+          <fieldset class="fraction-input-group">
+            <legend>Segunda fracción</legend>
+            <label for="commonNum2">Numerador</label>
+            <input type="number" id="commonNum2" min="1" max="4" value="2" oninput="updateCommonDenominator()">
+            <span aria-hidden="true">/</span>
+            <label for="commonDen2">Denominador</label>
+            <input type="number" id="commonDen2" min="2" max="8" value="5" oninput="updateCommonDenominator()">
+          </fieldset>
         </div>
-      </div>
+        <p id="commonControlsHelp" class="common-help">Usa fracciones propias; cambia los valores para explorar otros ejemplos.</p>
+        <button type="button" class="mini-hint-button preset-example" onclick="setCommonExample(1, 6, 1, 4)">Probar también 1/6 + 1/4</button>
 
+        <div class="common-visual-grid">
+          <section class="common-visual-card" aria-labelledby="differentPartsTitle">
+            <h3 id="differentPartsTitle">Antes: partes de distinto tamaño</h3>
+            <div class="fraction-visual-row">
+              <span class="fraction-visual-label" id="originalLabel1">1/3</span>
+              <div class="fraction-strip" id="originalBar1"></div>
+            </div>
+            <div class="fraction-visual-row">
+              <span class="fraction-visual-label" id="originalLabel2">2/5</span>
+              <div class="fraction-strip" id="originalBar2"></div>
+            </div>
+            <p class="bar-caption">Cada barra representa una unidad completa, dividida según su denominador.</p>
+          </section>
+
+          <section class="common-visual-card" aria-labelledby="equalPartsTitle">
+            <h3 id="equalPartsTitle">Después: partes del mismo tamaño</h3>
+            <div class="fraction-visual-row">
+              <span class="fraction-visual-label" id="commonLabel1">5/15</span>
+              <div class="fraction-strip" id="commonBar1"></div>
+            </div>
+            <div class="fraction-visual-row">
+              <span class="fraction-visual-label" id="commonLabel2">6/15</span>
+              <div class="fraction-strip" id="commonBar2"></div>
+            </div>
+            <p class="bar-caption">Ahora ambas barras usan el mismo número de partes iguales.</p>
+          </section>
+        </div>
+
+        <p class="common-equation" id="commonEquation" aria-live="polite">1/3 + 2/5 = 5/15 + 6/15 = 11/15</p>
+        <div class="multiples-panel">
+          <p><strong>Múltiplos de <span id="multipleDen1">3</span>:</strong> <span id="commonMultiples1">3, 6, 9, 12, 15</span></p>
+          <p><strong>Múltiplos de <span id="multipleDen2">5</span>:</strong> <span id="commonMultiples2">5, 10, 15</span></p>
+          <p>El primer múltiplo común es <strong id="commonLcmLabel">15</strong>: m.c.m.(<span id="commonPair">3, 5</span>) = <strong id="commonLcmLabelEcho">15</strong>.</p>
+        </div>
+        <p class="common-product-note" id="commonProductNote" aria-live="polite">En este ejemplo, 3 × 5 coincide con el m.c.m. No siempre ocurre.</p>
+      </div>
+      <div class="mini-practice" data-hint="Compara 1/3 y 1/4: ¿una parte de un tercio tiene el mismo tamaño que una parte de un cuarto?" data-retry="Convierte ambas fracciones a doceavos y luego suma las partes.">
+        <div class="mini-practice-heading">
+          <span class="mini-practice-label">Detecta el error</span>
+          <h3>Alguien dice: 1/3 + 1/4 = 2/7. ¿Qué falla?</h3>
+        </div>
+        <div class="mini-practice-options">
+          <button type="button" data-correct="true" onclick="checkMiniPractice(this)">Ha sumado partes de distinto tamaño sin igualarlas.</button>
+          <button type="button" data-correct="false" onclick="checkMiniPractice(this)">Las fracciones menores que 1 no se pueden sumar.</button>
+          <button type="button" data-correct="false" onclick="checkMiniPractice(this)">El resultado debe ser menor que 1/3.</button>
+        </div>
+        <button type="button" class="mini-hint-button" onclick="showMiniHint(this)">Pedir una pista</button>
+        <p class="mini-hint" hidden></p>
+        <p class="mini-feedback" role="status" aria-live="polite" data-explanation="Exacto. 1/3 = 4/12 y 1/4 = 3/12; entonces 4/12 + 3/12 = 7/12. No se suman los denominadores porque los trozos originales tienen tamaños distintos."></p>
+      </div>
     </div>
 
     <!-- ================= PESTAÑA 4: MULTIPLICACIÓN Y DIVISIÓN ================= -->
@@ -445,6 +628,20 @@
         </div>
       </div>
 
+      <div class="mini-practice" data-hint="Al dividir, deja la primera fracción igual e invierte la segunda." data-retry="Recuerda el orden: 2/7 ÷ 3/5 = 2/7 × 5/3.">
+        <div class="mini-practice-heading">
+          <span class="mini-practice-label">Prueba rápida</span>
+          <h3>¿Cuánto es 2/7 ÷ 3/5?</h3>
+        </div>
+        <div class="mini-practice-options">
+          <button type="button" data-correct="false" onclick="checkMiniPractice(this)">6/35</button>
+          <button type="button" data-correct="true" onclick="checkMiniPractice(this)">10/21</button>
+          <button type="button" data-correct="false" onclick="checkMiniPractice(this)">5/21</button>
+        </div>
+        <button type="button" class="mini-hint-button" onclick="showMiniHint(this)">Pedir una pista</button>
+        <p class="mini-hint" hidden></p>
+        <p class="mini-feedback" role="status" aria-live="polite" data-explanation="Correcto: invierte la segunda fracción y multiplica: 2/7 × 5/3 = 10/21."></p>
+      </div>
     </div>
 
   </main>
@@ -576,11 +773,174 @@
 
       drawPizzaSVG('pizza_eq1', numBase, denBase, colorOn, colorOff);
       drawPizzaSVG('pizza_eq2', newNum, newDen, colorOn, colorOff);
+      const lineLabel = document.getElementById('equivLineLabel');
+      if (lineLabel) lineLabel.textContent = newNum + '/' + newDen;
+      const numberLine = document.getElementById('equivNumberLine');
+      if (numberLine) numberLine.setAttribute('aria-label', 'Un medio y ' + newNum + ' sobre ' + newDen + ' están en el mismo punto, a mitad de camino entre cero y uno.');
+    }
+
+
+    function renderFractionStrip(container, numerator, denominator, segmentClass, accessibleLabel) {
+      const parts = Math.max(1, Math.min(56, Number(denominator) || 1));
+      const filled = Math.max(0, Math.min(parts, Number(numerator) || 0));
+      container.replaceChildren();
+      container.style.setProperty('--fraction-parts', parts);
+      container.setAttribute('role', 'img');
+      container.setAttribute('aria-label', accessibleLabel);
+      for (let i = 0; i < parts; i++) {
+        const piece = document.createElement('span');
+        piece.className = 'fraction-piece ' + segmentClass + (i < filled ? ' filled' : '');
+        piece.setAttribute('aria-hidden', 'true');
+        container.appendChild(piece);
+      }
+    }
+
+    function gcdFraction(a, b) {
+      while (b !== 0) [a, b] = [b, a % b];
+      return a;
+    }
+
+    function lcmFraction(a, b) {
+      return (a / gcdFraction(a, b)) * b;
+    }
+
+    function setCommonExample(n1, d1, n2, d2) {
+      document.getElementById('commonNum1').value = n1;
+      document.getElementById('commonDen1').value = d1;
+      document.getElementById('commonNum2').value = n2;
+      document.getElementById('commonDen2').value = d2;
+      updateCommonDenominator();
+    }
+
+    function updateCommonDenominator() {
+      const den1Input = document.getElementById('commonDen1');
+      const den2Input = document.getElementById('commonDen2');
+      const den1 = Math.max(2, Math.min(8, parseInt(den1Input.value, 10) || 2));
+      const den2 = Math.max(2, Math.min(8, parseInt(den2Input.value, 10) || 2));
+      den1Input.value = den1;
+      den2Input.value = den2;
+
+      const num1Input = document.getElementById('commonNum1');
+      const num2Input = document.getElementById('commonNum2');
+      num1Input.max = den1 - 1;
+      num2Input.max = den2 - 1;
+      const num1 = Math.max(1, Math.min(den1 - 1, parseInt(num1Input.value, 10) || 1));
+      const num2 = Math.max(1, Math.min(den2 - 1, parseInt(num2Input.value, 10) || 1));
+      num1Input.value = num1;
+      num2Input.value = num2;
+
+      const commonDen = lcmFraction(den1, den2);
+      const equivalentNum1 = num1 * (commonDen / den1);
+      const equivalentNum2 = num2 * (commonDen / den2);
+      const total = equivalentNum1 + equivalentNum2;
+      const product = den1 * den2;
+
+      document.getElementById('originalLabel1').textContent = num1 + '/' + den1;
+      document.getElementById('originalLabel2').textContent = num2 + '/' + den2;
+      document.getElementById('commonLabel1').textContent = equivalentNum1 + '/' + commonDen;
+      document.getElementById('commonLabel2').textContent = equivalentNum2 + '/' + commonDen;
+      renderFractionStrip(document.getElementById('originalBar1'), num1, den1, 'segment-a', num1 + ' de ' + den1 + ' partes coloreadas.');
+      renderFractionStrip(document.getElementById('originalBar2'), num2, den2, 'segment-b', num2 + ' de ' + den2 + ' partes coloreadas.');
+      renderFractionStrip(document.getElementById('commonBar1'), equivalentNum1, commonDen, 'segment-a', equivalentNum1 + ' de ' + commonDen + ' partes iguales coloreadas.');
+      renderFractionStrip(document.getElementById('commonBar2'), equivalentNum2, commonDen, 'segment-b', equivalentNum2 + ' de ' + commonDen + ' partes iguales coloreadas.');
+
+      document.getElementById('commonEquation').textContent =
+        num1 + '/' + den1 + ' + ' + num2 + '/' + den2 + ' = ' +
+        equivalentNum1 + '/' + commonDen + ' + ' + equivalentNum2 + '/' + commonDen +
+        ' = ' + total + '/' + commonDen;
+      document.getElementById('multipleDen1').textContent = den1;
+      document.getElementById('multipleDen2').textContent = den2;
+      document.getElementById('commonMultiples1').textContent =
+        Array.from({ length: commonDen / den1 }, (_, i) => den1 * (i + 1)).join(', ');
+      document.getElementById('commonMultiples2').textContent =
+        Array.from({ length: commonDen / den2 }, (_, i) => den2 * (i + 1)).join(', ');
+      document.getElementById('commonPair').textContent = den1 + ', ' + den2;
+      document.getElementById('commonLcmLabel').textContent = commonDen;
+      document.getElementById('commonLcmLabelEcho').textContent = commonDen;
+
+      const note = document.getElementById('commonProductNote');
+      if (product === commonDen) {
+        note.textContent = 'Aquí ' + den1 + ' × ' + den2 + ' = ' + commonDen + ', así que el producto coincide con el m.c.m. En otros casos el producto también sirve como denominador común, pero puede ser mayor.';
+      } else {
+        note.textContent = 'El producto ' + den1 + ' × ' + den2 + ' = ' + product + ' también sería un denominador común. El m.c.m. es ' + commonDen + ': permite dividir la unidad en menos partes y trabajar con números más pequeños.';
+      }
+    }
+
+    function renderMixedUnits(numerator, denominator) {
+      const container = document.getElementById('mixedUnits');
+      container.replaceChildren();
+      const wholes = Math.floor(numerator / denominator);
+      const remainder = numerator % denominator;
+      const numberOfBars = Math.max(1, wholes + (remainder > 0 ? 1 : 0));
+      let remaining = numerator;
+
+      for (let i = 0; i < numberOfBars; i++) {
+        const filled = Math.min(denominator, remaining);
+        const unit = document.createElement('div');
+        unit.className = 'mixed-unit';
+        const label = document.createElement('span');
+        label.className = 'mixed-unit-label';
+        if (filled === denominator) label.textContent = 'Unidad completa: ' + denominator + '/' + denominator;
+        else if (wholes === 0) label.textContent = 'Parte de una unidad: ' + filled + '/' + denominator;
+        else label.textContent = 'Parte de la unidad siguiente: ' + filled + '/' + denominator;
+        const strip = document.createElement('div');
+        strip.className = 'fraction-strip';
+        unit.append(label, strip);
+        container.appendChild(unit);
+        renderFractionStrip(strip, filled, denominator, 'segment-mixed', label.textContent);
+        remaining -= filled;
+      }
+      container.setAttribute('aria-label', numerator + ' trozos; cada uno es una de ' + denominator + ' partes iguales de la unidad.');
+    }
+
+    function updateMixedNumber() {
+      const numeratorInput = document.getElementById('mixedNumerator');
+      const denominatorInput = document.getElementById('mixedDenominator');
+      const numerator = Math.max(1, Math.min(12, parseInt(numeratorInput.value, 10) || 1));
+      const denominator = Math.max(2, Math.min(8, parseInt(denominatorInput.value, 10) || 2));
+      numeratorInput.value = numerator;
+      denominatorInput.value = denominator;
+
+      const wholes = Math.floor(numerator / denominator);
+      const remainder = numerator % denominator;
+      let explanation = '';
+      if (numerator < denominator) {
+        explanation = numerator + '/' + denominator + ' representa menos de una unidad.';
+      } else if (remainder === 0) {
+        explanation = numerator + '/' + denominator + ' = ' + wholes + ' unidades completas (' + numerator + ' = ' + denominator + ' × ' + wholes + ').';
+      } else {
+        explanation = numerator + '/' + denominator + ' = ' + wholes + ' + ' + remainder + '/' + denominator +
+          ' = ' + wholes + ' ' + remainder + '/' + denominator +
+          ' (' + numerator + ' = ' + denominator + ' × ' + wholes + ' + ' + remainder + ').';
+      }
+      document.getElementById('mixedEquation').textContent = explanation;
+      renderMixedUnits(numerator, denominator);
+    }
+
+    function checkMiniPractice(button) {
+      const practice = button.closest('.mini-practice');
+      const feedback = practice.querySelector('.mini-feedback');
+      if (button.dataset.correct === 'true') {
+        feedback.textContent = feedback.dataset.explanation;
+        feedback.className = 'mini-feedback feedback-correct';
+      } else {
+        feedback.textContent = practice.dataset.retry;
+        feedback.className = 'mini-feedback feedback-retry';
+      }
+    }
+
+    function showMiniHint(button) {
+      const practice = button.closest('.mini-practice');
+      const hint = practice.querySelector('.mini-hint');
+      hint.textContent = practice.dataset.hint;
+      hint.hidden = false;
     }
 
     // Inits
     updatePizza();
     updateEquiv();
+    updateCommonDenominator();
+    updateMixedNumber();
 
   </script>
 </body>

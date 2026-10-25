@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Entrenador Matemático | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* BARRA SUPERIOR */
+    .trainer-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .trainer-nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 900px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* MARCADOR DE RACHA */
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.75rem 1.5rem;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+    .streak-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--accent-gold);
+    }
+
+    /* SELECTOR DE TEMAS */
+    .selector-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .level-pills {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.3rem;
+    }
+    .level-btn {
+      padding: 0.45rem 0.9rem;
+      border-radius: 20px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .level-btn.active.c1 { background: rgba(56, 189, 248, 0.15); border-color: #38bdf8; color: #38bdf8; }
+    .level-btn.active.c2 { background: rgba(16, 185, 129, 0.15); border-color: #10b981; color: #10b981; }
+    .level-btn.active.bach { background: rgba(245, 158, 11, 0.15); border-color: #f59e0b; color: #f59e0b; }
+
+    .topic-select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-size: 1rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* TARJETA DEL EJERCICIO PRINCIPAL */
+    .exercise-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      position: relative;
+    }
+    .exercise-tag {
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-blue);
+    }
+    .exercise-statement {
+      font-size: 1.35rem;
+      font-weight: 700;
+      line-height: 1.5;
+      color: #fff;
+      font-family: monospace;
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.5rem;
+      text-align: center;
+      white-space: pre-line;
+    }
+    [data-theme="light"] .exercise-statement {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* INPUTS DE RESPUESTA */
+    .answer-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .answer-input {
+      width: 110px;
+      padding: 0.75rem 0.5rem;
+      font-size: 1.25rem;
+      font-weight: 800;
+      font-family: monospace;
+      text-align: center;
+      background: var(--bg-primary);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      outline: none;
+      transition: all 0.2s;
+    }
+    .answer-input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+    }
+
+    /* CAJA DE PISTA */
+    .hint-box {
+      display: none;
+      background: rgba(251, 191, 36, 0.08);
+      border: 1px dashed var(--accent-gold);
+      border-radius: 8px;
+      padding: 0.9rem 1.2rem;
+      font-size: 0.95rem;
+      color: var(--accent-gold);
+      line-height: 1.4;
+    }
+
+    /* FEEDBACK Y RESOLUCIÓN */
+    .feedback-box {
+      display: none;
+      border-radius: 8px;
+      padding: 1.2rem;
+      font-size: 1rem;
+      line-height: 1.6;
+      animation: fadeIn 0.3s ease;
+    }
+    .feedback-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--accent-success);
+      color: #34d399;
+    }
+    .feedback-error {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--accent-op);
+      color: #fb7185;
+    }
+
+    .steps-box {
+      margin-top: 0.8rem;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0.8rem 1rem;
+      font-family: monospace;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .btn-action-group {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media print {
+      body { background: #fff !important; color: #000 !important; }
+      .trainer-header, .selector-card, .stats-bar, .btn-action-group, .hint-box, .feedback-box { display: none !important; }
+      .main-wrap { max-width: 100% !important; padding: 0 !important; }
+      .exercise-card { box-shadow: none !important; border: 1px solid #000 !important; page-break-inside: avoid; margin-bottom: 2rem; }
+      .exercise-statement { background: #fff !important; color: #000 !important; border: 1px solid #ccc !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="trainer-header">
+    <div class="trainer-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Gimnasio Matemático 🏋️</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <!-- BARRA DE RACHA Y CONTADORES -->
+    <div class="stats-bar">
+      <div class="streak-badge">
+        <span>🔥 Racha actual:</span>
+        <span id="streakCount">0</span>
+      </div>
+      <div style="font-size:0.9rem; color:var(--text-muted);">
+        Aciertos totales: <strong id="totalCorrect" style="color:#fff;">0</strong>
+      </div>
+      <button onclick="window.print()" class="btn btn-secondary" style="padding:0.4rem 0.8rem; font-size:0.85rem;" title="Imprimir ficha A4">
+        🖨️ Imprimir Ficha
+      </button>
+    </div>
+
+    <!-- SELECTOR DE NIVEL Y TEMA -->
+    <div class="selector-card">
+      <div class="level-pills">
+        <button class="level-btn active c1" onclick="setLevel('ciclo1', this)">🌱 1r Ciclo ESO</button>
+        <button class="level-btn c2" onclick="setLevel('ciclo2', this)">🌿 2º Ciclo ESO</button>
+        <button class="level-btn bach" onclick="setLevel('bach', this)">🎓 Bachillerato</button>
+      </div>
+
+      <select id="topicDropdown" class="topic-select" onchange="loadNewExercise()">
+        <!-- Opciones inyectadas por JS -->
+      </select>
+    </div>
+
+    <!-- TARJETA DEL RETO DINÁMICO -->
+    <div class="exercise-card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span class="exercise-tag" id="exTopicTag">ARITMÉTICA</span>
+        <button class="btn btn-secondary" onclick="loadNewExercise()" style="padding:0.4rem 0.8rem; font-size:0.85rem;" title="Generar otros números">
+          🎲 Nuevo Reto
+        </button>
+      </div>
+
+      <div class="exercise-statement" id="exStatement">
+        Cargando ejercicio...
+      </div>
+
+      <div class="hint-box" id="hintBox"></div>
+
+      <!-- ZONA DE INPUTS -->
+      <div id="answerArea" class="answer-row"></div>
+
+      <!-- BOTONES DE ACCIÓN -->
+      <div class="btn-action-group">
+        <button class="btn btn-primary" id="btnCheck" onclick="checkAnswer()">
+          Comprobar Respuesta 🎯
+        </button>
+        <button class="btn btn-secondary" id="btnHint" onclick="toggleHint()">
+          Pista 💡
+        </button>
+      </div>
+
+      <!-- FEEDBACK Y RESOLUCIÓN -->
+      <div class="feedback-box" id="feedbackBox">
+        <div id="feedbackText" style="font-weight:bold; font-size:1.1rem; margin-bottom:0.4rem;"></div>
+        <div class="steps-box" id="stepsContent"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // =========================================================================
+    // 1. GENERADORES MATEMÁTICOS INTEGRADOS (SIN DEPENDENCIAS EXTERNAS)
+    // =========================================================================
+    function randomInt(min, max, exclude = []) {
+      let res;
+      do {
+        res = Math.floor(Math.random() * (max - min + 1)) + min;
+      } while (exclude.includes(res));
+      return res;
+    }
+
+    const TopicsDatabase = {
+      ciclo1: [
+        { id: 'enteros_jerarquia', name: 'Jerarquía de Operaciones (PEMDAS)' }
+      ],
+      ciclo2: [
+        { id: 'segundo_grado', name: 'Ecuaciones de 2º Grado (Completas e Incompletas)' },
+        { id: 'pitagoras', name: 'Teorema de Pitágoras (Hipotenusa y Catetos)' },
+        { id: 'factoriales', name: 'Factoriales y Combinatoria' }
+      ],
+      bach: [
+        { id: 'factoriales', name: 'Factoriales y Simplificación de Fracciones' }
+      ]
+    };
+
+    const Generators = {
+      // 1. JERARQUÍA CON MÚLTIPLES PLANTILLAS
+      enteros_jerarquia: () => {
+        const arquetipos = [
+          () => {
+            const base = randomInt(2, 4);
+            const exp = randomInt(2, 3);
+            const pot = Math.pow(base, exp);
+            const a = randomInt(-5, 5, [0]);
+            const b = randomInt(2, 4);
+            const res = a + (pot * b);
+            const expChar = (exp === 3) ? '³' : '²';
+            return {
+              statement: `${a} + ${base}${expChar} · (${b}) = ?`,
+              hint: `Primero resuelve la potencia (${base}^${exp}), luego multiplica por ${b} y al final suma ${a}.`,
+              type: 'single',
+              solution: res,
+              steps: [
+                `1. Potencia: ${base}^${exp} = ${pot}`,
+                `2. Multiplicación: ${pot} · (${b}) = ${pot * b}`,
+                `3. Suma final: ${a} + (${pot * b}) = ${res}`
+              ]
+            };
+          },
+          () => {
+            const raices = [[4, 2], [9, 3], [16, 4], [25, 5], [36, 6]];
+            const [rad, r] = raices[randomInt(0, raices.length - 1)];
+            const div = randomInt(2, 4);
+            const mult = div * randomInt(2, 5);
+            const a = randomInt(-4, 6, [0]);
+            const res = a + r - (mult / div);
+            return {
+              statement: `${a} + √${rad} - (${mult} : ${div}) = ?`,
+              hint: `Calcula por separado √${rad} y la división (${mult} : ${div}), y opera sumas y restas de izquierda a derecha.`,
+              type: 'single',
+              solution: res,
+              steps: [
+                `1. Raíz cuadrada: √${rad} = ${r}`,
+                `2. División: ${mult} : ${div} = ${mult / div}`,
+                `3. Operación final: ${a} + ${r} - ${mult / div} = ${res}`
+              ]
+            };
+          },
+          () => {
+            const k = randomInt(2, 4);
+            const x = randomInt(-6, 6, [0]);
+            const y = randomInt(2, 5);
+            const sumaInt = x + y;
+            const res = k * sumaInt;
+            return {
+              statement: `${k} · [ ${x} + (${y}) ] = ?`,
+              hint: 'Prioridad absoluta: resuelve primero el interior del corchete [ ... ] antes de multiplicar.',
+              type: 'single',
+              solution: res,
+              steps: [
+                `1. Interior del corchete: [${x} + (${y})] = ${sumaInt}`,
+                `2. Multiplicación exterior: ${k} · (${sumaInt}) = ${res}`
+              ]
+            };
+          }
+        ];
+        const elegido = arquetipos[randomInt(0, arquetipos.length - 1)]();
+        return { tag: 'ARITMÉTICA 1r CICLO', ...elegido };
+      },
+
+      // 2. ECUACIONES DE 2º GRADO
+      segundo_grado: () => {
+        const arquetipos = [
+          () => {
+            const r1 = randomInt(-5, 5, [0]);
+            const r2 = randomInt(-5, 5, [0, r1]);
+            const b = -(r1 + r2);
+            const c = r1 * r2;
+            const bStr = b >= 0 ? `+ ${b}` : `- ${Math.abs(b)}`;
+            const cStr = c >= 0 ? `+ ${c}` : `- ${Math.abs(c)}`;
+            return {
+              statement: `x² ${bStr}x ${cStr} = 0`,
+              hint: 'Fórmula general: x = (-b ± √(b² - 4ac)) / 2a. Introduce las dos soluciones.',
+              type: 'double',
+              solution: [Math.min(r1, r2), Math.max(r1, r2)],
+              steps: [
+                `1. Coeficientes: a = 1, b = ${b}, c = ${c}`,
+                `2. Discriminante: Δ = (${b})² - 4(1)(${c}) = ${b*b - 4*c}`,
+                `3. Raíz: √${b*b - 4*c} = ${Math.sqrt(b*b - 4*c)}`,
+                `4. Soluciones: x₁ = ${Math.min(r1, r2)}, x₂ = ${Math.max(r1, r2)}`
+              ]
+            };
+          },
+          () => {
+            const r2 = randomInt(-7, 7, [0]);
+            const b = -r2;
+            const bStr = b >= 0 ? `+ ${b}` : `- ${Math.abs(b)}`;
+            return {
+              statement: `x² ${bStr}x = 0`,
+              hint: 'Incompleta sin c: saca factor común x(x + b) = 0. Una de las soluciones siempre es 0.',
+              type: 'double',
+              solution: [Math.min(0, r2), Math.max(0, r2)],
+              steps: [
+                `1. Factor común: x · (x ${bStr}) = 0`,
+                `2. x = 0  ó  x ${bStr} = 0 ➔ x = ${r2}`,
+                `3. Soluciones: x₁ = ${Math.min(0, r2)}, x₂ = ${Math.max(0, r2)}`
+              ]
+            };
+          },
+          () => {
+            const k = randomInt(2, 8);
+            const c = k * k;
+            return {
+              statement: `x² - ${c} = 0`,
+              hint: 'Incompleta sin b: despeja x² = c y aplica la raíz cuadrada con doble signo (±).',
+              type: 'double',
+              solution: [-k, k],
+              steps: [
+                `1. Despejamos: x² = ${c}`,
+                `2. Aplicamos raíz: x = ±√${c}`,
+                `3. Soluciones: x₁ = -${k}, x₂ = ${k}`
+              ]
+            };
+          }
+        ];
+        const elegido = arquetipos[randomInt(0, arquetipos.length - 1)]();
+        return { tag: 'ÁLGEBRA 2º CICLO', ...elegido };
+      },
+
+      // 3. TEOREMA DE PITÁGORAS
+      pitagoras: () => {
+        const ternas = [[3, 4, 5], [6, 8, 10], [5, 12, 13], [8, 15, 17], [9, 12, 15]];
+        const [c1, c2, h] = ternas[randomInt(0, ternas.length - 1)];
+        const pedirCateto = Math.random() > 0.5;
+
+        if (pedirCateto) {
+          return {
+            tag: 'GEOMETRÍA 2º CICLO',
+            statement: `Triángulo Rectángulo:\nHipotenusa h = ${h} cm  |  Cateto a = ${c1} cm\nCalcula el otro Cateto (b):`,
+            hint: 'Para hallar un cateto se resta: b² = h² - a² ➔ b = √(h² - a²)',
+            type: 'single',
+            solution: c2,
+            steps: [
+              `1. Planteamiento: b² = ${h}² - ${c1}²`,
+              `2. Cuadrados: b² = ${h*h} - ${c1*c1} = ${c2*c2}`,
+              `3. Raíz: b = √${c2*c2} = ${c2} cm`
+            ]
+          };
+        } else {
+          return {
+            tag: 'GEOMETRÍA 2º CICLO',
+            statement: `Triángulo Rectángulo:\nCateto a = ${c1} cm  |  Cateto b = ${c2} cm\nCalcula la Hipotenusa (h):`,
+            hint: 'Para hallar la hipotenusa se suma: h² = a² + b² ➔ h = √(a² + b²)',
+            type: 'single',
+            solution: h,
+            steps: [
+              `1. Planteamiento: h² = ${c1}² + ${c2}²`,
+              `2. Cuadrados: h² = ${c1*c1} + ${c2*c2} = ${h*h}`,
+              `3. Raíz: h = √${h*h} = ${h} cm`
+            ]
+          };
+        }
+      },
+
+      // 4. FACTORIALES
+      factoriales: () => {
+        const arquetipos = [
+          () => {
+            const k = randomInt(4, 7);
+            const diff = randomInt(1, 2);
+            const n = k + diff;
+            let product = 1;
+            let factors = [];
+            for (let i = n; i > k; i--) {
+              product *= i;
+              factors.push(i);
+            }
+            return {
+              statement: `Calcula el valor simplificado:\n(${n}!) / (${k}!) = ?`,
+              hint: `Descompón ${n}! hasta llegar a ${k}! y cancela factores idénticos.`,
+              type: 'single',
+              solution: product,
+              steps: [
+                `1. Desarrollamos: (${factors.join(' · ')} · ${k}!) / (${k}!)`,
+                `2. Cancelamos ${k}!`,
+                `3. Resultado: ${factors.join(' · ')} = ${product}`
+              ]
+            };
+          },
+          () => {
+            const n = randomInt(4, 7);
+            const comb = (n * (n - 1)) / 2;
+            return {
+              statement: `Número combinatorio:\nC(${n}, 2) = (${n}!) / [ 2! · (${n}-2)! ] = ?`,
+              hint: `Aplica la simplificación: C(n, 2) = [ n · (n - 1) ] / 2`,
+              type: 'single',
+              solution: comb,
+              steps: [
+                `1. Desarrollamos: [ ${n} · ${n-1} · (${n-2})! ] / [ 2 · (${n-2})! ]`,
+                `2. Cancelamos (${n-2})!`,
+                `3. Operación: (${n} · ${n-1}) / 2 = ${comb}`
+              ]
+            };
+          }
+        ];
+        const elegido = arquetipos[randomInt(0, arquetipos.length - 1)]();
+        return { tag: 'ESTADÍSTICA Y COMBINATORIA', ...elegido };
+      }
+    };
+
+    // =========================================================================
+    // 2. CONTROLADOR DE LA INTERFAZ
+    // =========================================================================
+    let currentExercise = null;
+    let streak = 0;
+    let totalCorrect = 0;
+
+    function setLevel(levelKey, btn) {
+      document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      const select = document.getElementById('topicDropdown');
+      select.innerHTML = '';
+
+      if (TopicsDatabase[levelKey]) {
+        TopicsDatabase[levelKey].forEach(topic => {
+          const opt = document.createElement('option');
+          opt.value = topic.id;
+          opt.textContent = topic.name;
+          select.appendChild(opt);
+        });
+      }
+
+      loadNewExercise();
+    }
+
+    function loadNewExercise() {
+      const topicId = document.getElementById('topicDropdown').value;
+      if (!Generators[topicId]) return;
+
+      currentExercise = Generators[topicId]();
+
+      document.getElementById('exTopicTag').textContent = currentExercise.tag;
+      document.getElementById('exStatement').innerHTML = currentExercise.statement;
+      document.getElementById('hintBox').style.display = 'none';
+      document.getElementById('feedbackBox').style.display = 'none';
+
+      const area = document.getElementById('answerArea');
+      area.innerHTML = '';
+
+      if (currentExercise.type === 'single') {
+        area.innerHTML = `
+          <label style="font-weight:700;">Resultado:</label>
+          <input type="number" id="userAns1" class="answer-input" placeholder="0" autofocus>
+        `;
+      } else if (currentExercise.type === 'double') {
+        area.innerHTML = `
+          <label style="font-weight:700;">x₁:</label>
+          <input type="number" id="userAns1" class="answer-input" placeholder="x₁" autofocus>
+          <label style="font-weight:700; margin-left:0.5rem;">x₂:</label>
+          <input type="number" id="userAns2" class="answer-input" placeholder="x₂">
+        `;
+      }
+
+      document.querySelectorAll('.answer-input').forEach(input => {
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') checkAnswer();
+        });
+      });
+    }
+
+    function toggleHint() {
+      const hint = document.getElementById('hintBox');
+      hint.textContent = currentExercise.hint;
+      hint.style.display = (hint.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function checkAnswer() {
+      const fb = document.getElementById('feedbackBox');
+      const fbText = document.getElementById('feedbackText');
+      const steps = document.getElementById('stepsContent');
+      let isCorrect = false;
+
+      if (currentExercise.type === 'single') {
+        const val = parseFloat(document.getElementById('userAns1').value);
+        if (isNaN(val)) return;
+        isCorrect = (val === currentExercise.solution);
+      } else if (currentExercise.type === 'double') {
+        const v1 = parseFloat(document.getElementById('userAns1').value);
+        const v2 = parseFloat(document.getElementById('userAns2').value);
+        if (isNaN(v1) || isNaN(v2)) return;
+
+        const userSorted = [v1, v2].sort((a, b) => a - b);
+        isCorrect = (userSorted[0] === currentExercise.solution[0] && userSorted[1] === currentExercise.solution[1]);
+      }
+
+      fb.style.display = 'block';
+      steps.innerHTML = currentExercise.steps.map(s => `<div>${s}</div>`).join('');
+
+      if (isCorrect) {
+        streak++;
+        totalCorrect++;
+        fb.className = 'feedback-box feedback-success';
+        fbText.textContent = '¡Correcto! Excelente deducción 🎯';
+      } else {
+        streak = 0;
+        fb.className = 'feedback-box feedback-error';
+        fbText.textContent = 'Incorrecto. Revisa el procedimiento paso a paso:';
+      }
+
+      document.getElementById('streakCount').textContent = streak;
+      document.getElementById('totalCorrect').textContent = totalCorrect;
+    }
+
+    // Inicialización automática
+    window.addEventListener('DOMContentLoaded', () => {
+      setLevel('ciclo1', document.querySelector('.level-btn.c1'));
+    });
+  </script>
+</body>
+</html>

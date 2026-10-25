@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Aplicaciones de la Integral | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border-color: var(--accent-blue);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* TARJETAS DE PASO A PASO */
+    .step-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .step-num {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-blue);
+    }
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .math-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem 1.3rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      color: #fff;
+      line-height: 2.2;
+    }
+    [data-theme="light"] .math-block {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* COMPONENTES MATEMÁTICOS LIMPIOS */
+    .frac-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 0.25rem;
+      line-height: 1.15;
+      font-size: 0.95em;
+    }
+    .frac-num {
+      border-bottom: 1.8px solid currentColor;
+      padding: 0 0.2rem 2px 0.2rem;
+      display: block;
+    }
+    .frac-den {
+      padding: 2px 0.2rem 0 0.2rem;
+      display: block;
+    }
+
+    .integral-symbol {
+      font-size: 1.9rem;
+      font-family: 'Times New Roman', serif;
+      font-style: italic;
+      vertical-align: middle;
+      margin-right: 0.1rem;
+    }
+    
+    .integral-limits {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      vertical-align: middle;
+      font-size: 0.75rem;
+      line-height: 1;
+      margin-right: 0.3rem;
+      text-align: left;
+    }
+
+    .bracket-wrap {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+    }
+    .bracket-symbol {
+      font-size: 2rem;
+      font-weight: 300;
+      line-height: 1;
+    }
+
+    /* CONTENEDORES DE LIENZOS */
+    .sim-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      gap: 1rem;
+    }
+    .sim-canvas {
+      background: #060911;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-width: 100%;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+    }
+    [data-theme="light"] .sim-canvas {
+      background: #ffffff !important;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 600px;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .slider-row input[type="range"] {
+      flex: 1;
+      min-width: 180px;
+      accent-color: var(--accent-gold);
+      cursor: pointer;
+    }
+
+    .badge-highlight {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--accent-blue);
+      border-radius: 6px;
+      color: var(--accent-blue);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    /* INPUTS ENTRENADOR */
+    .ans-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .ans-input {
+      width: 100px;
+      padding: 0.6rem 0.4rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      font-family: monospace;
+      text-align: center;
+      background: var(--bg-primary);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      outline: none;
+    }
+    .ans-input:focus { border-color: var(--accent-gold); }
+
+    .feedback-box {
+      display: none;
+      border-radius: 8px;
+      padding: 1.2rem;
+      font-size: 0.95rem;
+      line-height: 2.1;
+    }
+    .feedback-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--accent-success);
+      color: #34d399;
+    }
+    .feedback-error {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--accent-op);
+      color: #fb7185;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Aplicaciones de la Integral 📐</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+      <span class="badge" style="color: var(--accent-blue);">2º Bachillerato</span>
+      <div class="content-text">
+        Una vez sabemos encontrar funciones primitivas (Integral Indefinida), damos el gran salto a la <strong>Integral Definida</strong>. Con ella podemos calcular con precisión milimétrica el <strong>área bajo cualquier curva</strong> o la superficie atrapada entre varias funciones, aplicando la todopoderosa Regla de Barrow.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('barrow', this)">1. Integral Definida y Regla de Barrow</button>
+      <button class="tab-btn" onclick="switchTab('areau', this)">2. Área con el Eje X</button>
+      <button class="tab-btn" onclick="switchTab('areados', this)">3. Laboratorio: Área entre Dos Curvas</button>
+      <button class="tab-btn" onclick="switchTab('propiedades', this)">4. Propiedades y Física</button>
+      <button class="tab-btn" onclick="switchTab('entrenador', this)">5. 🎯 Entrenador de Áreas</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: INTEGRAL DEFINIDA Y BARROW -->
+    <!-- ===================================================================== -->
+    <div id="tab-barrow" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem;">La Integral Definida y la Regla de Barrow</h2>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">El Teorema Fundamental del Cálculo</span>
+        <div class="step-title">La Regla de Barrow: El atajo supremo</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Para calcular el área exacta bajo una función f(x) entre dos límites [a, b], no necesitamos sumar infinitos rectángulos. Newton y Leibniz descubrieron que basta con encontrar <strong>una primitiva F(x)</strong> y evaluar sus extremos:
+        </p>
+        <div class="math-block" style="text-align:center; font-size:1.25rem;">
+          <span class="integral-symbol">∫</span><span class="integral-limits"><span>b</span><span>a</span></span> f(x) dx = 
+          <span class="bracket-wrap"><span class="bracket-symbol">[</span> &nbsp;F(x)&nbsp; <span class="bracket-symbol">]</span><span class="integral-limits" style="margin-left:0.1rem;"><span>b</span><span>a</span></span></span>
+          = F(b) - F(a)
+        </div>
+        <p style="margin:0.5rem 0 0 0; font-size:0.9rem; color:var(--text-muted);">
+          <em>Nota: En la integral definida ya NO se añade la constante "+ C", porque al restar F(b) - F(a) la C se anula matemáticamente.</em>
+        </p>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Ejemplo Resuelto Paso a Paso</span>
+        <div class="step-title">Área bajo una parábola entre x=1 y x=3</div>
+        <div class="math-block">
+          Calcular: &nbsp; <span class="integral-symbol">∫</span><span class="integral-limits"><span>3</span><span>1</span></span> x² dx<br><br>
+          <strong>1. Hallar la primitiva (sin la C):</strong><br>
+          <span class="integral-symbol">∫</span> x² dx = <span class="frac-wrap"><span class="frac-num">x³</span><span class="frac-den">3</span></span><br><br>
+          
+          <strong>2. Aplicar la Regla de Barrow (Límite Superior - Límite Inferior):</strong><br>
+          <span class="bracket-wrap"><span class="bracket-symbol">[</span> <span class="frac-wrap"><span class="frac-num">x³</span><span class="frac-den">3</span></span> <span class="bracket-symbol">]</span><span class="integral-limits" style="margin-left:0.1rem;"><span>3</span><span>1</span></span></span> = ( <span class="frac-wrap"><span class="frac-num">3³</span><span class="frac-den">3</span></span> ) - ( <span class="frac-wrap"><span class="frac-num">1³</span><span class="frac-den">3</span></span> ) = ( <span class="frac-wrap"><span class="frac-num">27</span><span class="frac-den">3</span></span> ) - ( <span class="frac-wrap"><span class="frac-num">1</span><span class="frac-den">3</span></span> ) = <strong><span class="frac-wrap"><span class="frac-num">26</span><span class="frac-den">3</span></span> u²</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: ÁREA BAJO EL EJE X -->
+    <!-- ===================================================================== -->
+    <div id="tab-areau" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">El Área con el Eje X (Cuidado con los signos)</h2>
+
+      <div class="step-card" style="border-left-color: var(--accent-op);">
+        <span class="step-num" style="color:var(--accent-op);">¡Trampa de Examen! Las áreas negativas</span>
+        <div class="step-title">La integral no es exactamente un área geométrica</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Si una función pasa por debajo del eje X, los rectángulos de Riemann tienen "altura negativa". La integral dará un resultado negativo. Como <strong>no existen áreas geométricas negativas</strong>, debemos partir la integral en trozos y usar <strong>valores absolutos</strong>.
+        </p>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-blue);">
+        <span class="step-num" style="color:var(--accent-blue);">Protocolo para Calcular el Área Total</span>
+        <div class="math-block" style="line-height:2;">
+          <strong>1. Buscar Puntos de Corte con el eje X:</strong><br>
+          Igualamos <strong>f(x) = 0</strong> y resolvemos. Si las raíces (ej: x=c) caen dentro de nuestro intervalo [a, b], tenemos que partir la integral.<br><br>
+          
+          <strong>2. Trocear la integral (Aditividad):</strong><br>
+          Área Total = | <span class="integral-symbol">∫</span><span class="integral-limits"><span>c</span><span>a</span></span> f(x) dx | + | <span class="integral-symbol">∫</span><span class="integral-limits"><span>b</span><span>c</span></span> f(x) dx |<br><br>
+          
+          <em>Aplicando el valor absoluto a cada trozo garantizamos que las partes hundidas sumen área en positivo y no se cancelen con las partes que están por encima.</em>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: ÁREA ENTRE DOS CURVAS (LABORATORIO) -->
+    <!-- ===================================================================== -->
+    <div id="tab-areados" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Laboratorio: Área entre Dos Curvas</h2>
+      
+      <div class="step-card">
+        <span class="step-num">Fórmula General (Techo menos Suelo)</span>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Para calcular el área atrapada entre f(x) y g(x), primero buscamos dónde se cruzan igualándolas: <strong>f(x) = g(x)</strong>. Esos puntos serán nuestros límites de integración [a, b]. Luego integramos la resta de la que va por encima menos la que va por debajo.
+        </p>
+        <div class="math-block" style="text-align:center; font-size:1.2rem;">
+          Área = <span class="integral-symbol">∫</span><span class="integral-limits"><span>b</span><span>a</span></span> | f(x) - g(x) | dx
+        </div>
+      </div>
+
+      <!-- SIMULADOR VISUAL -->
+      <div class="sim-container" style="border-color:var(--accent-gold);">
+        <div style="font-weight:bold; color:var(--accent-gold); font-size:1.05rem;">
+          Laboratorio Dinámico de Intersecciones
+        </div>
+        <p style="margin:0; font-size:0.9rem; color:var(--text-muted); text-align:center;">
+          Parábola: <strong style="color:#38bdf8;">f(x) = -x² + C</strong> &nbsp;|&nbsp; Recta: <strong style="color:#f59e0b;">g(x) = mx</strong><br>
+          Mueve los controles para alterar la curva y la recta y observa el área pintada.
+        </p>
+
+        <div class="slider-row">
+          <label style="font-weight:700; color:#38bdf8;">Altura Parábola (C = <span id="lbl_c">4</span>):</label>
+          <input type="range" id="sl_c" min="1" max="9" step="1" value="4" oninput="drawAreaLab()">
+        </div>
+        <div class="slider-row">
+          <label style="font-weight:700; color:#f59e0b;">Pendiente Recta (m = <span id="lbl_m">0</span>):</label>
+          <input type="range" id="sl_m" min="-3" max="3" step="0.5" value="0" oninput="drawAreaLab()">
+        </div>
+
+        <canvas id="canvasArea" class="sim-canvas" width="560" height="300"></canvas>
+
+        <div class="math-block" id="boxAreaMetrics" style="width:100%; max-width:600px; line-height:2;">
+          <!-- Inyectado por JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 4: PROPIEDADES Y APLICACIONES FÍSICAS -->
+    <!-- ===================================================================== -->
+    <div id="tab-propiedades" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Propiedades de la Integral y Física</h2>
+
+      <div class="step-card" style="border-left-color: var(--accent-blue);">
+        <span class="step-num" style="color:var(--accent-blue);">Propiedades Clave en Exámenes</span>
+        <div class="math-block" style="line-height:2.2;">
+          1. <strong>Inversión de límites:</strong><br>
+          &nbsp;&nbsp;&nbsp;<span class="integral-symbol">∫</span><span class="integral-limits"><span>a</span><span>b</span></span> f(x) dx = <strong>-</strong> <span class="integral-symbol">∫</span><span class="integral-limits"><span>b</span><span>a</span></span> f(x) dx<br>
+          2. <strong>Intervalo nulo:</strong><br>
+          &nbsp;&nbsp;&nbsp;<span class="integral-symbol">∫</span><span class="integral-limits"><span>a</span><span>a</span></span> f(x) dx = <strong>0</strong><br>
+          3. <strong>Linealidad (Separar sumas y constantes):</strong><br>
+          &nbsp;&nbsp;&nbsp;<span class="integral-symbol">∫</span> [ 3·f(x) + g(x) ] dx = 3·<span class="integral-symbol">∫</span> f(x) dx + <span class="integral-symbol">∫</span> g(x) dx
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">Cinemática: De la Velocidad al Espacio</span>
+        <div class="step-title">Integrar es acumular los cambios en el tiempo</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Sabiendo que la velocidad es la derivada de la posición (v = s'), la integral actúa como la máquina del tiempo inversa: el área bajo la curva de velocidad-tiempo representa el <strong>espacio total recorrido</strong>.
+        </p>
+        <div class="math-block" style="text-align:center;">
+          Espacio Recorrido = <span class="integral-symbol">∫</span><span class="integral-limits"><span>t₂</span><span>t₁</span></span> v(t) dt
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 5: ENTRENADOR INTERACTIVO -->
+    <!-- ===================================================================== -->
+    <div id="tab-entrenador" class="tab-content">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; font-size:1.3rem;">Gimnasio de Áreas (Selectividad)</h2>
+        <button class="btn btn-secondary" onclick="generateAreaChallenge()" style="padding:0.4rem 0.8rem; font-size:0.85rem;">
+          🎲 Nuevo Reto
+        </button>
+      </div>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Calcula el <strong>área encerrada</strong> entre la parábola y el eje X ($y=0$). Encuentra los puntos de corte, aplica Barrow e introduce el área exacta (admite decimales):
+      </p>
+
+      <div class="math-block" id="areaStatement" style="text-align:center; font-size:1.4rem; padding:1.5rem; color:var(--accent-gold);">
+        Cargando función...
+      </div>
+
+      <div class="ans-row">
+        <label style="font-weight:700;">Área =</label>
+        <input type="number" step="any" id="in_area" class="ans-input" placeholder="0.00" autofocus>
+        <span style="font-weight:bold;">u²</span>
+        <button class="btn btn-primary" onclick="checkAreaChallenge()">Comprobar 🎯</button>
+      </div>
+
+      <div id="areaFeedback" class="feedback-box">
+        <div id="areaFbText" style="font-weight:bold; font-size:1.05rem; margin-bottom:0.4rem;"></div>
+        <div id="areaSteps" style="font-family:monospace; line-height:2.2;"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      if (tabId === 'areados') drawAreaLab();
+    }
+
+    // =========================================================================
+    // LABORATORIO DE ÁREA ENTRE DOS CURVAS (TAB 3)
+    // =========================================================================
+    function drawAreaLab() {
+      const cv = document.getElementById('canvasArea');
+      if (!cv) return;
+      const ctx = cv.getContext('2d');
+      const w = cv.width, h = cv.height;
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+      ctx.clearRect(0, 0, w, h);
+
+      const C = parseInt(document.getElementById('sl_c').value, 10);
+      const m = parseFloat(document.getElementById('sl_m').value);
+
+      document.getElementById('lbl_c').textContent = C;
+      document.getElementById('lbl_m').textContent = m.toFixed(1);
+
+      // f(x) = -x² + C
+      // g(x) = m*x
+      // Intersección: -x² + C = mx => x² + mx - C = 0
+      // Raíces por resolvente cuadrática
+      const discriminant = m * m - 4 * 1 * (-C);
+      const x1 = (-m - Math.sqrt(discriminant)) / 2;
+      const x2 = (-m + Math.sqrt(discriminant)) / 2;
+
+      // Calcular Área Analíticamente: Integral de x1 a x2 de [ (-x²+C) - (mx) ]
+      // Primitiva: -x³/3 - mx²/2 + Cx
+      const evalF = (x) => -Math.pow(x, 3) / 3 - (m * Math.pow(x, 2)) / 2 + C * x;
+      const areaVal = evalF(x2) - evalF(x1);
+
+      const box = document.getElementById('boxAreaMetrics');
+      const mStr = m === 0 ? '0' : `${m}x`;
+      box.innerHTML = `
+        <strong>1. Puntos de corte:</strong> -x² + ${C} = ${mStr} ➔ x² + ${mStr} - ${C} = 0<br>
+        ➔ Raíces en <strong style="color:var(--accent-gold);">x₁ = ${x1.toFixed(2)}</strong> y <strong style="color:var(--accent-gold);">x₂ = ${x2.toFixed(2)}</strong><br>
+        <strong>2. Área (Regla de Barrow):</strong><br>
+        ➔ Área = <span class="integral-symbol">∫</span><span class="integral-limits"><span>${x2.toFixed(2)}</span><span>${x1.toFixed(2)}</span></span> [ (-x² + ${C}) - (${mStr}) ] dx = <strong style="color:var(--accent-gold); font-size:1.15rem;">${areaVal.toFixed(3)} u²</strong>
+      `;
+
+      // Transformaciones de Dibujo
+      const originX = w / 2;
+      const originY = h * 0.75; 
+      const scaleX = 35; 
+      const scaleY = 25; 
+
+      // Rejilla y Ejes
+      ctx.strokeStyle = isLight ? '#e2e8f0' : '#1e293b';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let x = originX % scaleX; x < w; x += scaleX) {
+        ctx.moveTo(x, 0); ctx.lineTo(x, h);
+      }
+      for (let y = originY % scaleY; y < h; y += scaleY) {
+        ctx.moveTo(0, y); ctx.lineTo(w, y);
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = isLight ? '#94a3b8' : '#475569';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, originY); ctx.lineTo(w, originY); // Eje X
+      ctx.moveTo(originX, 0); ctx.lineTo(originX, h); // Eje Y
+      ctx.stroke();
+
+      // Sombreado del área entre x1 y x2
+      ctx.fillStyle = 'rgba(251, 191, 36, 0.4)'; // Oro transparente
+      ctx.beginPath();
+      for (let px = originX + x1 * scaleX; px <= originX + x2 * scaleX; px++) {
+        const x = (px - originX) / scaleX;
+        const yF = -x * x + C; // Techo
+        ctx.lineTo(px, originY - yF * scaleY);
+      }
+      for (let px = originX + x2 * scaleX; px >= originX + x1 * scaleX; px--) {
+        const x = (px - originX) / scaleX;
+        const yG = m * x; // Suelo
+        ctx.lineTo(px, originY - yG * scaleY);
+      }
+      ctx.closePath();
+      ctx.fill();
+
+      // Dibujar Recta g(x) = mx
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(0, originY - (m * ((0 - originX)/scaleX)) * scaleY);
+      ctx.lineTo(w, originY - (m * ((w - originX)/scaleX)) * scaleY);
+      ctx.stroke();
+
+      // Dibujar Parábola f(x) = -x² + C
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      for (let px = 0; px <= w; px += 2) {
+        const x = (px - originX) / scaleX;
+        const y = -x * x + C;
+        if (px === 0) ctx.moveTo(px, originY - y * scaleY);
+        else ctx.lineTo(px, originY - y * scaleY);
+      }
+      ctx.stroke();
+
+      // Puntos de intersección
+      ctx.fillStyle = '#10b981';
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      
+      const p1X = originX + x1 * scaleX;
+      const p1Y = originY - (m * x1) * scaleY;
+      ctx.beginPath(); ctx.arc(p1X, p1Y, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      const p2X = originX + x2 * scaleX;
+      const p2Y = originY - (m * x2) * scaleY;
+      ctx.beginPath(); ctx.arc(p2X, p2Y, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    }
+
+    // =========================================================================
+    // ENTRENADOR PARAMÉTRICO DE ÁREAS (TAB 5)
+    // =========================================================================
+    let currentAreaChallenge = null;
+
+    function randomInt(min, max, exclude = []) {
+      let res;
+      do {
+        res = Math.floor(Math.random() * (max - min + 1)) + min;
+      } while (exclude.includes(res));
+      return res;
+    }
+
+    function generateAreaChallenge() {
+      // f(x) = -x^2 + k^2
+      // Cortes en x = -k y x = k
+      // Integral de -k a k = 2 * (k^3 - k^3/3) = 4k^3 / 3
+      const k = randomInt(1, 4);
+      const c = k * k; 
+      
+      const exactArea = (4 * Math.pow(k, 3)) / 3;
+
+      currentAreaChallenge = {
+        k: k,
+        c: c,
+        area: exactArea
+      };
+
+      document.getElementById('areaStatement').innerHTML = `
+        f(x) = -x² + ${c}
+      `;
+
+      document.getElementById('areaFeedback').style.display = 'none';
+      document.getElementById('in_area').value = '';
+    }
+
+    function checkAreaChallenge() {
+      if (!currentAreaChallenge) return;
+      const userVal = parseFloat(document.getElementById('in_area').value);
+
+      if (isNaN(userVal)) {
+        alert('Por favor, introduce un número para el área.');
+        return;
+      }
+
+      // Tolerancia por redondeo
+      const isOk = Math.abs(userVal - currentAreaChallenge.area) < 0.05;
+      const fb = document.getElementById('areaFeedback');
+      const txt = document.getElementById('areaFbText');
+      const steps = document.getElementById('areaSteps');
+
+      fb.style.display = 'block';
+
+      if (isOk) {
+        fb.className = 'feedback-box feedback-success';
+        txt.textContent = '¡Correcto! Has calculado el área encerrada a la perfección 🎯';
+      } else {
+        fb.className = 'feedback-box feedback-error';
+        txt.textContent = `Incorrecto. El área exacta es ${currentAreaChallenge.area.toFixed(2)}. Revisa tus pasos:`;
+      }
+
+      const k = currentAreaChallenge.k;
+      const c = currentAreaChallenge.c;
+      
+      steps.innerHTML = `
+        1. Puntos de corte con el Eje X (f(x) = 0):<br>
+        &nbsp;&nbsp;&nbsp;-x² + ${c} = 0 ➔ x² = ${c} ➔ <strong>Límites: x = -${k} y x = ${k}</strong><br><br>
+        2. Planteamos la Integral Definida:<br>
+        &nbsp;&nbsp;&nbsp;Área = <span class="integral-symbol">∫</span><span class="integral-limits"><span>${k}</span><span>-${k}</span></span> (-x² + ${c}) dx<br><br>
+        3. Primitiva y Regla de Barrow:<br>
+        &nbsp;&nbsp;&nbsp;<span class="bracket-wrap"><span class="bracket-symbol">[</span> <span class="frac-wrap"><span class="frac-num">-x³</span><span class="frac-den">3</span></span> + ${c}x <span class="bracket-symbol">]</span><span class="integral-limits" style="margin-left:0.1rem;"><span>${k}</span><span>-${k}</span></span></span><br>
+        &nbsp;&nbsp;&nbsp;= ( <span class="frac-wrap"><span class="frac-num">-${k*k*k}</span><span class="frac-den">3</span></span> + ${c * k} ) - ( <span class="frac-wrap"><span class="frac-num">${k*k*k}</span><span class="frac-den">3</span></span> - ${c * k} ) = <strong style="color:var(--accent-gold); font-size:1.15rem;">${currentAreaChallenge.area.toFixed(2)} u²</strong>
+      `;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      drawAreaLab();
+      generateAreaChallenge();
+
+      document.getElementById('in_area').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') checkAreaChallenge();
+      });
+    });
+  </script>
+</body>
+</html>

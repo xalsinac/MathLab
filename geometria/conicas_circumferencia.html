@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cónicas: La Circunferencia | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border-color: var(--accent-blue);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* TARJETAS DE PASO A PASO */
+    .step-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .step-num {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-blue);
+    }
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .math-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem 1.3rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      color: #fff;
+      line-height: 2.2;
+    }
+    [data-theme="light"] .math-block {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* COMPONENTES DE FRACCIONES Y RAÍCES */
+    .frac-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 0.25rem;
+      line-height: 1.15;
+      font-size: 0.95em;
+    }
+    .frac-num {
+      border-bottom: 1.8px solid currentColor;
+      padding: 0 0.2rem 2px 0.2rem;
+      display: block;
+    }
+    .frac-den {
+      padding: 2px 0.2rem 0 0.2rem;
+      display: block;
+    }
+
+    .radic-wrap {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 0.15rem;
+    }
+    .radic-symbol {
+      font-size: 1.25rem;
+      line-height: 1;
+      padding-right: 1px;
+      user-select: none;
+    }
+    .radic-content {
+      border-top: 1.8px solid currentColor;
+      padding: 0 0.25rem;
+      display: inline-block;
+      line-height: 1.15;
+    }
+
+    /* LABORATORIOS VISUALES */
+    .sim-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      gap: 1.2rem;
+    }
+    .sim-canvas {
+      background: #060911;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-width: 100%;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+    }
+    [data-theme="light"] .sim-canvas {
+      background: #ffffff !important;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 600px;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .slider-row input[type="range"] {
+      flex: 1;
+      min-width: 180px;
+      accent-color: var(--accent-blue);
+      cursor: pointer;
+    }
+
+    .badge-highlight {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--accent-blue);
+      border-radius: 6px;
+      color: var(--accent-blue);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    /* INPUTS ENTRENADOR */
+    .ans-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .cramer-input-box {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--bg-primary);
+      padding: 0.5rem 0.8rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+    .ans-input {
+      width: 70px;
+      padding: 0.5rem 0.3rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      font-family: monospace;
+      text-align: center;
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
+      outline: none;
+    }
+    .ans-input:focus { border-color: var(--accent-blue); }
+
+    .feedback-box {
+      display: none;
+      border-radius: 8px;
+      padding: 1.2rem;
+      font-size: 0.95rem;
+      line-height: 2.1;
+    }
+    .feedback-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--accent-success);
+      color: #34d399;
+    }
+    .feedback-error {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--accent-op);
+      color: #fb7185;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Cónicas: La Circunferencia ⭕</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+      <span class="badge" style="color: var(--accent-blue);">Bachillerato (Geometría Analítica)</span>
+      <div class="content-text">
+        Una circunferencia no es solo un círculo dibujado a compás. En geometría analítica, es el <strong>lugar geométrico</strong> de todos los puntos del plano (x, y) que se encuentran a una distancia fija (<strong>radio r</strong>) de un punto central (<strong>Centro C</strong>). Al seccionar un cono de forma paralela a su base, nace esta cónica perfecta.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('ecuacion', this)">1. Ecuación y Laboratorio</button>
+      <button class="tab-btn" onclick="switchTab('trespuntos', this)">2. Circunferencia por 3 Puntos</button>
+      <button class="tab-btn" onclick="switchTab('tangentes', this)">3. Posiciones Relativas (Visor)</button>
+      <button class="tab-btn" onclick="switchTab('potencia', this)">4. Potencia de un Punto</button>
+      <button class="tab-btn" onclick="switchTab('entrenador', this)">5. 🎯 Entrenador de Centros</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: ECUACIÓN, CENTRO, RADIO Y LABORATORIO INTERACTIVO -->
+    <!-- ===================================================================== -->
+    <div id="tab-ecuacion" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem;">Laboratorio Visual de la Circunferencia</h2>
+
+      <div class="step-card">
+        <span class="step-num">La Ecuación Reducida (o Canónica)</span>
+        <div class="step-title">Aplicación directa del Teorema de Pitágoras</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Si el centro es <strong>C(h, k)</strong> y el radio es <strong>r</strong>, cualquier punto P(x, y) de la curva forma un triángulo rectángulo con el centro. Su ecuación es:
+        </p>
+        <div class="math-block" style="text-align:center; font-size:1.2rem;">
+          (x - h)² + (y - k)² = r²
+        </div>
+      </div>
+
+      <!-- SIMULADOR INTERACTIVO 1 -->
+      <div class="sim-container">
+        <div style="font-weight:bold; color:var(--accent-blue); font-size:1.05rem;">
+          Esculpiendo la Circunferencia
+        </div>
+        <p style="margin:0; font-size:0.9rem; color:var(--text-muted); text-align:center;">
+          Mueve el centro y estira el radio para ver cómo la ecuación se actualiza en tiempo real.
+        </p>
+
+        <div class="slider-row">
+          <label style="font-weight:700; color:#38bdf8;">Centro X (h = <span id="lbl_h">2</span>):</label>
+          <input type="range" id="sl_h" min="-6" max="6" step="1" value="2" oninput="drawCircleLab()">
+        </div>
+        <div class="slider-row">
+          <label style="font-weight:700; color:#38bdf8;">Centro Y (k = <span id="lbl_k">1</span>):</label>
+          <input type="range" id="sl_k" min="-4" max="4" step="1" value="1" oninput="drawCircleLab()">
+        </div>
+        <div class="slider-row">
+          <label style="font-weight:700; color:var(--accent-gold);">Radio (r = <span id="lbl_r">3</span>):</label>
+          <input type="range" id="sl_r" min="1" max="8" step="1" value="3" oninput="drawCircleLab()">
+        </div>
+
+        <canvas id="canvasCirc" class="sim-canvas" width="560" height="340"></canvas>
+
+        <div class="math-block" id="boxCircleEquations" style="width:100%; max-width:600px; line-height:2;">
+          <!-- Inyectado dinámicamente -->
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">La Ecuación General</span>
+        <div class="step-title">Desarrollando los binomios al cuadrado</div>
+        <div class="math-block">
+          Si desarrollamos (x - h)² + (y - k)² = r², obtenemos la forma general:<br>
+          <strong style="color:var(--accent-gold); font-size:1.15rem;">x² + y² + Dx + Ey + F = 0</strong><br><br>
+          Donde las equivalencias son mágicamente simples:<br>
+          • <strong>D = -2h</strong> &nbsp;&nbsp;(El centro en X es la mitad de D cambiada de signo)<br>
+          • <strong>E = -2k</strong> &nbsp;&nbsp;(El centro en Y es la mitad de E cambiada de signo)<br>
+          • <strong>F = h² + k² - r²</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: CIRCUNFERENCIA POR 3 PUNTOS -->
+    <!-- ===================================================================== -->
+    <div id="tab-trespuntos" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Determinación: Circunferencia por 3 Puntos</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Por tres puntos no alineados del plano pasa siempre <strong>una y solo una</strong> circunferencia. Hay dos formas de encontrarla: el método analítico y el geométrico.
+      </p>
+
+      <div class="step-card">
+        <span class="step-num">Método Analítico: Sistema de Ecuaciones</span>
+        <div class="math-block">
+          Usamos la ecuación general: <strong>x² + y² + Dx + Ey + F = 0</strong>.<br>
+          Sustituimos las coordenadas (x, y) de cada uno de los tres puntos P₁, P₂, P₃ en la ecuación.<br>
+          Esto genera un <strong>sistema lineal de 3 ecuaciones con 3 incógnitas (D, E, F)</strong> que resolvemos por Gauss o Cramer.
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-blue);">
+        <span class="step-num" style="color:var(--accent-blue);">Método Geométrico: El Circuncentro</span>
+        <div class="step-title">La intersección de las mediatrices</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Los tres puntos forman un triángulo. El centro de la circunferencia que pasa por los tres vértices (circunferencia circunscrita) es el <strong>Circuncentro</strong>.
+        </p>
+        <div class="math-block">
+          <strong>1.</strong> Construimos el segmento que une el punto A y el B, y hallamos la ecuación de su recta <strong>mediatriz</strong> (perpendicular por el punto medio).<br>
+          <strong>2.</strong> Repetimos el proceso con los puntos B y C para obtener una segunda mediatriz.<br>
+          <strong>3.</strong> Resolvemos el sistema formado por las dos mediatrices. El punto de corte es el <strong>Centro C(h, k)</strong>.<br>
+          <strong>4.</strong> El radio es simplemente la distancia desde ese centro a cualquiera de los tres puntos originales: <strong>r = d(C, A)</strong>.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: POSICIONES RELATIVAS Y TANGENCIAS (NUEVO VISUALIZADOR) -->
+    <!-- ===================================================================== -->
+    <div id="tab-tangentes" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Posiciones Relativas de dos Circunferencias</h2>
+      
+      <div class="step-card">
+        <span class="step-num">El Indicador Clave: Distancia entre Centros (d)</span>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Para estudiar cómo interactúan dos circunferencias de radios r₁ y r₂, primero calculamos la distancia entre sus centros: <strong>d = d(C₁, C₂)</strong>.
+        </p>
+      </div>
+
+      <!-- SIMULADOR INTERACTIVO 2 -->
+      <div class="sim-container" style="border-color:var(--accent-success);">
+        <div style="font-weight:bold; color:var(--accent-success); font-size:1.05rem;">
+          Simulador: Acercando Circunferencias
+        </div>
+        <p style="margin:0; font-size:0.9rem; color:var(--text-muted); text-align:center;">
+          Mueve el deslizador para modificar la distancia <strong>d</strong> entre los centros (r₁ = 3, r₂ = 2).
+        </p>
+
+        <div class="slider-row">
+          <label style="font-weight:700;">Distancia (d = <span id="lbl_d">6.0</span>):</label>
+          <input type="range" id="sl_d" min="0" max="8" step="0.25" value="6" oninput="drawPosicionesLab()">
+        </div>
+
+        <canvas id="canvasPosiciones" class="sim-canvas" width="560" height="200"></canvas>
+
+        <div class="math-block" id="boxPosicionesMetrics" style="width:100%; max-width:600px; text-align:center; line-height:2;">
+          <!-- Inyectado dinámicamente -->
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">Resumen de los 5 Casos Geométricos</span>
+        <div class="math-block" style="line-height:2;">
+          • <strong>Exteriores:</strong> d > r₁ + r₂ &nbsp;<em>(No se tocan, están separadas)</em>.<br>
+          • <strong>Tangentes Exteriores:</strong> d = r₁ + r₂ &nbsp;<em>(Se tocan en un único punto exteriormente)</em>.<br>
+          • <strong>Secantes:</strong> |r₁ - r₂| &lt; d &lt; r₁ + r₂ &nbsp;<em>(Se cortan en dos puntos, formando una cuerda común)</em>.<br>
+          • <strong>Tangentes Interiores:</strong> d = |r₁ - r₂| &nbsp;<em>(Una está dentro de la otra, tocándose en un punto)</em>.<br>
+          • <strong>Interiores:</strong> d &lt; |r₁ - r₂| &nbsp;<em>(Una completamente dentro de la otra sin tocarse)</em>.<br>
+          &nbsp;&nbsp;&nbsp;➔ <em>Caso especial:</em> Si d = 0, son <strong>Concéntricas</strong>.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 4: POTENCIA DE UN PUNTO -->
+    <!-- ===================================================================== -->
+    <div id="tab-potencia" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Potencia de un Punto respecto a una Circunferencia</h2>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Definición Analítica</span>
+        <div class="step-title">Sustituir el punto en la ecuación general</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          La <strong>potencia (Pot)</strong> de un punto P(x₀, y₀) respecto a una circunferencia se halla simplemente evaluando las coordenadas del punto en la ecuación general de la circunferencia (igualada a 0):
+        </p>
+        <div class="math-block" style="text-align:center;">
+          Pot(P) = x₀² + y₀² + D·x₀ + E·y₀ + F
+        </div>
+        <div class="math-block" style="text-align:center; border-top:1px dashed var(--border-color); margin-top:0.4rem; padding-top:0.8rem;">
+          Geométricamente, la potencia es: <strong>Pot(P) = d² - r²</strong><br>
+          <em>(donde d es la distancia del punto P al Centro, y r es el radio)</em>.
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-blue);">
+        <span class="step-num" style="color:var(--accent-blue);">El Signo de la Potencia lo dice todo</span>
+        <div class="math-block" style="line-height:2;">
+          • <strong>Pot > 0:</strong> El punto P es <strong>Exterior</strong> a la circunferencia.<br>
+          • <strong>Pot = 0:</strong> El punto P <strong>Pertenece</strong> a la circunferencia.<br>
+          • <strong>Pot &lt; 0:</strong> El punto P es <strong>Interior</strong> a la circunferencia.
+        </div>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Teorema de las Secantes y Tangentes</span>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Si desde un punto exterior P trazamos una recta secante que corta a la circunferencia en los puntos A y B, y una recta tangente que toca en T, el valor de la Potencia representa una invariante geométrica constante:
+        </p>
+        <div class="math-block" style="text-align:center; font-size:1.15rem; color:var(--accent-gold);">
+          Pot(P) = PA · PB = PT²
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 5: ENTRENADOR INTERACTIVO -->
+    <!-- ===================================================================== -->
+    <div id="tab-entrenador" class="tab-content">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; font-size:1.3rem;">Gimnasio: De Ecuación General a Reducida</h2>
+        <button class="btn btn-secondary" onclick="generateConicChallenge()" style="padding:0.4rem 0.8rem; font-size:0.85rem;">
+          🎲 Nueva Circunferencia
+        </button>
+      </div>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Dada la siguiente ecuación general de una circunferencia, <strong>completa cuadrados</strong> para averiguar las coordenadas de su centro <strong>C(h, k)</strong> y su radio <strong>r</strong>:
+      </p>
+
+      <div class="math-block" id="conicStatement" style="text-align:center; font-size:1.3rem; padding:1.25rem; color:var(--accent-gold);">
+        Cargando ecuación...
+      </div>
+
+      <div class="ans-row">
+        <div class="cramer-input-box">
+          <label style="font-weight:700;">C_x (h) =</label>
+          <input type="number" id="in_h" class="ans-input" placeholder="h">
+        </div>
+        <div class="cramer-input-box">
+          <label style="font-weight:700;">C_y (k) =</label>
+          <input type="number" id="in_k" class="ans-input" placeholder="k">
+        </div>
+        <div class="cramer-input-box">
+          <label style="font-weight:700;">Radio r =</label>
+          <input type="number" id="in_r" class="ans-input" placeholder="r">
+        </div>
+        <button class="btn btn-primary" onclick="checkConicChallenge()">Comprobar 🎯</button>
+      </div>
+
+      <div id="conicFeedback" class="feedback-box">
+        <div id="conicFbText" style="font-weight:bold; font-size:1.05rem; margin-bottom:0.4rem;"></div>
+        <div id="conicSteps" style="font-family:monospace; line-height:2.2;"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      if (tabId === 'ecuacion') drawCircleLab();
+      if (tabId === 'tangentes') drawPosicionesLab();
+    }
+
+    // =========================================================================
+    // DIBUJO DEL LABORATORIO DE CIRCUNFERENCIA (TAB 1)
+    // =========================================================================
+    function drawCircleLab() {
+      const cv = document.getElementById('canvasCirc');
+      if (!cv) return;
+      const ctx = cv.getContext('2d');
+      const w = cv.width, h = cv.height;
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+      ctx.clearRect(0, 0, w, h);
+
+      const hVal = parseInt(document.getElementById('sl_h').value, 10);
+      const kVal = parseInt(document.getElementById('sl_k').value, 10);
+      const rVal = parseInt(document.getElementById('sl_r').value, 10);
+
+      document.getElementById('lbl_h').textContent = hVal;
+      document.getElementById('lbl_k').textContent = kVal;
+      document.getElementById('lbl_r').textContent = rVal;
+
+      const originX = w / 2;
+      const originY = h / 2;
+      const scale = 20; 
+
+      ctx.strokeStyle = isLight ? '#e2e8f0' : '#1e293b';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let x = originX % scale; x < w; x += scale) {
+        ctx.moveTo(x, 0); ctx.lineTo(x, h);
+      }
+      for (let y = originY % scale; y < h; y += scale) {
+        ctx.moveTo(0, y); ctx.lineTo(w, y);
+      }
+      ctx.stroke();
+
+      ctx.strokeStyle = isLight ? '#94a3b8' : '#475569';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, originY); ctx.lineTo(w, originY);
+      ctx.moveTo(originX, 0); ctx.lineTo(originX, h);
+      ctx.stroke();
+
+      ctx.fillStyle = isLight ? '#64748b' : '#94a3b8';
+      ctx.font = 'bold 12px monospace';
+      ctx.fillText('X', w - 15, originY - 8);
+      ctx.fillText('Y', originX + 8, 16);
+
+      const pxCenter = originX + hVal * scale;
+      const pyCenter = originY - kVal * scale;
+      const pxRadius = rVal * scale;
+
+      ctx.strokeStyle = '#10b981';
+      ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(pxCenter, pyCenter, pxRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(pxCenter, pyCenter);
+      ctx.lineTo(pxCenter + pxRadius * Math.cos(-Math.PI/4), pyCenter + pxRadius * Math.sin(-Math.PI/4));
+      ctx.stroke();
+      ctx.setLineDash([]);
+      
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = 'bold 13px monospace';
+      ctx.fillText(`r=${rVal}`, pxCenter + (pxRadius/2)*Math.cos(-Math.PI/4) + 5, pyCenter + (pxRadius/2)*Math.sin(-Math.PI/4) - 5);
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.arc(pxCenter, pyCenter, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.fillStyle = isLight ? '#0f172a' : '#ffffff';
+      ctx.font = 'bold 12px monospace';
+      ctx.fillText(`C(${hVal}, ${kVal})`, pxCenter + 10, pyCenter + 15);
+
+      const box = document.getElementById('boxCircleEquations');
+      const signH = hVal > 0 ? ` - ${hVal}` : (hVal < 0 ? ` + ${Math.abs(hVal)}` : ``);
+      const signK = kVal > 0 ? ` - ${kVal}` : (kVal < 0 ? ` + ${Math.abs(kVal)}` : ``);
+      const termX = hVal === 0 ? `x²` : `(x${signH})²`;
+      const termY = kVal === 0 ? `y²` : `(y${signK})²`;
+      
+      const D = -2 * hVal;
+      const E = -2 * kVal;
+      const F = (hVal*hVal) + (kVal*kVal) - (rVal*rVal);
+
+      const strD = D === 0 ? '' : (D > 0 ? ` + ${D}x` : ` - ${Math.abs(D)}x`);
+      const strE = E === 0 ? '' : (E > 0 ? ` + ${E}y` : ` - ${Math.abs(E)}y`);
+      const strF = F === 0 ? '' : (F > 0 ? ` + ${F}` : ` - ${Math.abs(F)}`);
+
+      box.innerHTML = `
+        <strong>Desarrollo Analítico:</strong><br>
+        • Ecuación reducida: <strong style="color:var(--accent-blue); font-size:1.15rem;">${termX} + ${termY} = ${rVal*rVal}</strong><br>
+        • Desarrollo: (x² ${D===0?'':strD} + ${hVal*hVal}) + (y² ${E===0?'':strE} + ${kVal*kVal}) - ${rVal*rVal} = 0<br>
+        • Ecuación General: <strong style="color:var(--accent-gold); font-size:1.15rem;">x² + y²${strD}${strE}${strF} = 0</strong>
+      `;
+    }
+
+    // =========================================================================
+    // SIMULADOR POSICIONES RELATIVAS (TAB 3)
+    // =========================================================================
+    function drawPosicionesLab() {
+      const cv = document.getElementById('canvasPosiciones');
+      if (!cv) return;
+      const ctx = cv.getContext('2d');
+      const w = cv.width, h = cv.height;
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+      ctx.clearRect(0, 0, w, h);
+
+      const d = parseFloat(document.getElementById('sl_d').value);
+      document.getElementById('lbl_d').textContent = d.toFixed(2);
+
+      const r1 = 3;
+      const r2 = 2;
+      const scale = 25; 
+      const originY = h / 2;
+      const cx1 = w / 2 - (d * scale) / 2;
+      const cx2 = w / 2 + (d * scale) / 2;
+
+      // Circunferencia 1 (Azul)
+      ctx.strokeStyle = '#38bdf8';
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.1)';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(cx1, originY, r1 * scale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      // Centro 1
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.arc(cx1, originY, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Circunferencia 2 (Oro)
+      ctx.strokeStyle = '#f59e0b';
+      ctx.fillStyle = 'rgba(245, 158, 11, 0.15)';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(cx2, originY, r2 * scale, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      // Centro 2
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.arc(cx2, originY, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Línea de distancia d
+      if (d > 0) {
+        ctx.strokeStyle = isLight ? '#64748b' : '#94a3b8';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(cx1, originY);
+        ctx.lineTo(cx2, originY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // Lógica de clasificación
+      let state = '';
+      let stateColor = '';
+      let condition = '';
+
+      if (d > r1 + r2) { 
+        state = 'Exteriores'; 
+        condition = `d > r₁ + r₂ (${d.toFixed(2)} > ${r1+r2})`;
+        stateColor = '#94a3b8'; 
+      }
+      else if (d === r1 + r2) { 
+        state = 'Tangentes Exteriores'; 
+        condition = `d = r₁ + r₂ (${d.toFixed(2)} = ${r1+r2})`;
+        stateColor = '#10b981'; 
+      }
+      else if (d < r1 + r2 && d > Math.abs(r1 - r2)) { 
+        state = 'Secantes'; 
+        condition = `|r₁ - r₂| < d < r₁ + r₂ (${Math.abs(r1-r2)} < ${d.toFixed(2)} < ${r1+r2})`;
+        stateColor = '#f59e0b'; 
+      }
+      else if (d === Math.abs(r1 - r2)) { 
+        state = 'Tangentes Interiores'; 
+        condition = `d = |r₁ - r₂| (${d.toFixed(2)} = ${Math.abs(r1-r2)})`;
+        stateColor = '#38bdf8'; 
+      }
+      else if (d < Math.abs(r1 - r2) && d > 0) { 
+        state = 'Interiores'; 
+        condition = `d < |r₁ - r₂| (${d.toFixed(2)} < ${Math.abs(r1-r2)})`;
+        stateColor = '#fb7185'; 
+      }
+      else if (d === 0) { 
+        state = 'Concéntricas'; 
+        condition = `d = 0`;
+        stateColor = '#fb7185'; 
+      }
+
+      document.getElementById('boxPosicionesMetrics').innerHTML = `
+        <strong style="color:${stateColor}; font-size:1.25rem;">${state}</strong><br>
+        <span style="font-family:monospace; color:var(--text-muted);">Condición cumplida: ${condition}</span>
+      `;
+    }
+
+    // =========================================================================
+    // ENTRENADOR PARAMÉTRICO COMPLETAR CUADRADOS (TAB 5)
+    // =========================================================================
+    let currentConic = null;
+
+    function randomInt(min, max, exclude = []) {
+      let res;
+      do {
+        res = Math.floor(Math.random() * (max - min + 1)) + min;
+      } while (exclude.includes(res));
+      return res;
+    }
+
+    function generateConicChallenge() {
+      const h = randomInt(-5, 5);
+      const k = randomInt(-5, 5);
+      const r = randomInt(2, 7);
+
+      const D = -2 * h;
+      const E = -2 * k;
+      const F = (h * h) + (k * k) - (r * r);
+
+      currentConic = { h: h, k: k, r: r, D: D, E: E, F: F };
+
+      const strD = D === 0 ? '' : (D > 0 ? ` + ${D}x` : ` - ${Math.abs(D)}x`);
+      const strE = E === 0 ? '' : (E > 0 ? ` + ${E}y` : ` - ${Math.abs(E)}y`);
+      const strF = F === 0 ? '' : (F > 0 ? ` + ${F}` : ` - ${Math.abs(F)}`);
+
+      document.getElementById('conicStatement').innerHTML = `
+        x² + y²${strD}${strE}${strF} = 0
+      `;
+
+      document.getElementById('conicFeedback').style.display = 'none';
+      document.getElementById('in_h').value = '';
+      document.getElementById('in_k').value = '';
+      document.getElementById('in_r').value = '';
+    }
+
+    function checkConicChallenge() {
+      if (!currentConic) return;
+      const userH = parseFloat(document.getElementById('in_h').value);
+      const userK = parseFloat(document.getElementById('in_k').value);
+      const userR = parseFloat(document.getElementById('in_r').value);
+
+      if (isNaN(userH) || isNaN(userK) || isNaN(userR)) {
+        alert('Por favor, rellena las coordenadas h, k del centro y el radio r.');
+        return;
+      }
+
+      const isOk = (userH === currentConic.h && userK === currentConic.k && userR === currentConic.r);
+      const fb = document.getElementById('conicFeedback');
+      const txt = document.getElementById('conicFbText');
+      const steps = document.getElementById('conicSteps');
+
+      fb.style.display = 'block';
+
+      if (isOk) {
+        fb.className = 'feedback-box feedback-success';
+        txt.textContent = '¡Correcto! Has completado los cuadrados perfectamente 🎯';
+      } else {
+        fb.className = 'feedback-box feedback-error';
+        txt.textContent = `Incorrecto. El centro era C(${currentConic.h}, ${currentConic.k}) y el radio r = ${currentConic.r}. Revisa el desarrollo:`;
+      }
+
+      const h = currentConic.h;
+      const k = currentConic.k;
+      const r = currentConic.r;
+      const F = currentConic.F;
+
+      const signH = h > 0 ? ` - ${h}` : (h < 0 ? ` + ${Math.abs(h)}` : ``);
+      const signK = k > 0 ? ` - ${k}` : (k < 0 ? ` + ${Math.abs(k)}` : ``);
+      const termX = h === 0 ? `x²` : `(x${signH})²`;
+      const termY = k === 0 ? `y²` : `(y${signK})²`;
+
+      steps.innerHTML = `
+        <strong>1. Por identificación directa de coeficientes:</strong><br>
+        • D = ${currentConic.D} ➔ h = D / (-2) = <strong style="color:var(--accent-blue);">${h}</strong><br>
+        • E = ${currentConic.E} ➔ k = E / (-2) = <strong style="color:var(--accent-blue);">${k}</strong><br>
+        <strong>2. Hallamos el radio despejando de F:</strong><br>
+        • F = h² + k² - r² ➔ r² = h² + k² - F<br>
+        • r² = (${h})² + (${k})² - (${F}) = ${h*h} + ${k*k} ${F < 0 ? '+ ' + Math.abs(F) : '- ' + F} = ${r*r}<br>
+        • r = <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">${r*r}</span></span> = <strong style="color:var(--accent-gold);">${r}</strong><br><br>
+        Ecuación canónica final: <strong>${termX} + ${termY} = ${r*r}</strong>
+      `;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      drawCircleLab();
+      drawPosicionesLab();
+      generateConicChallenge();
+      
+      ['in_h', 'in_k', 'in_r'].forEach(id => {
+        document.getElementById(id).addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') checkConicChallenge();
+        });
+      });
+    });
+  </script>
+</body>
+</html>

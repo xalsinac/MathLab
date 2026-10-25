@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Probabilidad y Distribuciones | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS PRINCIPALES */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--accent-gold);
+      color: #042f2e;
+      border-color: var(--accent-gold);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* SUBPESTAÑAS DE CASOS DE LA NORMAL */
+    .normal-cases-bar {
+      display: flex;
+      gap: 0.5rem;
+      background: var(--bg-primary);
+      padding: 0.4rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      overflow-x: auto;
+      margin-top: 0.5rem;
+    }
+    .case-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .case-btn:hover { color: var(--text-main); }
+    .case-btn.active {
+      background: rgba(251, 191, 36, 0.18);
+      color: var(--accent-gold);
+      border-color: var(--accent-gold);
+    }
+
+    /* TARJETAS DE PASO A PASO */
+    .step-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-gold);
+      border-radius: 8px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .step-num {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-gold);
+    }
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .math-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem 1.3rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      color: #fff;
+      line-height: 2.2;
+    }
+    [data-theme="light"] .math-block {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* COMPONENTES MATEMÁTICOS */
+    .frac-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 0.25rem;
+      line-height: 1.15;
+      font-size: 0.95em;
+    }
+    .frac-num {
+      border-bottom: 1.8px solid currentColor;
+      padding: 0 0.2rem 2px 0.2rem;
+      display: block;
+    }
+    .frac-den {
+      padding: 2px 0.2rem 0 0.2rem;
+      display: block;
+    }
+
+    .combinatorial-wrap {
+      display: inline-flex;
+      align-items: center;
+      position: relative;
+      vertical-align: middle;
+      padding: 0 0.45rem;
+      margin: 0 0.2rem;
+    }
+    .combinatorial-wrap::before {
+      content: '';
+      position: absolute;
+      top: 1px;
+      bottom: 1px;
+      left: 0;
+      width: 7px;
+      border-left: 1.8px solid currentColor;
+      border-top: 1.8px solid currentColor;
+      border-bottom: 1.8px solid currentColor;
+      border-radius: 10px 0 0 10px;
+      pointer-events: none;
+    }
+    .combinatorial-wrap::after {
+      content: '';
+      position: absolute;
+      top: 1px;
+      bottom: 1px;
+      right: 0;
+      width: 7px;
+      border-right: 1.8px solid currentColor;
+      border-top: 1.8px solid currentColor;
+      border-bottom: 1.8px solid currentColor;
+      border-radius: 0 10px 10px 0;
+      pointer-events: none;
+    }
+    .comb-values {
+      display: inline-flex;
+      flex-direction: column;
+      text-align: center;
+      line-height: 1.05;
+      padding: 0 0.15rem;
+      font-weight: bold;
+    }
+
+    .radic-wrap {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 0.15rem;
+    }
+    .radic-symbol {
+      font-size: 1.25rem;
+      line-height: 1;
+      padding-right: 1px;
+      user-select: none;
+    }
+    .radic-content {
+      border-top: 1.8px solid currentColor;
+      padding: 0 0.25rem;
+      display: inline-block;
+      line-height: 1.15;
+    }
+
+    .mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: monospace;
+      font-size: 0.9rem;
+      text-align: center;
+      margin: 0.6rem 0;
+    }
+    .mini-table th {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem;
+      color: var(--accent-gold);
+    }
+    .mini-table td {
+      border: 1px solid var(--border-color);
+      padding: 0.45rem;
+    }
+    .cell-highlight {
+      background: rgba(251, 191, 36, 0.2) !important;
+      color: var(--accent-gold);
+      font-weight: bold;
+      outline: 2px solid var(--accent-gold);
+    }
+
+    .sim-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      gap: 1rem;
+    }
+    .sim-canvas {
+      background: #060911;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-width: 100%;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+    }
+    [data-theme="light"] .sim-canvas {
+      background: #ffffff !important;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 600px;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .slider-row input[type="range"] {
+      flex: 1;
+      min-width: 180px;
+      accent-color: var(--accent-gold);
+      cursor: pointer;
+    }
+
+    .badge-highlight {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid var(--accent-gold);
+      border-radius: 6px;
+      color: var(--accent-gold);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .ans-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .ans-input {
+      width: 110px;
+      padding: 0.6rem 0.4rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      font-family: monospace;
+      text-align: center;
+      background: var(--bg-primary);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      outline: none;
+    }
+    .ans-input:focus { border-color: var(--accent-gold); }
+
+    .feedback-box {
+      display: none;
+      border-radius: 8px;
+      padding: 1.2rem;
+      font-size: 0.95rem;
+      line-height: 2.1;
+    }
+    .feedback-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--accent-success);
+      color: #34d399;
+    }
+    .feedback-error {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--accent-op);
+      color: #fb7185;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Probabilidad y Distribuciones 🎲</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+      <span class="badge" style="color: var(--accent-gold);">2º Bachillerato (Ciencias y CCSS)</span>
+      <div class="content-text">
+        La probabilidad modela la incertidumbre y el azar. Domina desde la regla básica de <strong>Laplace</strong> y el <strong>Teorema de Bayes</strong> hasta las grandes distribuciones de la ciencia: la <strong>Binomial</strong> discreta, la <strong>Normal</strong> continua de Gauss y la corrección por continuidad de De Moivre.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('bayes', this)">1. Laplace, Árbol y Bayes</button>
+      <button class="tab-btn" onclick="switchTab('binomial', this)">2. Distribución Binomial B(n, p)</button>
+      <button class="tab-btn" onclick="switchTab('normal', this)">3. Distribución Normal N(μ, σ)</button>
+      <button class="tab-btn" onclick="switchTab('aproximacion', this)">4. De Moivre y Corrección</button>
+      <button class="tab-btn" onclick="switchTab('entrenador', this)">5. 🎯 Ponte a Prueba</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: LAPLACE, ÁRBOL Y BAYES -->
+    <!-- ===================================================================== -->
+    <div id="tab-bayes" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem;">De Laplace a la Probabilidad Condicionada y Bayes</h2>
+
+      <!-- LAPLACE FLASH -->
+      <div class="step-card">
+        <span class="step-num">Recordatorio Express: Regla de Laplace</span>
+        <div class="step-title">Solo válida en espacios muestrales con sucesos equiprobables</div>
+        <div class="math-block" style="text-align:center;">
+          P(A) = <span class="frac-wrap"><span class="frac-num">Casos Favorables</span><span class="frac-den">Casos Posibles</span></span>
+        </div>
+      </div>
+
+      <!-- PROBABILIDAD TOTAL Y BAYES -->
+      <div class="step-card" style="border-left-color: var(--accent-blue);">
+        <span class="step-num" style="color:var(--accent-blue);">Diagrama de Árbol y Teorema de la Probabilidad Total</span>
+        <div class="step-title">«Avanzar hacia adelante en el tiempo»</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Si un espacio se divide en ramas incompatibles <em>A₁, A₂, ..., Aₙ</em>, la probabilidad de un suceso final <em>B</em> es la suma de los productos de cada camino del árbol:
+        </p>
+        <div class="math-block" style="text-align:center;">
+          P(B) = P(A₁)·P(B|A₁) + P(A₂)·P(B|A₂) + ... + P(Aₙ)·P(B|Aₙ)
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Teorema de Bayes: Probabilidad a Posteriori</span>
+        <div class="step-title">«Ir marcha atrás: sabiendo el resultado final, ¿de qué rama procedía?»</div>
+        <div class="math-block" style="text-align:center;">
+          P(Aᵢ|B) = <span class="frac-wrap"><span class="frac-num">P(Aᵢ ∩ B)</span><span class="frac-den">P(B)</span></span> = 
+          <span class="frac-wrap">
+            <span class="frac-num">P(Aᵢ) · P(B|Aᵢ)</span>
+            <span class="frac-den">∑ [ P(Aₖ) · P(B|Aₖ) ]</span>
+          </span>
+          = <span class="frac-wrap"><span class="frac-num">Rama elegida</span><span class="frac-den">Suma de todas las ramas que dan B</span></span>
+        </div>
+
+        <div style="font-weight:bold; margin-top:0.6rem;">Ejemplo clásico de examen (Control de Calidad):</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Una fábrica usa dos máquinas: la Máquina 1 produce el 60% de los tornillos (con 2% de defectuosos) y la Máquina 2 el 40% (con 5% de defectuosos). Si se elige un tornillo al azar y es <strong>defectuoso (D)</strong>, ¿cuál es la probabilidad de que lo fabricara la Máquina 1?
+        </p>
+        <div class="math-block">
+          1. Ramas de defectuosos: P(M₁) = 0,60 ; P(D|M₁) = 0,02 &nbsp;|&nbsp; P(M₂) = 0,40 ; P(D|M₂) = 0,05<br>
+          2. Probabilidad Total de tornillo defectuoso P(D):<br>
+          &nbsp;&nbsp;&nbsp;P(D) = (0,60 · 0,02) + (0,40 · 0,05) = 0,012 + 0,020 = <strong>0,032 (3,2%)</strong><br>
+          3. Aplicamos Bayes para P(M₁|D):<br>
+          &nbsp;&nbsp;&nbsp;P(M₁|D) = <span class="frac-wrap"><span class="frac-num">0,60 · 0,02</span><span class="frac-den">0,032</span></span> = <span class="frac-wrap"><span class="frac-num">0,012</span><span class="frac-den">0,032</span></span> = <strong style="color:var(--accent-gold); font-size:1.15rem;">0,375 (37,5%)</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: DISTRIBUCIÓN BINOMIAL (CORREGIDA Y AMPLIADA) -->
+    <!-- ===================================================================== -->
+    <div id="tab-binomial" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Distribución Binomial: B(n, p)</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Modela el número de éxitos <em>k</em> al repetir <strong>n ensayos independientes</strong> con probabilidad fija de éxito <strong>p</strong> (y fracaso <em>q = 1 - p</em>).
+      </p>
+
+      <!-- FÓRMULA MAQUETADA CORRECTAMENTE -->
+      <div class="step-card">
+        <span class="step-num">Función de Probabilidad Puntual y Parámetros</span>
+        <div class="math-block" style="text-align:center;">
+          P(X = k) = 
+          <span class="combinatorial-wrap">
+            <span class="comb-values"><span>n</span><span>k</span></span>
+          </span>
+          · pᵏ · (1 - p)ⁿ⁻ᵏ
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          donde 
+          <span class="combinatorial-wrap">
+            <span class="comb-values"><span>n</span><span>k</span></span>
+          </span>
+          = <span class="frac-wrap"><span class="frac-num">n!</span><span class="frac-den">k! · (n - k)!</span></span>
+        </div>
+        <div class="math-block" style="margin-top:0.4rem;">
+          • Media (Esperanza de aciertos): <strong>μ = n · p</strong><br>
+          • Varianza: <strong>σ² = n · p · q</strong> &nbsp;➔&nbsp; Desviación típica: <strong>σ = <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">n · p · q</span></span></strong>
+        </div>
+      </div>
+
+      <!-- EJEMPLO RESUELTO PASO A PASO: EL ARQUERO -->
+      <div class="step-card" style="border-left-color:var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">Ejemplo Modelo Resuelto: El Arquero Olímpico</span>
+        <div class="step-title">«Un arquero profesional tiene una probabilidad de acertar en el centro de la diana del 80% (p = 0,8). Si dispara 5 flechas (n = 5), calcula:»</div>
+        
+        <div class="math-block">
+          Identificamos la variable: <strong>X = "número de flechas que dan en el centro" ~ B(n = 5, p = 0,8)</strong><br>
+          Datos: <em>n = 5</em>, &nbsp;<em>p = 0,8</em>, &nbsp;<em>q = 1 - 0,8 = 0,2</em><br><br>
+
+          <strong>Apartado A: Probabilidad de acertar exactamente 4 flechas (k = 4):</strong><br>
+          P(X = 4) = 
+          <span class="combinatorial-wrap">
+            <span class="comb-values"><span>5</span><span>4</span></span>
+          </span>
+          · (0,8)⁴ · (0,2)⁵⁻⁴<br>
+          • Calculamos el combinatorio: 
+          <span class="combinatorial-wrap">
+            <span class="comb-values"><span>5</span><span>4</span></span>
+          </span>
+          = <span class="frac-wrap"><span class="frac-num">5!</span><span class="frac-den">4! · 1!</span></span> = <span class="frac-wrap"><span class="frac-num">5 · 4 · 3 · 2 · 1</span><span class="frac-den">(4 · 3 · 2 · 1) · 1</span></span> = <strong>5</strong><br>
+          • Multiplicamos potencias: P(X = 4) = 5 · (0,4096) · (0,2) = <strong style="color:var(--accent-gold); font-size:1.15rem;">0,4096 (40,96%)</strong><br><br>
+
+          <strong>Apartado B: Probabilidad de acertar AL MENOS una flecha (P(X ≥ 1)):</strong><br>
+          <em>¡Truco de examen!</em> En lugar de calcular P(1)+P(2)+P(3)+P(4)+P(5), usamos el suceso contrario (no acertar ninguna flecha, X = 0):<br>
+          • P(X = 0) = 
+          <span class="combinatorial-wrap">
+            <span class="comb-values"><span>5</span><span>0</span></span>
+          </span>
+          · (0,8)⁰ · (0,2)⁵ = 1 · 1 · (0,00032) = <strong>0,00032</strong><br>
+          • P(X ≥ 1) = 1 - P(X = 0) = 1 - 0,00032 = <strong style="color:var(--accent-gold); font-size:1.15rem;">0,99968 (99,97%)</strong><br><br>
+
+          <strong>Apartado C: ¿Cuántas flechas se espera que acierte en promedio?</strong><br>
+          • Media: μ = n · p = 5 · 0,8 = <strong style="color:var(--accent-gold); font-size:1.15rem;">4 flechas</strong>
+        </div>
+      </div>
+
+      <!-- SIMULADOR INTERACTIVO BINOMIAL -->
+      <div class="sim-container">
+        <div style="font-weight:bold; color:var(--accent-gold);">Simulador de Diagrama de Barras Binomial</div>
+        <div class="slider-row">
+          <label style="font-weight:700;">Ensayos (n = <span id="lbl_bin_n">10</span>):</label>
+          <input type="range" id="sl_bin_n" min="4" max="25" step="1" value="10" oninput="drawBinomial()">
+        </div>
+        <div class="slider-row">
+          <label style="font-weight:700;">Prob. éxito (p = <span id="lbl_bin_p">0.50</span>):</label>
+          <input type="range" id="sl_bin_p" min="0.05" max="0.95" step="0.05" value="0.5" oninput="drawBinomial()">
+        </div>
+
+        <canvas id="canvasBinomial" class="sim-canvas" width="560" height="240"></canvas>
+        <div id="binMetrics" style="font-family:monospace; font-size:0.95rem; color:var(--text-muted);">
+          <!-- Inyectado por JS -->
+        </div>
+      </div>
+    </div>
+
+<!-- ===================================================================== -->
+    <!-- TAB 3: DISTRIBUCIÓN NORMAL Y MANIOBRAS DE TABLA -->
+    <!-- ===================================================================== -->
+    <div id="tab-normal" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Distribución Normal N(μ, σ), Tabla y Casos de Examen</h2>
+
+      <!-- FUNDAMENTO: POR QUÉ EXISTE Y T-STUDENT -->
+      <div class="step-card" style="border-left-color: var(--accent-blue);">
+        <span class="step-num" style="color:var(--accent-blue);">La Campana de Gauss y el Cociente Intelectual (CI)</span>
+        <div class="step-title">Teorema Central del Límite: Suma de múltiples factores independientes</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Cualquier fenómeno biológico, antropométrico o social que dependa de muchos factores aleatorios pequeños converge hacia una distribución normal.
+          Por ejemplo, el <strong>Cociente Intelectual (CI)</strong> está calibrado para que la media poblacional sea <strong>μ = 100</strong> y la desviación típica sea <strong>σ = 15</strong> ➔ <strong>CI ~ N(100, 15)</strong>.
+        </p>
+        <div style="margin-top:0.4rem; font-size:0.88rem; color:var(--text-muted);">
+          💡 <em>Dato metodológico:</em> Para poblaciones completas o muestras grandes (N ≥ 30) la campana de Gauss es el estándar. Si la muestra experimental es pequeña (N &lt; 30) y no conocemos la varianza real de la población, se recurre a la distribución <strong>t de Student</strong>.
+        </div>
+      </div>
+
+      <!-- TIPICACIÓN -->
+      <div class="step-card">
+        <span class="step-num">Paso Obligatorio: Tipificación</span>
+        <div class="step-title">Convertir X en Z para poder consultar la tabla estándar tabulada N(0, 1)</div>
+        <div class="math-block" style="text-align:center;">
+          Z = <span class="frac-wrap"><span class="frac-num">X - μ</span><span class="frac-den">σ</span></span>
+        </div>
+      </div>
+
+      <!-- CÓMO LEER LA TABLA NORMAL -->
+      <div class="step-card">
+        <span class="step-num">¿Qué significa y cómo se lee la Tabla N(0, 1)?</span>
+        <div class="step-title">La tabla da el área acumulada hacia la izquierda de valores positivos: Φ(z) = P(Z ≤ z)</div>
+        <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">
+          En las filas buscas las unidades y el primer decimal; en las columnas buscas las centésimas (segundo decimal):
+        </p>
+        
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>z</th>
+              <th>0.00</th>
+              <th>...</th>
+              <th>0.04</th>
+              <th>...</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1.9</strong></td>
+              <td>0.9713</td>
+              <td>...</td>
+              <td>0.9738</td>
+              <td>...</td>
+            </tr>
+            <tr>
+              <td style="color:var(--accent-gold); font-weight:bold;">2.0</td>
+              <td class="cell-highlight">0.9772</td>
+              <td>...</td>
+              <td>0.9793</td>
+              <td>...</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="font-size:0.85rem; color:var(--accent-gold); text-align:center;">
+          Ejemplo: Para z = 2,00 ➔ fila 2.0 y columna 0.00 ➔ P(Z ≤ 2,00) = 0,9772 (el 97,72% de la población queda por debajo).
+        </div>
+      </div>
+
+      <!-- PROBLEMA RESUELTO CI (RECUPERADO Y MEJORADO) -->
+      <div class="step-card" style="border-left-color: var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">Problema Modelo Resuelto: Superdotación Intelectual (CI)</span>
+        <div class="step-title">«Si el CI sigue una distribución N(100, 15), ¿qué porcentaje de personas tiene un CI ≥ 130 (altas capacidades)?»</div>
+
+        <div class="math-block">
+          Variable original: <strong>X ~ N(μ = 100, σ = 15)</strong>. Buscamos calcular <strong>P(X ≥ 130)</strong>.<br><br>
+
+          <strong>1. Tipificar la variable para pasar a Z ~ N(0, 1):</strong><br>
+          Z = <span class="frac-wrap"><span class="frac-num">X - μ</span><span class="frac-den">σ</span></span> = <span class="frac-wrap"><span class="frac-num">130 - 100</span><span class="frac-den">15</span></span> = <span class="frac-wrap"><span class="frac-num">30</span><span class="frac-den">15</span></span> = <strong style="color:var(--accent-gold); font-size:1.15rem;">2,00</strong><br>
+          Por tanto: P(X ≥ 130) = <strong>P(Z ≥ 2,00)</strong><br><br>
+
+          <strong>2. Aplicar complementario (la tabla solo lee áreas hacia la izquierda "≤"):</strong><br>
+          P(Z ≥ 2,00) = 1 - P(Z ≤ 2,00)<br><br>
+
+          <strong>3. Consultar la tabla para z = 2,00:</strong><br>
+          P(Z ≤ 2,00) = Φ(2,00) = <strong>0,9772</strong><br><br>
+
+          <strong>4. Resultado final:</strong><br>
+          P(X ≥ 130) = 1 - 0,9772 = <strong style="color:var(--accent-gold); font-size:1.2rem;">0,0228 ➔ 2,28%</strong><br><br>
+          <span class="badge-highlight">Conclusión: Solo el 2,28% de la población mundial alcanza o supera un CI de 130.</span>
+        </div>
+      </div>
+
+      <!-- VISOR INTERACTIVO DE LAS 4 MANIOBRAS -->
+      <div class="sim-container">
+        <div style="font-weight:bold; color:var(--accent-gold); font-size:1.05rem;">
+          Simulador Visual: Las 4 Maniobras de Simetría en Examen
+        </div>
+        <p style="margin:0; font-size:0.9rem; color:var(--text-muted); text-align:center;">
+          Selecciona un caso para ver cómo se proyecta el área y cómo se traduce con la tabla:
+        </p>
+
+        <!-- SELECTOR DE CASOS -->
+        <div class="normal-cases-bar">
+          <button class="case-btn active" onclick="setNormalCase('directo', this)">Caso 1: Directo P(Z ≤ a)</button>
+          <button class="case-btn" onclick="setNormalCase('mayor_pos', this)">Caso 2: Cola Derecha P(Z ≥ a)</button>
+          <button class="case-btn" onclick="setNormalCase('menor_neg', this)">Caso 3: Cola Negativa P(Z ≤ -a)</button>
+          <button class="case-btn" onclick="setNormalCase('intervalo', this)">Caso 4: Entre dos valores P(-a ≤ Z ≤ a)</button>
+        </div>
+
+        <!-- CONTROL SLIDER DINÁMICO -->
+        <div class="slider-row" id="normSliderBox">
+          <label style="font-weight:700;" id="lblNormSlider">Valor a (z = 1.00):</label>
+          <input type="range" id="sl_case_a" min="0.1" max="2.8" step="0.05" value="1.0" oninput="renderSelectedNormalCase()">
+        </div>
+
+        <canvas id="canvasNormal" class="sim-canvas" width="560" height="240"></canvas>
+
+        <!-- RECUADRO DIDÁCTICO DEL CASO ACTIVO -->
+        <div class="math-block" id="boxCaseFormula" style="width:100%; max-width:650px; line-height:2;">
+          <!-- Rellenado por JS -->
+        </div>
+      </div>
+
+      <!-- GUÍA RESUMEN SIN ERRORES DE SINTAXIS LATEX -->
+      <div class="step-card" style="border-left-color:var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Chuleta Mnemotécnica de Simetrías</span>
+        <div class="math-block" style="line-height:2.2;">
+          1. <strong>P(Z ≤ a):</strong> Buscar directamente a en la tabla ➔ <strong>Φ(a)</strong>.<br>
+          2. <strong>P(Z ≥ a):</strong> El área total bajo la curva es 1 ➔ <strong>1 - Φ(a)</strong>.<br>
+          3. <strong>P(Z ≤ -a):</strong> Por simetría axial respecto al centro ➔ <strong>P(Z ≥ a) = 1 - Φ(a)</strong>.<br>
+          4. <strong>P(Z ≥ -a):</strong> Área complementaria de la cola negativa ➔ <strong>1 - P(Z ≤ -a) = Φ(a)</strong>.<br>
+          5. <strong>P(a ≤ Z ≤ b):</strong> Restar el acumulado del mayor menos el del menor ➔ <strong>Φ(b) - Φ(a)</strong>.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 4: APROXIMACIÓN DE LA BINOMIAL POR LA NORMAL -->
+    <!-- ===================================================================== -->
+    <div id="tab-aproximacion" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Teorema de De Moivre y Corrección de Continuidad (Yates)</h2>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">¿Cuándo se puede aproximar? (Condiciones de De Moivre)</span>
+        <div class="step-title">Si n es grande y p no es extremo, la Binomial se curva como una campana</div>
+        <div class="math-block">
+          Requisitos indispensables en examen:<br>
+          1. <strong>n ≥ 30</strong> (o número elevado de ensayos)<br>
+          2. <strong>n · p ≥ 5</strong><br>
+          3. <strong>n · q ≥ 5</strong> (donde q = 1 - p)<br><br>
+          Si se cumplen, aproximamos: <strong>X ~ B(n, p) &nbsp;➔&nbsp; X' ~ N(μ = n·p, &nbsp;σ = <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">n·p·q</span></span>)</strong>
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-op);">
+        <span class="step-num" style="color:var(--accent-op);">¿Por qué es obligatoria la corrección de medio punto (± 0,5)?</span>
+        <div class="step-title">El choque conceptual entre el mundo discreto y el mundo continuo</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          En una distribución continua como la Normal, la probabilidad en un punto exacto es nula: <strong>P(X' = k) = 0</strong> (una línea vertical no tiene área). Sin embargo, en la Binomial discreta, el suceso <em>X = k</em> tiene la anchura de una barra que va desde <strong>k - 0,5</strong> hasta <strong>k + 0,5</strong>.
+        </p>
+
+        <div class="math-block">
+          <strong>Reglas de ajuste de Yates:</strong><br>
+          • Probabilidad puntual: P(X = k) &nbsp;➔&nbsp; <strong>P(k - 0,5 ≤ X' ≤ k + 0,5)</strong><br>
+          • Menor o igual: P(X ≤ k) &nbsp;➔&nbsp; <strong>P(X' ≤ k + 0,5)</strong> &nbsp;<em>(incluye toda la barra de k)</em><br>
+          • Estrictamente menor: P(X &lt; k) &nbsp;➔&nbsp; <strong>P(X' ≤ k - 0,5)</strong> &nbsp;<em>(excluye la barra de k)</em><br>
+          • Mayor o igual: P(X ≥ k) &nbsp;➔&nbsp; <strong>P(X' ≥ k - 0,5)</strong> &nbsp;<em>(incluye toda la barra de k)</em><br>
+          • Estrictamente mayor: P(X > k) &nbsp;➔&nbsp; <strong>P(X' ≥ k + 0,5)</strong> &nbsp;<em>(excluye la barra de k)</em>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 5: ENTRENADOR INTERACTIVO -->
+    <!-- ===================================================================== -->
+    <div id="tab-entrenador" class="tab-content">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; font-size:1.3rem;">Gimnasio de Tipificación Normal</h2>
+        <button class="btn btn-secondary" onclick="generateProbChallenge()" style="padding:0.4rem 0.8rem; font-size:0.85rem;">
+          🎲 Nuevo Reto
+        </button>
+      </div>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Dada la variable aleatoria normal, tipifica la variable y calcula el valor de Z correspondiente:
+      </p>
+
+      <div class="math-block" id="probStatement" style="text-align:center; font-size:1.35rem; padding:1.25rem; color:var(--accent-gold);">
+        Cargando problema...
+      </div>
+
+      <div class="ans-row">
+        <label style="font-weight:700;">Valor tipificado Z =</label>
+        <input type="number" step="any" id="in_prob" class="ans-input" placeholder="0.00" autofocus>
+        <button class="btn btn-primary" onclick="checkProbChallenge()">Comprobar Z 🎯</button>
+      </div>
+
+      <div id="probFeedback" class="feedback-box">
+        <div id="probFbText" style="font-weight:bold; font-size:1.05rem; margin-bottom:0.4rem;"></div>
+        <div id="probSteps" style="font-family:monospace; line-height:2.2;"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      if (tabId === 'binomial') drawBinomial();
+      if (tabId === 'normal') drawNormal();
+    }
+
+    // =========================================================================
+    // DIBUJO DE DISTRIBUCIÓN BINOMIAL (BARRAS)
+    // =========================================================================
+    function combinations(n, k) {
+      if (k < 0 || k > n) return 0;
+      if (k === 0 || k === n) return 1;
+      let c = 1;
+      for (let i = 1; i <= k; i++) {
+        c = (c * (n - (k - i))) / i;
+      }
+      return c;
+    }
+
+    function drawBinomial() {
+      const cv = document.getElementById('canvasBinomial');
+      if (!cv) return;
+      const ctx = cv.getContext('2d');
+      const w = cv.width, h = cv.height;
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+      ctx.clearRect(0, 0, w, h);
+
+      const n = parseInt(document.getElementById('sl_bin_n').value, 10);
+      const p = parseFloat(document.getElementById('sl_bin_p').value);
+
+      document.getElementById('lbl_bin_n').textContent = n;
+      document.getElementById('lbl_bin_p').textContent = p.toFixed(2);
+
+      const q = 1 - p;
+      const mean = n * p;
+      const sigma = Math.sqrt(n * p * q);
+
+      document.getElementById('binMetrics').innerHTML = `
+        Media: μ = n·p = <strong>${mean.toFixed(2)}</strong> &nbsp;|&nbsp; 
+        Desv. Típica: σ = √(n·p·q) = <strong>${sigma.toFixed(2)}</strong>
+      `;
+
+      // Calcular probabilidades
+      const probs = [];
+      let maxP = 0;
+      for (let k = 0; k <= n; k++) {
+        const prob = combinations(n, k) * Math.pow(p, k) * Math.pow(q, n - k);
+        probs.push(prob);
+        if (prob > maxP) maxP = prob;
+      }
+
+      // Dibujar barras
+      const padX = 40;
+      const padY = 30;
+      const barW = Math.max(8, (w - 2 * padX) / (n + 1) - 4);
+      const scaleY = (h - 2 * padY) / (maxP * 1.15);
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.strokeStyle = '#0284c7';
+      ctx.lineWidth = 1;
+
+      for (let k = 0; k <= n; k++) {
+        const barH = probs[k] * scaleY;
+        const x = padX + k * ((w - 2 * padX) / n) - barW / 2;
+        const y = h - padY - barH;
+
+        ctx.fillRect(x, y, barW, barH);
+        ctx.strokeRect(x, y, barW, barH);
+
+        // Etiquetas eje X
+        ctx.fillStyle = isLight ? '#64748b' : '#94a3b8';
+        ctx.font = '10px monospace';
+        ctx.textAlign = 'center';
+        if (n <= 15 || k % 2 === 0) {
+          ctx.fillText(k, x + barW / 2, h - padY + 14);
+        }
+        ctx.fillStyle = '#38bdf8';
+      }
+    }
+
+    // =========================================================================
+    // DIBUJO DE CAMPANA DE GAUSS CON ÁREA SOMBREADA
+    // =========================================================================
+    function normalPDF(x) {
+      return (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * x * x);
+    }
+
+    function normalCDF(z) {
+      const t = 1 / (1 + 0.2316419 * Math.abs(z));
+      const d = 0.3989423 * Math.exp(-z * z / 2);
+      let prob = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+      if (z > 0) prob = 1 - prob;
+      return prob;
+    }
+
+// =========================================================================
+    // SIMULADOR DE DISTRIBUCIÓN NORMAL Y SUS 4 CASOS DE COLA/INTERVALO
+    // =========================================================================
+    let currentNormalCase = 'directo';
+
+    function normalPDF(x) {
+      return (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * x * x);
+    }
+
+    function normalCDF(z) {
+      const t = 1 / (1 + 0.2316419 * Math.abs(z));
+      const d = 0.3989423 * Math.exp(-z * z / 2);
+      let prob = d * t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+      if (z > 0) prob = 1 - prob;
+      return prob;
+    }
+
+    function setNormalCase(caseName, btn) {
+      currentNormalCase = caseName;
+      document.querySelectorAll('.case-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderSelectedNormalCase();
+    }
+
+    function renderSelectedNormalCase() {
+      const cv = document.getElementById('canvasNormal');
+      if (!cv) return;
+      const ctx = cv.getContext('2d');
+      const w = cv.width, h = cv.height;
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+      ctx.clearRect(0, 0, w, h);
+
+      const valA = parseFloat(document.getElementById('sl_case_a').value);
+      document.getElementById('lblNormSlider').textContent = `Valor a (z = ${valA.toFixed(2)}):`;
+
+      const originX = w / 2;
+      const originY = h - 35;
+      const scaleX = 75;
+      const scaleY = 400;
+
+      const phiA = normalCDF(valA);
+      const box = document.getElementById('boxCaseFormula');
+
+      let shadeStart = -3.5, shadeEnd = 0, finalProb = 0, formulaHtml = '';
+
+      switch (currentNormalCase) {
+        case 'directo':
+          shadeStart = -3.5;
+          shadeEnd = valA;
+          finalProb = phiA;
+          formulaHtml = `
+            <strong>Caso 1: Cola izquierda directa P(Z ≤ ${valA.toFixed(2)})</strong><br>
+            • Como el número es positivo y la desigualdad es "≤", coincide exactamente con la tabla:<br>
+            ➔ P(Z ≤ ${valA.toFixed(2)}) = Φ(${valA.toFixed(2)}) = <strong style="color:var(--accent-gold);">${finalProb.toFixed(4)} (${(finalProb*100).toFixed(2)}%)</strong>
+          `;
+          break;
+
+        case 'mayor_pos':
+          shadeStart = valA;
+          shadeEnd = 3.5;
+          finalProb = 1 - phiA;
+          formulaHtml = `
+            <strong>Caso 2: Cola derecha P(Z ≥ ${valA.toFixed(2)})</strong><br>
+            • La tabla no lee hacia la derecha. Restamos al área total (1) la cola izquierda:<br>
+            ➔ P(Z ≥ ${valA.toFixed(2)}) = 1 - P(Z ≤ ${valA.toFixed(2)}) = 1 - ${phiA.toFixed(4)} = <strong style="color:var(--accent-gold);">${finalProb.toFixed(4)} (${(finalProb*100).toFixed(2)}%)</strong>
+          `;
+          break;
+
+        case 'menor_neg':
+          shadeStart = -3.5;
+          shadeEnd = -valA;
+          finalProb = 1 - phiA;
+          formulaHtml = `
+            <strong>Caso 3: Cola izquierda negativa P(Z ≤ -${valA.toFixed(2)})</strong><br>
+            • Por simetría axial de la campana, la cola izquierda de -a es idéntica a la cola derecha de +a:<br>
+            ➔ P(Z ≤ -${valA.toFixed(2)}) = P(Z ≥ ${valA.toFixed(2)}) = 1 - Φ(${valA.toFixed(2)}) = 1 - ${phiA.toFixed(4)} = <strong style="color:var(--accent-gold);">${finalProb.toFixed(4)} (${(finalProb*100).toFixed(2)}%)</strong>
+          `;
+          break;
+
+        case 'intervalo':
+          // Rango simétrico [-valA, +valA]
+          shadeStart = -valA;
+          shadeEnd = valA;
+          finalProb = phiA - (1 - phiA); // 2*phiA - 1
+          formulaHtml = `
+            <strong>Caso 4: Intervalo comprendido P(-${valA.toFixed(2)} ≤ Z ≤ ${valA.toFixed(2)})</strong><br>
+            • Restamos la probabilidad del límite superior menos la del límite inferior:<br>
+            ➔ P(-${valA.toFixed(2)} ≤ Z ≤ ${valA.toFixed(2)}) = Φ(${valA.toFixed(2)}) - Φ(-${valA.toFixed(2)}) = ${phiA.toFixed(4)} - ${(1 - phiA).toFixed(4)} = <strong style="color:var(--accent-gold);">${finalProb.toFixed(4)} (${(finalProb*100).toFixed(2)}%)</strong>
+          `;
+          break;
+      }
+
+      box.innerHTML = formulaHtml;
+
+      // Sombreado dinámico según el caso
+      ctx.fillStyle = 'rgba(251, 191, 36, 0.35)';
+      ctx.beginPath();
+      const pxStart = Math.max(0, originX + shadeStart * scaleX);
+      const pxEnd = Math.min(w, originX + shadeEnd * scaleX);
+
+      ctx.moveTo(pxStart, originY);
+      for (let px = pxStart; px <= pxEnd; px += 2) {
+        const z = (px - originX) / scaleX;
+        const y = normalPDF(z);
+        ctx.lineTo(px, originY - y * scaleY);
+      }
+      ctx.lineTo(pxEnd, originY);
+      ctx.closePath();
+      ctx.fill();
+
+      // Líneas de corte de los límites
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2;
+
+      if (currentNormalCase === 'directo' || currentNormalCase === 'mayor_pos') {
+        ctx.beginPath();
+        ctx.moveTo(originX + valA * scaleX, originY);
+        ctx.lineTo(originX + valA * scaleX, originY - normalPDF(valA) * scaleY);
+        ctx.stroke();
+      } else if (currentNormalCase === 'menor_neg') {
+        ctx.beginPath();
+        ctx.moveTo(originX - valA * scaleX, originY);
+        ctx.lineTo(originX - valA * scaleX, originY - normalPDF(-valA) * scaleY);
+        ctx.stroke();
+      } else if (currentNormalCase === 'intervalo') {
+        ctx.beginPath();
+        ctx.moveTo(originX - valA * scaleX, originY);
+        ctx.lineTo(originX - valA * scaleX, originY - normalPDF(-valA) * scaleY);
+        ctx.moveTo(originX + valA * scaleX, originY);
+        ctx.lineTo(originX + valA * scaleX, originY - normalPDF(valA) * scaleY);
+        ctx.stroke();
+      }
+
+      // Curva completa de Gauss
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let px = 0; px <= w; px += 2) {
+        const z = (px - originX) / scaleX;
+        const y = normalPDF(z);
+        const py = originY - y * scaleY;
+        if (px === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+
+      // Eje X horizontal
+      ctx.strokeStyle = isLight ? '#94a3b8' : '#475569';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, originY);
+      ctx.lineTo(w, originY);
+      ctx.stroke();
+
+      // Marcas de desviación típica
+      ctx.fillStyle = isLight ? '#64748b' : '#94a3b8';
+      ctx.font = '11px monospace';
+      ctx.textAlign = 'center';
+      for (let z = -3; z <= 3; z++) {
+        const px = originX + z * scaleX;
+        ctx.fillText(z === 0 ? '0' : (z > 0 ? `+${z}` : `${z}`), px, originY + 16);
+      }
+    }
+
+    // Adaptamos drawNormal para que apunte al nuevo renderizador
+    function drawNormal() {
+      renderSelectedNormalCase();
+    }
+
+    // =========================================================================
+    // ENTRENADOR PARAMÉTRICO DE TIPIFICACIÓN
+    // =========================================================================
+    let currentChallenge = null;
+
+    function randomInt(min, max, exclude = []) {
+      let res;
+      do {
+        res = Math.floor(Math.random() * (max - min + 1)) + min;
+      } while (exclude.includes(res));
+      return res;
+    }
+
+    function generateProbChallenge() {
+      const mu = randomInt(50, 120);
+      const sigma = randomInt(4, 15);
+      const zTarget = (randomInt(-25, 25, [0]) / 10);
+      const xVal = parseFloat((mu + zTarget * sigma).toFixed(1));
+      const exactZ = parseFloat(((xVal - mu) / sigma).toFixed(2));
+
+      currentChallenge = {
+        mu: mu,
+        sigma: sigma,
+        xVal: xVal,
+        exactZ: exactZ
+      };
+
+      document.getElementById('probStatement').innerHTML = `
+        Sea X ~ N(μ = ${mu}, σ = ${sigma}).<br>
+        Halla el valor tipificado Z para <strong>P(X ≤ ${xVal})</strong>
+      `;
+
+      document.getElementById('probFeedback').style.display = 'none';
+      document.getElementById('in_prob').value = '';
+    }
+
+    function checkProbChallenge() {
+      if (!currentChallenge) return;
+      const userVal = parseFloat(document.getElementById('in_prob').value);
+
+      if (isNaN(userVal)) {
+        alert('Por favor, introduce el valor numérico de Z.');
+        return;
+      }
+
+      const isOk = Math.abs(userVal - currentChallenge.exactZ) < 0.05;
+      const fb = document.getElementById('probFeedback');
+      const txt = document.getElementById('probFbText');
+      const steps = document.getElementById('probSteps');
+
+      fb.style.display = 'block';
+
+      if (isOk) {
+        fb.className = 'feedback-box feedback-success';
+        txt.textContent = '¡Correcto! Has tipificado la variable a la perfección 🎯';
+      } else {
+        fb.className = 'feedback-box feedback-error';
+        txt.textContent = `Incorrecto. El valor exacto es Z = ${currentChallenge.exactZ}. Revisa el cálculo:`;
+      }
+
+      steps.innerHTML = `
+        1. Fórmula de tipificación: Z = <span class="frac-wrap"><span class="frac-num">X - μ</span><span class="frac-den">σ</span></span><br>
+        2. Sustituimos los datos: Z = <span class="frac-wrap"><span class="frac-num">${currentChallenge.xVal} - ${currentChallenge.mu}</span><span class="frac-den">${currentChallenge.sigma}</span></span> = <span class="frac-wrap"><span class="frac-num">${(currentChallenge.xVal - currentChallenge.mu).toFixed(1)}</span><span class="frac-den">${currentChallenge.sigma}</span></span><br>
+        3. Valor final tipificado: <strong style="color:var(--accent-gold); font-size:1.15rem;">Z = ${currentChallenge.exactZ}</strong>
+      `;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      drawBinomial();
+      drawNormal();
+      generateProbChallenge();
+
+      document.getElementById('in_prob').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') checkProbChallenge();
+      });
+    });
+  </script>
+</body>
+</html>

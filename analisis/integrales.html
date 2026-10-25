@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Integrales y Métodos | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border-color: var(--accent-blue);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* TARJETAS DE PASO A PASO */
+    .step-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .step-num {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-blue);
+    }
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .math-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem 1.3rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      color: #fff;
+      line-height: 2.2;
+    }
+    [data-theme="light"] .math-block {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* COMPONENTES MATEMÁTICOS LIMPIOS */
+    .frac-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 0.25rem;
+      line-height: 1.15;
+      font-size: 0.95em;
+    }
+    .frac-num {
+      border-bottom: 1.8px solid currentColor;
+      padding: 0 0.2rem 2px 0.2rem;
+      display: block;
+    }
+    .frac-den {
+      padding: 2px 0.2rem 0 0.2rem;
+      display: block;
+    }
+
+    .radic-wrap {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 0.15rem;
+    }
+    .radic-symbol {
+      font-size: 1.25rem;
+      line-height: 1;
+      padding-right: 1px;
+      user-select: none;
+    }
+    .radic-content {
+      border-top: 1.8px solid currentColor;
+      padding: 0 0.25rem;
+      display: inline-block;
+      line-height: 1.15;
+    }
+
+    .integral-symbol {
+      font-size: 1.8rem;
+      font-family: 'Times New Roman', serif;
+      font-style: italic;
+      vertical-align: middle;
+      margin-right: 0.2rem;
+    }
+
+    /* TABLA DE INTEGRALES */
+    .mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: monospace;
+      font-size: 1rem;
+      text-align: left;
+      margin: 0.6rem 0;
+    }
+    .mini-table th {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 0.8rem;
+      color: var(--accent-gold);
+    }
+    .mini-table td {
+      border: 1px solid var(--border-color);
+      padding: 0.8rem;
+    }
+
+    /* CONTENEDORES DE LIENZOS */
+    .sim-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      gap: 1rem;
+    }
+    .sim-canvas {
+      background: #060911;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-width: 100%;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+    }
+    [data-theme="light"] .sim-canvas {
+      background: #ffffff !important;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 600px;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .slider-row input[type="range"] {
+      flex: 1;
+      min-width: 180px;
+      accent-color: var(--accent-blue);
+      cursor: pointer;
+    }
+
+    .badge-highlight {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--accent-blue);
+      border-radius: 6px;
+      color: var(--accent-blue);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    /* INPUTS ENTRENADOR */
+    .ans-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .cramer-input-box {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--bg-primary);
+      padding: 0.5rem 0.8rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+    .ans-select {
+      padding: 0.5rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      font-family: monospace;
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
+      outline: none;
+      cursor: pointer;
+    }
+    .ans-select:focus { border-color: var(--accent-gold); }
+
+    .feedback-box {
+      display: none;
+      border-radius: 8px;
+      padding: 1.2rem;
+      font-size: 0.95rem;
+      line-height: 2.1;
+    }
+    .feedback-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--accent-success);
+      color: #34d399;
+    }
+    .feedback-error {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--accent-op);
+      color: #fb7185;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Integrales y Métodos 📏</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+      <span class="badge" style="color: var(--accent-blue);">2º Bachillerato</span>
+      <div class="content-text">
+        Si derivar es desarmar una función para ver su velocidad, <strong>integrar es reconstruirla acumulando sus pedazos</strong>. Nació del problema milenario de calcular áreas bajo curvas amorfas y se convirtió en la herramienta fundamental de la física y la ingeniería.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('concepto', this)">1. Concepto y Sumas (Visual)</button>
+      <button class="tab-btn" onclick="switchTab('primitiva', this)">2. Primitiva y Tabla Inmediata</button>
+      <button class="tab-btn" onclick="switchTab('sustitucion', this)">3. Cambio de Variable</button>
+      <button class="tab-btn" onclick="switchTab('partes', this)">4. Integración por Partes</button>
+      <button class="tab-btn" onclick="switchTab('entrenador', this)">5. 🎯 Entrenador ALPES</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: CONCEPTO Y SUMAS DE RIEMANN (VISUAL) -->
+    <!-- ===================================================================== -->
+    <div id="tab-concepto" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem;">De los Rectángulos a la Integral (Sumas de Riemann)</h2>
+
+      <div class="step-card">
+        <span class="step-num">El problema del área</span>
+        <div class="step-title">¿Cómo calcular el área bajo una curva si no es recta?</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Bernhard Riemann propuso una idea brillante: como sabemos calcular el área de un rectángulo (base × altura), vamos a rellenar el espacio bajo la curva con rectángulos. Cuanto más estrechos sean (base <strong>dx</strong>), más exacto será el cálculo.
+        </p>
+      </div>
+
+      <!-- SIMULADOR VISUAL DE RIEMANN -->
+      <div class="sim-container">
+        <div style="font-weight:bold; color:var(--accent-blue); font-size:1.05rem;">
+          Laboratorio: Aproximando el Infinito
+        </div>
+        <p style="margin:0; font-size:0.9rem; color:var(--text-muted); text-align:center;">
+          Desliza para aumentar el número de rectángulos (n). Observa cómo la suma de sus áreas converge hacia la <strong>Integral Definida</strong> exacta.
+        </p>
+
+        <div class="slider-row">
+          <label style="font-weight:700; color:#38bdf8;">Número de rectángulos (n = <span id="lbl_n">4</span>):</label>
+          <input type="range" id="sl_n" min="2" max="150" step="1" value="4" oninput="drawRiemann()">
+        </div>
+
+        <canvas id="canvasRiemann" class="sim-canvas" width="560" height="280"></canvas>
+
+        <div class="math-block" id="boxRiemannMetrics" style="width:100%; max-width:600px; text-align:center; line-height:2;">
+          <!-- Inyectado dinámicamente -->
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">El Símbolo de la Integral</span>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Cuando n tiende a infinito, la suma (Σ) muta en una "S" alargada, y la anchura finita (Δx) se convierte en un diferencial infinitesimal (dx). Así nace la notación de Leibniz:
+        </p>
+        <div class="math-block" style="text-align:center; font-size:1.3rem;">
+          <span class="integral-symbol">∫</span> f(x) dx
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: PRIMITIVA Y TABLA DE INTEGRALES -->
+    <!-- ===================================================================== -->
+    <div id="tab-primitiva" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Primitivas e Integrales Inmediatas</h2>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">¿Qué es una función Primitiva F(x)?</span>
+        <div class="step-title">La operación inversa de la derivada</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Decimos que <strong>F(x)</strong> es una primitiva de <strong>f(x)</strong> si al derivar la primera obtenemos la segunda: <strong>F'(x) = f(x)</strong>.
+        </p>
+        <div class="math-block" style="text-align:center; font-size:1.2rem;">
+          <span class="integral-symbol">∫</span> f(x) dx = F(x) + C
+        </div>
+        <p style="margin:0.5rem 0 0 0; font-size:0.9rem; color:var(--text-muted); line-height:1.6;">
+          <em>¿Por qué añadimos "+ C"?</em> Porque la derivada de cualquier constante es 0. Existen infinitas funciones primitivas paralelas que varían solo en su altura vertical (C). Al conjunto de todas ellas lo llamamos <strong>Integral Indefinida</strong>.
+        </p>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Tabla de Supervivencia: Integrales Inmediatas</span>
+        <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">
+          Debes saberlas de memoria, reconociendo siempre a la función "u" y su derivada multiplicando "u'".
+        </p>
+        
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Función a integrar</th>
+              <th>Primitiva + C</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="integral-symbol">∫</span> x<sup>n</sup> dx</td>
+              <td><span class="frac-wrap"><span class="frac-num">x<sup>n+1</sup></span><span class="frac-den">n + 1</span></span> + C &nbsp;&nbsp;<em>(si n ≠ -1)</em></td>
+            </tr>
+            <tr>
+              <td><span class="integral-symbol">∫</span> <span class="frac-wrap"><span class="frac-num">1</span><span class="frac-den">x</span></span> dx</td>
+              <td>ln |x| + C</td>
+            </tr>
+            <tr>
+              <td><span class="integral-symbol">∫</span> e<sup>x</sup> dx</td>
+              <td>e<sup>x</sup> + C</td>
+            </tr>
+            <tr>
+              <td><span class="integral-symbol">∫</span> sen(x) dx</td>
+              <td>-cos(x) + C &nbsp;&nbsp;<em>(¡Ojo al signo menos!)</em></td>
+            </tr>
+            <tr>
+              <td><span class="integral-symbol">∫</span> cos(x) dx</td>
+              <td>sen(x) + C</td>
+            </tr>
+            <tr>
+              <td><span class="integral-symbol">∫</span> <span class="frac-wrap"><span class="frac-num">u'</span><span class="frac-den">1 + u²</span></span> dx</td>
+              <td>arctan(u) + C</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: CAMBIO DE VARIABLE -->
+    <!-- ===================================================================== -->
+    <div id="tab-sustitucion" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Método de Sustitución (Cambio de Variable)</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Se utiliza cuando detectamos una función compuesta y, mágicamente, <strong>su derivada (o casi) está multiplicando fuera</strong>. Es la Regla de la Cadena aplicada al revés.
+      </p>
+
+      <div class="step-card" style="border-left-color: var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">Problema Modelo Resuelto Paso a Paso</span>
+        <div class="step-title">Calcular: <span class="integral-symbol">∫</span> <span class="frac-wrap"><span class="frac-num">x</span><span class="frac-den"><span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">x² + 1</span></span></span></span> dx</div>
+
+        <div class="math-block">
+          <strong>1. Elegir el cambio (lo más "feo" dentro de una raíz/potencia):</strong><br>
+          Sea <strong>u = x² + 1</strong><br><br>
+
+          <strong>2. Diferenciar ambos lados:</strong><br>
+          Derivamos: du = 2x dx<br>
+          Despejamos lo que tenemos en nuestra integral (x dx):<br>
+          <strong>x dx = <span class="frac-wrap"><span class="frac-num">du</span><span class="frac-den">2</span></span></strong><br><br>
+
+          <strong>3. Sustituir todo al nuevo mundo "u":</strong><br>
+          <span class="integral-symbol">∫</span> <span class="frac-wrap"><span class="frac-num">1</span><span class="frac-den"><span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">u</span></span></span></span> · <span class="frac-wrap"><span class="frac-num">du</span><span class="frac-den">2</span></span> = <span class="frac-wrap"><span class="frac-num">1</span><span class="frac-den">2</span></span> <span class="integral-symbol">∫</span> u<sup>-1/2</sup> du<br><br>
+
+          <strong>4. Integrar la forma inmediata:</strong><br>
+          <span class="frac-wrap"><span class="frac-num">1</span><span class="frac-den">2</span></span> · <span class="frac-wrap"><span class="frac-num">u<sup>1/2</sup></span><span class="frac-den">1/2</span></span> = u<sup>1/2</sup> = <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">u</span></span><br><br>
+
+          <strong>5. Deshacer el cambio (volver a las "x"):</strong><br>
+          <strong style="color:var(--accent-gold); font-size:1.15rem;"><span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">x² + 1</span></span> + C</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 4: INTEGRACIÓN POR PARTES -->
+    <!-- ===================================================================== -->
+    <div id="tab-partes" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Integración por Partes</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Es el salvavidas cuando tenemos un <strong>producto de dos funciones de distinta naturaleza</strong> (ej. un polinomio multiplicado por una exponencial, o un logaritmo).
+      </p>
+
+      <div class="step-card" style="border-left-color: var(--accent-blue);">
+        <span class="step-num" style="color:var(--accent-blue);">La Fórmula y el Truco de la Vaca</span>
+        <div class="math-block" style="text-align:center; font-size:1.3rem;">
+          <span class="integral-symbol">∫</span> u dv = u · v - <span class="integral-symbol">∫</span> v du
+        </div>
+        <p style="margin:0.5rem 0 0 0; font-size:0.95rem; font-style:italic; text-align:center;">
+          "Un Día Vi = Una Vaca - sin Cola Vestida De Uniforme"
+        </p>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">¿Cómo elegir "u" y "dv"? La Regla ALPES</span>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Para que la integral no se complique más, elegimos como <strong>"u"</strong> (lo que vamos a derivar) la primera función que aparezca en este orden jerárquico:
+        </p>
+        <div class="math-block">
+          <strong>A</strong> - Arcos (arcsen, arctan...)<br>
+          <strong>L</strong> - Logaritmos (ln x)<br>
+          <strong>P</strong> - Polinomios (x, x²...)<br>
+          <strong>E</strong> - Exponenciales (e<sup>x</sup>)<br>
+          <strong>S</strong> - Senos/Cosenos (sen x, cos x)
+        </div>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Ejemplo Clásico: <span class="integral-symbol">∫</span> x · e<sup>x</sup> dx</span>
+        <div class="math-block">
+          <strong>1. Elección (ALPES):</strong> Polinomio (x) va antes que Exponencial (e<sup>x</sup>).<br>
+          • <strong>u = x</strong> ➔ Derivamos: <strong>du = dx</strong><br>
+          • <strong>dv = e<sup>x</sup> dx</strong> ➔ Integramos: <strong>v = e<sup>x</sup></strong><br><br>
+
+          <strong>2. Aplicar fórmula de la Vaca:</strong><br>
+          <span class="integral-symbol">∫</span> x e<sup>x</sup> dx = x · e<sup>x</sup> - <span class="integral-symbol">∫</span> e<sup>x</sup> dx<br><br>
+
+          <strong>3. Resolver la integral final:</strong><br>
+          <strong style="color:var(--accent-gold); font-size:1.15rem;">x · e<sup>x</sup> - e<sup>x</sup> + C</strong> &nbsp;&nbsp;<em>(Sacando factor común: e<sup>x</sup>(x - 1) + C)</em>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 5: ENTRENADOR INTERACTIVO ALPES -->
+    <!-- ===================================================================== -->
+    <div id="tab-entrenador" class="tab-content">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; font-size:1.3rem;">Gimnasio: Maestro de ALPES</h2>
+        <button class="btn btn-secondary" onclick="generateAlpesChallenge()" style="padding:0.4rem 0.8rem; font-size:0.85rem;">
+          🎲 Nueva Integral
+        </button>
+      </div>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Aplica la regla ALPES para decidir qué parte de la integral será <strong>u</strong> (la que derivarás) y qué parte será <strong>dv</strong> (la que integrarás).
+      </p>
+
+      <div class="math-block" id="alpesStatement" style="text-align:center; font-size:1.4rem; padding:1.5rem; color:var(--accent-blue);">
+        Cargando integral...
+      </div>
+
+      <div class="ans-row">
+        <div class="cramer-input-box">
+          <label style="font-weight:700;">Elección de u:</label>
+          <select id="sel_u" class="ans-select">
+            <option value="none">-- Selecciona --</option>
+            <option value="A">Arcos (arcsen/arctan)</option>
+            <option value="L">Logaritmos (ln)</option>
+            <option value="P">Polinomios (xⁿ)</option>
+            <option value="E">Exponenciales (eˣ)</option>
+            <option value="S">Senos/Cosenos</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="checkAlpesChallenge()">Comprobar 🎯</button>
+      </div>
+
+      <div id="alpesFeedback" class="feedback-box">
+        <div id="alpesFbText" style="font-weight:bold; font-size:1.05rem; margin-bottom:0.4rem;"></div>
+        <div id="alpesSteps" style="font-family:monospace; line-height:2.2;"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      if (tabId === 'concepto') drawRiemann();
+    }
+
+    // =========================================================================
+    // SIMULADOR DE SUMAS DE RIEMANN (TAB 1)
+    // =========================================================================
+    // Función a integrar: f(x) = -x^2 + 6x  (Parábola invertida, raíces en 0 y 6)
+    function f(x) {
+      return -x * x + 6 * x;
+    }
+    // Integral exacta en [0, 6]: F(x) = -x^3/3 + 3x^2 => F(6) = -216/3 + 3(36) = -72 + 108 = 36.
+    const EXACT_AREA = 36;
+
+    function drawRiemann() {
+      const cv = document.getElementById('canvasRiemann');
+      if (!cv) return;
+      const ctx = cv.getContext('2d');
+      const w = cv.width, h = cv.height;
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+      ctx.clearRect(0, 0, w, h);
+
+      const n = parseInt(document.getElementById('sl_n').value, 10);
+      document.getElementById('lbl_n').textContent = n;
+
+      const a = 0;
+      const b = 6;
+      const dx = (b - a) / n;
+      let sumArea = 0;
+
+      // Escalas de dibujo
+      const padX = 40;
+      const padY = 30;
+      const originX = padX;
+      const originY = h - padY;
+      const drawW = w - 2 * padX;
+      const scaleX = drawW / (b - a);
+      const scaleY = (h - 2 * padY) / 10; // Max altura de f(x) es f(3) = 9
+
+      // Dibujar rectángulos (Suma por la izquierda)
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.4)'; // Azul transparente
+      ctx.strokeStyle = '#0284c7';
+      ctx.lineWidth = 1;
+
+      for (let i = 0; i < n; i++) {
+        const xi = a + i * dx;
+        const fi = f(xi);
+        const rectArea = fi * dx;
+        sumArea += rectArea;
+
+        const px = originX + xi * scaleX;
+        const pw = dx * scaleX;
+        const ph = fi * scaleY;
+        const py = originY - ph;
+
+        if (ph > 0) {
+          ctx.fillRect(px, py, pw, ph);
+          if (n < 60) {
+            ctx.strokeRect(px, py, pw, ph);
+          }
+        }
+      }
+
+      // Dibujar la curva f(x) perfecta
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      for (let px = 0; px <= drawW; px += 2) {
+        const x = a + px / scaleX;
+        const y = f(x);
+        const py = originY - y * scaleY;
+        if (px === 0) ctx.moveTo(originX + px, py);
+        else ctx.lineTo(originX + px, py);
+      }
+      ctx.stroke();
+
+      // Ejes
+      ctx.strokeStyle = isLight ? '#94a3b8' : '#475569';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(10, originY); ctx.lineTo(w - 10, originY); // X
+      ctx.moveTo(originX, 10); ctx.lineTo(originX, h - 10); // Y
+      ctx.stroke();
+
+      // Textos
+      ctx.fillStyle = isLight ? '#0f172a' : '#ffffff';
+      ctx.font = 'bold 12px monospace';
+      ctx.fillText('0', originX - 12, originY + 15);
+      ctx.fillText('6', originX + drawW - 5, originY + 15);
+      ctx.fillText('f(x) = -x² + 6x', originX + 20, 20);
+
+      // Actualizar Métricas
+      const errorStr = Math.abs(EXACT_AREA - sumArea).toFixed(3);
+      document.getElementById('boxRiemannMetrics').innerHTML = `
+        <span style="display:inline-block; margin-right:1rem;">Área de los rectángulos: <strong>${sumArea.toFixed(3)}</strong> u²</span>
+        <span style="display:inline-block;">Área Exacta de la Integral: <strong style="color:var(--accent-gold);">${EXACT_AREA}</strong> u²</span><br>
+        <span style="font-size:0.85rem; color:var(--text-muted);">Error de aproximación: ${errorStr} u²</span>
+      `;
+    }
+
+    // =========================================================================
+    // ENTRENADOR ALPES (TAB 5)
+    // =========================================================================
+    let currentAlpes = null;
+
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function generateAlpesChallenge() {
+      // Tipos: A, L, P, E, S
+      const cases = [
+        { typeU: 'L', typeDV: 'P', html: 'x² · ln(x)', ans: 'L', expl: 'El Logaritmo (L) va antes que el Polinomio (P) en ALPES. Por tanto, u = ln(x).' },
+        { typeU: 'P', typeDV: 'E', html: 'x · e<sup>3x</sup>', ans: 'P', expl: 'El Polinomio (P) va antes que la Exponencial (E) en ALPES. Por tanto, u = x.' },
+        { typeU: 'A', typeDV: 'P', html: 'arctan(x)', ans: 'A', expl: '¡Truco clásico! Es como tener 1 · arctan(x). El Arco (A) va antes que el Polinomio oculto (1). Por tanto, u = arctan(x).' },
+        { typeU: 'P', typeDV: 'S', html: 'x² · sen(x)', ans: 'P', expl: 'El Polinomio (P) va antes que el Seno (S). Por tanto, u = x².' },
+        { typeU: 'E', typeDV: 'S', html: 'e<sup>x</sup> · cos(x)', ans: 'E', expl: 'La Exponencial (E) va antes que el Coseno (S). Por tanto, u = eˣ. (Es una integral cíclica famosa).' }
+      ];
+
+      currentAlpes = cases[randomInt(0, cases.length - 1)];
+
+      document.getElementById('alpesStatement').innerHTML = `
+        <span class="integral-symbol">∫</span> ( ${currentAlpes.html} ) dx
+      `;
+
+      document.getElementById('alpesFeedback').style.display = 'none';
+      document.getElementById('sel_u').value = 'none';
+    }
+
+    function checkAlpesChallenge() {
+      if (!currentAlpes) return;
+      const userSel = document.getElementById('sel_u').value;
+
+      if (userSel === 'none') {
+        alert('Por favor, selecciona qué tipo de función será "u".');
+        return;
+      }
+
+      const isOk = (userSel === currentAlpes.ans);
+      const fb = document.getElementById('alpesFeedback');
+      const txt = document.getElementById('alpesFbText');
+      const steps = document.getElementById('alpesSteps');
+
+      fb.style.display = 'block';
+
+      if (isOk) {
+        fb.className = 'feedback-box feedback-success';
+        txt.textContent = '¡Correcto! Has aplicado la regla ALPES a la perfección 🎯';
+      } else {
+        fb.className = 'feedback-box feedback-error';
+        txt.textContent = `Elección incorrecta. La respuesta correcta era "${currentAlpes.ans}".`;
+      }
+
+      steps.innerHTML = currentAlpes.expl;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      drawRiemann();
+      generateAlpesChallenge();
+    });
+  </script>
+</body>
+</html>

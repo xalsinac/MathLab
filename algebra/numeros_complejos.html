@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Números Complejos | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border-color: var(--accent-blue);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* TARJETAS DE PASO A PASO */
+    .step-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .step-num {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-blue);
+    }
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .math-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem 1.3rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      color: #fff;
+      line-height: 2.2;
+    }
+    [data-theme="light"] .math-block {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* COMPONENTES DE FRACCIONES Y RAÍCES LIMPIAS */
+    .frac-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 0.25rem;
+      line-height: 1.15;
+      font-size: 0.95em;
+    }
+    .frac-num {
+      border-bottom: 1.8px solid currentColor;
+      padding: 0 0.2rem 2px 0.2rem;
+      display: block;
+    }
+    .frac-den {
+      padding: 2px 0.2rem 0 0.2rem;
+      display: block;
+    }
+
+    .radic-wrap {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 0.15rem;
+    }
+    .radic-symbol {
+      font-size: 1.25rem;
+      line-height: 1;
+      padding-right: 1px;
+      user-select: none;
+    }
+    .radic-content {
+      border-top: 1.8px solid currentColor;
+      padding: 0 0.25rem;
+      display: inline-block;
+      line-height: 1.15;
+    }
+
+    /* SIMULADOR PLANO DE ARGAND */
+    .complex-sim-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      gap: 1rem;
+    }
+    .complex-canvas {
+      background: #060911;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-width: 100%;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+    }
+    [data-theme="light"] .complex-canvas {
+      background: #ffffff !important;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 600px;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .slider-row input[type="range"] {
+      flex: 1;
+      min-width: 180px;
+      accent-color: var(--accent-blue);
+      cursor: pointer;
+    }
+
+    .badge-highlight {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--accent-blue);
+      border-radius: 6px;
+      color: var(--accent-blue);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    /* INPUTS ENTRENADOR */
+    .ans-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .ans-input {
+      width: 110px;
+      padding: 0.6rem 0.4rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      font-family: monospace;
+      text-align: center;
+      background: var(--bg-primary);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      outline: none;
+    }
+    .ans-input:focus { border-color: var(--accent-blue); }
+
+    .feedback-box {
+      display: none;
+      border-radius: 8px;
+      padding: 1.2rem;
+      font-size: 0.95rem;
+      line-height: 2.1;
+    }
+    .feedback-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--accent-success);
+      color: #34d399;
+    }
+    .feedback-error {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--accent-op);
+      color: #fb7185;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Números Complejos (ℂ) 🌀</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+      <span class="badge" style="color: var(--accent-blue);">1º Bachillerato Científico</span>
+      <div class="content-text">
+        ¿Qué ocurre cuando intentamos resolver <strong>x² + 1 = 0</strong>? Durante siglos se consideró un callejón sin salida. Los <strong>números complejos</strong> amplían la recta real unidimensional a un <strong>plano bidimensional</strong>, permitiendo resolver cualquier ecuación algebraica y modelar ondas, electromagnetismo y mecánica cuántica.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('origen', this)">1. ¿Qué es i? Origen y Potencias</button>
+      <button class="tab-btn" onclick="switchTab('plano', this)">2. El Plano de Argand y Forma Polar</button>
+      <button class="tab-btn" onclick="switchTab('operaciones', this)">3. Operaciones y De Moivre</button>
+      <button class="tab-btn" onclick="switchTab('euler', this)">4. La Fórmula de Euler</button>
+      <button class="tab-btn" onclick="switchTab('entrenador', this)">5. 🎯 Ponte a Prueba</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: ORIGEN Y POTENCIAS DE I -->
+    <!-- ===================================================================== -->
+    <div id="tab-origen" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem;">La Unidad Imaginaria (i)</h2>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">El Nacimiento de los Imaginarios</span>
+        <div class="step-title">Resolver lo imposible: Raíces cuadradas de números negativos</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Ningún número real al cuadrado da un resultado negativo: (+2)² = +4 y (-2)² = +4. Para resolver <strong>x² = -1</strong>, definimos un nuevo número llamado <strong>unidad imaginaria i</strong>:
+        </p>
+        <div class="math-block" style="text-align:center;">
+          <strong>i = <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">-1</span></span></strong>
+          &nbsp;&nbsp;&nbsp;&nbsp;➔&nbsp;&nbsp;&nbsp;&nbsp;
+          <strong>i² = -1</strong>
+        </div>
+        <p style="margin:0.5rem 0 0 0; font-size:0.95rem; line-height:1.6;">
+          Ahora cualquier raíz negativa se descompone de forma limpia:
+          <br>
+          <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">-9</span></span> = <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">9 · (-1)</span></span> = <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">9</span></span> · <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">-1</span></span> = <strong>±3i</strong>.
+        </p>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Ciclo Periódico de las Potencias de i</span>
+        <div class="step-title">Multiplicar por i equivale geométricamente a girar 90° en el plano</div>
+        <div class="math-block">
+          • i⁰ = <strong>1</strong><br>
+          • i¹ = <strong>i</strong><br>
+          • i² = <strong>-1</strong><br>
+          • i³ = i² · i = (-1) · i = <strong>-i</strong><br>
+          • i⁴ = i² · i² = (-1) · (-1) = <strong>1</strong> &nbsp;<em>(¡El ciclo se repite cada 4 pasos!)</em>
+        </div>
+        <div style="font-weight:bold; margin-top:0.6rem;">¿Cómo calcular potencias elevadas (ej: i¹³⁵)?</div>
+        <div class="math-block">
+          Dividimos el exponente entre 4 y nos quedamos con el <strong>resto</strong>:<br>
+          135 ÷ 4 = cociente 33 con <strong>resto 3</strong>.<br>
+          ➔ i¹³⁵ = i³ = <strong>-i</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: EL PLANO DE ARGAND Y FORMA POLAR -->
+    <!-- ===================================================================== -->
+    <div id="tab-plano" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">El Plano Complejo (Argand): Forma Binómica y Polar</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Un número complejo <strong>z</strong> no cabe en la recta numérica real. Necesita dos dimensiones: un <strong>Eje Real horizontal (Re)</strong> y un <strong>Eje Imaginario vertical (Im)</strong>.
+      </p>
+
+      <div class="step-card">
+        <span class="step-num">Las Dos Formas de Representación</span>
+        <div class="math-block">
+          • <strong>Forma Binómica:</strong> z = <strong>a + bi</strong> &nbsp;&nbsp;<em>(a = parte real, b = parte imaginaria)</em><br>
+          • <strong>Forma Polar:</strong> z = <strong>r<sub>α</sub></strong> &nbsp;&nbsp;<em>(r = módulo, α = argumento)</em>
+        </div>
+      </div>
+
+      <!-- SIMULADOR VISUAL DEL VECTOR COMPLEJO -->
+      <div class="complex-sim-container">
+        <div style="font-weight:bold; color:var(--accent-blue); font-size:1.05rem;">
+          Laboratorio Vectorial: De Binómica a Polar en Tiempo Real
+        </div>
+
+        <div class="slider-row">
+          <label style="font-weight:700;">Parte Real (a = <span id="lbl_a" style="color:#38bdf8;">3</span>):</label>
+          <input type="range" id="sl_a" min="-5" max="5" step="1" value="3" oninput="drawArgandPlane()">
+        </div>
+
+        <div class="slider-row">
+          <label style="font-weight:700;">Parte Imaginaria (b = <span id="lbl_b" style="color:#f59e0b;">4</span>):</label>
+          <input type="range" id="sl_b" min="-5" max="5" step="1" value="4" oninput="drawArgandPlane()">
+        </div>
+
+        <canvas id="canvasArgand" class="complex-canvas" width="460" height="340"></canvas>
+
+        <div class="math-block" id="boxPolarMetrics" style="width:100%; max-width:600px; line-height:2;"></div>
+      </div>
+
+      <div class="step-card" style="border-left-color:var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Fórmulas de Conversión Directa</span>
+        <div class="math-block">
+          1. <strong>Módulo (Teorema de Pitágoras):</strong> r = |z| = <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">a² + b²</span></span><br>
+          2. <strong>Argumento (Trigonometría):</strong> α = arctan( <span class="frac-wrap"><span class="frac-num">b</span><span class="frac-den">a</span></span> ) &nbsp;<em>(ajustando según el cuadrante: +180° si a &lt; 0)</em><br>
+          3. <strong>Paso de Polar a Binómica (Forma Trigonométrica):</strong> a = r · cos(α) &nbsp;|&nbsp; b = r · sen(α)
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: OPERACIONES Y FÓRMULA DE DE MOIVRE -->
+    <!-- ===================================================================== -->
+    <div id="tab-operaciones" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Operaciones con Números Complejos</h2>
+
+      <div class="step-card">
+        <span class="step-num">1. Operaciones en Forma Binómica (Suma, Resta y División)</span>
+        <div class="math-block">
+          • <strong>Suma y Resta:</strong> Se suman o restan componentes reales entre sí e imaginarias entre sí:<br>
+          &nbsp;&nbsp;&nbsp;(3 + 2i) + (1 - 5i) = (3 + 1) + (2 - 5)i = <strong>4 - 3i</strong><br><br>
+          • <strong>Conjugado:</strong> Dado z = a + bi, su conjugado es <strong>z̄ = a - bi</strong> (simétrico respecto al eje real).<br><br>
+          • <strong>División:</strong> Se multiplica numerador y denominador por el conjugado del divisor para eliminar la i del denominador:<br>
+          &nbsp;&nbsp;&nbsp;<span class="frac-wrap"><span class="frac-num">2 + 3i</span><span class="frac-den">1 - i</span></span> = <span class="frac-wrap"><span class="frac-num">(2 + 3i) · (1 + i)</span><span class="frac-den">(1 - i) · (1 + i)</span></span> = <span class="frac-wrap"><span class="frac-num">2 + 2i + 3i + 3i²</span><span class="frac-den">1² - i²</span></span> = <span class="frac-wrap"><span class="frac-num">2 + 5i - 3</span><span class="frac-den">1 - (-1)</span></span> = <span class="frac-wrap"><span class="frac-num">-1 + 5i</span><span class="frac-den">2</span></span> = <strong style="color:var(--accent-gold);">-0,5 + 2,5i</strong>
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">2. Multiplicación y División en Forma Polar: La Ventaja Geométrica</span>
+        <div class="step-title">En polar, multiplicar es girar y escalar</div>
+        <div class="math-block">
+          Sean dos complejos en polar: z₁ = (r₁)<sub>α</sub> &nbsp;y&nbsp; z₂ = (r₂)<sub>β</sub>:<br><br>
+          • <strong>Producto:</strong> z₁ · z₂ = (r₁ · r₂)<sub>α + β</sub><br><br>
+          • <strong>Cociente:</strong> <span class="frac-wrap"><span class="frac-num">z₁</span><span class="frac-den">z₂</span></span> = ( <span class="frac-wrap"><span class="frac-num">r₁</span><span class="frac-den">r₂</span></span> )<sub>α - β</sub>
+          &nbsp;&nbsp;&nbsp;<span class="frac-wrap"><span class="frac-num">z₁</span><span class="frac-den">z₂</span></span> = ( <span class="frac-wrap"><span class="frac-num">r₁</span><span class="frac-den">r₂</span></span> )_{α - β}
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">3. Potencias: Fórmula de De Moivre</span>
+        <div class="step-title">Calcular (1 + i)¹⁰ sin desarrollar binomios interminables</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Elevar a una potencia <strong>n</strong> en forma polar es directo: el módulo se eleva a la potencia y el ángulo se multiplica por <strong>n</strong>:
+        </p>
+        <div class="math-block" style="text-align:center; font-size:1.15rem;">
+          ( r<sub>α</sub> )<sup>n</sup> = (r<sup>n</sup>)<sub>n · α</sub> = r<sup>n</sup> · [ cos(nα) + i · sen(nα) ]
+        </div>
+        <div class="math-block" style="margin-top:0.4rem;">
+          Ejemplo: z = 1 + i ➔ Módulo r = <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">1² + 1²</span></span> = <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">2</span></span> ; Ángulo α = 45° ➔ z = (<span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">2</span></span>)<sub>45°</sub><br><br>
+          z⁶ = [ (<span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">2</span></span>)<sub>45°</sub> ]⁶ = [ (<span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">2</span></span>)⁶ ]<sub>6 · 45°</sub> = <strong>8<sub>270°</sub></strong> = <strong>-8i</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 4: LA IDENTIDAD DE EULER -->
+    <!-- ===================================================================== -->
+    <div id="tab-euler" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">La Fórmula y la Identidad de Euler</h2>
+
+      <div class="step-card" style="border-left-color: var(--accent-blue);">
+        <span class="step-num" style="color:var(--accent-blue);">La Fórmula de Euler</span>
+        <div class="step-title">Conectar la función exponencial con la trigonometría</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Leonhard Euler demostró que la base natural <strong>e</strong> elevada a un exponente imaginario traza una trayectoria circular en el plano complejo:
+        </p>
+        <div class="math-block" style="text-align:center;">
+          e^(iθ) = cos(θ) + i · sen(θ)
+        </div>
+        <p style="margin:0.4rem 0 0 0; font-size:0.95rem; line-height:1.6;">
+          Esto permite expresar cualquier número complejo en <strong>forma exponencial</strong>: <strong>z = r · e^(iα)</strong>.
+        </p>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">La Identidad Más Bella de las Matemáticas</span>
+        <div class="step-title">¿Qué ocurre cuando el ángulo es exactamente π radianes (180°)?</div>
+        <div class="math-block">
+          Sustituyendo θ = π en la fórmula de Euler:<br>
+          e^(iπ) = cos(π) + i · sen(π)<br>
+          Como cos(π) = -1 y sen(π) = 0:<br>
+          e^(iπ) = -1 + 0i = -1<br><br>
+          Pasando el 1 sumando al miembro izquierdo obtenemos:
+          <div style="text-align:center; font-size:1.4rem; font-weight:bold; color:var(--accent-gold); margin:0.8rem 0;">
+            e^(iπ) + 1 = 0
+          </div>
+          Esta fórmula unifica las 5 constantes capitales del universo matemático en una sola ecuación:
+          <ul style="margin:0.4rem 0 0 0; padding-left:1.4rem; font-size:0.95rem;">
+            <li><strong>e:</strong> La base del cálculo y del crecimiento natural.</li>
+            <li><strong>i:</strong> La unidad imaginaria del álgebra.</li>
+            <li><strong>π:</strong> La constante geométrica del círculo.</li>
+            <li><strong>1:</strong> El elemento neutro de la multiplicación.</li>
+            <li><strong>0:</strong> El elemento neutro de la suma.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 5: ENTRENADOR INTERACTIVO -->
+    <!-- ===================================================================== -->
+    <div id="tab-entrenador" class="tab-content">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; font-size:1.3rem;">Gimnasio de Conversión a Polar</h2>
+        <button class="btn btn-secondary" onclick="generateComplexChallenge()" style="padding:0.4rem 0.8rem; font-size:0.85rem;">
+          🎲 Nuevo Reto
+        </button>
+      </div>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Dado el número complejo en forma binómica, calcula su <strong>módulo r</strong> y su <strong>argumento principal α en grados [0°, 360°)</strong>:
+      </p>
+
+      <div class="math-block" id="complexStatement" style="text-align:center; font-size:1.4rem; padding:1.25rem; color:var(--accent-blue);">
+        Cargando complejo...
+      </div>
+
+      <div class="ans-row">
+        <div style="display:flex; align-items:center; gap:0.4rem;">
+          <label style="font-weight:700;">Módulo r =</label>
+          <input type="number" step="any" id="in_r" class="ans-input" placeholder="r">
+        </div>
+        <div style="display:flex; align-items:center; gap:0.4rem;">
+          <label style="font-weight:700;">Ángulo α =</label>
+          <input type="number" step="any" id="in_angle" class="ans-input" placeholder="grados">
+          <span style="font-weight:bold;">°</span>
+        </div>
+        <button class="btn btn-primary" onclick="checkComplexChallenge()">Comprobar 🎯</button>
+      </div>
+
+      <div id="complexFeedback" class="feedback-box">
+        <div id="complexFbText" style="font-weight:bold; font-size:1.05rem; margin-bottom:0.4rem;"></div>
+        <div id="complexSteps" style="font-family:monospace; line-height:2.2;"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      if (tabId === 'plano') drawArgandPlane();
+    }
+
+    // =========================================================================
+    // DIBUJO DEL PLANO DE ARGAND
+    // =========================================================================
+    function drawArgandPlane() {
+      const cv = document.getElementById('canvasArgand');
+      if (!cv) return;
+      const ctx = cv.getContext('2d');
+      const w = cv.width, h = cv.height;
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+      ctx.clearRect(0, 0, w, h);
+
+      const a = parseInt(document.getElementById('sl_a').value, 10);
+      const b = parseInt(document.getElementById('sl_b').value, 10);
+
+      document.getElementById('lbl_a').textContent = a;
+      document.getElementById('lbl_b').textContent = b >= 0 ? `+${b}` : b;
+
+      const r = Math.sqrt(a * a + b * b);
+      let deg = Math.atan2(b, a) * (180 / Math.PI);
+      if (deg < 0) deg += 360;
+
+      const box = document.getElementById('boxPolarMetrics');
+      box.innerHTML = `
+        <strong>Estado analítico del complejo:</strong><br>
+        • Forma Binómica: <strong>z = ${a} ${b >= 0 ? '+ ' + b : '- ' + Math.abs(b)}i</strong><br>
+        • Módulo: r = √(${a}² + (${b})²) = √(${a*a + b*b}) = <strong style="color:var(--accent-gold);">${r.toFixed(2)}</strong><br>
+        • Argumento: α = <strong style="color:var(--accent-gold);">${deg.toFixed(1)}°</strong> (${(deg * Math.PI / 180).toFixed(2)} rad)<br>
+        • Forma Polar: <strong style="color:#38bdf8;">z = (${r.toFixed(2)})<sub>${deg.toFixed(1)}°</sub></strong>
+      `;
+
+      const originX = w / 2;
+      const originY = h / 2;
+      const scale = 28;
+
+      // Rejilla
+      ctx.strokeStyle = isLight ? '#e2e8f0' : '#1e293b';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let x = originX % scale; x < w; x += scale) {
+        ctx.moveTo(x, 0); ctx.lineTo(x, h);
+      }
+      for (let y = originY % scale; y < h; y += scale) {
+        ctx.moveTo(0, y); ctx.lineTo(w, y);
+      }
+      ctx.stroke();
+
+      // Ejes
+      ctx.strokeStyle = isLight ? '#94a3b8' : '#475569';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, originY); ctx.lineTo(w, originY);
+      ctx.moveTo(originX, 0); ctx.lineTo(originX, h);
+      ctx.stroke();
+
+      ctx.fillStyle = isLight ? '#64748b' : '#94a3b8';
+      ctx.font = 'bold 12px monospace';
+      ctx.fillText('Re (+)', w - 42, originY - 8);
+      ctx.fillText('Im (i)', originX + 8, 16);
+
+      const targetX = originX + a * scale;
+      const targetY = originY - b * scale;
+
+      // Componentes triangulares
+      ctx.strokeStyle = isLight ? '#94a3b8' : '#64748b';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(originX, originY);
+      ctx.lineTo(targetX, originY);
+      ctx.lineTo(targetX, targetY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Arco del ángulo
+      if (r > 0.5) {
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        const endAngle = -deg * (Math.PI / 180);
+        ctx.arc(originX, originY, 30, 0, endAngle, true);
+        ctx.stroke();
+
+        ctx.fillStyle = '#f59e0b';
+        ctx.font = 'bold 11px monospace';
+        ctx.fillText(`α`, originX + 36 * Math.cos(endAngle / 2), originY + 36 * Math.sin(endAngle / 2));
+      }
+
+      // Vector fasor
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(originX, originY);
+      ctx.lineTo(targetX, targetY);
+      ctx.stroke();
+
+      // Punta de la flecha
+      const headlen = 10;
+      const angle = Math.atan2(targetY - originY, targetX - originX);
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.moveTo(targetX, targetY);
+      ctx.lineTo(targetX - headlen * Math.cos(angle - Math.PI / 6), targetY - headlen * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(targetX - headlen * Math.cos(angle + Math.PI / 6), targetY - headlen * Math.sin(angle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+
+      // Punto afijo
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(targetX, targetY, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.fillStyle = isLight ? '#0f172a' : '#ffffff';
+      ctx.font = 'bold 12px monospace';
+      ctx.fillText(`P(${a}, ${b})`, targetX + 10, targetY - 10);
+    }
+
+    // =========================================================================
+    // ENTRENADOR PARAMÉTRICO
+    // =========================================================================
+    let currentChallenge = null;
+
+    function randomInt(min, max, exclude = []) {
+      let res;
+      do {
+        res = Math.floor(Math.random() * (max - min + 1)) + min;
+      } while (exclude.includes(res));
+      return res;
+    }
+
+    function generateComplexChallenge() {
+      const presets = [
+        { a: 3, b: 4, r: 5, deg: 53.1 },
+        { a: -3, b: 4, r: 5, deg: 126.9 },
+        { a: 4, b: 0, r: 4, deg: 0 },
+        { a: 0, b: 5, r: 5, deg: 90 },
+        { a: -6, b: 0, r: 6, deg: 180 },
+        { a: 0, b: -7, r: 7, deg: 270 },
+        { a: 2, b: 2, r: 2.83, deg: 45 },
+        { a: -2, b: 2, r: 2.83, deg: 135 },
+        { a: -3, b: -3, r: 4.24, deg: 225 },
+        { a: 3, b: -3, r: 4.24, deg: 315 }
+      ];
+
+      const item = presets[randomInt(0, presets.length - 1)];
+
+      currentChallenge = {
+        a: item.a,
+        b: item.b,
+        r: item.r,
+        deg: item.deg
+      };
+
+      const bStr = item.b === 0 ? '' : (item.b === 1 ? ' + i' : (item.b === -1 ? ' - i' : (item.b > 0 ? ` + ${item.b}i` : ` - ${Math.abs(item.b)}i`)));
+      const aStr = item.a === 0 && item.b !== 0 ? '' : item.a;
+
+      document.getElementById('complexStatement').innerHTML = `
+        z = ${aStr}${bStr}
+      `;
+
+      document.getElementById('complexFeedback').style.display = 'none';
+      document.getElementById('in_r').value = '';
+      document.getElementById('in_angle').value = '';
+    }
+
+    function checkComplexChallenge() {
+      if (!currentChallenge) return;
+
+      const userR = parseFloat(document.getElementById('in_r').value);
+      const userDeg = parseFloat(document.getElementById('in_angle').value);
+
+      if (isNaN(userR) || isNaN(userDeg)) {
+        alert('Por favor, introduce el módulo r y el ángulo α.');
+        return;
+      }
+
+      const isROk = Math.abs(userR - currentChallenge.r) < 0.08;
+      const isDegOk = Math.abs(userDeg - currentChallenge.deg) < 1.0;
+
+      const fb = document.getElementById('complexFeedback');
+      const txt = document.getElementById('complexFbText');
+      const steps = document.getElementById('complexSteps');
+
+      fb.style.display = 'block';
+
+      if (isROk && isDegOk) {
+        fb.className = 'feedback-box feedback-success';
+        txt.textContent = '¡Correcto! Has convertido el número complejo a polar a la perfección 🎯';
+      } else {
+        fb.className = 'feedback-box feedback-error';
+        txt.textContent = `Resultado incorrecto. Los valores exactos son r = ${currentChallenge.r} y α = ${currentChallenge.deg}°. Revisa los pasos:`;
+      }
+
+      const a = currentChallenge.a;
+      const b = currentChallenge.b;
+
+      steps.innerHTML = `
+        1. Módulo r = <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">a² + b²</span></span> = <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">(${a})² + (${b})²</span></span> = <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">${a*a + b*b}</span></span> ≈ <strong style="color:var(--accent-gold);">${currentChallenge.r}</strong><br>
+        2. Argumento α:<br>
+        &nbsp;&nbsp;&nbsp;• Si está sobre un eje: revisa su cuadrante directo (0°, 90°, 180° o 270°).<br>
+        &nbsp;&nbsp;&nbsp;• Si no: α = arctan(b / a) = arctan(${b} / ${a}) ajustando según el cuadrante.<br>
+        &nbsp;&nbsp;&nbsp;➔ Ángulo resultante: <strong style="color:var(--accent-gold);">${currentChallenge.deg}°</strong><br>
+        3. Expresión polar final: <strong>(${currentChallenge.r})_${currentChallenge.deg}°</strong>
+      `;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      drawArgandPlane();
+      generateComplexChallenge();
+    });
+  </script>
+</body>
+</html>

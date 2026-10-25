@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ecuaciones Bicuadradas | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 950px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border-color: var(--accent-blue);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* TARJETAS DE PASO A PASO */
+    .step-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .step-num {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-blue);
+    }
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .math-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.9rem 1.2rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      color: #fff;
+      line-height: 1.8;
+    }
+    [data-theme="light"] .math-block {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* FORMATO VISUAL PARA RAÍCES MATEMÁTICAS */
+    .radic-wrap {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 0.15rem;
+    }
+    .radic-symbol {
+      font-size: 1.25rem;
+      line-height: 1;
+      padding-right: 1px;
+      user-select: none;
+    }
+    .radic-index {
+      font-size: 0.72rem;
+      position: relative;
+      top: -0.45rem;
+      margin-right: -0.2rem;
+      font-weight: bold;
+    }
+    .radic-content {
+      border-top: 1.8px solid currentColor;
+      padding: 0 0.25rem;
+      display: inline-block;
+      line-height: 1.15;
+    }
+
+    .badge-highlight {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid var(--accent-gold);
+      border-radius: 6px;
+      color: var(--accent-gold);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    /* INPUTS ENTRENADOR */
+    .ans-grid {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    .ans-input {
+      width: 75px;
+      padding: 0.6rem 0.4rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      font-family: monospace;
+      text-align: center;
+      background: var(--bg-primary);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      outline: none;
+    }
+    .ans-input:focus { border-color: var(--accent-blue); }
+
+    .feedback-box {
+      display: none;
+      border-radius: 8px;
+      padding: 1.2rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    .feedback-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--accent-success);
+      color: #34d399;
+    }
+    .feedback-error {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--accent-op);
+      color: #fb7185;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Ecuaciones Bicuadradas 🧩</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+      <span class="badge" style="color: var(--accent-blue);">2º Ciclo ESO y Bachillerato</span>
+      <div class="content-text">
+        Una ecuación bicuadrada es una ecuación de grado 4 que solo tiene exponentes pares: <strong>a·x⁴ + b·x² + c = 0</strong>. Descubre por qué el cambio de variable funciona y cómo aplicarlo a tricuadradas y expresiones complejas.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('clasica', this)">1. Bicuadrada Clásica (x⁴)</button>
+      <button class="tab-btn" onclick="switchTab('tricuadrada', this)">2. Tricuadrada (x⁶)</button>
+      <button class="tab-btn" onclick="switchTab('camuflada', this)">3. Caso Camuflado (Fracciones)</button>
+      <button class="tab-btn" onclick="switchTab('reto', this)">4. 🎯 Ponte a Prueba</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: BICUADRADA CLÁSICA -->
+    <!-- ===================================================================== -->
+    <div id="tab-clasica" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem;">¿Por qué inventamos el Cambio de Variable?</h2>
+      
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">El Motivo Pedagógico</span>
+        <div class="step-title">No sabemos resolver grado 4, pero sí grado 2</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.5;">
+          No existe una fórmula rápida para ecuaciones con <strong>x⁴</strong>. Sin embargo, sabemos que por propiedades de las potencias: <strong>x⁴ = (x²)²</strong>. Si le ponemos un «disfraz» temporal a <strong>x²</strong> llamándolo <strong>z</strong>, transformamos una ecuación compleja de grado 4 en una simple ecuación de 2º grado.
+        </p>
+      </div>
+
+      <div style="font-size:1.15rem; font-weight:700; margin-top:0.5rem;">
+        Ejemplo guiado: <span style="color:var(--accent-blue); font-family:monospace;">x⁴ - 13x² + 36 = 0</span>
+      </div>
+
+      <!-- PASO 1 -->
+      <div class="step-card">
+        <span class="step-num">Paso 1</span>
+        <div class="step-title">Aplicar el cambio de variable</div>
+        <div class="math-block">
+          Hacemos: <strong>z = x²</strong> &nbsp;➔&nbsp; Por tanto: <strong>z² = (x²)² = x⁴</strong><br>
+          La ecuación queda: <strong>z² - 13z + 36 = 0</strong>
+        </div>
+      </div>
+
+      <!-- PASO 2 -->
+      <div class="step-card">
+        <span class="step-num">Paso 2</span>
+        <div class="step-title">Resolver la ecuación de 2º grado en z</div>
+        <div class="math-block">
+          a = 1, b = -13, c = 36<br>
+          z = [ -(-13) ± <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">(-13)² - 4·1·36</span></span> ] / (2·1)<br>
+          z = [ 13 ± <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">169 - 144</span></span> ] / 2 = [ 13 ± <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">25</span></span> ] / 2 = [ 13 ± 5 ] / 2<br><br>
+          ➔ <strong>z₁ = (13 + 5)/2 = 18/2 = 9</strong><br>
+          ➔ <strong>z₂ = (13 - 5)/2 = 8/2 = 4</strong>
+        </div>
+      </div>
+
+      <!-- PASO 3 -->
+      <div class="step-card" style="border-left-color: var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">Paso 3 (Crucial)</span>
+        <div class="step-title">Deshacer el cambio para encontrar la x</div>
+        <p style="margin:0 0 0.5rem 0; font-size:0.9rem; color:var(--text-muted);">
+          El problema pedía hallar <em>x</em>, no <em>z</em>. Como <strong>z = x²</strong>, despejamos haciendo <strong>x = ±<span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">z</span></span></strong>:
+        </p>
+        <div class="math-block">
+          • Con z₁ = 9 &nbsp;➔&nbsp; x² = 9 &nbsp;➔&nbsp; <strong>x = ±<span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">9</span></span> = ±3</strong><br>
+          • Con z₂ = 4 &nbsp;➔&nbsp; x² = 4 &nbsp;➔&nbsp; <strong>x = ±<span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">4</span></span> = ±2</strong>
+        </div>
+        <div style="margin-top:0.6rem;">
+          <span class="badge-highlight">Solución final: 4 soluciones reales ➔ x = { -3, -2, 2, 3 }</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: TRICUADRADA -->
+    <!-- ===================================================================== -->
+    <div id="tab-tricuadrada" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Ecuaciones Tricuadradas (Grado 6)</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        ¿Qué ocurre cuando aparecen potencias como <strong>x⁶</strong> y <strong>x³</strong>? Sigue siendo la misma estrategia, porque <strong>x⁶ = (x³)²</strong>.
+      </p>
+
+      <div style="font-size:1.15rem; font-weight:700;">
+        Ejemplo guiado: <span style="color:var(--accent-gold); font-family:monospace;">x⁶ - 7x³ - 8 = 0</span>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Paso 1: Adaptar el cambio</span>
+        <div class="math-block">
+          Hacemos: <strong>z = x³</strong> &nbsp;➔&nbsp; <strong>z² = (x³)² = x⁶</strong><br>
+          La ecuación se transforma en: <strong>z² - 7z - 8 = 0</strong>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Paso 2: Resolver en z</span>
+        <div class="math-block">
+          z = [ 7 ± <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">(-7)² - 4·1·(-8)</span></span> ] / 2<br>
+          z = [ 7 ± <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">49 + 32</span></span> ] / 2 = [ 7 ± <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">81</span></span> ] / 2 = [ 7 ± 9 ] / 2<br><br>
+          ➔ <strong>z₁ = (7 + 9)/2 = 16/2 = 8</strong><br>
+          ➔ <strong>z₂ = (7 - 9)/2 = -2/2 = -1</strong>
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color:var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Paso 3: Deshacer con Raíz Cúbica</span>
+        <p style="margin:0 0 0.5rem 0; font-size:0.9rem; color:var(--text-muted);">
+          Como <strong>z = x³</strong>, aplicamos la raíz cúbica: <strong>x = <span class="radic-wrap"><span class="radic-index">3</span><span class="radic-symbol">√</span><span class="radic-content">z</span></span></strong> (las raíces de índice impar sí admiten radicandos negativos):
+        </p>
+        <div class="math-block">
+          • Con z₁ = 8 &nbsp;➔&nbsp; x = <span class="radic-wrap"><span class="radic-index">3</span><span class="radic-symbol">√</span><span class="radic-content">8</span></span> = <strong>2</strong><br>
+          • Con z₂ = -1 &nbsp;➔&nbsp; x = <span class="radic-wrap"><span class="radic-index">3</span><span class="radic-symbol">√</span><span class="radic-content">-1</span></span> = <strong>-1</strong>
+        </div>
+        <div style="margin-top:0.6rem;">
+          <span class="badge-highlight">Solución final: 2 soluciones reales ➔ x₁ = 2, x₂ = -1</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: CASO CAMUFLADO -->
+    <!-- ===================================================================== -->
+    <div id="tab-camuflada" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Bicuadradas Camufladas (Simplificar Primero)</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        En muchos exámenes la bicuadrada no viene servida. Primero hay que eliminar denominadores y agrupar términos.
+      </p>
+
+      <div style="font-size:1.15rem; font-weight:700;">
+        Ejemplo de examen: <span style="color:var(--accent-success); font-family:monospace;">x² - 1 = 24 / (x² + 1)</span>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Paso 1: Quitar denominadores</span>
+        <p style="margin:0; font-size:0.9rem;">Multiplicamos ambos miembros por el denominador <strong>(x² + 1)</strong>:</p>
+        <div class="math-block">
+          (x² - 1) · (x² + 1) = 24
+        </div>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Paso 2: Reconocer Identidad Notable</span>
+        <p style="margin:0; font-size:0.9rem;">Tenemos una <em>suma por diferencia</em>: <strong>(a - b)(a + b) = a² - b²</strong>:</p>
+        <div class="math-block">
+          (x²)² - (1)² = 24<br>
+          x⁴ - 1 = 24<br>
+          x⁴ - 25 = 0
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color:var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">Paso 3: Resolver la Bicuadrada Incompleta</span>
+        <div class="math-block">
+          Despejamos directamente:<br>
+          x⁴ = 25<br>
+          x = ± <span class="radic-wrap"><span class="radic-index">4</span><span class="radic-symbol">√</span><span class="radic-content">25</span></span> = ± <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content"><span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">25</span></span></span></span> = ± <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">5</span></span><br><br>
+          ➔ <strong>x₁ = +<span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">5</span></span> ≈ +2,236</strong><br>
+          ➔ <strong>x₂ = -<span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">5</span></span> ≈ -2,236</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 4: ENTRENADOR INTERACTIVO -->
+    <!-- ===================================================================== -->
+    <div id="tab-reto" class="tab-content">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; font-size:1.3rem;">Gimnasio de Bicuadradas</h2>
+        <button class="btn btn-secondary" onclick="generateChallenge()" style="padding:0.4rem 0.8rem; font-size:0.85rem;">
+          🎲 Nuevo Reto
+        </button>
+      </div>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Halla las 4 soluciones reales de la ecuación generada aleatoriamente:
+      </p>
+
+      <div id="chalStatement" class="math-block" style="text-align:center; font-size:1.4rem; padding:1.5rem; color:var(--accent-blue);">
+        Cargando...
+      </div>
+
+      <div class="ans-grid">
+        <label style="font-weight:700;">x₁:</label>
+        <input type="number" id="in_x1" class="ans-input" placeholder="x₁">
+        <label style="font-weight:700;">x₂:</label>
+        <input type="number" id="in_x2" class="ans-input" placeholder="x₂">
+        <label style="font-weight:700;">x₃:</label>
+        <input type="number" id="in_x3" class="ans-input" placeholder="x₃">
+        <label style="font-weight:700;">x₄:</label>
+        <input type="number" id="in_x4" class="ans-input" placeholder="x₄">
+      </div>
+
+      <div style="display:flex; justify-content:center; gap:0.8rem; margin-top:0.8rem;">
+        <button class="btn btn-primary" onclick="checkChallenge()">Comprobar 🎯</button>
+      </div>
+
+      <div id="chalFeedback" class="feedback-box">
+        <div id="chalFbText" style="font-weight:bold; font-size:1.05rem; margin-bottom:0.4rem;"></div>
+        <div id="chalSteps" style="font-family:monospace; line-height:1.8;"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+    }
+
+    // RETO INTERACTIVO PARAMÉTRICO
+    let currentChallenge = null;
+
+    function generateChallenge() {
+      const options = [1, 2, 3, 4];
+      const idx1 = Math.floor(Math.random() * options.length);
+      const a1 = options.splice(idx1, 1)[0];
+      const a2 = options[Math.floor(Math.random() * options.length)];
+
+      const z1 = a1 * a1;
+      const z2 = a2 * a2;
+
+      const b = -(z1 + z2);
+      const c = z1 * z2;
+
+      const bStr = b >= 0 ? `+ ${b}` : `- ${Math.abs(b)}`;
+      const cStr = c >= 0 ? `+ ${c}` : `- ${Math.abs(c)}`;
+
+      const solutions = [-Math.max(a1, a2), -Math.min(a1, a2), Math.min(a1, a2), Math.max(a1, a2)];
+
+      currentChallenge = {
+        statement: `x⁴ ${bStr}x² ${cStr} = 0`,
+        z1: Math.min(z1, z2),
+        z2: Math.max(z1, z2),
+        solutions: solutions
+      };
+
+      document.getElementById('chalStatement').textContent = currentChallenge.statement;
+      document.getElementById('chalFeedback').style.display = 'none';
+
+      document.getElementById('in_x1').value = '';
+      document.getElementById('in_x2').value = '';
+      document.getElementById('in_x3').value = '';
+      document.getElementById('in_x4').value = '';
+    }
+
+    function checkChallenge() {
+      if (!currentChallenge) return;
+
+      const inputs = [
+        parseFloat(document.getElementById('in_x1').value),
+        parseFloat(document.getElementById('in_x2').value),
+        parseFloat(document.getElementById('in_x3').value),
+        parseFloat(document.getElementById('in_x4').value)
+      ];
+
+      if (inputs.some(isNaN)) {
+        alert('Por favor, rellena las 4 soluciones.');
+        return;
+      }
+
+      inputs.sort((a, b) => a - b);
+      const correct = currentChallenge.solutions;
+      const isOk = inputs.every((val, i) => val === correct[i]);
+
+      const fb = document.getElementById('chalFeedback');
+      const txt = document.getElementById('chalFbText');
+      const steps = document.getElementById('chalSteps');
+
+      fb.style.display = 'block';
+
+      if (isOk) {
+        fb.className = 'feedback-box feedback-success';
+        txt.textContent = '¡Perfecto! Has encontrado las 4 soluciones reales 🎯';
+      } else {
+        fb.className = 'feedback-box feedback-error';
+        txt.textContent = 'Hay errores. Revisa la deducción paso a paso:';
+      }
+
+      steps.innerHTML = `
+        1. Cambio: z = x² ➔ z² ${currentChallenge.statement.replace('x⁴', '').replace('x²', 'z')}<br>
+        2. Soluciones en z: z₁ = ${currentChallenge.z1}, &nbsp; z₂ = ${currentChallenge.z2}<br>
+        3. Deshacemos x = ±<span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">z</span></span> ➔ 
+        x = ±<span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">${currentChallenge.z1}</span></span> = ±${Math.sqrt(currentChallenge.z1)}, &nbsp; 
+        x = ±<span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">${currentChallenge.z2}</span></span> = ±${Math.sqrt(currentChallenge.z2)}<br>
+        <strong>Soluciones finales: ${correct.join(', ')}</strong>
+      `;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      generateChallenge();
+    });
+  </script>
+</body>
+</html>

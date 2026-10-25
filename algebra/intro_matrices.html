@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Introducción a las Matrices | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border-color: var(--accent-blue);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* TARJETAS DE PASO A PASO */
+    .step-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .step-num {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-blue);
+    }
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .math-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem 1.3rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      color: #fff;
+      line-height: 2.2;
+    }
+    [data-theme="light"] .math-block {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* COMPONENTES DE MATRIZ EN CSS */
+    .matrix-inline {
+      display: inline-flex;
+      align-items: center;
+      position: relative;
+      margin: 0 0.35rem;
+      vertical-align: middle;
+    }
+    .matrix-grid {
+      display: inline-grid;
+      gap: 0.35rem 0.75rem;
+      padding: 0.25rem 0.55rem;
+      text-align: center;
+      font-family: monospace;
+      font-weight: bold;
+    }
+/* PARÉNTESIS MATEMÁTICOS REALES */
+    .matrix-bracket {
+      display: inline-flex;
+      align-items: center;
+      position: relative;
+      padding: 0 0.4rem;
+      border: none !important;
+    }
+    /* Paréntesis izquierdo '(' */
+    .matrix-bracket::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      bottom: 2px;
+      left: 0;
+      width: 10px;
+      border-left: 2px solid currentColor;
+      border-top: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      border-radius: 12px 0 0 12px;
+      pointer-events: none;
+    }
+    /* Paréntesis derecho ')' */
+    .matrix-bracket::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      bottom: 2px;
+      right: 0;
+      width: 10px;
+      border-right: 2px solid currentColor;
+      border-top: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      border-radius: 0 12px 12px 0;
+      pointer-events: none;
+    }
+
+    .grid-2x2 { grid-template-columns: repeat(2, auto); }
+    .grid-3x3 { grid-template-columns: repeat(3, auto); }
+
+    /* ESTILOS DEL SIMULADOR MULTIPLICADOR */
+    .mult-interactive-box {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .slider-control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .slider-control-row input[type="range"] {
+      flex: 1;
+      min-width: 200px;
+      accent-color: var(--accent-blue);
+      cursor: pointer;
+    }
+    .badge-cell-step {
+      font-family: monospace;
+      font-size: 1.05rem;
+      font-weight: 800;
+      padding: 0.35rem 0.8rem;
+      border-radius: 6px;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    .mult-vis-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      font-family: monospace;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+    .cell-box {
+      width: 38px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.25s ease;
+    }
+    .cell-highlight-a {
+      background: rgba(56, 189, 248, 0.35) !important;
+      color: #38bdf8 !important;
+      outline: 2px solid #38bdf8;
+    }
+    .cell-highlight-b {
+      background: rgba(245, 158, 11, 0.35) !important;
+      color: #f59e0b !important;
+      outline: 2px solid #f59e0b;
+    }
+    .cell-highlight-c {
+      background: rgba(16, 185, 129, 0.35) !important;
+      color: #34d399 !important;
+      outline: 2px solid #10b981;
+    }
+
+    /* FRACCIONES VERTICALES */
+    .frac-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 0.25rem;
+      line-height: 1.15;
+      font-size: 0.95em;
+    }
+    .frac-num {
+      border-bottom: 1.8px solid currentColor;
+      padding: 0 0.2rem 2px 0.2rem;
+      display: block;
+    }
+    .frac-den {
+      padding: 2px 0.2rem 0 0.2rem;
+      display: block;
+    }
+
+    .badge-alert {
+      display: inline-block;
+      padding: 0.3rem 0.7rem;
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--accent-op);
+      border-radius: 6px;
+      color: #fb7185;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    /* INPUTS ENTRENADOR */
+    .matrix-input-grid {
+      display: inline-grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      background: var(--bg-primary);
+      padding: 0.75rem;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+    }
+    .m-cell-in {
+      width: 55px;
+      padding: 0.5rem 0.3rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      font-family: monospace;
+      text-align: center;
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
+      outline: none;
+    }
+    .m-cell-in:focus { border-color: var(--accent-blue); }
+
+    .feedback-box {
+      display: none;
+      border-radius: 8px;
+      padding: 1.2rem;
+      font-size: 0.95rem;
+      line-height: 2.1;
+    }
+    .feedback-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--accent-success);
+      color: #34d399;
+    }
+    .feedback-error {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--accent-op);
+      color: #fb7185;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Álgebra Matricial 🗄️</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+      <span class="badge" style="color: var(--accent-blue);">2º Bachillerato (Ciencias y CCSS)</span>
+      <div class="content-text">
+        Una matriz es una tabla ordenada de números en <strong>filas (m)</strong> y <strong>columnas (n)</strong>. Son el lenguaje fundamental para resolver sistemas lineales masivos, gráficos por ordenador, econometría y aprendizaje automático.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('conceptos', this)">1. Tipos y Dimensiones</button>
+      <button class="tab-btn" onclick="switchTab('operaciones', this)">2. Suma y Producto Visual</button>
+      <button class="tab-btn" onclick="switchTab('inversa', this)">3. La Inversa (Sin División)</button>
+      <button class="tab-btn" onclick="switchTab('ecuaciones', this)">4. Ecuaciones Matriciales</button>
+      <button class="tab-btn" onclick="switchTab('entrenador', this)">5. 🎯 Ponte a Prueba</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: TIPOS Y DIMENSIONES -->
+    <!-- ===================================================================== -->
+    <div id="tab-conceptos" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem;">Dimensión y Familias de Matrices</h2>
+      
+      <div class="step-card">
+        <span class="step-num">Dimensión (m × n)</span>
+        <div class="step-title">Siempre se nombra primero el número de Filas y luego el de Columnas</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Una matriz de dimensión <strong>2 × 3</strong> tiene 2 filas horizontales y 3 columnas verticales:
+        </p>
+        <div class="math-block" style="text-align:center;">
+          A = 
+          <span class="matrix-inline matrix-bracket">
+            <span class="matrix-grid" style="grid-template-columns: repeat(3, auto);">
+              <span>a₁₁</span><span>a₁₂</span><span>a₁₃</span>
+              <span>a₂₁</span><span>a₂₂</span><span>a₂₃</span>
+            </span>
+          </span>
+          &nbsp;&nbsp;&nbsp;<em>(El elemento a₂₃ está en la fila 2, columna 3)</em>
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Matrices Especiales Clave</span>
+        <div class="math-block">
+          • <strong>Matriz Cuadrada (n × n):</strong> Mismo número de filas que de columnas (ej: 2×2, 3×3).<br>
+          • <strong>Matriz Identidad (I):</strong> Cuadrada, con unos en la diagonal principal y ceros en el resto. Es el elemento neutro: <strong>A · I = I · A = A</strong>.<br>
+          <div style="text-align:center; margin:0.4rem 0;">
+            I₂ = 
+            <span class="matrix-inline matrix-bracket">
+              <span class="matrix-grid grid-2x2">
+                <span>1</span><span>0</span>
+                <span>0</span><span>1</span>
+              </span>
+            </span>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            I₃ = 
+            <span class="matrix-inline matrix-bracket">
+              <span class="matrix-grid grid-3x3">
+                <span>1</span><span>0</span><span>0</span>
+                <span>0</span><span>1</span><span>0</span>
+                <span>0</span><span>0</span><span>1</span>
+              </span>
+            </span>
+          </div>
+          • <strong>Matriz Traspuesta (Aᵗ):</strong> Se cambian filas por columnas. Si A es (2×3), Aᵗ es (3×2).<br>
+          • <strong>Matriz Simétrica:</strong> Coincide con su traspuesta: <strong>A = Aᵗ</strong>.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: SUMA, ESCALAR Y PRODUCTO VISUAL (MEJORADO) -->
+    <!-- ===================================================================== -->
+    <div id="tab-operaciones" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Operaciones Básicas: Suma, Escalar y Multiplicación</h2>
+
+      <!-- SECCIÓN A: SUMA Y PRODUCTO ESCALAR PASO A PASO -->
+      <div class="step-card">
+        <span class="step-num">1. Suma y Producto Escalar: Explicación Paso a Paso</span>
+        <div class="step-title">Ejemplo completo: Calcular 2 · A + B</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Dadas las matrices 
+          A = <span class="matrix-inline matrix-bracket"><span class="matrix-grid grid-2x2"><span>1</span><span>3</span><span>-2</span><span>0</span></span></span> 
+          y 
+          B = <span class="matrix-inline matrix-bracket"><span class="matrix-grid grid-2x2"><span>4</span><span>-1</span><span>2</span><span>5</span></span></span>:
+        </p>
+
+        <div class="math-block">
+          <strong>Paso 1: Multiplicar el número exterior (escalar) por cada celda de A:</strong><br>
+          2 · A = 
+          <span class="matrix-inline matrix-bracket">
+            <span class="matrix-grid grid-2x2">
+              <span>2 · (1)</span><span>2 · (3)</span>
+              <span>2 · (-2)</span><span>2 · (0)</span>
+            </span>
+          </span>
+          =
+          <span class="matrix-inline matrix-bracket" style="color:var(--accent-blue);">
+            <span class="matrix-grid grid-2x2">
+              <span>2</span><span>6</span>
+              <span>-4</span><span>0</span>
+            </span>
+          </span><br><br>
+
+          <strong>Paso 2: Sumar posición por posición con la matriz B:</strong><br>
+          <span class="matrix-inline matrix-bracket" style="color:var(--accent-blue);">
+            <span class="matrix-grid grid-2x2">
+              <span>2</span><span>6</span>
+              <span>-4</span><span>0</span>
+            </span>
+          </span>
+          +
+          <span class="matrix-inline matrix-bracket">
+            <span class="matrix-grid grid-2x2">
+              <span>4</span><span>-1</span>
+              <span>2</span><span>5</span>
+            </span>
+          </span>
+          =
+          <span class="matrix-inline matrix-bracket">
+            <span class="matrix-grid grid-2x2">
+              <span>(2 + 4)</span><span>(6 + (-1))</span>
+              <span>(-4 + 2)</span><span>(0 + 5)</span>
+            </span>
+          </span><br><br>
+
+          <strong>Paso 3: Resultado final simplificado:</strong><br>
+          = 
+          <span class="matrix-inline matrix-bracket" style="color:var(--accent-success); font-weight:bold;">
+            <span class="matrix-grid grid-2x2">
+              <span>6</span><span>5</span>
+              <span>-2</span><span>5</span>
+            </span>
+          </span>
+        </div>
+      </div>
+
+      <!-- SECCIÓN B: MULTIPLICADOR INTERACTIVO FILA X COLUMNA -->
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">2. Multiplicación Fila × Columna (Simulador Interactivo)</span>
+        <div class="step-title">Mueve el slider para ver cómo se calcula cada una de las 4 celdas</div>
+        <p style="margin:0; font-size:0.95rem; color:var(--text-muted);">
+          Para obtener el elemento <strong style="color:var(--accent-success);">c_ij</strong>, se toma la <strong style="color:#38bdf8;">Fila i de la 1ª matriz</strong>, se multiplica término a término por la <strong style="color:#f59e0b;">Columna j de la 2ª matriz</strong>, y se suman sus productos.
+        </p>
+
+        <div class="mult-interactive-box">
+          <div class="slider-control-row">
+            <label style="font-weight:700;">Selecciona el elemento a calcular:</label>
+            <input type="range" id="multSlider" min="0" max="3" step="1" value="0" oninput="updateMultVisualizer()">
+            <span class="badge-cell-step" id="lblCellTarget">Calculando: c₁₁</span>
+          </div>
+
+          <!-- MATRICES ILUMINADAS -->
+          <div class="mult-vis-row">
+            <!-- MATRIZ A -->
+            <div style="display:flex; flex-direction:column; align-items:center;">
+              <span style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.2rem;">Matriz A (Filas)</span>
+              <span class="matrix-inline matrix-bracket">
+                <span class="matrix-grid grid-2x2">
+                  <span id="a00" class="cell-box">1</span><span id="a01" class="cell-box">2</span>
+                  <span id="a10" class="cell-box">3</span><span id="a11" class="cell-box">4</span>
+                </span>
+              </span>
+            </div>
+
+            <span style="color:var(--text-muted);">·</span>
+
+            <!-- MATRIZ B -->
+            <div style="display:flex; flex-direction:column; align-items:center;">
+              <span style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.2rem;">Matriz B (Columnas)</span>
+              <span class="matrix-inline matrix-bracket">
+                <span class="matrix-grid grid-2x2">
+                  <span id="b00" class="cell-box">5</span><span id="b01" class="cell-box">6</span>
+                  <span id="b10" class="cell-box">0</span><span id="b11" class="cell-box">-1</span>
+                </span>
+              </span>
+            </div>
+
+            <span style="color:var(--text-muted);">=</span>
+
+            <!-- MATRIZ C -->
+            <div style="display:flex; flex-direction:column; align-items:center;">
+              <span style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.2rem;">Resultado C</span>
+              <span class="matrix-inline matrix-bracket">
+                <span class="matrix-grid grid-2x2">
+                  <span id="c00" class="cell-box">5</span><span id="c01" class="cell-box">4</span>
+                  <span id="c10" class="cell-box">15</span><span id="c11" class="cell-box">14</span>
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <!-- EXPLICACIÓN ARITMÉTICA EN VIVO -->
+          <div class="math-block" id="multMathExplanation" style="line-height:1.8;">
+            <!-- Rellenado por JS -->
+          </div>
+        </div>
+
+        <div style="margin-top:0.5rem;">
+          <span class="badge-alert">⚠️ REGLA DE ORO DE SELECTIVIDAD: A · B ≠ B · A (No conmutativo)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: LA MATRIZ INVERSA -->
+    <!-- ===================================================================== -->
+    <div id="tab-inversa" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">La Matriz Inversa (A⁻¹): El porqué no se divide</h2>
+      
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">El Mayor Error de Examen: ¡NO EXISTE LA DIVISIÓN DE MATRICES!</span>
+        <div class="step-title">Jamás escribas una matriz en el denominador: (B / A) NO TIENE SENTIDO</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          En los números reales, dividir entre 5 es lo mismo que multiplicar por su inverso ($5^{-1} = 1/5$). En matrices hacemos exactamente eso: calculamos la <strong>matriz inversa A⁻¹</strong>, que cumple:
+        </p>
+        <div class="math-block" style="text-align:center;">
+          A · A⁻¹ = A⁻¹ · A = <strong>I</strong> &nbsp;&nbsp;&nbsp;<em>(donde I es la identidad)</em>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Cálculo de A⁻¹ para matrices 2×2 (Método Rápido)</span>
+        <div class="step-title">Fórmula mediante Determinante y Adjuntos</div>
+        <div class="math-block">
+          Dada A = 
+          <span class="matrix-inline matrix-bracket">
+            <span class="matrix-grid grid-2x2">
+              <span>a</span><span>b</span>
+              <span>c</span><span>d</span>
+            </span>
+          </span>:<br>
+          1. Determinante: <strong>|A| = a·d - b·c</strong>. Si |A| = 0, la matriz <strong>no tiene inversa</strong> (es singular).<br>
+          2. Fórmula directa 2×2 (intercambia diagonal principal, cambia de signo la secundaria):<br>
+          <div style="text-align:center; margin:0.5rem 0;">
+            A⁻¹ = <span class="frac-wrap"><span class="frac-num">1</span><span class="frac-den">|A|</span></span> · 
+            <span class="matrix-inline matrix-bracket">
+              <span class="matrix-grid grid-2x2">
+                <span>d</span><span>-b</span>
+                <span>-c</span><span>a</span>
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">Ejemplo Práctico Numérico</span>
+        <div class="math-block">
+          Calcular la inversa de A = 
+          <span class="matrix-inline matrix-bracket">
+            <span class="matrix-grid grid-2x2">
+              <span>2</span><span>1</span>
+              <span>5</span><span>3</span>
+            </span>
+          </span>:<br>
+          • |A| = (2·3) - (1·5) = 6 - 5 = <strong>1</strong> (Como es ≠ 0, existe A⁻¹)<br>
+          • Aplicamos la matriz adjunta traspuesta:<br>
+          <div style="text-align:center; margin:0.4rem 0;">
+            A⁻¹ = <span class="frac-wrap"><span class="frac-num">1</span><span class="frac-den">1</span></span> · 
+            <span class="matrix-inline matrix-bracket">
+              <span class="matrix-grid grid-2x2">
+                <span>3</span><span>-1</span>
+                <span>-5</span><span>2</span>
+              </span>
+            </span>
+            = 
+            <span class="matrix-inline matrix-bracket">
+              <span class="matrix-grid grid-2x2">
+                <span>3</span><span>-1</span>
+                <span>-5</span><span>2</span>
+              </span>
+            </span>
+          </div>
+          • Comprobación: A · A⁻¹ = 
+          <span class="matrix-inline matrix-bracket">
+            <span class="matrix-grid grid-2x2">
+              <span>2</span><span>1</span>
+              <span>5</span><span>3</span>
+            </span>
+          </span> · 
+          <span class="matrix-inline matrix-bracket">
+            <span class="matrix-grid grid-2x2">
+              <span>3</span><span>-1</span>
+              <span>-5</span><span>2</span>
+            </span>
+          </span> = 
+          <span class="matrix-inline matrix-bracket">
+            <span class="matrix-grid grid-2x2">
+              <span>1</span><span>0</span>
+              <span>0</span><span>1</span>
+            </span>
+          </span> = I₂
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 4: ECUACIONES MATRICIALES -->
+    <!-- ===================================================================== -->
+    <div id="tab-ecuaciones" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Resolución de Ecuaciones Matriciales</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Aquí se pierden la mayoría de notas en Selectividad. Dado que el producto no es conmutativo, <strong>el lado por el que multiplicas A⁻¹ es sagrado</strong>.
+      </p>
+
+      <div class="step-card" style="border-left-color: var(--accent-op);">
+        <span class="step-num" style="color:var(--accent-op);">Los dos casos canónicos de despeje</span>
+        <div class="math-block">
+          <strong>Caso 1: La incógnita X está a la derecha (A · X = B)</strong><br>
+          Multiplicamos por A⁻¹ <em>por la izquierda</em> en ambos miembros:<br>
+          A⁻¹ · (A · X) = A⁻¹ · B<br>
+          (A⁻¹ · A) · X = A⁻¹ · B<br>
+          I · X = A⁻¹ · B &nbsp;➔&nbsp; <strong style="color:var(--accent-gold);">X = A⁻¹ · B</strong><br><br>
+
+          <strong>Caso 2: La incógnita X está a la izquierda (X · A = B)</strong><br>
+          Multiplicamos por A⁻¹ <em>por la derecha</em> en ambos miembros:<br>
+          (X · A) · A⁻¹ = B · A⁻¹<br>
+          X · (A · A⁻¹) = B · A⁻¹<br>
+          X · I = B · A⁻¹ &nbsp;➔&nbsp; <strong style="color:var(--accent-gold);">X = B · A⁻¹</strong>
+        </div>
+        <span class="badge-alert">¡Cuidado! A⁻¹ · B NO es lo mismo que B · A⁻¹</span>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Caso Combinado: A · X + B = C</span>
+        <div class="math-block">
+          1. Restamos la matriz B a ambos lados (la suma sí es conmutativa):<br>
+          &nbsp;&nbsp;&nbsp;A · X = C - B<br>
+          2. Multiplicamos por la izquierda por A⁻¹ protegiendo el bloque derecho con paréntesis:<br>
+          &nbsp;&nbsp;&nbsp;A⁻¹ · (A · X) = A⁻¹ · (C - B)<br>
+          &nbsp;&nbsp;&nbsp;<strong style="color:var(--accent-gold);">X = A⁻¹ · (C - B)</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 5: ENTRENADOR INTERACTIVO -->
+    <!-- ===================================================================== -->
+    <div id="tab-entrenador" class="tab-content">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; font-size:1.3rem;">Gimnasio de Inversas y Ecuaciones</h2>
+        <button class="btn btn-secondary" onclick="generateMatrixChallenge()" style="padding:0.4rem 0.8rem; font-size:0.85rem;">
+          🎲 Nuevo Reto
+        </button>
+      </div>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Halla la matriz inversa <strong>A⁻¹</strong> de la siguiente matriz entera 2×2 (|A| = ±1 para soluciones limpias):
+      </p>
+
+      <div class="math-block" id="matrixStatement" style="text-align:center; font-size:1.3rem; padding:1.25rem; color:var(--accent-blue);">
+        Cargando matriz...
+      </div>
+
+      <div style="display:flex; flex-direction:column; align-items:center; gap:0.6rem; margin-top:1rem;">
+        <span style="font-weight:700;">Introduce los 4 elementos de A⁻¹:</span>
+        <div class="matrix-input-grid">
+          <input type="number" id="m_00" class="m-cell-in" placeholder="a₁₁">
+          <input type="number" id="m_01" class="m-cell-in" placeholder="a₁₂">
+          <input type="number" id="m_10" class="m-cell-in" placeholder="a₂₁">
+          <input type="number" id="m_11" class="m-cell-in" placeholder="a₂₂">
+        </div>
+        <button class="btn btn-primary" onclick="checkMatrixChallenge()" style="margin-top:0.6rem;">Comprobar A⁻¹ 🎯</button>
+      </div>
+
+      <div id="matrixFeedback" class="feedback-box">
+        <div id="matrixFbText" style="font-weight:bold; font-size:1.05rem; margin-bottom:0.4rem;"></div>
+        <div id="matrixSteps" style="font-family:monospace; line-height:2.2;"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      if (tabId === 'operaciones') updateMultVisualizer();
+    }
+
+    // =========================================================================
+    // SIMULADOR VISUAL MULTIPLICACIÓN FILA X COLUMNA
+    // =========================================================================
+    const multStepsData = [
+      {
+        target: 'c₁₁ (Fila 1 de A × Columna 1 de B)',
+        aHighlight: ['a00', 'a01'],
+        bHighlight: ['b00', 'b10'],
+        cHighlight: 'c00',
+        formula: 'c₁₁ = (Fila 1) · (Columna 1)',
+        calc: 'c₁₁ = (1 · 5) + (2 · 0) = 5 + 0 = 5',
+        note: 'Primer elemento superior izquierdo.'
+      },
+      {
+        target: 'c₁₂ (Fila 1 de A × Columna 2 de B)',
+        aHighlight: ['a00', 'a01'],
+        bHighlight: ['b01', 'b11'],
+        cHighlight: 'c01',
+        formula: 'c₁₂ = (Fila 1) · (Columna 2)',
+        calc: 'c₁₂ = (1 · 6) + (2 · (-1)) = 6 - 2 = 4',
+        note: 'Elemento superior derecho.'
+      },
+      {
+        target: 'c₂₁ (Fila 2 de A × Columna 1 de B)',
+        aHighlight: ['a10', 'a11'],
+        bHighlight: ['b00', 'b10'],
+        cHighlight: 'c10',
+        formula: 'c₂₁ = (Fila 2) · (Columna 1)',
+        calc: 'c₂₁ = (3 · 5) + (4 · 0) = 15 + 0 = 15',
+        note: 'Elemento inferior izquierdo.'
+      },
+      {
+        target: 'c₂₂ (Fila 2 de A × Columna 2 de B)',
+        aHighlight: ['a10', 'a11'],
+        bHighlight: ['b01', 'b11'],
+        cHighlight: 'c11',
+        formula: 'c₂₂ = (Fila 2) · (Columna 2)',
+        calc: 'c₂₂ = (3 · 6) + (4 · (-1)) = 18 - 4 = 14',
+        note: 'Elemento inferior derecho.'
+      }
+    ];
+
+    function updateMultVisualizer() {
+      const idx = parseInt(document.getElementById('multSlider').value, 10);
+      const step = multStepsData[idx];
+
+      document.getElementById('lblCellTarget').textContent = step.target;
+
+      // Limpiar clases previas
+      document.querySelectorAll('.cell-box').forEach(el => {
+        el.classList.remove('cell-highlight-a', 'cell-highlight-b', 'cell-highlight-c');
+      });
+
+      // Iluminar fila activa en A
+      step.aHighlight.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('cell-highlight-a');
+      });
+
+      // Iluminar columna activa en B
+      step.bHighlight.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('cell-highlight-b');
+      });
+
+      // Iluminar celda destino en C
+      const cEl = document.getElementById(step.cHighlight);
+      if (cEl) cEl.classList.add('cell-highlight-c');
+
+      // Actualizar explicación escrita
+      document.getElementById('multMathExplanation').innerHTML = `
+        <div style="color:var(--text-muted); font-size:0.9rem;">${step.formula}</div>
+        <div style="font-size:1.15rem; font-weight:bold; color:var(--text-main); margin:0.25rem 0;">
+          ${step.calc}
+        </div>
+        <div style="font-size:0.85rem; color:var(--accent-gold);">${step.note}</div>
+      `;
+    }
+
+    // =========================================================================
+    // ENTRENADOR DE MATRICES INVERSAS 2x2
+    // =========================================================================
+    let currentMatrix = null;
+
+    function randomInt(min, max, exclude = []) {
+      let res;
+      do {
+        res = Math.floor(Math.random() * (max - min + 1)) + min;
+      } while (exclude.includes(res));
+      return res;
+    }
+
+    function generateMatrixChallenge() {
+      let a, b, c, d, det;
+      do {
+        a = randomInt(-3, 4, [0]);
+        d = randomInt(-3, 4, [0]);
+        const target = a * d - 1;
+        const divisors = [];
+        for (let i = -6; i <= 6; i++) {
+          if (i !== 0 && target % i === 0) divisors.push(i);
+        }
+        if (divisors.length > 0) {
+          b = divisors[Math.floor(Math.random() * divisors.length)];
+          c = target / b;
+          det = a * d - b * c;
+        }
+      } while (det !== 1 || Math.abs(b) > 6 || Math.abs(c) > 6);
+
+      currentMatrix = {
+        a: a, b: b, c: c, d: d,
+        det: det,
+        inv00: d,
+        inv01: -b,
+        inv10: -c,
+        inv11: a
+      };
+
+      document.getElementById('matrixStatement').innerHTML = `
+        A = 
+        <span class="matrix-inline matrix-bracket">
+          <span class="matrix-grid grid-2x2">
+            <span>${a}</span><span>${b}</span>
+            <span>${c}</span><span>${d}</span>
+          </span>
+        </span>
+      `;
+
+      document.getElementById('matrixFeedback').style.display = 'none';
+      document.getElementById('m_00').value = '';
+      document.getElementById('m_01').value = '';
+      document.getElementById('m_10').value = '';
+      document.getElementById('m_11').value = '';
+    }
+
+    function checkMatrixChallenge() {
+      if (!currentMatrix) return;
+
+      const u00 = parseFloat(document.getElementById('m_00').value);
+      const u01 = parseFloat(document.getElementById('m_01').value);
+      const u10 = parseFloat(document.getElementById('m_10').value);
+      const u11 = parseFloat(document.getElementById('m_11').value);
+
+      if ([u00, u01, u10, u11].some(isNaN)) {
+        alert('Por favor, rellena los 4 valores de la matriz inversa.');
+        return;
+      }
+
+      const isOk = (
+        u00 === currentMatrix.inv00 &&
+        u01 === currentMatrix.inv01 &&
+        u10 === currentMatrix.inv10 &&
+        u11 === currentMatrix.inv11
+      );
+
+      const fb = document.getElementById('matrixFeedback');
+      const txt = document.getElementById('matrixFbText');
+      const steps = document.getElementById('matrixSteps');
+
+      fb.style.display = 'block';
+
+      if (isOk) {
+        fb.className = 'feedback-box feedback-success';
+        txt.textContent = '¡Correcto! Has hallado la matriz inversa perfecta 🎯';
+      } else {
+        fb.className = 'feedback-box feedback-error';
+        txt.textContent = 'Hay errores. Revisa la deducción analítica paso a paso:';
+      }
+
+      steps.innerHTML = `
+        1. Determinante: |A| = (${currentMatrix.a})·(${currentMatrix.d}) - (${currentMatrix.b})·(${currentMatrix.c}) = <strong>${currentMatrix.det}</strong><br>
+        2. Al ser |A| = 1 ≠ 0, la matriz tiene inversa.<br>
+        3. Aplicamos la fórmula 2×2 (permutar diagonal principal, cambiar signo secundaria):<br>
+        &nbsp;&nbsp;&nbsp;A⁻¹ = 
+        <span class="matrix-inline matrix-bracket">
+          <span class="matrix-grid grid-2x2">
+            <span>${currentMatrix.inv00}</span><span>${currentMatrix.inv01}</span>
+            <span>${currentMatrix.inv10}</span><span>${currentMatrix.inv11}</span>
+          </span>
+        </span>
+      `;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateMultVisualizer();
+      generateMatrixChallenge();
+    });
+  </script>
+</body>
+</html>

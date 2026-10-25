@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Aplicaciones Avanzadas de Derivadas | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border-color: var(--accent-blue);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* TARJETAS DE PASO A PASO */
+    .step-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .step-num {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-blue);
+    }
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .math-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem 1.3rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      color: #fff;
+      line-height: 2.2;
+    }
+    [data-theme="light"] .math-block {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* COMPONENTES MATEMÁTICOS LIMPIOS */
+    .frac-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 0.25rem;
+      line-height: 1.15;
+      font-size: 0.95em;
+    }
+    .frac-num {
+      border-bottom: 1.8px solid currentColor;
+      padding: 0 0.2rem 2px 0.2rem;
+      display: block;
+    }
+    .frac-den {
+      padding: 2px 0.2rem 0 0.2rem;
+      display: block;
+    }
+
+    .radic-wrap {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 0.15rem;
+    }
+    .radic-symbol {
+      font-size: 1.25rem;
+      line-height: 1;
+      padding-right: 1px;
+      user-select: none;
+    }
+    .radic-content {
+      border-top: 1.8px solid currentColor;
+      padding: 0 0.25rem;
+      display: inline-block;
+      line-height: 1.15;
+    }
+
+    /* CONTENEDORES DE LIENZOS */
+    .sim-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      gap: 1rem;
+    }
+    .sim-canvas {
+      background: #060911;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-width: 100%;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+    }
+    [data-theme="light"] .sim-canvas {
+      background: #ffffff !important;
+    }
+
+    .badge-highlight {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--accent-blue);
+      border-radius: 6px;
+      color: var(--accent-blue);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    /* INPUTS ENTRENADOR */
+    .ans-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .ans-input {
+      width: 90px;
+      padding: 0.6rem 0.4rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      font-family: monospace;
+      text-align: center;
+      background: var(--bg-primary);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      outline: none;
+    }
+    .ans-input:focus { border-color: var(--accent-blue); }
+
+    .feedback-box {
+      display: none;
+      border-radius: 8px;
+      padding: 1.2rem;
+      font-size: 0.95rem;
+      line-height: 2.1;
+    }
+    .feedback-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--accent-success);
+      color: #34d399;
+    }
+    .feedback-error {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--accent-op);
+      color: #fb7185;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Derivadas: Aplicaciones II 📈</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+      <span class="badge" style="color: var(--accent-blue);">2º Bachillerato</span>
+      <div class="content-text">
+        Llevamos las derivadas al siguiente nivel. Repasaremos rápidamente la <strong>representación gráfica</strong> para adentrarnos en los grandes teoremas del cálculo: el <strong>Teorema de Rolle</strong>, la poderosa <strong>Regla de L'Hôpital</strong> para destruir indeterminaciones, y la resolución de problemas de optimización geométricos.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('graficas', this)">1. Repaso: Gráficas y Curvatura</button>
+      <button class="tab-btn" onclick="switchTab('rolle', this)">2. Teorema de Rolle (Visual)</button>
+      <button class="tab-btn" onclick="switchTab('hopital', this)">3. Regla de L'Hôpital</button>
+      <button class="tab-btn" onclick="switchTab('optimizacion', this)">4. Optimización (Nivel 2)</button>
+      <button class="tab-btn" onclick="switchTab('entrenador', this)">5. 🎯 Entrenador L'Hôpital</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: REPASO GRÁFICO -->
+    <!-- ===================================================================== -->
+    <div id="tab-graficas" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem;">Síntesis: Representación Gráfica de Funciones</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Antes de avanzar, recordemos el esqueleto fundamental para dibujar cualquier función f(x) sin usar calculadora. Todo se basa en el comportamiento de su primera y segunda derivada.
+      </p>
+
+      <div class="step-card">
+        <span class="step-num">1. Monotonía y Extremos (Primera Derivada f')</span>
+        <div class="math-block">
+          • Resolvemos <strong>f'(x) = 0</strong> para encontrar los Puntos Críticos (candidatos a extremos).<br>
+          • Si <strong>f'(x) > 0</strong> ➔ La función CRECE ↗<br>
+          • Si <strong>f'(x) &lt; 0</strong> ➔ La función DECRECE ↘<br>
+          • Un cambio de + a - indica un <strong>Máximo Relativo</strong>.<br>
+          • Un cambio de - a + indica un <strong>Mínimo Relativo</strong>.
+        </div>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">2. Curvatura y Puntos de Inflexión (Segunda Derivada f'')</span>
+        <div class="math-block">
+          • Resolvemos <strong>f''(x) = 0</strong> para encontrar los posibles Puntos de Inflexión.<br>
+          • Si <strong>f''(x) > 0</strong> ➔ Curvatura en forma de U (Cóncava hacia arriba ∪).<br>
+          • Si <strong>f''(x) &lt; 0</strong> ➔ Curvatura en forma de campana (Cóncava hacia abajo ∩).<br>
+          • Si la curvatura cambia de signo al pasar por f''(x)=0, hay un <strong>Punto de Inflexión</strong>.
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Protocolo Completo de 5 Pasos (Selectividad)</span>
+        <div class="math-block" style="line-height:2;">
+          Para garantizar la máxima puntuación en un examen de representación:<br>
+          1. <strong>Dominio:</strong> ¿Dónde existe la función? (Cuidado con denominadores y raíces pares).<br>
+          2. <strong>Puntos de corte:</strong> Ejes X (f(x) = 0) e Y (x = 0).<br>
+          3. <strong>Asíntotas:</strong> Verticales (x=a), Horizontales (y=b) y Oblicuas (y=mx+n).<br>
+          4. <strong>Crecimiento y Extremos:</strong> Estudio de f'(x).<br>
+          5. <strong>Curvatura:</strong> Estudio de f''(x).
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: TEOREMA DE ROLLE (CON VISOR) -->
+    <!-- ===================================================================== -->
+    <div id="tab-rolle" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Teorema de Rolle</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Uno de los pilares del cálculo diferencial. Traduce una idea intuitiva al lenguaje matemático riguroso.
+      </p>
+
+      <div class="step-card" style="border-left-color: var(--accent-blue);">
+        <span class="step-num" style="color:var(--accent-blue);">El Enunciado del Teorema</span>
+        <div class="step-title">«Todo lo que sube, si vuelve al mismo sitio, tiene que haber parado de subir»</div>
+        <div class="math-block">
+          Si una función f(x) cumple tres condiciones estrictas:<br>
+          1. Es <strong>continua</strong> en el intervalo cerrado [a, b].<br>
+          2. Es <strong>derivable</strong> en el intervalo abierto (a, b).<br>
+          3. Toma el mismo valor en los extremos: <strong>f(a) = f(b)</strong>.<br><br>
+          Entonces, <strong>existe al menos un punto c ∈ (a, b)</strong> tal que su derivada se anula:<br>
+          <strong style="color:var(--accent-gold); font-size:1.2rem;">f'(c) = 0</strong> &nbsp;<em>(es decir, tiene tangente horizontal)</em>.
+        </div>
+      </div>
+
+      <!-- VISOR INTERACTIVO ROLLE -->
+      <div class="sim-container">
+        <div style="font-weight:bold; color:var(--accent-blue); font-size:1.05rem;">
+          Demostración Visual del Teorema de Rolle
+        </div>
+        <p style="margin:0; font-size:0.9rem; color:var(--text-muted); text-align:center;">
+          La curva empieza en A y termina en B a la misma altura. Por muy loca que sea la trayectoria (siempre que sea suave y continua), por obligación geométrica habrá al menos un punto C donde la pendiente sea totalmente plana.
+        </p>
+
+        <canvas id="canvasRolle" class="sim-canvas" width="560" height="260"></canvas>
+        
+        <div style="font-size:0.9rem; color:var(--accent-gold); font-weight:700;">
+          f(a) = f(b) ➔ Obliga a la existencia de un extremo relativo c donde f'(c) = 0.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: REGLA DE L'HÔPITAL -->
+    <!-- ===================================================================== -->
+    <div id="tab-hopital" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">La Regla de L'Hôpital</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        La herramienta definitiva para destruir indeterminaciones de tipo <strong>0 / 0</strong> y <strong>∞ / ∞</strong> en el cálculo de límites.
+      </p>
+
+      <div class="step-card" style="border-left-color: var(--accent-blue);">
+        <span class="step-num" style="color:var(--accent-blue);">El Concepto "de calle" (La intuición detrás de la regla)</span>
+        <div class="step-title">Una carrera de velocidades hacia el cero o el infinito</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Imagina que dos funciones (una en el numerador y otra en el denominador) están compitiendo por llegar al 0 o al infinito al mismo tiempo. Al calcular el límite, ambas chocan y crean un "empate" matemático (la indeterminación <strong>0 / 0</strong> o <strong>∞ / ∞</strong>). 
+          <br><br>
+          ¿Cómo desempatamos? Mirando quién iba más rápido. Como <strong>la derivada mide exactamente la velocidad</strong> de una función, L'Hôpital nos da este truco: <em>«Si las funciones originales te dan empate, divide sus velocidades (sus derivadas). El límite de sus velocidades te dará exactamente el mismo resultado que el límite original.»</em>
+        </p>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">¿Qué dice la regla matemática?</span>
+        <div class="step-title">Derivamos arriba y abajo de forma independiente</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Si al calcular lim (x → a) [f(x) / g(x)] obtenemos una indeterminación 0/0 o ∞/∞, podemos derivar el numerador y el denominador <strong>por separado</strong> (¡no usar la regla del cociente!) y el límite se mantendrá idéntico:
+        </p>
+        <div class="math-block" style="text-align:center; font-size:1.2rem;">
+          lim (x → a) <span class="frac-wrap"><span class="frac-num">f(x)</span><span class="frac-den">g(x)</span></span> = lim (x → a) <span class="frac-wrap"><span class="frac-num">f'(x)</span><span class="frac-den">g'(x)</span></span>
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">Ejemplo Práctico Resuelto</span>
+        <div class="step-title">Un límite trigonométrico clásico</div>
+        <div class="math-block">
+          Calcular: <strong>L = lim (x → 0) <span class="frac-wrap"><span class="frac-num">sen(x) - x</span><span class="frac-den">x³</span></span></strong><br><br>
+
+          <strong>Paso 1: Evaluar el límite directo.</strong><br>
+          Sustituimos x = 0:<br>
+          <span class="frac-wrap"><span class="frac-num">sen(0) - 0</span><span class="frac-den">0³</span></span> = <span class="frac-wrap"><span class="frac-num">0</span><span class="frac-den">0</span></span> &nbsp;<em>(Indeterminación. Aplicamos L'Hôpital)</em><br><br>
+
+          <strong>Paso 2: 1ª aplicación de L'Hôpital (derivamos arriba y abajo).</strong><br>
+          lim (x → 0) <span class="frac-wrap"><span class="frac-num">cos(x) - 1</span><span class="frac-den">3x²</span></span> = <span class="frac-wrap"><span class="frac-num">cos(0) - 1</span><span class="frac-den">0</span></span> = <span class="frac-wrap"><span class="frac-num">1 - 1</span><span class="frac-den">0</span></span> = <span class="frac-wrap"><span class="frac-num">0</span><span class="frac-den">0</span></span><br>
+          <em>(Sigue dando 0/0, así que volvemos a aplicar L'Hôpital a lo nuevo)</em><br><br>
+
+          <strong>Paso 3: 2ª aplicación de L'Hôpital.</strong><br>
+          lim (x → 0) <span class="frac-wrap"><span class="frac-num">-sen(x)</span><span class="frac-den">6x</span></span> = <span class="frac-wrap"><span class="frac-num">-0</span><span class="frac-den">0</span></span> = <span class="frac-wrap"><span class="frac-num">0</span><span class="frac-den">0</span></span><br>
+          <em>(Aplicamos por tercera vez)</em><br><br>
+
+          <strong>Paso 4: 3ª aplicación de L'Hôpital.</strong><br>
+          lim (x → 0) <span class="frac-wrap"><span class="frac-num">-cos(x)</span><span class="frac-den">6</span></span> = <span class="frac-wrap"><span class="frac-num">-cos(0)</span><span class="frac-den">6</span></span> = <strong style="color:var(--accent-gold); font-size:1.15rem;">-1 / 6</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 4: OPTIMIZACIÓN NIVEL 2 -->
+    <!-- ===================================================================== -->
+    <div id="tab-optimizacion" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Problemas de Optimización: Nivel Avanzado</h2>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Problema Clásico de Examen: El Cilindro Óptimo</span>
+        <div class="step-title">«Se desea fabricar una lata cilíndrica de volumen fijo V = 1000 cm³. ¿Qué dimensiones (radio y altura) minimizan la cantidad de material usado (área total)?»</div>
+        
+        <div class="math-block">
+          <strong>1. Función Objetivo a Minimizar (Área Total del Cilindro):</strong><br>
+          El área incluye dos tapas circulares y el lateral rectangular:<br>
+          A(r, h) = 2πr² + 2πrh &nbsp;<em>(Tiene dos variables, necesitamos la restricción)</em><br><br>
+
+          <strong>2. Ecuación de Ligadura (Volumen = 1000):</strong><br>
+          V = πr²h = 1000 &nbsp;➔&nbsp; Despejamos h: <strong style="color:#38bdf8;">h = <span class="frac-wrap"><span class="frac-num">1000</span><span class="frac-den">πr²</span></span></strong><br><br>
+
+          <strong>3. Reducir la función objetivo a una sola variable A(r):</strong><br>
+          Sustituimos h en el área:<br>
+          A(r) = 2πr² + 2πr · (<span class="frac-wrap"><span class="frac-num">1000</span><span class="frac-den">πr²</span></span>) = <strong>2πr² + <span class="frac-wrap"><span class="frac-num">2000</span><span class="frac-den">r</span></span></strong><br><br>
+
+          <strong>4. Derivar e igualar a cero para hallar el mínimo:</strong><br>
+          La derivada de 1/r es -1/r²:<br>
+          A'(r) = 4πr - <span class="frac-wrap"><span class="frac-num">2000</span><span class="frac-den">r²</span></span> = 0<br>
+          Multiplicamos todo por r² para eliminar denominadores:<br>
+          4πr³ - 2000 = 0 &nbsp;➔&nbsp; r³ = <span class="frac-wrap"><span class="frac-num">2000</span><span class="frac-den">4π</span></span> = <span class="frac-wrap"><span class="frac-num">500</span><span class="frac-den">π</span></span><br>
+          ➔ <strong style="color:var(--accent-gold);">r = ∛(500/π) ≈ 5,42 cm</strong><br><br>
+
+          <strong>5. Calcular la altura y verificar la proporción:</strong><br>
+          h = <span class="frac-wrap"><span class="frac-num">1000</span><span class="frac-den">π(5,42)²</span></span> ≈ <strong>10,84 cm</strong><br><br>
+          <span class="badge-highlight">Fíjate en el resultado: h = 2r. El cilindro óptimo tiene la altura igual a su diámetro.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 5: ENTRENADOR INTERACTIVO L'HÔPITAL -->
+    <!-- ===================================================================== -->
+    <div id="tab-entrenador" class="tab-content">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; font-size:1.3rem;">Gimnasio de Límites: L'Hôpital</h2>
+        <button class="btn btn-secondary" onclick="generateHopitalChallenge()" style="padding:0.4rem 0.8rem; font-size:0.85rem;">
+          🎲 Nuevo Límite
+        </button>
+      </div>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Resuelve el siguiente límite aplicando la Regla de L'Hôpital (introduce el resultado numérico en decimal si es necesario):
+      </p>
+
+      <div class="math-block" id="limitStatement" style="text-align:center; font-size:1.4rem; padding:1.5rem; color:var(--accent-gold);">
+        Cargando límite...
+      </div>
+
+      <div class="ans-row">
+        <label style="font-weight:700;">Límite L =</label>
+        <input type="number" step="any" id="in_limit" class="ans-input" placeholder="Valor" autofocus>
+        <button class="btn btn-primary" onclick="checkHopitalChallenge()">Comprobar 🎯</button>
+      </div>
+
+      <div id="limitFeedback" class="feedback-box">
+        <div id="limitFbText" style="font-weight:bold; font-size:1.05rem; margin-bottom:0.4rem;"></div>
+        <div id="limitSteps" style="font-family:monospace; line-height:2.2;"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      if (tabId === 'rolle') drawRolleTheorem();
+    }
+
+    // =========================================================================
+    // DIBUJO DEL TEOREMA DE ROLLE
+    // =========================================================================
+    function drawRolleTheorem() {
+      const cv = document.getElementById('canvasRolle');
+      if (!cv) return;
+      const ctx = cv.getContext('2d');
+      const w = cv.width, h = cv.height;
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+      ctx.clearRect(0, 0, w, h);
+
+      const originX = w * 0.15;
+      const originY = h * 0.8;
+      const scaleX = 80;
+      const scaleY = 60;
+
+      // Ejes
+      ctx.strokeStyle = isLight ? '#94a3b8' : '#475569';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(10, originY); ctx.lineTo(w - 10, originY);
+      ctx.moveTo(originX, 10); ctx.lineTo(originX, h - 10);
+      ctx.stroke();
+
+      // Puntos a y b (f(a) = f(b))
+      const a = 1;
+      const b = 4;
+      const fa = 2; // Altura constante para a y b
+      
+      const pxA = originX + a * scaleX;
+      const pxB = originX + b * scaleX;
+      const pyF = originY - fa * scaleY;
+
+      // Línea de base horizontal f(a)=f(b)
+      ctx.strokeStyle = isLight ? '#94a3b8' : '#64748b';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([5, 5]);
+      ctx.beginPath();
+      ctx.moveTo(originX, pyF);
+      ctx.lineTo(pxB + 40, pyF);
+      ctx.stroke();
+
+      // Líneas verticales hacia los ejes
+      ctx.beginPath();
+      ctx.moveTo(pxA, originY); ctx.lineTo(pxA, pyF);
+      ctx.moveTo(pxB, originY); ctx.lineTo(pxB, pyF);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Dibujar la curva (una parábola cóncava)
+      // Vértice en medio (2.5)
+      const c = 2.5;
+      const pxC = originX + c * scaleX;
+      
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      for (let px = pxA; px <= pxB; px++) {
+        const x = (px - originX) / scaleX;
+        // Parábola que pasa por (1,2) y (4,2) con vértice en (2.5, 3)
+        // y = -k(x-2.5)^2 + 3 => 2 = -k(1.5)^2 + 3 => k = 1 / 2.25
+        const y = -(1/2.25) * Math.pow(x - 2.5, 2) + 3;
+        const py = originY - y * scaleY;
+        if (px === pxA) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+
+      // Tangente horizontal en C
+      const pyC = originY - 3 * scaleY;
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(pxC - 50, pyC);
+      ctx.lineTo(pxC + 50, pyC);
+      ctx.stroke();
+
+      // Punto C
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.arc(pxC, pyC, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Puntos A y B
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(pxA, pyF, 6, 0, Math.PI * 2);
+      ctx.arc(pxB, pyF, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Textos
+      ctx.fillStyle = isLight ? '#0f172a' : '#ffffff';
+      ctx.font = 'bold 14px monospace';
+      ctx.fillText('a', pxA - 5, originY + 20);
+      ctx.fillText('b', pxB - 5, originY + 20);
+      ctx.fillText('f(a) = f(b)', originX + 10, pyF - 10);
+      
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillText("c", pxC - 5, originY + 20);
+      ctx.fillText("f'(c) = 0", pxC - 30, pyC - 15);
+    }
+
+    // =========================================================================
+    // ENTRENADOR DE L'HÔPITAL
+    // =========================================================================
+    let currentLimit = null;
+
+    function randomInt(min, max, exclude = []) {
+      let res;
+      do {
+        res = Math.floor(Math.random() * (max - min + 1)) + min;
+      } while (exclude.includes(res));
+      return res;
+    }
+
+    function generateHopitalChallenge() {
+      // Formato: lim (x->0) [e^(ax) - 1] / [bx]
+      const a = randomInt(-5, 5, [0]);
+      const b = randomInt(1, 5);
+      
+      const exactResult = a / b;
+
+      currentLimit = {
+        a: a,
+        b: b,
+        result: exactResult
+      };
+
+      const signA = a > 0 ? `${a}x` : `${a}x`;
+      
+      document.getElementById('limitStatement').innerHTML = `
+        lim (x → 0) 
+        <span class="frac-wrap" style="font-size:1.25rem;">
+          <span class="frac-num">e<sup>${signA}</sup> - 1</span>
+          <span class="frac-den">${b}x</span>
+        </span>
+      `;
+
+      document.getElementById('limitFeedback').style.display = 'none';
+      document.getElementById('in_limit').value = '';
+    }
+
+    function checkHopitalChallenge() {
+      if (!currentLimit) return;
+      const userVal = parseFloat(document.getElementById('in_limit').value);
+
+      if (isNaN(userVal)) {
+        alert('Por favor, introduce el resultado del límite.');
+        return;
+      }
+
+      // Tolerancia por si el resultado es periódico
+      const isOk = Math.abs(userVal - currentLimit.result) < 0.05;
+      const fb = document.getElementById('limitFeedback');
+      const txt = document.getElementById('limitFbText');
+      const steps = document.getElementById('limitSteps');
+
+      fb.style.display = 'block';
+
+      if (isOk) {
+        fb.className = 'feedback-box feedback-success';
+        txt.textContent = '¡Correcto! Has resuelto la indeterminación perfectamente 🎯';
+      } else {
+        fb.className = 'feedback-box feedback-error';
+        txt.textContent = `Incorrecto. El límite exacto es ${currentLimit.result.toFixed(2)}. Revisa los pasos:`;
+      }
+
+      const a = currentLimit.a;
+      const b = currentLimit.b;
+
+      steps.innerHTML = `
+        1. Al sustituir x = 0, obtenemos: (e⁰ - 1) / (0) = <strong>0 / 0</strong> (Indeterminación).<br>
+        2. Aplicamos la regla de L'Hôpital derivando numerador y denominador:<br>
+        &nbsp;&nbsp;&nbsp;• Derivada del numerador: d/dx (e<sup>${a}x</sup> - 1) = <strong>${a}e<sup>${a}x</sup></strong><br>
+        &nbsp;&nbsp;&nbsp;• Derivada del denominador: d/dx (${b}x) = <strong>${b}</strong><br>
+        3. Volvemos a evaluar el límite con las derivadas:<br>
+        &nbsp;&nbsp;&nbsp;lim (x → 0) <span class="frac-wrap"><span class="frac-num">${a}e<sup>${a}x</sup></span><span class="frac-den">${b}</span></span> = <span class="frac-wrap"><span class="frac-num">${a}e⁰</span><span class="frac-den">${b}</span></span> = <strong style="color:var(--accent-gold); font-size:1.15rem;">${a} / ${b}</strong> = <strong>${currentLimit.result.toFixed(3)}</strong>
+      `;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      drawRolleTheorem();
+      generateHopitalChallenge();
+
+      document.getElementById('in_limit').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') checkHopitalChallenge();
+      });
+    });
+  </script>
+</body>
+</html>

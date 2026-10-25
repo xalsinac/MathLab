@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Inferencia Estadística | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--accent-gold);
+      color: #042f2e;
+      border-color: var(--accent-gold);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* TARJETAS DE PASO A PASO */
+    .step-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-gold);
+      border-radius: 8px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .step-num {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-gold);
+    }
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .math-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem 1.3rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      color: #fff;
+      line-height: 2.2;
+    }
+    [data-theme="light"] .math-block {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* COMPONENTES MATEMÁTICOS LIMPIOS */
+    .frac-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 0.25rem;
+      line-height: 1.15;
+      font-size: 0.95em;
+    }
+    .frac-num {
+      border-bottom: 1.8px solid currentColor;
+      padding: 0 0.2rem 2px 0.2rem;
+      display: block;
+    }
+    .frac-den {
+      padding: 2px 0.2rem 0 0.2rem;
+      display: block;
+    }
+
+    .radic-wrap {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 0.15rem;
+    }
+    .radic-symbol {
+      font-size: 1.25rem;
+      line-height: 1;
+      padding-right: 1px;
+      user-select: none;
+    }
+    .radic-content {
+      border-top: 1.8px solid currentColor;
+      padding: 0 0.25rem;
+      display: inline-block;
+      line-height: 1.15;
+    }
+
+    /* TABLA RESUMEN */
+    .mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: monospace;
+      font-size: 0.95rem;
+      text-align: center;
+      margin: 0.6rem 0;
+    }
+    .mini-table th {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 0.6rem;
+      color: var(--accent-gold);
+    }
+    .mini-table td {
+      border: 1px solid var(--border-color);
+      padding: 0.55rem;
+    }
+
+    /* CONTENEDORES DE LIENZOS */
+    .sim-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      gap: 1rem;
+    }
+    .sim-canvas {
+      background: #060911;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-width: 100%;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+    }
+    [data-theme="light"] .sim-canvas {
+      background: #ffffff !important;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 620px;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .slider-row input[type="range"] {
+      flex: 1;
+      min-width: 180px;
+      accent-color: var(--accent-gold);
+      cursor: pointer;
+    }
+
+    .badge-highlight {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid var(--accent-gold);
+      border-radius: 6px;
+      color: var(--accent-gold);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    /* INPUTS ENTRENADOR */
+    .ans-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .ans-input {
+      width: 110px;
+      padding: 0.6rem 0.4rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      font-family: monospace;
+      text-align: center;
+      background: var(--bg-primary);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      outline: none;
+    }
+    .ans-input:focus { border-color: var(--accent-gold); }
+
+    .feedback-box {
+      display: none;
+      border-radius: 8px;
+      padding: 1.2rem;
+      font-size: 0.95rem;
+      line-height: 2.1;
+    }
+    .feedback-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--accent-success);
+      color: #34d399;
+    }
+    .feedback-error {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--accent-op);
+      color: #fb7185;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Inferencia Estadística 📊</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+      <span class="badge" style="color: var(--accent-gold);">2º Bachillerato (Ciencias y CCSS)</span>
+      <div class="content-text">
+        La inferencia estadística es la disciplina que permite <strong>deducir propiedades de una población entera a partir de una muestra reducida</strong>. Aprende a calcular intervalos de confianza para la media o proporción y a determinar el tamaño de muestra necesario para no superar un margen de error fijado.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('muestreo', this)">1. Muestreo y Medias Muestrales</button>
+      <button class="tab-btn" onclick="switchTab('intervalos', this)">2. Intervalos de Confianza</button>
+      <button class="tab-btn" onclick="switchTab('tamano', this)">3. Error Máximo y Tamaño n</button>
+      <button class="tab-btn" onclick="switchTab('simulador', this)">4. Simulador Gráfico</button>
+      <button class="tab-btn" onclick="switchTab('entrenador', this)">5. 🎯 Ponte a Prueba</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: MUESTREO Y MEDIAS MUESTRALES -->
+    <!-- ===================================================================== -->
+    <div id="tab-muestreo" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem;">Población, Muestra y Distribución de la Media</h2>
+
+      <div class="step-card" style="border-left-color: var(--accent-blue);">
+        <span class="step-num" style="color:var(--accent-blue);">El Puente Estadístico: De la Parte al Todo</span>
+        <div class="step-title">Población (Parámetros desconocidos) vs. Muestra (Estadísticos conocidos)</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Casi nunca podemos encuestar a millones de ciudadanos ni analizar todos los productos de una fábrica. Tomamos una <strong>muestra aleatoria de tamaño n</strong> y calculamos su media <strong>x̄</strong>. La pregunta clave es: ¿cómo de cerca está esa media muestral de la media poblacional real <strong>μ</strong>?
+        </p>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Teorema Central del Límite (TCL)</span>
+        <div class="step-title">Distribución de las Medias Muestrales</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Si una población tiene media <strong>μ</strong> y desviación típica <strong>σ</strong>, al extraer todas las muestras posibles de tamaño <strong>n</strong> (con n ≥ 30 o población normal), las medias de esas muestras se comportan como una variable normal:
+        </p>
+        <div class="math-block" style="text-align:center;">
+          X̄ ~ N( μ, &nbsp;<span class="frac-wrap"><span class="frac-num">σ</span><span class="frac-den"><span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">n</span></span></span></span> )
+        </div>
+        <div class="math-block" style="margin-top:0.4rem;">
+          • La media de todas las muestras coincide exactamente con la media real: <strong>μ_x̄ = μ</strong>.<br>
+          • La dispersión de las medias (error estándar) es mucho menor que la individual: <strong>σ_x̄ = σ / <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">n</span></span></strong>.<br>
+          <em>(A mayor tamaño muestral n, las medias se concentran más apretadas en torno a μ).</em>
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color:var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Distribución para Proporciones Muestrales</span>
+        <div class="step-title">¿Qué ocurre si la variable es una proporción (Sí/No, Votantes)?</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Para una variable dicotómica con proporción poblacional de éxito <strong>p</strong> y fracaso <strong>q = 1 - p</strong>, la proporción en la muestra <strong>p̂</strong> se distribuye como:
+        </p>
+        <div class="math-block" style="text-align:center;">
+          P̂ ~ N( p, &nbsp;<span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content"><span class="frac-wrap"><span class="frac-num">p · q</span><span class="frac-den">n</span></span></span></span> )
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: INTERVALOS DE CONFIANZA -->
+    <!-- ===================================================================== -->
+    <div id="tab-intervalos" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Intervalos de Confianza para la Media Poblacional</h2>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">El Nivel de Confianza (1 - α) y el Valor Crítico z_α/2</span>
+        <div class="step-title">¿Qué significa un 95% de confianza?</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Significa que si repitiéramos el muestreo 100 veces, <strong>95 de los intervalos calculados contendrían la media real μ</strong> y 5 quedarían fuera. El nivel de significación o riesgo de error es <strong>α</strong>.
+        </p>
+
+        <table class="mini-table">
+          <thead>
+            <tr>
+              <th>Nivel de Confianza (1 - α)</th>
+              <th>Riesgo (α)</th>
+              <th>Cola unilateral (α/2)</th>
+              <th>Valor Crítico (z_α/2)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>90% (0,90)</td>
+              <td>0,10</td>
+              <td>0,05</td>
+              <td><strong>1,645</strong></td>
+            </tr>
+            <tr style="background:rgba(251, 191, 36, 0.12);">
+              <td style="color:var(--accent-gold); font-weight:bold;">95% (0,95) [El estándar]</td>
+              <td>0,05</td>
+              <td>0,025</td>
+              <td style="color:var(--accent-gold); font-weight:bold;">1,960</td>
+            </tr>
+            <tr>
+              <td>99% (0,99)</td>
+              <td>0,01</td>
+              <td>0,005</td>
+              <td><strong>2,575</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Fórmula del Intervalo de Confianza para μ</span>
+        <div class="math-block" style="text-align:center;">
+          I.C. = [ &nbsp;x̄ - z_α/2 · <span class="frac-wrap"><span class="frac-num">σ</span><span class="frac-den"><span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">n</span></span></span></span> , &nbsp;&nbsp;x̄ + z_α/2 · <span class="frac-wrap"><span class="frac-num">σ</span><span class="frac-den"><span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">n</span></span></span></span> &nbsp;]
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">Problema Resuelto Paso a Paso (Tipo Examen)</span>
+        <div class="step-title">«El tiempo de carga de una página web sigue una distribución normal con σ = 0,8 s. Una muestra aleatoria de n = 64 visitas da una media de x̄ = 3,5 s. Halla el I.C. al 95%.»</div>
+
+        <div class="math-block">
+          <strong>1. Extraer los datos del enunciado:</strong><br>
+          • Media muestral: <strong>x̄ = 3,5</strong><br>
+          • Desviación típica conocida: <strong>σ = 0,8</strong><br>
+          • Tamaño muestral: <strong>n = 64</strong> ➔ <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">n</span></span> = <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">64</span></span> = <strong>8</strong><br>
+          • Confianza 95% ➔ <strong>z_α/2 = 1,96</strong><br><br>
+
+          <strong>2. Calcular el Margen de Error (E):</strong><br>
+          E = z_α/2 · <span class="frac-wrap"><span class="frac-num">σ</span><span class="frac-den"><span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">n</span></span></span></span> = 1,96 · <span class="frac-wrap"><span class="frac-num">0,8</span><span class="frac-den">8</span></span> = 1,96 · 0,1 = <strong style="color:var(--accent-gold); font-size:1.15rem;">0,196</strong><br><br>
+
+          <strong>3. Construir los extremos del intervalo [ x̄ - E , x̄ + E ]:</strong><br>
+          • Extremo inferior: 3,5 - 0,196 = <strong>3,304</strong><br>
+          • Extremo superior: 3,5 + 0,196 = <strong>3,696</strong><br><br>
+
+          <span class="badge-highlight">Intervalo al 95%: [ 3,304 ; 3,696 ] segundos</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: ERROR MÁXIMO Y TAMAÑO MUESTRAL -->
+    <!-- ===================================================================== -->
+    <div id="tab-tamano" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Error Máximo Admisible y Tamaño de la Muestra</h2>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">El Margen de Error Admisible (E)</span>
+        <div class="step-title">La semiamplitud del intervalo de confianza</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          El radio del intervalo es la distancia desde la media muestral hasta cualquiera de los extremos:
+        </p>
+        <div class="math-block" style="text-align:center;">
+          E = z_α/2 · <span class="frac-wrap"><span class="frac-num">σ</span><span class="frac-den"><span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">n</span></span></span></span>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <em>(Amplitud total del intervalo = 2 · E)</em>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Cálculo del Tamaño Muestral Mínimo (n)</span>
+        <div class="step-title">Despejamos n elevando ambos miembros al cuadrado</div>
+        <div class="math-block" style="text-align:center;">
+          <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">n</span></span> = <span class="frac-wrap"><span class="frac-num">z_α/2 · σ</span><span class="frac-den">E</span></span>
+          &nbsp;&nbsp;&nbsp;&nbsp;➔&nbsp;&nbsp;&nbsp;&nbsp;
+          <strong style="color:var(--accent-gold); font-size:1.2rem;">n = [ <span class="frac-wrap"><span class="frac-num">z_α/2 · σ</span><span class="frac-den">E</span></span> ]²</strong>
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-op);">
+        <span class="step-num" style="color:var(--accent-op);">⚠️ La Regla de Oro de Selectividad: Redondeo por Exceso</span>
+        <div class="step-title">Jamás apliques redondeo simétrico en el tamaño muestral</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Si n da con decimales (por ejemplo, <strong>68,14</strong>), debes redondear obligatoriamente al <strong>entero superior más cercano (69)</strong>. Si redondearas a 68, la muestra sería insuficiente y el error superaría el límite permitido.
+        </p>
+
+        <div style="font-weight:bold; margin-top:0.6rem;">Ejemplo guiado:</div>
+        <div class="math-block">
+          «Con σ = 12 y una confianza del 99% (z_α/2 = 2,575), ¿cuántas observaciones se necesitan para que el error máximo no supere 2 unidades (E = 2)?»<br><br>
+          n = [ <span class="frac-wrap"><span class="frac-num">2,575 · 12</span><span class="frac-den">2</span></span> ]² = [ <span class="frac-wrap"><span class="frac-num">30,9</span><span class="frac-den">2</span></span> ]² = [ 15,45 ]² = <strong>238,70</strong><br><br>
+          <span class="badge-highlight">Solución final: Se necesitan como mínimo n = 239 observaciones.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 4: SIMULADOR GRÁFICO DEL INTERVALO -->
+    <!-- ===================================================================== -->
+    <div id="tab-simulador" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Laboratorio Interactivo de Intervalos</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Modifica los tres factores clave para observar cómo se ensancha o estrecha el intervalo de confianza alrededor de la media muestral en tiempo real.
+      </p>
+
+      <div class="sim-container">
+        <!-- CONTROLES SLIDERS -->
+        <div class="slider-row">
+          <label style="font-weight:700;">Nivel Confianza: <span id="lbl_conf" style="color:var(--accent-gold);">95% (z = 1.96)</span></label>
+          <input type="range" id="sl_conf" min="0" max="2" step="1" value="1" oninput="updateIntervalSim()">
+        </div>
+
+        <div class="slider-row">
+          <label style="font-weight:700;">Desviación típica (σ = <span id="lbl_sigma">15</span>):</label>
+          <input type="range" id="sl_sigma" min="5" max="30" step="1" value="15" oninput="updateIntervalSim()">
+        </div>
+
+        <div class="slider-row">
+          <label style="font-weight:700;">Tamaño muestra (n = <span id="lbl_n">64</span>):</label>
+          <input type="range" id="sl_n" min="16" max="256" step="16" value="64" oninput="updateIntervalSim()">
+        </div>
+
+        <!-- LIENZO -->
+        <canvas id="canvasInterval" class="sim-canvas" width="560" height="240"></canvas>
+
+        <div class="math-block" id="boxSimMetrics" style="width:100%; max-width:620px; line-height:2;">
+          <!-- Inyectado por JS -->
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color:var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Relaciones Matemáticas Observables</span>
+        <div class="math-block">
+          • <strong>Si aumentas la confianza (1 - α):</strong> El valor z sube ➔ El margen de error crece ➔ El intervalo se hace <strong>más ancho</strong> (menos preciso).<br>
+          • <strong>Si aumentas el tamaño muestral (n):</strong> Al dividir por <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">n</span></span> el error baja ➔ El intervalo se hace <strong>más estrecho</strong> (más preciso).<br>
+          • <strong>Si aumenta la dispersión (σ):</strong> Crece la incertidumbre ➔ El intervalo se ensancha.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 5: ENTRENADOR INTERACTIVO -->
+    <!-- ===================================================================== -->
+    <div id="tab-entrenador" class="tab-content">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; font-size:1.3rem;">Gimnasio de Inferencia (Selectividad)</h2>
+        <button class="btn btn-secondary" onclick="generateInferChallenge()" style="padding:0.4rem 0.8rem; font-size:0.85rem;">
+          🎲 Nuevo Reto
+        </button>
+      </div>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Halla el <strong>margen de error (E)</strong> admisible para el intervalo de confianza planteado (introduce el valor con dos o tres decimales exactos):
+      </p>
+
+      <div class="math-block" id="inferStatement" style="text-align:center; font-size:1.3rem; padding:1.25rem; color:var(--accent-gold);">
+        Cargando reto...
+      </div>
+
+      <div class="ans-row">
+        <label style="font-weight:700;">Margen de Error E =</label>
+        <input type="number" step="any" id="in_error" class="ans-input" placeholder="0.00" autofocus>
+        <button class="btn btn-primary" onclick="checkInferChallenge()">Comprobar E 🎯</button>
+      </div>
+
+      <div id="inferFeedback" class="feedback-box">
+        <div id="inferFbText" style="font-weight:bold; font-size:1.05rem; margin-bottom:0.4rem;"></div>
+        <div id="inferSteps" style="font-family:monospace; line-height:2.2;"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      if (tabId === 'simulador') updateIntervalSim();
+    }
+
+    // =========================================================================
+    // SIMULADOR GRÁFICO DEL INTERVALO DE CONFIANZA
+    // =========================================================================
+    const confLevels = [
+      { text: '90% (z = 1.645)', z: 1.645 },
+      { text: '95% (z = 1.960)', z: 1.960 },
+      { text: '99% (z = 2.575)', z: 2.575 }
+    ];
+
+    function updateIntervalSim() {
+      const cv = document.getElementById('canvasInterval');
+      if (!cv) return;
+      const ctx = cv.getContext('2d');
+      const w = cv.width, h = cv.height;
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+      ctx.clearRect(0, 0, w, h);
+
+      const confIdx = parseInt(document.getElementById('sl_conf').value, 10);
+      const sigma = parseFloat(document.getElementById('sl_sigma').value);
+      const n = parseInt(document.getElementById('sl_n').value, 10);
+
+      const confObj = confLevels[confIdx];
+      const z = confObj.z;
+
+      document.getElementById('lbl_conf').textContent = confObj.text;
+      document.getElementById('lbl_sigma').textContent = sigma;
+      document.getElementById('lbl_n').textContent = n;
+
+      const fixedXbar = 100; // media fija centrada
+      const error = z * (sigma / Math.sqrt(n));
+      const lower = fixedXbar - error;
+      const upper = fixedXbar + error;
+
+      document.getElementById('boxSimMetrics').innerHTML = `
+        <strong>Parámetros calculados:</strong><br>
+        • Margen de error: E = ${z} · (${sigma} / √${n}) = <strong style="color:var(--accent-gold);">${error.toFixed(3)}</strong><br>
+        • Amplitud total (2·E): <strong>${(2 * error).toFixed(3)}</strong><br>
+        • Intervalo: [ ${lower.toFixed(3)} ; ${upper.toFixed(3)} ]
+      `;
+
+      // Visualización cartesiana
+      const originX = w / 2;
+      const originY = h * 0.55;
+      const scaleX = 25; // 25 px por unidad
+
+      // Eje numérico horizontal
+      ctx.strokeStyle = isLight ? '#94a3b8' : '#475569';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(30, originY);
+      ctx.lineTo(w - 30, originY);
+      ctx.stroke();
+
+      // Centro media muestral x̄
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.arc(originX, originY, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = isLight ? '#0f172a' : '#ffffff';
+      ctx.font = 'bold 12px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(`x̄ = ${fixedXbar}`, originX, originY + 22);
+
+      // Límites inferior y superior en píxeles
+      const pxLower = originX - error * scaleX;
+      const pxUpper = originX + error * scaleX;
+
+      // Barra de intervalo sombreada
+      ctx.fillStyle = 'rgba(251, 191, 36, 0.25)';
+      ctx.fillRect(pxLower, originY - 14, pxUpper - pxLower, 28);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2.5;
+      ctx.strokeRect(pxLower, originY - 14, pxUpper - pxLower, 28);
+
+      // Extremos
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.arc(pxLower, originY, 4, 0, Math.PI * 2);
+      ctx.arc(pxUpper, originY, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Cotas de texto inferior y superior
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = 'bold 11px monospace';
+      ctx.fillText(lower.toFixed(2), pxLower, originY - 22);
+      ctx.fillText(upper.toFixed(2), pxUpper, originY - 22);
+
+      // Flechas de radio de error
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(originX, originY - 4);
+      ctx.lineTo(pxUpper, originY - 4);
+      ctx.stroke();
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = '10px monospace';
+      ctx.fillText(`E = ${error.toFixed(2)}`, originX + (pxUpper - originX) / 2, originY - 8);
+    }
+
+    // =========================================================================
+    // ENTRENADOR PARAMÉTRICO DE ERROR Y TAMAÑO MUESTRAL
+    // =========================================================================
+    let currentInferChallenge = null;
+
+    function randomInt(min, max, exclude = []) {
+      let res;
+      do {
+        res = Math.floor(Math.random() * (max - min + 1)) + min;
+      } while (exclude.includes(res));
+      return res;
+    }
+
+    function generateInferChallenge() {
+      const confData = [
+        { level: 90, z: 1.645 },
+        { level: 95, z: 1.96 },
+        { level: 99, z: 2.575 }
+      ];
+
+      const c = confData[randomInt(0, 2)];
+      const sigma = randomInt(4, 18);
+      // Elegimos n cuadrado perfecto para operaciones amables
+      const nSquares = [36, 64, 100, 144, 196, 256];
+      const n = nSquares[randomInt(0, nSquares.length - 1)];
+      const xbar = randomInt(40, 150);
+
+      const exactError = parseFloat((c.z * (sigma / Math.sqrt(n))).toFixed(3));
+
+      currentInferChallenge = {
+        level: c.level,
+        z: c.z,
+        sigma: sigma,
+        n: n,
+        xbar: xbar,
+        error: exactError
+      };
+
+      document.getElementById('inferStatement').innerHTML = `
+        Muestra de n = ${n} observaciones con media x̄ = ${xbar}.<br>
+        Desviación típica poblacional conocida σ = ${sigma}.<br>
+        Calcula el <strong>Margen de Error (E)</strong> para una confianza del <strong>${c.level}%</strong>.
+      `;
+
+      document.getElementById('inferFeedback').style.display = 'none';
+      document.getElementById('in_error').value = '';
+    }
+
+    function checkInferChallenge() {
+      if (!currentInferChallenge) return;
+      const userVal = parseFloat(document.getElementById('in_error').value);
+
+      if (isNaN(userVal)) {
+        alert('Por favor, introduce el valor numérico del error.');
+        return;
+      }
+
+      const isOk = Math.abs(userVal - currentInferChallenge.error) < 0.05;
+      const fb = document.getElementById('inferFeedback');
+      const txt = document.getElementById('inferFbText');
+      const steps = document.getElementById('inferSteps');
+
+      fb.style.display = 'block';
+
+      if (isOk) {
+        fb.className = 'feedback-box feedback-success';
+        txt.textContent = '¡Correcto! Has determinado el margen de error exacto 🎯';
+      } else {
+        fb.className = 'feedback-box feedback-error';
+        txt.textContent = `Incorrecto. El margen de error exacto es E = ${currentInferChallenge.error}. Revisa el cálculo:`;
+      }
+
+      const ch = currentInferChallenge;
+      steps.innerHTML = `
+        1. Confianza del ${ch.level}% ➔ Valor crítico: <strong>z_α/2 = ${ch.z}</strong><br>
+        2. Raíz del tamaño muestral: √${ch.n} = <strong>${Math.sqrt(ch.n)}</strong><br>
+        3. Fórmula del error: E = z_α/2 · <span class="frac-wrap"><span class="frac-num">σ</span><span class="frac-den">√n</span></span> = ${ch.z} · <span class="frac-wrap"><span class="frac-num">${ch.sigma}</span><span class="frac-den">${Math.sqrt(ch.n)}</span></span> = <strong style="color:var(--accent-gold); font-size:1.15rem;">${ch.error}</strong><br>
+        4. El intervalo resultante sería: [ ${ch.xbar} - ${ch.error} ; ${ch.xbar} + ${ch.error} ] = <strong>[ ${(ch.xbar - ch.error).toFixed(3)} ; ${(ch.xbar + ch.error).toFixed(3)} ]</strong>
+      `;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateIntervalSim();
+      generateInferChallenge();
+
+      document.getElementById('in_error').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') checkInferChallenge();
+      });
+    });
+  </script>
+</body>
+</html>

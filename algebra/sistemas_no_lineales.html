@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sistemas No Lineales | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 950px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border-color: var(--accent-blue);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* TARJETAS DE PASO A PASO */
+    .step-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .step-num {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-blue);
+    }
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .math-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.9rem 1.2rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      color: #fff;
+      line-height: 1.8;
+    }
+    [data-theme="light"] .math-block {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* VISOR GRÁFICO CARTESIANO */
+    .graph-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.2rem;
+      gap: 0.8rem;
+    }
+    .graph-canvas {
+      background: #060911;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-width: 100%;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    }
+    [data-theme="light"] .graph-canvas {
+      background: #ffffff !important;
+    }
+    .graph-legend {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.88rem;
+      font-weight: 700;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    /* SISTEMA DE LLAVE MATEMÁTICA */
+    .system-bracket {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: monospace;
+      font-size: 1.15rem;
+      margin: 0.5rem 0;
+    }
+    .bracket-symbol {
+      font-size: 2.8rem;
+      font-family: Arial, sans-serif;
+      line-height: 1;
+      color: var(--accent-blue);
+      user-select: none;
+    }
+    .system-eqs {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    /* RAÍCES CON VINCULUM CONTINUO */
+    .radic-wrap {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 0.15rem;
+    }
+    .radic-symbol {
+      font-size: 1.25rem;
+      line-height: 1;
+      padding-right: 1px;
+      user-select: none;
+    }
+    .radic-content {
+      border-top: 1.8px solid currentColor;
+      padding: 0 0.25rem;
+      display: inline-block;
+      line-height: 1.15;
+    }
+
+    .badge-highlight {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid var(--accent-gold);
+      border-radius: 6px;
+      color: var(--accent-gold);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    /* ENTRENADOR */
+    .ans-grid-pairs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      max-width: 500px;
+      margin: 1rem auto;
+    }
+    .pair-box {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .ans-input {
+      width: 60px;
+      padding: 0.5rem 0.3rem;
+      font-size: 1.1rem;
+      font-weight: 800;
+      font-family: monospace;
+      text-align: center;
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
+      outline: none;
+    }
+    .ans-input:focus { border-color: var(--accent-blue); }
+
+    .feedback-box {
+      display: none;
+      border-radius: 8px;
+      padding: 1.2rem;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .feedback-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--accent-success);
+      color: #34d399;
+    }
+    .feedback-error {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--accent-op);
+      color: #fb7185;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Sistemas No Lineales ⚡</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+      <span class="badge" style="color: var(--accent-blue);">4º ESO y 1º Bachillerato</span>
+      <div class="content-text">
+        Un sistema es <strong>no lineal</strong> cuando al menos una de sus ecuaciones tiene incógnitas al cuadrado o multiplicadas. Geométricamente, las soluciones algebraicas son los <strong>puntos exactos (x, y) donde se cruzan las gráficas</strong>.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('sustitucion', this)">1. Recta y Circunferencia</button>
+      <button class="tab-btn" onclick="switchTab('parabola', this)">2. Recta y Parábola (Visual)</button>
+      <button class="tab-btn" onclick="switchTab('reduccion', this)">3. Dos Cuadráticas (4 Cortes)</button>
+      <button class="tab-btn" onclick="switchTab('gimnasio', this)">4. 🎯 Ponte a Prueba</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: RECTA Y CIRCUNFERENCIA -->
+    <!-- ===================================================================== -->
+    <div id="tab-sustitucion" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem;">Intersección de Recta y Circunferencia</h2>
+      
+      <div class="system-bracket">
+        <span class="bracket-symbol">{</span>
+        <div class="system-eqs">
+          <span>x - y = 1 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>(Recta secante)</em></span>
+          <span>x² + y² = 25 &nbsp;&nbsp;&nbsp;&nbsp;<em>(Circunferencia de radio 5)</em></span>
+        </div>
+      </div>
+
+      <!-- VISOR CANVAS 1 -->
+      <div class="graph-container">
+        <canvas id="canvasCirculo" class="graph-canvas" width="460" height="340"></canvas>
+        <div class="graph-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:#38bdf8;"></span> Recta: y = x - 1</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#f59e0b;"></span> Circunferencia: x² + y² = 25</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#10b981;"></span> Puntos de corte P(x, y)</span>
+        </div>
+      </div>
+
+      <!-- RESOLUCIÓN -->
+      <div class="step-card">
+        <span class="step-num">Paso 1: Despejar de la recta y sustituir</span>
+        <div class="math-block">
+          Despejamos x: <strong>x = y + 1</strong><br>
+          Sustituimos en x² + y² = 25:<br>
+          <strong>(y + 1)²</strong> + y² = 25 &nbsp;➔&nbsp; 2y² + 2y + 1 = 25 &nbsp;➔&nbsp; <strong>y² + y - 12 = 0</strong><br>
+          Resolviendo: <strong>y₁ = 3</strong>, &nbsp;<strong>y₂ = -4</strong>
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">Paso 2: Coordenadas de los cruces</span>
+        <div class="math-block">
+          • Con y₁ = 3 &nbsp;➔&nbsp; x₁ = 3 + 1 = <strong>4</strong> &nbsp;&nbsp;&nbsp;➔ Punto de corte: <strong>P₁(4, 3)</strong><br>
+          • Con y₂ = -4 ➔&nbsp; x₂ = -4 + 1 = <strong>-3</strong> &nbsp;➔ Punto de corte: <strong>P₂(-3, -4)</strong>
+        </div>
+        <div style="margin-top:0.4rem;">
+          <span class="badge-highlight">La recta atraviesa la circunferencia exactamente en (4, 3) y (-3, -4)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: RECTA Y PARÁBOLA (VISUAL) -->
+    <!-- ===================================================================== -->
+    <div id="tab-parabola" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Intersección de Recta y Parábola</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Un caso esencial en 4º de ESO y Bachillerato: igualar una función lineal (recta) con una función cuadrática (parábola).
+      </p>
+
+      <div class="system-bracket">
+        <span class="bracket-symbol">{</span>
+        <div class="system-eqs">
+          <span>y = 2x + 1 &nbsp;&nbsp;&nbsp;&nbsp;<em>(Recta)</em></span>
+          <span>y = x² - 2 &nbsp;&nbsp;&nbsp;&nbsp;<em>(Parábola)</em></span>
+        </div>
+      </div>
+
+      <!-- VISOR CANVAS 2 -->
+      <div class="graph-container">
+        <canvas id="canvasParabola" class="graph-canvas" width="460" height="340"></canvas>
+        <div class="graph-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:#38bdf8;"></span> Recta: y = 2x + 1</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#c084fc;"></span> Parábola: y = x² - 2</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#10b981;"></span> Puntos de corte</span>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Resolución por Igualación</span>
+        <div class="math-block">
+          Como ambas tienen la y despejada, igualamos directamente:<br>
+          x² - 2 = 2x + 1 &nbsp;➔&nbsp; <strong>x² - 2x - 3 = 0</strong><br><br>
+          x = [ 2 ± <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">(-2)² - 4·1·(-3)</span></span> ] / 2 = [ 2 ± <span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">16</span></span> ] / 2 = [ 2 ± 4 ] / 2<br>
+          ➔ <strong>x₁ = 3</strong>, &nbsp;<strong>x₂ = -1</strong><br><br>
+          Sustituyendo en y = 2x + 1:<br>
+          • x = 3 &nbsp;➔&nbsp; y = 2(3) + 1 = <strong>7</strong> &nbsp;&nbsp;➔ <strong>P₁(3, 7)</strong><br>
+          • x = -1 ➔&nbsp; y = 2(-1) + 1 = <strong>-1</strong> ➔ <strong>P₂(-1, -1)</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: REDUCCIÓN (DOS CUADRÁTICAS) -->
+    <!-- ===================================================================== -->
+    <div id="tab-reduccion" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Dos Cuadráticas (4 Puntos de Corte)</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        La intersección de dos curvas cónicas (por ejemplo, una circunferencia y una elipse o hipérbola) puede dar hasta 4 soluciones simétricas.
+      </p>
+
+      <div class="system-bracket">
+        <span class="bracket-symbol">{</span>
+        <div class="system-eqs">
+          <span>x² + y² = 13</span>
+          <span>x² - y² = 5</span>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Paso 1: Sumar ambas ecuaciones (Reducción)</span>
+        <div class="math-block">
+          &nbsp;&nbsp;x² + y² = 13<br>
+        + x² - y² = 5<br>
+        -----------------<br>
+          2x² + 0 &nbsp;= 18 &nbsp;➔&nbsp; x² = 9 &nbsp;➔&nbsp; <strong>x = ±3</strong>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Paso 2: Calcular el valor de y</span>
+        <div class="math-block">
+          9 + y² = 13 &nbsp;➔&nbsp; y² = 4 &nbsp;➔&nbsp; <strong>y = ±2</strong>
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color:var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Paso 3: Las 4 intersecciones</span>
+        <div class="math-block">
+          Al combinar los signos independientes obtenemos 4 puntos en el plano:<br>
+          <strong>P₁(3, 2), &nbsp;P₂(3, -2), &nbsp;P₃(-3, 2), &nbsp;P₄(-3, -2)</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 4: ENTRENADOR INTERACTIVO -->
+    <!-- ===================================================================== -->
+    <div id="tab-gimnasio" class="tab-content">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; font-size:1.3rem;">Gimnasio de Sistemas No Lineales</h2>
+        <button class="btn btn-secondary" onclick="generateSystemChallenge()" style="padding:0.4rem 0.8rem; font-size:0.85rem;">
+          🎲 Nuevo Sistema
+        </button>
+      </div>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Resuelve el sistema por sustitución o igualación y halla las coordenadas de los dos puntos de corte <strong>(x₁, y₁)</strong> y <strong>(x₂, y₂)</strong>:
+      </p>
+
+      <div class="math-block" id="sysStatement" style="text-align:center; font-size:1.25rem; padding:1.25rem; color:var(--accent-blue);">
+        Cargando sistema...
+      </div>
+
+      <div class="ans-grid-pairs">
+        <div class="pair-box">
+          <span style="font-weight:bold;">Punto 1:</span>
+          <span>x₁=</span><input type="number" id="in_x1" class="ans-input" placeholder="x₁">
+          <span>y₁=</span><input type="number" id="in_y1" class="ans-input" placeholder="y₁">
+        </div>
+        <div class="pair-box">
+          <span style="font-weight:bold;">Punto 2:</span>
+          <span>x₂=</span><input type="number" id="in_x2" class="ans-input" placeholder="x₂">
+          <span>y₂=</span><input type="number" id="in_y2" class="ans-input" placeholder="y₂">
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:center; gap:0.8rem; margin-top:0.8rem;">
+        <button class="btn btn-primary" onclick="checkSystemChallenge()">Comprobar 🎯</button>
+      </div>
+
+      <div id="sysFeedback" class="feedback-box">
+        <div id="sysFbText" style="font-weight:bold; font-size:1.05rem; margin-bottom:0.4rem;"></div>
+        <div id="sysSteps" style="font-family:monospace; line-height:1.7;"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      if (tabId === 'sustitucion') drawCircleSystem();
+      if (tabId === 'parabola') drawParabolaSystem();
+    }
+
+    // =========================================================================
+    // DIBUJO DE GRÁFICAS EN CANVAS CON PLANO CARTESIANO
+    // =========================================================================
+    function drawAxes(ctx, width, height, scale, originX, originY) {
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      ctx.clearRect(0, 0, width, height);
+
+      // Rejilla
+      ctx.strokeStyle = isLight ? '#e2e8f0' : '#1e293b';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let x = originX % scale; x < width; x += scale) {
+        ctx.moveTo(x, 0); ctx.lineTo(x, height);
+      }
+      for (let y = originY % scale; y < height; y += scale) {
+        ctx.moveTo(0, y); ctx.lineTo(width, y);
+      }
+      ctx.stroke();
+
+      // Ejes principales
+      ctx.strokeStyle = isLight ? '#94a3b8' : '#475569';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, originY); ctx.lineTo(width, originY);
+      ctx.moveTo(originX, 0); ctx.lineTo(originX, height);
+      ctx.stroke();
+
+      // Etiquetas X / Y
+      ctx.fillStyle = isLight ? '#64748b' : '#94a3b8';
+      ctx.font = '11px monospace';
+      ctx.fillText('X', width - 15, originY - 6);
+      ctx.fillText('Y', originX + 8, 15);
+    }
+
+    function drawPoint(ctx, px, py, label) {
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(px, py, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 12px monospace';
+      ctx.fillText(label, px + 8, py - 6);
+    }
+
+    // 1. GRÁFICA RECTA + CIRCUNFERENCIA
+    function drawCircleSystem() {
+      const cv = document.getElementById('canvasCirculo');
+      if (!cv) return;
+      const ctx = cv.getContext('2d');
+      const w = cv.width, h = cv.height;
+      const originX = w / 2, originY = h / 2;
+      const scale = 22; // 22px por unidad
+
+      drawAxes(ctx, w, h, scale, originX, originY);
+
+      // Dibujar Circunferencia r = 5
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(originX, originY, 5 * scale, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Dibujar Recta y = x - 1
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      const xStart = -8, xEnd = 8;
+      ctx.moveTo(originX + xStart * scale, originY - (xStart - 1) * scale);
+      ctx.lineTo(originX + xEnd * scale, originY - (xEnd - 1) * scale);
+      ctx.stroke();
+
+      // Puntos de corte P1(4, 3) y P2(-3, -4)
+      drawPoint(ctx, originX + 4 * scale, originY - 3 * scale, 'P₁(4, 3)');
+      drawPoint(ctx, originX - 3 * scale, originY - (-4) * scale, 'P₂(-3, -4)');
+    }
+
+    // 2. GRÁFICA RECTA + PARÁBOLA
+    function drawParabolaSystem() {
+      const cv = document.getElementById('canvasParabola');
+      if (!cv) return;
+      const ctx = cv.getContext('2d');
+      const w = cv.width, h = cv.height;
+      const originX = w / 2, originY = h * 0.65;
+      const scale = 20;
+
+      drawAxes(ctx, w, h, scale, originX, originY);
+
+      // Dibujar Parábola: y = x² - 2
+      ctx.strokeStyle = '#c084fc';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let px = 0; px <= w; px += 2) {
+        const xVal = (px - originX) / scale;
+        const yVal = xVal * xVal - 2;
+        const py = originY - yVal * scale;
+        if (px === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+
+      // Dibujar Recta: y = 2x + 1
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      const xStart = -6, xEnd = 6;
+      ctx.moveTo(originX + xStart * scale, originY - (2 * xStart + 1) * scale);
+      ctx.lineTo(originX + xEnd * scale, originY - (2 * xEnd + 1) * scale);
+      ctx.stroke();
+
+      // Puntos de corte P1(3, 7) y P2(-1, -1)
+      drawPoint(ctx, originX + 3 * scale, originY - 7 * scale, 'P₁(3, 7)');
+      drawPoint(ctx, originX - 1 * scale, originY - (-1) * scale, 'P₂(-1, -1)');
+    }
+
+    // =========================================================================
+    // ENTRENADOR PARAMÉTRICO DE SISTEMAS
+    // =========================================================================
+    let currentSystem = null;
+
+    function generateSystemChallenge() {
+      const pool = [-4, -3, -2, -1, 1, 2, 3, 4];
+      const idx1 = Math.floor(Math.random() * pool.length);
+      const x1 = pool.splice(idx1, 1)[0];
+      const x2 = pool[Math.floor(Math.random() * pool.length)];
+
+      const d = Math.floor(Math.random() * 5) - 2 || 1;
+      const y1 = x1 + d;
+      const y2 = x2 + d;
+
+      const bCuad = -(x1 + x2) + 1;
+      const cCuad = (x1 * x2) + d;
+
+      const signB = bCuad >= 0 ? `+ ${bCuad}` : `- ${Math.abs(bCuad)}`;
+      const signC = cCuad >= 0 ? `+ ${cCuad}` : `- ${Math.abs(cCuad)}`;
+
+      currentSystem = {
+        x1: x1, y1: y1,
+        x2: x2, y2: y2,
+        d: d,
+        bCuad: bCuad,
+        cCuad: cCuad,
+        eq1Str: `y - x = ${d}`,
+        eq2Str: `y = x² ${signB}x ${signC}`
+      };
+
+      document.getElementById('sysStatement').innerHTML = `
+        <div class="system-bracket">
+          <span class="bracket-symbol">{</span>
+          <div class="system-eqs" style="text-align:left;">
+            <span>${currentSystem.eq1Str}</span>
+            <span>${currentSystem.eq2Str}</span>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('sysFeedback').style.display = 'none';
+      document.getElementById('in_x1').value = '';
+      document.getElementById('in_y1').value = '';
+      document.getElementById('in_x2').value = '';
+      document.getElementById('in_y2').value = '';
+    }
+
+    function checkSystemChallenge() {
+      if (!currentSystem) return;
+
+      const ux1 = parseFloat(document.getElementById('in_x1').value);
+      const uy1 = parseFloat(document.getElementById('in_y1').value);
+      const ux2 = parseFloat(document.getElementById('in_x2').value);
+      const uy2 = parseFloat(document.getElementById('in_y2').value);
+
+      if ([ux1, uy1, ux2, uy2].some(isNaN)) {
+        alert('Por favor, rellena los dos pares de coordenadas (x, y).');
+        return;
+      }
+
+      const p1MatchP1 = (ux1 === currentSystem.x1 && uy1 === currentSystem.y1);
+      const p2MatchP2 = (ux2 === currentSystem.x2 && uy2 === currentSystem.y2);
+
+      const p1MatchP2 = (ux1 === currentSystem.x2 && uy1 === currentSystem.y2);
+      const p2MatchP1 = (ux2 === currentSystem.x1 && uy2 === currentSystem.y1);
+
+      const isOk = (p1MatchP1 && p2MatchP2) || (p1MatchP2 && p2MatchP1);
+
+      const fb = document.getElementById('sysFeedback');
+      const txt = document.getElementById('sysFbText');
+      const steps = document.getElementById('sysSteps');
+
+      fb.style.display = 'block';
+
+      if (isOk) {
+        fb.className = 'feedback-box feedback-success';
+        txt.textContent = '¡Correcto! Has determinado exactamente los dos puntos de corte 🎯';
+      } else {
+        fb.className = 'feedback-box feedback-error';
+        txt.textContent = 'Solución incorrecta. Revisa el procedimiento ordenado:';
+      }
+
+      steps.innerHTML = `
+        1. Despejamos de la 1ª ec: <strong>y = x ${currentSystem.d >= 0 ? '+ ' + currentSystem.d : '- ' + Math.abs(currentSystem.d)}</strong><br>
+        2. Igualamos a la parábola: x ${currentSystem.d >= 0 ? '+ ' + currentSystem.d : '- ' + Math.abs(currentSystem.d)} = x² ${currentSystem.bCuad >= 0 ? '+ ' + currentSystem.bCuad : '- ' + Math.abs(currentSystem.bCuad)}x ${currentSystem.cCuad >= 0 ? '+ ' + currentSystem.cCuad : '- ' + Math.abs(currentSystem.cCuad)}<br>
+        3. Resolvemos la ecuación cuadrática resultante y obtenemos x₁ = <strong>${currentSystem.x1}</strong> y x₂ = <strong>${currentSystem.x2}</strong><br>
+        4. Sustituimos en y = x + (${currentSystem.d}) para calcular cada pareja:<br>
+        &nbsp;&nbsp;&nbsp;• Si x = ${currentSystem.x1} ➔ y = <strong>${currentSystem.y1}</strong> ➔ <strong>P₁(${currentSystem.x1}, ${currentSystem.y1})</strong><br>
+        &nbsp;&nbsp;&nbsp;• Si x = ${currentSystem.x2} ➔ y = <strong>${currentSystem.y2}</strong> ➔ <strong>P₂(${currentSystem.x2}, ${currentSystem.y2})</strong>
+      `;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      drawCircleSystem();
+      generateSystemChallenge();
+    });
+  </script>
+</body>
+</html>

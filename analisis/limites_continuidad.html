@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Límites, Continuidad y Asíntotas | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--accent-gold);
+      color: #042f2e;
+      border-color: var(--accent-gold);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* TARJETAS DE PASO A PASO */
+    .step-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-gold);
+      border-radius: 8px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .step-num {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-gold);
+    }
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .math-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem 1.3rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      color: #fff;
+      line-height: 2.2;
+    }
+    [data-theme="light"] .math-block {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* COMPONENTES MATEMÁTICOS LIMPIOS: FRACCIONES VERTICALES Y RAÍCES */
+    .frac-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 0.25rem;
+      line-height: 1.15;
+      font-size: 0.95em;
+    }
+    .frac-num {
+      border-bottom: 1.8px solid currentColor;
+      padding: 0 0.2rem 2px 0.2rem;
+      display: block;
+    }
+    .frac-den {
+      padding: 2px 0.2rem 0 0.2rem;
+      display: block;
+    }
+
+    .radic-wrap {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 0.15rem;
+    }
+    .radic-symbol {
+      font-size: 1.25rem;
+      line-height: 1;
+      padding-right: 1px;
+      user-select: none;
+    }
+    .radic-content {
+      border-top: 1.8px solid currentColor;
+      padding: 0 0.25rem;
+      display: inline-block;
+      line-height: 1.15;
+    }
+
+    /* LLAVE DE FUNCIÓN A TROZOS */
+    .piecewise-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      margin: 0.5rem 0;
+    }
+    .piecewise-bracket {
+      font-size: 3.2rem;
+      font-family: Arial, sans-serif;
+      line-height: 1;
+      color: var(--accent-gold);
+      user-select: none;
+    }
+    .piecewise-cases {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    /* VISOR CANVAS */
+    .graph-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.2rem;
+      gap: 0.8rem;
+    }
+    .graph-canvas {
+      background: #060911;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-width: 100%;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    }
+    [data-theme="light"] .graph-canvas {
+      background: #ffffff !important;
+    }
+    .graph-legend {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.88rem;
+      font-weight: 700;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .badge-highlight {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid var(--accent-gold);
+      border-radius: 6px;
+      color: var(--accent-gold);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    /* INPUTS ENTRENADOR */
+    .ans-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .ans-input {
+      width: 110px;
+      padding: 0.6rem 0.4rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      font-family: monospace;
+      text-align: center;
+      background: var(--bg-primary);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      outline: none;
+    }
+    .ans-input:focus { border-color: var(--accent-gold); }
+
+    .feedback-box {
+      display: none;
+      border-radius: 8px;
+      padding: 1.2rem;
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+    .feedback-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--accent-success);
+      color: #34d399;
+    }
+    .feedback-error {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--accent-op);
+      color: #fb7185;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Límites y Continuidad 📈</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+      <span class="badge" style="color: var(--accent-gold);">Bachillerato (Ciencias y Ciencias Sociales)</span>
+      <div class="content-text">
+        El concepto de límite describe el <strong>comportamiento de una función al aproximarse</strong> a un valor concreto o al infinito, sin necesidad de alcanzarlo. Es la base fundamental para el cálculo de asíntotas, la continuidad y la derivada.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('asintotas', this)">1. Límites y Asíntotas (Visual)</button>
+      <button class="tab-btn" onclick="switchTab('indeterminaciones', this)">2. Indeterminaciones Clave</button>
+      <button class="tab-btn" onclick="switchTab('continuidad', this)">3. Continuidad con Parámetros</button>
+      <button class="tab-btn" onclick="switchTab('entrenador', this)">4. 🎯 Ponte a Prueba</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: LÍMITES Y ASÍNTOTAS -->
+    <!-- ===================================================================== -->
+    <div id="tab-asintotas" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem;">Comportamiento Asintótico y Límites Laterales</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Observa la función racional <strong>f(x) = <span class="frac-wrap"><span class="frac-num">x + 1</span><span class="frac-den">x - 2</span></span></strong>. Alrededor de x = 2 el denominador se anula (<span class="frac-wrap"><span class="frac-num">k</span><span class="frac-den">0</span></span>), disparando las ramas al infinito. Al alejarse hacia ±∞, los valores se estabilizan en la recta horizontal.
+      </p>
+
+      <!-- VISOR CANVAS -->
+      <div class="graph-container">
+        <canvas id="canvasLimites" class="graph-canvas" width="560" height="340"></canvas>
+        <div class="graph-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:#38bdf8;"></span> Curva f(x) = (x+1)/(x-2)</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#f43f5e;"></span> Asíntota Vertical: x = 2</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#10b981;"></span> Asíntota Horizontal: y = 1</span>
+        </div>
+      </div>
+
+      <!-- DESGLOSE ASÍNTOTAS -->
+      <div class="step-card">
+        <span class="step-num">Asíntota Vertical (A.V.)</span>
+        <div class="step-title">Candidatos: puntos que anulan el denominador (x - 2 = 0 ➔ x = 2)</div>
+        <div class="math-block">
+          Estudiamos los límites laterales evaluando valores cercanos:<br>
+          • Por la izquierda: lim (x ➔ 2⁻) <span class="frac-wrap"><span class="frac-num">x + 1</span><span class="frac-den">x - 2</span></span> = <span class="frac-wrap"><span class="frac-num">3</span><span class="frac-den">0⁻</span></span> = <strong>-∞</strong> &nbsp;<em>(ej: x = 1,99)</em><br>
+          • Por la derecha: &nbsp;&nbsp;lim (x ➔ 2⁺) <span class="frac-wrap"><span class="frac-num">x + 1</span><span class="frac-den">x - 2</span></span> = <span class="frac-wrap"><span class="frac-num">3</span><span class="frac-den">0⁺</span></span> = <strong>+∞</strong> &nbsp;<em>(ej: x = 2,01)</em><br><br>
+          Como al menos un lateral da ±∞, existe una <strong>Asíntota Vertical en x = 2</strong>.
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color:var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">Asíntota Horizontal (A.H.)</span>
+        <div class="step-title">Comportamiento en el infinito (x ➔ ±∞)</div>
+        <div class="math-block">
+          lim (x ➔ +∞) <span class="frac-wrap"><span class="frac-num">x + 1</span><span class="frac-den">x - 2</span></span> = lim (x ➔ +∞) <span class="frac-wrap"><span class="frac-num">x</span><span class="frac-den">x</span></span> = <strong>1</strong><br>
+          lim (x ➔ -∞) <span class="frac-wrap"><span class="frac-num">x + 1</span><span class="frac-den">x - 2</span></span> = <strong>1</strong><br><br>
+          Al dar un número real finito, existe una <strong>Asíntota Horizontal en y = 1</strong> en ambos extremos.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: RESOLUCIÓN DE INDETERMINACIONES -->
+    <!-- ===================================================================== -->
+    <div id="tab-indeterminaciones" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Las 3 Indeterminaciones Básicas de Examen</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Una indeterminación no significa que el límite no exista, sino que la sustitución directa no basta: hay que romperla algebraicamente.
+      </p>
+
+      <!-- CASO 1: 0/0 POR FACTORIZACIÓN -->
+      <div class="step-card">
+        <span class="step-num">Tipo <span class="frac-wrap"><span class="frac-num">0</span><span class="frac-den">0</span></span> (Polinomios) ➔ Factorizar y simplificar</span>
+        <div class="step-title">Ejemplo: lim (x ➔ 3) <span class="frac-wrap"><span class="frac-num">x² - 9</span><span class="frac-den">x² - 2x - 3</span></span></div>
+        <div class="math-block">
+          1. Sustitución inicial: <span class="frac-wrap"><span class="frac-num">3² - 9</span><span class="frac-den">3² - 6 - 3</span></span> = <strong><span class="frac-wrap"><span class="frac-num">0</span><span class="frac-den">0</span></span> (Indeterminación)</strong><br>
+          2. Como x = 3 anula ambos polinomios, factorizamos sacando el término (x - 3):<br>
+          &nbsp;&nbsp;&nbsp;• Numerador: x² - 9 = (x - 3)(x + 3)<br>
+          &nbsp;&nbsp;&nbsp;• Denominador: x² - 2x - 3 = (x - 3)(x + 1)<br>
+          3. Cancelamos el factor problemático (x - 3):<br>
+          &nbsp;&nbsp;&nbsp;lim (x ➔ 3) <span class="frac-wrap"><span class="frac-num">(x - 3)(x + 3)</span><span class="frac-den">(x - 3)(x + 1)</span></span> = lim (x ➔ 3) <span class="frac-wrap"><span class="frac-num">x + 3</span><span class="frac-den">x + 1</span></span><br>
+          4. Evaluamos: <span class="frac-wrap"><span class="frac-num">3 + 3</span><span class="frac-den">3 + 1</span></span> = <span class="frac-wrap"><span class="frac-num">6</span><span class="frac-den">4</span></span> = <strong style="color:var(--accent-gold);"><span class="frac-wrap"><span class="frac-num">3</span><span class="frac-den">2</span></span></strong>
+        </div>
+      </div>
+
+      <!-- CASO 2: 0/0 CON RAÍCES (CONJUGADO) -->
+      <div class="step-card" style="border-left-color:var(--accent-blue);">
+        <span class="step-num" style="color:var(--accent-blue);">Tipo <span class="frac-wrap"><span class="frac-num">0</span><span class="frac-den">0</span></span> con Raíces ➔ Multiplicar por el Conjugado</span>
+        <div class="step-title">Ejemplo: lim (x ➔ 0) <span class="frac-wrap"><span class="frac-num"><span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">x + 4</span></span> - 2</span><span class="frac-den">x</span></span></div>
+        <div class="math-block">
+          1. Sustitución: <span class="frac-wrap"><span class="frac-num"><span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">4</span></span> - 2</span><span class="frac-den">0</span></span> = <strong><span class="frac-wrap"><span class="frac-num">0</span><span class="frac-den">0</span></span></strong><br>
+          2. Multiplicamos numerador y denominador por el conjugado (<span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">x + 4</span></span> + 2):<br>
+          &nbsp;&nbsp;&nbsp;Numerador: (<span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">x + 4</span></span> - 2) · (<span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">x + 4</span></span> + 2) = (x + 4) - 4 = <strong>x</strong><br>
+          3. Simplificamos la x del denominador:<br>
+          &nbsp;&nbsp;&nbsp;lim (x ➔ 0) <span class="frac-wrap"><span class="frac-num">x</span><span class="frac-den">x · (<span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">x + 4</span></span> + 2)</span></span> = lim (x ➔ 0) <span class="frac-wrap"><span class="frac-num">1</span><span class="frac-den"><span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">x + 4</span></span> + 2</span></span><br>
+          4. Evaluamos: <span class="frac-wrap"><span class="frac-num">1</span><span class="frac-den"><span class="radic-wrap"><span class="radic-symbol">√</span><span class="radic-content">4</span></span> + 2</span></span> = <span class="frac-wrap"><span class="frac-num">1</span><span class="frac-den">2 + 2</span></span> = <strong style="color:var(--accent-gold);"><span class="frac-wrap"><span class="frac-num">1</span><span class="frac-den">4</span></span></strong>
+        </div>
+      </div>
+
+      <!-- CASO 3: INFINITO / INFINITO -->
+      <div class="step-card" style="border-left-color:var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">Tipo <span class="frac-wrap"><span class="frac-num">∞</span><span class="frac-den">∞</span></span> ➔ Comparación de Grados</span>
+        <div class="math-block">
+          Para cocientes polinómicos lim (x ➔ ∞) <span class="frac-wrap"><span class="frac-num">P(x)</span><span class="frac-den">Q(x)</span></span>:<br>
+          • <strong>Grado P > Grado Q:</strong> El límite es <strong>±∞</strong> (no hay asíntota horizontal).<br>
+          • <strong>Grado P = Grado Q:</strong> El límite es el cociente de los coeficientes líderes.<br>
+          &nbsp;&nbsp;&nbsp;<em>Ejemplo: lim (x ➔ ∞) <span class="frac-wrap"><span class="frac-num">5x² - 2</span><span class="frac-den">2x² + 7</span></span> = <strong style="color:var(--accent-gold);"><span class="frac-wrap"><span class="frac-num">5</span><span class="frac-den">2</span></span></strong></em><br>
+          • <strong>Grado P < Grado Q:</strong> El denominador crece mucho más rápido ➔ Límite = <strong>0</strong>.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: CONTINUIDAD CON PARÁMETROS -->
+    <!-- ===================================================================== -->
+    <div id="tab-continuidad" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Continuidad y Cálculo del Parámetro k</h2>
+      
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Definición Rigurosa de Continuidad</span>
+        <div class="step-title">Una función f(x) es continua en x = c si cumple 3 condiciones:</div>
+        <div class="math-block">
+          1. Existe imagen: <strong>f(c) ∈ ℝ</strong><br>
+          2. Existe límite: <strong>lim (x ➔ c⁻) f(x) = lim (x ➔ c⁺) f(x) = L</strong><br>
+          3. Coincidencia: <strong>lim (x ➔ c) f(x) = f(c)</strong>
+        </div>
+      </div>
+
+      <div style="font-size:1.15rem; font-weight:700;">
+        Problema clásico de Selectividad: Hallar k para que f(x) sea continua en todo ℝ
+      </div>
+
+      <div class="piecewise-wrap">
+        <span>f(x) = </span>
+        <span class="piecewise-bracket">{</span>
+        <div class="piecewise-cases">
+          <span>x² + k &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;si x < 2</span>
+          <span>3x - 1 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;si x ≥ 2</span>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Paso 1: Identificar ramas y punto de cambio</span>
+        <p style="margin:0; font-size:0.9rem;">
+          Las dos ramas son polinomios (parábola y recta), por lo que son continuas por separado en sus intervalos. El único punto crítico donde puede haber un salto es en <strong>x = 2</strong>.
+        </p>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Paso 2: Calcular imagen y límites laterales en x = 2</span>
+        <div class="math-block">
+          • Imagen: f(2) = 3(2) - 1 = 6 - 1 = <strong>5</strong><br>
+          • Límite por la izquierda (x < 2):<br>
+          &nbsp;&nbsp;lim (x ➔ 2⁻) (x² + k) = 2² + k = <strong>4 + k</strong><br>
+          • Límite por la derecha (x > 2):<br>
+          &nbsp;&nbsp;lim (x ➔ 2⁺) (3x - 1) = 3(2) - 1 = <strong>5</strong>
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color:var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">Paso 3: Igualar laterales para forzar la continuidad</span>
+        <div class="math-block">
+          Para que exista límite y coincida con f(2), los laterales deben coincidir:<br>
+          lim (x ➔ 2⁻) f(x) = lim (x ➔ 2⁺) f(x)<br>
+          4 + k = 5 &nbsp;➔&nbsp; k = 5 - 4 &nbsp;➔&nbsp; <strong style="color:var(--accent-gold); font-size:1.2rem;">k = 1</strong>
+        </div>
+        <div style="margin-top:0.4rem;">
+          <span class="badge-highlight">Con k = 1, la función se conecta sin saltos en el punto (2, 5)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 4: ENTRENADOR INTERACTIVO -->
+    <!-- ===================================================================== -->
+    <div id="tab-entrenador" class="tab-content">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; font-size:1.3rem;">Gimnasio de Límites e Indeterminaciones</h2>
+        <button class="btn btn-secondary" onclick="generateLimitChallenge()" style="padding:0.4rem 0.8rem; font-size:0.85rem;">
+          🎲 Nuevo Límite
+        </button>
+      </div>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Resuelve algebraicamente la indeterminación generada (introduce el resultado exacto, entero o decimal):
+      </p>
+
+      <div class="math-block" id="limitStatement" style="text-align:center; font-size:1.35rem; padding:1.5rem; color:var(--accent-gold);">
+        Cargando límite...
+      </div>
+
+      <div class="ans-row">
+        <label style="font-weight:700;">Resultado Límite:</label>
+        <input type="number" step="any" id="in_limit" class="ans-input" placeholder="0" autofocus>
+        <button class="btn btn-primary" onclick="checkLimitChallenge()">Comprobar 🎯</button>
+      </div>
+
+      <div id="limitFeedback" class="feedback-box">
+        <div id="limitFbText" style="font-weight:bold; font-size:1.05rem; margin-bottom:0.4rem;"></div>
+        <div id="limitSteps" style="font-family:monospace; line-height:2.2;"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      if (tabId === 'asintotas') drawAsymptotesGraph();
+    }
+
+    // =========================================================================
+    // GRÁFICA DE ASÍNTOTAS EN CANVAS
+    // =========================================================================
+    function drawAsymptotesGraph() {
+      const cv = document.getElementById('canvasLimites');
+      if (!cv) return;
+      const ctx = cv.getContext('2d');
+      const w = cv.width, h = cv.height;
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+      ctx.clearRect(0, 0, w, h);
+
+      const scale = 25; // 25px por unidad
+      const originX = w / 2 - 25;
+      const originY = h / 2 + 25;
+
+      // Rejilla
+      ctx.strokeStyle = isLight ? '#e2e8f0' : '#1e293b';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let x = originX % scale; x < w; x += scale) {
+        ctx.moveTo(x, 0); ctx.lineTo(x, h);
+      }
+      for (let y = originY % scale; y < h; y += scale) {
+        ctx.moveTo(0, y); ctx.lineTo(w, y);
+      }
+      ctx.stroke();
+
+      // Ejes principales
+      ctx.strokeStyle = isLight ? '#94a3b8' : '#475569';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, originY); ctx.lineTo(w, originY);
+      ctx.moveTo(originX, 0); ctx.lineTo(originX, h);
+      ctx.stroke();
+
+      // Etiquetas X / Y
+      ctx.fillStyle = isLight ? '#64748b' : '#94a3b8';
+      ctx.font = '11px monospace';
+      ctx.fillText('X', w - 15, originY - 6);
+      ctx.fillText('Y', originX + 8, 15);
+
+      // Asíntota Vertical: x = 2
+      const avX = originX + 2 * scale;
+      ctx.strokeStyle = '#f43f5e';
+      ctx.lineWidth = 1.8;
+      ctx.setLineDash([5, 5]);
+      ctx.beginPath();
+      ctx.moveTo(avX, 0); ctx.lineTo(avX, h);
+      ctx.stroke();
+
+      // Asíntota Horizontal: y = 1
+      const ahY = originY - 1 * scale;
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.moveTo(0, ahY); ctx.lineTo(w, ahY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Curva f(x) = (x + 1) / (x - 2)
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.5;
+
+      // Rama izquierda
+      ctx.beginPath();
+      for (let px = 0; px < avX - 2; px += 2) {
+        const xVal = (px - originX) / scale;
+        const yVal = (xVal + 1) / (xVal - 2);
+        const py = originY - yVal * scale;
+        if (px === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+
+      // Rama derecha
+      ctx.beginPath();
+      for (let px = avX + 3; px <= w; px += 2) {
+        const xVal = (px - originX) / scale;
+        const yVal = (xVal + 1) / (xVal - 2);
+        const py = originY - yVal * scale;
+        if (px === avX + 3) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+    }
+
+    // =========================================================================
+    // ENTRENADOR PARAMÉTRICO DE LÍMITES CON FRACCIONES VERTICALES
+    // =========================================================================
+    let currentLimit = null;
+
+    function randomInt(min, max, exclude = []) {
+      let res;
+      do {
+        res = Math.floor(Math.random() * (max - min + 1)) + min;
+      } while (exclude.includes(res));
+      return res;
+    }
+
+    function generateLimitChallenge() {
+      const archetypes = [
+        // Arquetipo 1: Indeterminación 0/0 cuadrática simple
+        () => {
+          const a = randomInt(2, 6);
+          const a2 = a * a;
+          const sol = 2 * a;
+          return {
+            statement: `lim (x ➔ ${a}) &nbsp; <span class="frac-wrap"><span class="frac-num">x² - ${a2}</span><span class="frac-den">x - ${a}</span></span> = ?`,
+            sol: sol,
+            steps: [
+              `1. Sustitución directa: <span class="frac-wrap"><span class="frac-num">${a}² - ${a2}</span><span class="frac-den">${a} - ${a}</span></span> = <span class="frac-wrap"><span class="frac-num">0</span><span class="frac-den">0</span></span> (Indeterminación)`,
+              `2. Factorizamos el numerador (diferencia de cuadrados): x² - ${a2} = (x - ${a})(x + ${a})`,
+              `3. Cancelamos el factor (x - ${a}): lim (x ➔ ${a}) (x + ${a})`,
+              `4. Evaluamos: ${a} + ${a} = <strong>${sol}</strong>`
+            ]
+          };
+        },
+
+        // Arquetipo 2: Grados iguales en infinito
+        () => {
+          const B = randomInt(2, 4);
+          const mult = randomInt(2, 5);
+          const A = B * mult;
+          const c = randomInt(-7, 7, [0]);
+          const d = randomInt(1, 9);
+          const sol = A / B;
+          return {
+            statement: `lim (x ➔ +∞) &nbsp; <span class="frac-wrap"><span class="frac-num">${A}x² ${c >= 0 ? '+ ' + c : c}</span><span class="frac-den">${B}x² + ${d}</span></span> = ?`,
+            sol: sol,
+            steps: [
+              `1. Sustitución directa: <span class="frac-wrap"><span class="frac-num">∞</span><span class="frac-den">∞</span></span> (Indeterminación)`,
+              `2. Comparamos grados: ambos polinomios tienen grado 2.`,
+              `3. El límite es el cociente de coeficientes líderes: <span class="frac-wrap"><span class="frac-num">${A}</span><span class="frac-den">${B}</span></span> = <strong>${sol}</strong>`
+            ]
+          };
+        },
+
+        // Arquetipo 3: Factorización completa con Ruffini
+        () => {
+          const a = randomInt(1, 4);
+          const b = randomInt(1, 4);
+          const c = randomInt(2, 5, [b]);
+          
+          const numB = b - a;
+          const numC = -(a * b);
+          const denB = c - a;
+          const denC = -(a * c);
+
+          const fmtPol = (B, C) => {
+            const bStr = B === 0 ? '' : (B > 0 ? `+ ${B === 1 ? '' : B}x` : `- ${Math.abs(B) === 1 ? '' : Math.abs(B)}x`);
+            const cStr = C >= 0 ? `+ ${C}` : `- ${Math.abs(C)}`;
+            return `x² ${bStr} ${cStr}`;
+          };
+
+          const sol = (a + b) / (a + c);
+
+          return {
+            statement: `lim (x ➔ ${a}) &nbsp; <span class="frac-wrap"><span class="frac-num">${fmtPol(numB, numC)}</span><span class="frac-den">${fmtPol(denB, denC)}</span></span> = ?`,
+            sol: parseFloat(sol.toFixed(2)),
+            steps: [
+              `1. Sustitución directa: da <span class="frac-wrap"><span class="frac-num">0</span><span class="frac-den">0</span></span>.`,
+              `2. Por factorización / Ruffini:`,
+              `   • Numerador: (x - ${a})(x + ${b})`,
+              `   • Denominador: (x - ${a})(x + ${c})`,
+              `3. Cancelamos el factor (x - ${a}): lim (x ➔ ${a}) <span class="frac-wrap"><span class="frac-num">x + ${b}</span><span class="frac-den">x + ${c}</span></span>`,
+              `4. Evaluamos: <span class="frac-wrap"><span class="frac-num">${a} + ${b}</span><span class="frac-den">${a} + ${c}</span></span> = <span class="frac-wrap"><span class="frac-num">${a + b}</span><span class="frac-den">${a + c}</span></span> ≈ <strong>${sol.toFixed(2)}</strong>`
+            ]
+          };
+        }
+      ];
+
+      currentLimit = archetypes[randomInt(0, archetypes.length - 1)]();
+      document.getElementById('limitStatement').innerHTML = currentLimit.statement;
+      document.getElementById('limitFeedback').style.display = 'none';
+      document.getElementById('in_limit').value = '';
+    }
+
+    function checkLimitChallenge() {
+      if (!currentLimit) return;
+      const userVal = parseFloat(document.getElementById('in_limit').value);
+
+      if (isNaN(userVal)) {
+        alert('Por favor, introduce un valor numérico.');
+        return;
+      }
+
+      const isOk = Math.abs(userVal - currentLimit.sol) < 0.05;
+      const fb = document.getElementById('limitFeedback');
+      const txt = document.getElementById('limitFbText');
+      const steps = document.getElementById('limitSteps');
+
+      fb.style.display = 'block';
+
+      if (isOk) {
+        fb.className = 'feedback-box feedback-success';
+        txt.textContent = '¡Correcto! Has resuelto la indeterminación con éxito 🎯';
+      } else {
+        fb.className = 'feedback-box feedback-error';
+        txt.textContent = `Incorrecto. El resultado correcto es ${currentLimit.sol}. Revisa el desarrollo:`;
+      }
+
+      steps.innerHTML = currentLimit.steps.join('<br>');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      drawAsymptotesGraph();
+      generateLimitChallenge();
+
+      document.getElementById('in_limit').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') checkLimitChallenge();
+      });
+    });
+  </script>
+</body>
+</html>

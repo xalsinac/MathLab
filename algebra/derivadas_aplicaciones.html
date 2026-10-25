@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Aplicaciones de las Derivadas | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border-color: var(--accent-blue);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* TARJETAS DE PASO A PASO */
+    .step-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .step-num {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-blue);
+    }
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .math-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem 1.3rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      color: #fff;
+      line-height: 2.2;
+    }
+    [data-theme="light"] .math-block {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* COMPONENTES DE FRACCIONES VERTICALES */
+    .frac-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 0.25rem;
+      line-height: 1.15;
+      font-size: 0.95em;
+    }
+    .frac-num {
+      border-bottom: 1.8px solid currentColor;
+      padding: 0 0.2rem 2px 0.2rem;
+      display: block;
+    }
+    .frac-den {
+      padding: 2px 0.2rem 0 0.2rem;
+      display: block;
+    }
+
+    /* TABLAS DE SIGNOS */
+    .table-responsive {
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+    .sign-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+      text-align: center;
+    }
+    .sign-table th {
+      background: var(--bg-primary);
+      padding: 0.75rem 1rem;
+      color: var(--accent-gold);
+      border-bottom: 1px solid var(--border-color);
+      font-weight: 700;
+    }
+    .sign-table td {
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      font-family: monospace;
+    }
+    .sign-table tr:hover { background: rgba(255,255,255,0.02); }
+
+    /* LIENZO DE GRÁFICA */
+    .graph-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.2rem;
+      gap: 0.8rem;
+    }
+    .graph-canvas {
+      background: #060911;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-width: 100%;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    }
+    [data-theme="light"] .graph-canvas {
+      background: #ffffff !important;
+    }
+    .graph-legend {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.88rem;
+      font-weight: 700;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .badge-highlight {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid var(--accent-gold);
+      border-radius: 6px;
+      color: var(--accent-gold);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    /* INPUTS ENTRENADOR */
+    .ans-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .ans-input {
+      width: 80px;
+      padding: 0.55rem 0.35rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      font-family: monospace;
+      text-align: center;
+      background: var(--bg-primary);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      outline: none;
+    }
+    .ans-input:focus { border-color: var(--accent-blue); }
+
+    .feedback-box {
+      display: none;
+      border-radius: 8px;
+      padding: 1.2rem;
+      font-size: 0.95rem;
+      line-height: 2.1;
+    }
+    .feedback-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--accent-success);
+      color: #34d399;
+    }
+    .feedback-error {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--accent-op);
+      color: #fb7185;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Aplicaciones de las Derivadas 🏔️</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+      <span class="badge" style="color: var(--accent-blue);">2º Bachillerato</span>
+      <div class="content-text">
+        Calcular derivadas cobra todo su sentido cuando las usamos para resolver problemas reales: encontrar los <strong>puntos óptimos (máximos y mínimos)</strong>, determinar cuándo una curva sube o baja, modelar la curvatura espacial y dibujar funciones completas con precisión milimétrica.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('monotonia', this)">1. Puntos Singulares y Extremos</button>
+      <button class="tab-btn" onclick="switchTab('curvatura', this)">2. Segunda Derivada e Inflexión</button>
+      <button class="tab-btn" onclick="switchTab('graficas', this)">3. Representación Gráfica</button>
+      <button class="tab-btn" onclick="switchTab('optimizacion', this)">4. Problemas de Optimización</button>
+      <button class="tab-btn" onclick="switchTab('entrenador', this)">5. 🎯 Gimnasio de Extremos</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: PUNTOS SINGULARES Y EXTREMOS RELATIVOS -->
+    <!-- ===================================================================== -->
+    <div id="tab-monotonia" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem;">Puntos Singulares (Críticos) y Monotonía</h2>
+      
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">¿Qué es un Punto Singular?</span>
+        <div class="step-title">La recta tangente se vuelve completamente plana (horizontal, m = 0)</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Los puntos donde la primera derivada se anula, <strong>f'(x) = 0</strong>, son los candidatos a cimas (<strong>máximos</strong>), valles (<strong>mínimos</strong>) o descansos planos (puntos de inflexión de tangente horizontal).
+        </p>
+      </div>
+
+      <!-- VISOR CANVAS INTERACTIVO -->
+      <div class="graph-container">
+        <canvas id="canvasExtremos" class="graph-canvas" width="560" height="320"></canvas>
+        <div class="graph-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:#38bdf8;"></span> Curva f(x) = 2x³ - 3x² - 12x + 1</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#10b981;"></span> Máximo Relativo (-1, 8) [f'=0]</span>
+          <span class="legend-item"><span class="legend-dot" style="background:#f43f5e;"></span> Mínimo Relativo (2, -19) [f'=0]</span>
+        </div>
+      </div>
+
+      <!-- EJEMPLO RESUELTO PASO A PASO -->
+      <div class="step-card">
+        <span class="step-num">Procedimiento de Examen: Hallar intervalos de crecimiento y extremos</span>
+        <div class="math-block">
+          Dada <strong>f(x) = 2x³ - 3x² - 12x + 1</strong>:<br><br>
+          <strong>1. Derivar e igualar a cero:</strong><br>
+          f'(x) = 6x² - 6x - 12 = 0 &nbsp;➔&nbsp; x² - x - 2 = 0<br>
+          Resolviendo: <strong style="color:var(--accent-gold);">x₁ = -1</strong> &nbsp;y&nbsp; <strong style="color:var(--accent-gold);">x₂ = 2</strong> (Puntos singulares).<br><br>
+
+          <strong>2. Tabla de signos de f'(x) dividiendo la recta real:</strong>
+        </div>
+
+        <div class="table-responsive">
+          <table class="sign-table">
+            <thead>
+              <tr>
+                <th>Intervalo</th>
+                <th>(-∞, -1)</th>
+                <th>x = -1</th>
+                <th>(-1, 2)</th>
+                <th>x = 2</th>
+                <th>(2, +∞)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:bold;">Signo de f'(x)</td>
+                <td style="color:#34d399; font-weight:bold;">+ (f'(-2) = 24 > 0)</td>
+                <td>f' = 0</td>
+                <td style="color:#fb7185; font-weight:bold;">- (f'(0) = -12 &lt; 0)</td>
+                <td>f' = 0</td>
+                <td style="color:#34d399; font-weight:bold;">+ (f'(3) = 24 > 0)</td>
+              </tr>
+              <tr>
+                <td style="font-weight:bold;">Comportamiento f(x)</td>
+                <td style="color:#34d399; font-weight:bold;">CRECIENTE ↗</td>
+                <td style="color:var(--accent-gold); font-weight:bold;">MÁXIMO</td>
+                <td style="color:#fb7185; font-weight:bold;">DECRECIENTE ↘</td>
+                <td style="color:var(--accent-gold); font-weight:bold;">MÍNIMO</td>
+                <td style="color:#34d399; font-weight:bold;">CRECIENTE ↗</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="math-block" style="margin-top:0.6rem;">
+          <strong>3. Calcular las coordenadas Y sustituyendo en la función original f(x):</strong><br>
+          • f(-1) = 2(-1)³ - 3(-1)² - 12(-1) + 1 = -2 - 3 + 12 + 1 = <strong>8</strong> &nbsp;➔&nbsp; <strong style="color:#34d399;">Máximo en (-1, 8)</strong><br>
+          • f(2) = 2(2)³ - 3(2)² - 12(2) + 1 = 16 - 12 - 24 + 1 = <strong>-19</strong> &nbsp;➔&nbsp; <strong style="color:#fb7185;">Mínimo en (2, -19)</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: SEGUNDA DERIVADA, CURVATURA E INFLEXIÓN -->
+    <!-- ===================================================================== -->
+    <div id="tab-curvatura" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">La Segunda Derivada: Curvatura e Inflexión</h2>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">El Criterio Rápido de la Segunda Derivada para Extremos</span>
+        <div class="step-title">¿Cómo saber si un punto crítico x₀ es máximo o mínimo sin hacer la tabla?</div>
+        <div class="math-block">
+          Calculamos <strong>f''(x₀)</strong> en el punto singular:<br>
+          • Si <strong>f''(x₀) &lt; 0</strong> ➔ Curva convexa / cóncava hacia abajo ➔ <strong style="color:#34d399;">MÁXIMO RELATIVO ∩</strong><br>
+          • Si <strong>f''(x₀) > 0</strong> ➔ Curva cóncava / cóncava hacia arriba ➔ <strong style="color:#fb7185;">MÍNIMO RELATIVO ∪</strong><br>
+          • Si <strong>f''(x₀) = 0</strong> ➔ El criterio no decide (hay que mirar derivadas superiores o tabla).
+        </div>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Puntos de Inflexión: Donde cambia la curvatura</span>
+        <div class="step-title">Condición necesaria: f''(x) = 0 y f'''(x) ≠ 0</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Un <strong>Punto de Inflexión</strong> es el lugar geométrico exacto donde la gráfica pasa de cóncava a convexa (o viceversa), y la recta tangente <em>atraviesa</em> la función.
+        </p>
+
+        <div class="math-block">
+          Siguiendo con f(x) = 2x³ - 3x² - 12x + 1:<br>
+          1. f'(x) = 6x² - 6x - 12<br>
+          2. Segunda derivada: <strong>f''(x) = 12x - 6</strong><br>
+          3. Igualamos a cero: 12x - 6 = 0 ➔ 12x = 6 ➔ <strong style="color:var(--accent-gold);">x = 1/2 = 0,5</strong><br>
+          4. Como f'''(x) = 12 ≠ 0, se confirma que es punto de inflexión.<br>
+          5. Coordenada Y: f(0,5) = 2(0,125) - 3(0,25) - 12(0,5) + 1 = 0,25 - 0,75 - 6 + 1 = <strong>-5,5</strong><br><br>
+          <span class="badge-highlight">Punto de Inflexión en P(0.5, -5.5)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: REPRESENTACIÓN GRÁFICA DE FUNCIONES -->
+    <!-- ===================================================================== -->
+    <div id="tab-graficas" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Protocolo Maestro de Representación Gráfica</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        En los exámenes de Selectividad, la representación gráfica se corrige siguiendo una rúbrica estricta en 6 etapas:
+      </p>
+
+      <div class="step-card">
+        <span class="step-num">1. Dominio y Simetría</span>
+        <div class="math-block">
+          • Buscar puntos que anulan denominadores o hacen negativos los radicandos pares.<br>
+          • Simetría par: f(-x) = f(x) (simétrica respecto al eje Y).<br>
+          • Simetría impar: f(-x) = -f(x) (simétrica respecto al origen O).
+        </div>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">2. Puntos de Corte con los Ejes</span>
+        <div class="math-block">
+          • Con el eje Y: Hacemos x = 0 ➔ <strong>(0, f(0))</strong>.<br>
+          • Con el eje X: Resolvemos f(x) = 0 ➔ <strong>(x₁, 0), (x₂, 0)</strong>.
+        </div>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">3. Ramas Infinitas y Asíntotas</span>
+        <div class="math-block">
+          • <strong>Asíntota Vertical (A.V.):</strong> En los puntos fuera del dominio x = a donde lim (x ➔ a) f(x) = ±∞.<br>
+          • <strong>Asíntota Horizontal (A.H.):</strong> y = k si lim (x ➔ ±∞) f(x) = k.<br>
+          • <strong>Asíntota Oblicua (A.O.):</strong> y = mx + n (solo si no hay horizontal y grado numerador = grado denominador + 1):<br>
+          &nbsp;&nbsp;&nbsp;m = lim (x ➔ ∞) <span class="frac-wrap"><span class="frac-num">f(x)</span><span class="frac-den">x</span></span> &nbsp;&nbsp;&nbsp;&nbsp; n = lim (x ➔ ∞) [ f(x) - m·x ]
+        </div>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">4. Monotonía y Extremos (Primera Derivada)</span>
+        <div class="math-block">
+          Resolver f'(x) = 0, montar la tabla de intervalos y señalar los máximos y mínimos relativos.
+        </div>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">5. Curvatura e Inflexión (Segunda Derivada)</span>
+        <div class="math-block">
+          Resolver f''(x) = 0 para detectar los cambios de curvatura y puntos de inflexión.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 4: PROBLEMAS DE OPTIMIZACIÓN -->
+    <!-- ===================================================================== -->
+    <div id="tab-optimizacion" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Problemas de Optimización (El Clásico de Selectividad)</h2>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">El Método Infalible en 4 Pasos</span>
+        <div class="math-block">
+          1. <strong>Identificar la función objetivo:</strong> ¿Qué queremos maximizar o minimizar? (Área, volumen, coste, tiempo...).<br>
+          2. <strong>Ecuación de ligadura (restricción):</strong> Expresar una relación entre las variables (perímetro fijo, volumen dado...).<br>
+          3. <strong>Despejar y reducir a una sola variable:</strong> Sustituir en la función objetivo para obtener f(x).<br>
+          4. <strong>Derivar, igualar a cero y comprobar con f'':</strong> Hallar el punto crítico y verificar con la segunda derivada si es el extremo buscado.
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">Problema Modelo Resuelto: El Vallado Óptimo</span>
+        <div class="step-title">«Se dispone de 200 metros de tela metálica para cercar un terreno rectangular. ¿Cuáles deben ser sus dimensiones para que el área encerrada sea máxima?»</div>
+        
+        <div class="math-block">
+          <strong>Paso 1: Variables y función a maximizar:</strong><br>
+          Sean <em>x</em> la base e <em>y</em> la altura del rectángulo.<br>
+          Queremos que el área sea máxima: <strong>Área = x · y</strong> &nbsp;<em>(Fórmula con 2 variables)</em><br><br>
+
+          <strong>Paso 2: Condición de ligadura (Perímetro = 200 m):</strong><br>
+          2x + 2y = 200 ➔ Dividiendo entre 2: x + y = 100 ➔ <strong style="color:var(--accent-blue);">y = 100 - x</strong><br><br>
+
+          <strong>Paso 3: Reducir la función área a una sola variable A(x):</strong><br>
+          A(x) = x · (100 - x) = <strong>100x - x²</strong><br><br>
+
+          <strong>Paso 4: Derivar e igualar a cero para hallar el máximo:</strong><br>
+          A'(x) = 100 - 2x = 0 ➔ 2x = 100 ➔ <strong style="color:var(--accent-gold); font-size:1.2rem;">x = 50 m</strong><br><br>
+
+          <strong>Paso 5: Comprobación con la segunda derivada:</strong><br>
+          A''(x) = -2 &lt; 0 ➔ Es un <strong>MÁXIMO ABSOLUTO</strong> indiscutible.<br><br>
+
+          <strong>Paso 6: Dimensiones y Área Máxima:</strong><br>
+          • Altura: y = 100 - 50 = <strong style="color:var(--accent-gold); font-size:1.2rem;">y = 50 m</strong><br>
+          • Área máxima: A = 50 · 50 = <strong style="color:#34d399; font-size:1.2rem;">2.500 m²</strong><br><br>
+          <span class="badge-highlight">Conclusión geométrica: El rectángulo de área máxima siempre es un CUADRADO.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 5: ENTRENADOR INTERACTIVO -->
+    <!-- ===================================================================== -->
+    <div id="tab-entrenador" class="tab-content">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; font-size:1.3rem;">Gimnasio de Extremos Relativos</h2>
+        <button class="btn btn-secondary" onclick="generateExtremeChallenge()" style="padding:0.4rem 0.8rem; font-size:0.85rem;">
+          🎲 Nueva Función
+        </button>
+      </div>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Dada la función cúbica, calcula las dos coordenadas <strong>x</strong> donde f'(x) = 0 e indica cuál corresponde al máximo y cuál al mínimo:
+      </p>
+
+      <div class="math-block" id="extStatement" style="text-align:center; font-size:1.3rem; padding:1.25rem; color:var(--accent-blue);">
+        Cargando función...
+      </div>
+
+      <div class="ans-row">
+        <div style="display:flex; align-items:center; gap:0.4rem;">
+          <label style="font-weight:700; color:#34d399;">x del MÁXIMO:</label>
+          <input type="number" id="in_max_x" class="ans-input" placeholder="x">
+        </div>
+        <div style="display:flex; align-items:center; gap:0.4rem;">
+          <label style="font-weight:700; color:#fb7185;">x del MÍNIMO:</label>
+          <input type="number" id="in_min_x" class="ans-input" placeholder="x">
+        </div>
+        <button class="btn btn-primary" onclick="checkExtremeChallenge()">Comprobar 🎯</button>
+      </div>
+
+      <div id="extFeedback" class="feedback-box">
+        <div id="extFbText" style="font-weight:bold; font-size:1.05rem; margin-bottom:0.4rem;"></div>
+        <div id="extSteps" style="font-family:monospace; line-height:2.2;"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      if (tabId === 'monotonia') drawExtremesGraph();
+    }
+
+    // =========================================================================
+    // GRÁFICA DE f(x) CON MÁXIMO Y MÍNIMO
+    // =========================================================================
+    function drawExtremesGraph() {
+      const cv = document.getElementById('canvasExtremos');
+      if (!cv) return;
+      const ctx = cv.getContext('2d');
+      const w = cv.width, h = cv.height;
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+      ctx.clearRect(0, 0, w, h);
+
+      // f(x) = 2x³ - 3x² - 12x + 1
+      // Dominio visual: x en [-2.5, 3.5], y en [-25, 15]
+      const originX = w * 0.42;
+      const originY = h * 0.38;
+      const scaleX = 75;
+      const scaleY = 7.5;
+
+      // Rejilla
+      ctx.strokeStyle = isLight ? '#e2e8f0' : '#1e293b';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let x = originX % scaleX; x < w; x += scaleX) {
+        ctx.moveTo(x, 0); ctx.lineTo(x, h);
+      }
+      for (let y = originY % 40; y < h; y += 40) {
+        ctx.moveTo(0, y); ctx.lineTo(w, y);
+      }
+      ctx.stroke();
+
+      // Ejes
+      ctx.strokeStyle = isLight ? '#94a3b8' : '#475569';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, originY); ctx.lineTo(w, originY);
+      ctx.moveTo(originX, 0); ctx.lineTo(originX, h);
+      ctx.stroke();
+
+      ctx.fillStyle = isLight ? '#64748b' : '#94a3b8';
+      ctx.font = '11px monospace';
+      ctx.fillText('X', w - 15, originY - 6);
+      ctx.fillText('Y', originX + 8, 15);
+
+      // Curva f(x)
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let px = 0; px <= w; px += 2) {
+        const x = (px - originX) / scaleX;
+        const y = 2 * Math.pow(x, 3) - 3 * Math.pow(x, 2) - 12 * x + 1;
+        const py = originY - y * scaleY;
+        if (px === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+
+      // Función auxiliar para dibujar puntos singulares con tangente plana
+      function drawTangentPoint(xVal, yVal, color, label) {
+        const px = originX + xVal * scaleX;
+        const py = originY - yVal * scaleY;
+
+        // Tangente horizontal
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(px - 35, py);
+        ctx.lineTo(px + 35, py);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Punto
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(px, py, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Texto
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 12px monospace';
+        ctx.fillText(label, px + 10, py + (yVal > 0 ? -10 : 15));
+      }
+
+      // Máximo en (-1, 8)
+      drawTangentPoint(-1, 8, '#10b981', 'Máx(-1, 8)');
+
+      // Mínimo en (2, -19)
+      drawTangentPoint(2, -19, '#f43f5e', 'Mín(2, -19)');
+    }
+
+    // =========================================================================
+    // ENTRENADOR PARAMÉTRICO DE EXTREMOS RELATIVOS
+    // =========================================================================
+    let currentExtChallenge = null;
+
+    function randomInt(min, max, exclude = []) {
+      let res;
+      do {
+        res = Math.floor(Math.random() * (max - min + 1)) + min;
+      } while (exclude.includes(res));
+      return res;
+    }
+
+    function generateExtremeChallenge() {
+      // Elegimos dos raíces enteras para f'(x) = 0: x1 (mínimo de la derivada) y x2
+      let r1 = randomInt(-3, 1);
+      let r2 = randomInt(r1 + 1, 4);
+
+      // f'(x) = 3(x - r1)(x - r2) = 3x² - 3(r1 + r2)x + 3·r1·r2
+      // Integrando: f(x) = x³ - [3(r1 + r2)/2] x² + (3·r1·r2)x + C
+      // Para que los coeficientes sean enteros, forzamos que (r1 + r2) sea par:
+      if ((r1 + r2) % 2 !== 0) {
+        r2++; // ajustamos para paridad
+      }
+
+      const b = - (3 * (r1 + r2)) / 2;
+      const c = 3 * r1 * r2;
+      const d = randomInt(-5, 5);
+
+      // Como el coeficiente principal de x³ es +1 > 0:
+      // r1 (la menor) es el MÁXIMO RELATIVO
+      // r2 (la mayor) es el MÍNIMO RELATIVO
+      currentExtChallenge = {
+        r1: r1,
+        r2: r2,
+        b: b,
+        c: c,
+        d: d,
+        maxX: r1,
+        minX: r2
+      };
+
+      const bStr = b === 0 ? '' : (b > 0 ? `+ ${b}x²` : `- ${Math.abs(b)}x²`);
+      const cStr = c === 0 ? '' : (c > 0 ? `+ ${c}x` : `- ${Math.abs(c)}x`);
+      const dStr = d === 0 ? '' : (d > 0 ? `+ ${d}` : `- ${Math.abs(d)}`);
+
+      document.getElementById('extStatement').innerHTML = `
+        f(x) = x³ ${bStr} ${cStr} ${dStr}
+      `;
+
+      document.getElementById('extFeedback').style.display = 'none';
+      document.getElementById('in_max_x').value = '';
+      document.getElementById('in_min_x').value = '';
+    }
+
+    function checkExtremeChallenge() {
+      if (!currentExtChallenge) return;
+
+      const userMax = parseFloat(document.getElementById('in_max_x').value);
+      const userMin = parseFloat(document.getElementById('in_min_x').value);
+
+      if (isNaN(userMax) || isNaN(userMin)) {
+        alert('Por favor, rellena las coordenadas x del máximo y del mínimo.');
+        return;
+      }
+
+      const isOk = (userMax === currentExtChallenge.maxX && userMin === currentExtChallenge.minX);
+      const fb = document.getElementById('extFeedback');
+      const txt = document.getElementById('extFbText');
+      const steps = document.getElementById('extSteps');
+
+      fb.style.display = 'block';
+
+      if (isOk) {
+        fb.className = 'feedback-box feedback-success';
+        txt.textContent = '¡Correcto! Has clasificado los dos extremos a la perfección 🎯';
+      } else {
+        fb.className = 'feedback-box feedback-error';
+        txt.textContent = `Hay errores. El máximo está en x = ${currentExtChallenge.maxX} y el mínimo en x = ${currentExtChallenge.minX}. Revisa:`;
+      }
+
+      const b = currentExtChallenge.b;
+      const c = currentExtChallenge.c;
+      const r1 = currentExtChallenge.r1;
+      const r2 = currentExtChallenge.r2;
+
+      steps.innerHTML = `
+        1. Primera derivada: f'(x) = 3x² ${2*b >= 0 ? '+ ' + (2*b) : '- ' + Math.abs(2*b)}x ${c >= 0 ? '+ ' + c : '- ' + Math.abs(c)} = 0<br>
+        2. Dividiendo entre 3 e igualando a cero: (x - (${r1}))(x - (${r2})) = 0<br>
+        &nbsp;&nbsp;&nbsp;Puntos singulares en: <strong>x = ${r1}</strong> &nbsp;y&nbsp; <strong>x = ${r2}</strong><br>
+        3. Segunda derivada: f''(x) = 6x ${2*b >= 0 ? '+ ' + (2*b) : '- ' + Math.abs(2*b)}<br>
+        &nbsp;&nbsp;&nbsp;• En x = ${r1}: f''(${r1}) = ${6*r1 + 2*b} &lt; 0 ➔ <strong style="color:#34d399;">MÁXIMO RELATIVO en x = ${r1}</strong><br>
+        &nbsp;&nbsp;&nbsp;• En x = ${r2}: f''(${r2}) = ${6*r2 + 2*b} > 0 ➔ <strong style="color:#fb7185;">MÍNIMO RELATIVO en x = ${r2}</strong>
+      `;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      drawExtremesGraph();
+      generateExtremeChallenge();
+    });
+  </script>
+</body>
+</html>

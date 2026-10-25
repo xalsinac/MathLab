@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Determinantes y Rango | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border-color: var(--accent-blue);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* TARJETAS DE PASO A PASO */
+    .step-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .step-num {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-blue);
+    }
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .math-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem 1.3rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      color: #fff;
+      line-height: 2.2;
+    }
+    [data-theme="light"] .math-block {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* COMPONENTES DE MATRIZ Y DETERMINANTE */
+    .matrix-inline {
+      display: inline-flex;
+      align-items: center;
+      position: relative;
+      margin: 0 0.35rem;
+      vertical-align: middle;
+    }
+    .det-bars {
+      border-left: 2px solid currentColor;
+      border-right: 2px solid currentColor;
+      padding: 0.15rem 0.45rem;
+    }
+    .matrix-bracket {
+      border-top: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      position: relative;
+    }
+    .matrix-bracket::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 2px;
+      background: currentColor;
+    }
+    .matrix-bracket::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      width: 2px;
+      background: currentColor;
+    }
+
+    .matrix-grid {
+      display: inline-grid;
+      gap: 0.35rem 0.75rem;
+      text-align: center;
+      font-family: monospace;
+      font-weight: bold;
+    }
+    .grid-2x2 { grid-template-columns: repeat(2, auto); }
+    .grid-3x3 { grid-template-columns: repeat(3, auto); }
+
+    /* SIMULADOR SARRUS */
+    .sarrus-box {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .sarrus-grid {
+      display: inline-grid;
+      grid-template-columns: repeat(3, 45px);
+      grid-template-rows: repeat(3, 40px);
+      gap: 6px;
+      margin: 0 auto;
+      font-family: monospace;
+      font-size: 1.25rem;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border-left: 3px solid currentColor;
+      border-right: 3px solid currentColor;
+    }
+    .s-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: all 0.25s ease;
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .s-pos {
+      background: rgba(16, 185, 129, 0.35) !important;
+      color: #34d399 !important;
+      outline: 2px solid #10b981;
+    }
+    .s-neg {
+      background: rgba(244, 63, 94, 0.35) !important;
+      color: #fb7185 !important;
+      outline: 2px solid #f43f5e;
+    }
+
+    /* FRACCIONES VERTICALES */
+    .frac-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 0.25rem;
+      line-height: 1.15;
+      font-size: 0.95em;
+    }
+    .frac-num {
+      border-bottom: 1.8px solid currentColor;
+      padding: 0 0.2rem 2px 0.2rem;
+      display: block;
+    }
+    .frac-den {
+      padding: 2px 0.2rem 0 0.2rem;
+      display: block;
+    }
+
+    .badge-highlight {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid var(--accent-gold);
+      border-radius: 6px;
+      color: var(--accent-gold);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .badge-alert {
+      display: inline-block;
+      padding: 0.3rem 0.7rem;
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--accent-op);
+      border-radius: 6px;
+      color: #fb7185;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    /* ENTRENADOR */
+    .ans-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .ans-input {
+      width: 110px;
+      padding: 0.6rem 0.4rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      font-family: monospace;
+      text-align: center;
+      background: var(--bg-primary);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      outline: none;
+    }
+    .ans-input:focus { border-color: var(--accent-blue); }
+
+    .feedback-box {
+      display: none;
+      border-radius: 8px;
+      padding: 1.2rem;
+      font-size: 0.95rem;
+      line-height: 2.1;
+    }
+    .feedback-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--accent-success);
+      color: #34d399;
+    }
+    .feedback-error {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--accent-op);
+      color: #fb7185;
+    }
+    /* VISOR SARRUS MATRIZ EXTENDIDA */
+    .sarrus-canvas-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .sarrus-canvas {
+      background: #060911;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-width: 100%;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+    }
+    [data-theme="light"] .sarrus-canvas {
+      background: #ffffff !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Determinantes y Rango 📏</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+      <span class="badge" style="color: var(--accent-blue);">2º Bachillerato</span>
+      <div class="content-text">
+        El <strong>determinante</strong> es un número escalar único asignado a cada matriz cuadrada. Es la herramienta definitiva para comprobar si una matriz tiene inversa, calcular el <strong>rango</strong> (independencia lineal) y discutir sistemas mediante el Teorema de Rouché-Fröbenius.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('orden2y3', this)">1. Ordre 2 i Sarrus (Visual)</button>
+      <button class="tab-btn" onclick="switchTab('propietats', this)">2. Propietats Fonamentals</button>
+      <button class="tab-btn" onclick="switchTab('rang', this)">3. Rang per Menors</button>
+      <button class="tab-btn" onclick="switchTab('inversa', this)">4. Matriu Inversa per Adjunts</button>
+      <button class="tab-btn" onclick="switchTab('entrenador', this)">5. 🎯 Gimnàs de Determinants</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: ORDRE 2 I REGLA DE SARRUS -->
+    <!-- ===================================================================== -->
+    <div id="tab-orden2y3" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem;">Determinants d'Ordre 2 i 3</h2>
+
+      <!-- DETERMINANT 2X2 -->
+      <div class="step-card">
+        <span class="step-num">Determinant d'Ordre 2 (2 × 2)</span>
+        <div class="step-title">Producte de la diagonal principal menys la secundària</div>
+        <div class="math-block" style="text-align:center;">
+          |A| = 
+          <span class="matrix-inline det-bars">
+            <span class="matrix-grid grid-2x2">
+              <span>a</span><span>b</span>
+              <span>c</span><span>d</span>
+            </span>
+          </span>
+          = <strong>a · d - b · c</strong>
+        </div>
+        <div class="math-block">
+          Exemple: 
+          |A| = 
+          <span class="matrix-inline det-bars">
+            <span class="matrix-grid grid-2x2">
+              <span>3</span><span>-2</span>
+              <span>5</span><span>4</span>
+            </span>
+          </span>
+          = (3 · 4) - (-2 · 5) = 12 - (-10) = 12 + 10 = <strong>22</strong>
+        </div>
+      </div>
+
+<!-- DETERMINANT 3X3 - MÉTODO DE LAS FILAS EXTENDIDAS -->
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Determinante 3 × 3: Regla de Sarrus (Método de Filas Extendidas)</span>
+        <div class="step-title">Repetimos las dos primeras filas abajo y trazamos diagonales rectas</div>
+        <p style="margin:0; font-size:0.95rem; color:var(--text-muted); line-height:1.6;">
+          El truco más fácil para no equivocarse con los triángulos: copiamos la <strong>Fila 1</strong> y la <strong>Fila 2</strong> debajo de la matriz. Todas las operaciones se convierten en <strong>líneas diagonales rectas continuas de 3 números</strong>.
+        </p>
+
+        <div class="sarrus-canvas-container">
+          <!-- CONTROL SLIDER -->
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; width:100%; max-width:600px; flex-wrap:wrap;">
+            <label style="font-weight:700;">Modo de visualización:</label>
+            <input type="range" id="sarrusExtendedSlider" min="0" max="6" step="1" value="0" oninput="drawSarrusExtended()" style="flex:1; min-width:180px; accent-color:var(--accent-gold); cursor:pointer;">
+            <span id="lblSarrusExt" class="badge-highlight">Ver todas las diagonales</span>
+          </div>
+
+          <!-- LIENZO INTERACTIVO CON MATRIZ 3x3 + 2 FILAS -->
+          <canvas id="canvasSarrusExt" class="sarrus-canvas" width="460" height="300"></canvas>
+
+          <!-- EXPLICACIÓN ARITMÉTICA DINÁMICA -->
+          <div class="math-block" id="sarrusExtExplanation" style="width:100%; max-width:600px; line-height:1.9;">
+            <!-- Rellenado por JS -->
+          </div>
+        </div>
+
+        <div class="math-block" style="margin-top:0.5rem;">
+          <strong>Regla de Signos Nemotécnica:</strong><br>
+          • <span style="color:#34d399; font-weight:bold;">🟢 Diagonales hacia abajo a la derecha:</span> Conservan su signo (+).<br>
+          • <span style="color:#fb7185; font-weight:bold;">🔴 Diagonales hacia abajo a la izquierda:</span> Se les cambia el signo (-).
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: PROPIETATS DELS DETERMINANTS -->
+    <!-- ===================================================================== -->
+    <div id="tab-propietats" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Propietats Fonamentals (Trucs de Selectivitat)</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Conèixer aquestes propietats permet calcular determinants d'ordre superior sense desenvolupar càlculs llargs i justificar problemes teòrics.
+      </p>
+
+      <div class="step-card">
+        <span class="step-num">1. Quan un determinant val ZERO exactament?</span>
+        <div class="math-block">
+          El determinant d'una matriu quadrada val 0 (|A| = 0) si:<br>
+          • Té una <strong>fila o columna sencera de zeros</strong>.<br>
+          • Té dues <strong>files o columnes idèntiques</strong>.<br>
+          • Té dues <strong>files o columnes proporcionals</strong> (ex: F₂ = 3 · F₁).<br>
+          • Una fila és <strong>combinació lineal</strong> d'altres files (ex: F₃ = F₁ + 2·F₂).
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color:var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">2. Operacions entre Files i Columnes</span>
+        <div class="math-block">
+          • <strong>Permutar dues files:</strong> El determinant <strong>canvia de signe</strong>.<br>
+          &nbsp;&nbsp;&nbsp;|F₂, F₁, F₃| = - |F₁, F₂, F₃|<br><br>
+          • <strong>Multiplicar una fila per un nombre k:</strong> El determinant queda multiplicat per k.<br>
+          &nbsp;&nbsp;&nbsp;|k·F₁, F₂, F₃| = k · |F₁, F₂, F₃|<br>
+          &nbsp;&nbsp;&nbsp;<em>Atenció en Selectivitat:</em> Si la matriu A és n × n, llavors <strong>|k · A| = kⁿ · |A|</strong>.<br><br>
+          • <strong>Sumar a una fila una combinació d'altres files:</strong> El valor del determinant <strong>NO canvia</strong> (la base del mètode de Gauss per fer zeros).
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color:var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">3. Propietats de la Transposada, Producte i Inversa</span>
+        <div class="math-block">
+          • <strong>Transposició:</strong> El determinant d'una matriu i el de la seva transposada són idèntics:<br>
+          &nbsp;&nbsp;&nbsp;<strong>|Aᵗ| = |A|</strong><br><br>
+          • <strong>Producte de matrius:</strong> El determinant del producte és el producte dels determinants:<br>
+          &nbsp;&nbsp;&nbsp;<strong>|A · B| = |A| · |B|</strong><br><br>
+          • <strong>Determinant de la inversa:</strong> Com que A · A⁻¹ = I i |I| = 1:<br>
+          &nbsp;&nbsp;&nbsp;<strong>|A⁻¹| = <span class="frac-wrap"><span class="frac-num">1</span><span class="frac-den">|A|</span></span></strong> &nbsp;&nbsp;&nbsp;(sempre que |A| ≠ 0)
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: RANG PER MENORS -->
+    <!-- ===================================================================== -->
+    <div id="tab-rang" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Rang d'una Matriu mitjançant Determinants (Menors)</h2>
+      
+      <div class="step-card" style="border-left-color: var(--accent-blue);">
+        <span class="step-num">Concepte de Menor i Definició de Rang</span>
+        <div class="step-title">El rang és l'ordre del menor més gran no nul</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Un <strong>menor d'ordre k</strong> és el determinant d'una submatriu quadrada k × k obtinguda eliminant certes files i columnes de la matriu original.
+        </p>
+        <div class="math-block">
+          <strong>Rang(A) = r</strong> significa que existeix com a mínim un menor d'ordre r que no s'anul·la (≠ 0), i tots els menors d'ordre superior (r+1) valen 0.
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Algorisme d'«Orlar» Menors pas a pas</span>
+        <div class="step-title">Exemple: Trobar el rang d'una matriu 3 × 4</div>
+        <div class="math-block">
+          Sigui A = 
+          <span class="matrix-inline matrix-bracket">
+            <span class="matrix-grid" style="grid-template-columns: repeat(4, auto);">
+              <span>1</span><span>2</span><span>3</span><span>0</span>
+              <span>2</span><span>4</span><span>6</span><span>1</span>
+              <span>1</span><span>0</span><span>2</span><span>-1</span>
+            </span>
+          </span><br><br>
+          <strong>Paso 1: Buscar un menor d'ordre 1 no nul:</strong><br>
+          |1| = 1 ≠ 0 ➔ Rang(A) ≥ 1.<br><br>
+
+          <strong>Paso 2: Buscar un menor d'ordre 2 no nul afegint fila i columna (orlar):</strong><br>
+          Prenem les files 1, 3 i columnes 1, 2:<br>
+          <span class="matrix-inline det-bars">
+            <span class="matrix-grid grid-2x2">
+              <span>1</span><span>2</span>
+              <span>1</span><span>0</span>
+            </span>
+          </span>
+          = (1·0) - (2·1) = <strong>-2 ≠ 0</strong> ➔ <strong style="color:var(--accent-gold);">Rang(A) ≥ 2</strong>.<br><br>
+
+          <strong>Paso 3: Orlar el menor 2×2 anterior amb la fila restant (F₂) i les columnes 3 i 4:</strong><br>
+          • Amb Columna 3 (Files 1, 2, 3 i Cols 1, 2, 3):<br>
+          <span class="matrix-inline det-bars">
+            <span class="matrix-grid grid-3x3">
+              <span>1</span><span>2</span><span>3</span>
+              <span>2</span><span>4</span><span>6</span>
+              <span>1</span><span>0</span><span>2</span>
+            </span>
+          </span>
+          = 0 &nbsp;<em>(Fila 2 és proporcional a Fila 1: [2, 4, 6] = 2·[1, 2, 3])</em>.<br><br>
+          • Amb Columna 4 (Files 1, 2, 3 i Cols 1, 2, 4):<br>
+          <span class="matrix-inline det-bars">
+            <span class="matrix-grid grid-3x3">
+              <span>1</span><span>2</span><span>0</span>
+              <span>2</span><span>4</span><span>1</span>
+              <span>1</span><span>0</span><span>-1</span>
+            </span>
+          </span>
+          = (1·4·(-1) + 2·1·1 + 0) - (0 + 1·0 + 2·2·(-1)) = (-4 + 2) - (-4) = -2 + 4 = <strong>2 ≠ 0</strong>.<br><br>
+          Com hem trobat un menor 3×3 diferent de zero: <strong style="color:var(--accent-success); font-size:1.15rem;">Rang(A) = 3</strong>.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 4: MATRIU INVERSA PER ADJUNTS -->
+    <!-- ===================================================================== -->
+    <div id="tab-inversa" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">La Matriu Inversa mitjançant Determinants</h2>
+      
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Condició d'Existència de la Inversa (Teorema)</span>
+        <div class="step-title">Una matriu A té inversa (és invertible o regular) si i només si |A| ≠ 0</div>
+        <p style="margin:0; font-size:0.95rem;">
+          Si |A| = 0, la matriu s'anomena <strong>singular</strong> i no té inversa.
+        </p>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Fórmula General d'Inversió</span>
+        <div class="math-block" style="text-align:center;">
+          A⁻¹ = <span class="frac-wrap"><span class="frac-num">1</span><span class="frac-den">|A|</span></span> · [ Adj(A) ]ᵗ
+        </div>
+        <p style="margin:0.4rem 0 0 0; font-size:0.9rem; color:var(--text-muted);">
+          On l'<strong>adjunt</strong> d'un element és: <em>A_ij = (-1)^(i+j) · M_ij</em> (el menor eliminant la fila i i columna j).
+        </p>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">Exemple Complet 3 × 3 resolt pas a pas</span>
+        <div class="math-block">
+          Sigui A = 
+          <span class="matrix-inline matrix-bracket">
+            <span class="matrix-grid grid-3x3">
+              <span>1</span><span>0</span><span>2</span>
+              <span>2</span><span>-1</span><span>3</span>
+              <span>4</span><span>1</span><span>8</span>
+            </span>
+          </span><br><br>
+
+          <strong>Paso 1: Calcular el determinant de A:</strong><br>
+          |A| = [ 1·(-1)·8 + 0·3·4 + 2·2·1 ] - [ 2·(-1)·4 + 1·3·1 + 0·2·8 ]<br>
+          |A| = [ -8 + 0 + 4 ] - [ -8 + 3 + 0 ] = (-4) - (-5) = <strong>1</strong> (Com |A| = 1 ≠ 0, existeix A⁻¹)<br><br>
+
+          <strong>Paso 2: Calcular la matriu d'adjunts Adj(A) considerant el tauler de signes:</strong><br>
+          Tauler de signes:
+          <span class="matrix-inline">
+            <span class="matrix-grid grid-3x3" style="font-size:0.9rem;">
+              <span>+</span><span>-</span><span>+</span>
+              <span>-</span><span>+</span><span>-</span>
+              <span>+</span><span>-</span><span>+</span>
+            </span>
+          </span><br>
+          • A₁₁ = + |(-1·8) - (3·1)| = -8 - 3 = <strong>-11</strong><br>
+          • A₁₂ = - |(2·8) - (3·4)| = -(16 - 12) = <strong>-4</strong><br>
+          • A₁₃ = + |(2·1) - (-1·4)| = 2 - (-4) = <strong>6</strong><br>
+          • A₂₁ = - |(0·8) - (2·1)| = -(0 - 2) = <strong>2</strong><br>
+          • A₂₂ = + |(1·8) - (2·4)| = 8 - 8 = <strong>0</strong><br>
+          • A₂₃ = - |(1·1) - (0·4)| = -(1 - 0) = <strong>-1</strong><br>
+          • A₃₁ = + |(0·3) - (2·(-1))| = 0 - (-2) = <strong>2</strong><br>
+          • A₃₂ = - |(1·3) - (2·2)| = -(3 - 4) = <strong>1</strong><br>
+          • A₃₃ = + |(1·(-1)) - (0·2)| = -1 - 0 = <strong>-1</strong><br><br>
+
+          Adj(A) = 
+          <span class="matrix-inline matrix-bracket">
+            <span class="matrix-grid grid-3x3">
+              <span>-11</span><span>-4</span><span>6</span>
+              <span>2</span><span>0</span><span>-1</span>
+              <span>2</span><span>1</span><span>-1</span>
+            </span>
+          </span><br><br>
+
+          <strong>Paso 3: Transposar la matriu d'adjunts [Adj(A)]ᵗ:</strong><br>
+          [Adj(A)]ᵗ = 
+          <span class="matrix-inline matrix-bracket">
+            <span class="matrix-grid grid-3x3">
+              <span>-11</span><span>2</span><span>2</span>
+              <span>-4</span><span>0</span><span>1</span>
+              <span>6</span><span>-1</span><span>-1</span>
+            </span>
+          </span><br><br>
+
+          <strong>Paso 4: Multiplicar per 1 / |A| (com |A| = 1, queda idèntica):</strong><br>
+          A⁻¹ = 
+          <span class="matrix-inline matrix-bracket" style="color:var(--accent-gold);">
+            <span class="matrix-grid grid-3x3">
+              <span>-11</span><span>2</span><span>2</span>
+              <span>-4</span><span>0</span><span>1</span>
+              <span>6</span><span>-1</span><span>-1</span>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 5: ENTRENADOR INTERACTIU -->
+    <!-- ===================================================================== -->
+    <div id="tab-entrenador" class="tab-content">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; font-size:1.3rem;">Gimnàs de Determinants 3 × 3</h2>
+        <button class="btn btn-secondary" onclick="generateDetChallenge()" style="padding:0.4rem 0.8rem; font-size:0.85rem;">
+          🎲 Nou Determinant
+        </button>
+      </div>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Aplica la regla de Sarrus i calcula el valor numèric del determinant generat:
+      </p>
+
+      <div class="math-block" id="detStatement" style="text-align:center; font-size:1.35rem; padding:1.25rem; color:var(--accent-blue);">
+        Carregant matriu...
+      </div>
+
+      <div class="ans-row">
+        <label style="font-weight:700;">|A| =</label>
+        <input type="number" id="in_det" class="ans-input" placeholder="0" autofocus>
+        <button class="btn btn-primary" onclick="checkDetChallenge()">Comprovar 🎯</button>
+      </div>
+
+      <div id="detFeedback" class="feedback-box">
+        <div id="detFbText" style="font-weight:bold; font-size:1.05rem; margin-bottom:0.4rem;"></div>
+        <div id="detSteps" style="font-family:monospace; line-height:2.2;"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      if (tabId === 'orden2y3') drawSarrusExtended();
+    }
+
+// =========================================================================
+    // DIBUJO DE SARRUS CON MATRIZ AMPLIADA HACIA ABAJO
+    // =========================================================================
+    // Matriz 3x3 original:
+    // [ 1,  2,  3 ]
+    // [ 0,  4,  5 ]
+    // [ 1,  0,  6 ]
+    // Extendida con F1 y F2 abajo:
+    // [ 1,  2,  3 ] (F1 repetida)
+    // [ 0,  4,  5 ] (F2 repetida)
+
+    const extMatrix = [
+      [1, 2, 3],
+      [0, 4, 5],
+      [1, 0, 6],
+      [1, 2, 3], // Fila 1 copiada
+      [0, 4, 5]  // Fila 2 copiada
+    ];
+
+    function drawSarrusExtended() {
+      const cv = document.getElementById('canvasSarrusExt');
+      if (!cv) return;
+      const ctx = cv.getContext('2d');
+      const w = cv.width, h = cv.height;
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+      ctx.clearRect(0, 0, w, h);
+
+      const step = parseInt(document.getElementById('sarrusExtendedSlider').value, 10);
+      const lbl = document.getElementById('lblSarrusExt');
+      const exp = document.getElementById('sarrusExtExplanation');
+
+      // Coordenadas base
+      const startX = 140;
+      const startY = 45;
+      const colGap = 90;
+      const rowGap = 48;
+
+      // Línea divisoria discontinua que separa la matriz original de las filas repetidas
+      ctx.strokeStyle = isLight ? '#cbd5e1' : '#334155';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(startX - 35, startY + 2.5 * rowGap);
+      ctx.lineTo(startX + 2 * colGap + 35, startY + 2.5 * rowGap);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Barras verticales de determinante para las 3 primeras filas
+      ctx.strokeStyle = isLight ? '#0f172a' : '#f8fafc';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(startX - 25, startY - 18);
+      ctx.lineTo(startX - 25, startY + 2 * rowGap + 18);
+      ctx.moveTo(startX + 2 * colGap + 25, startY - 18);
+      ctx.lineTo(startX + 2 * colGap + 25, startY + 2 * rowGap + 18);
+      ctx.stroke();
+
+      // Función auxiliar para obtener posición en píxeles de la celda (fila, col)
+      const getPos = (r, c) => ({ x: startX + c * colGap, y: startY + r * rowGap });
+
+      // Definición de las 6 diagonales
+      const diagonals = [
+        // Positivas (Verdes, bajan hacia la derecha)
+        { id: 1, type: 'pos', color: '#10b981', points: [getPos(0,0), getPos(1,1), getPos(2,2)], text: '+ (1 · 4 · 6) = +24', name: '1ª Diagonal Principal (+)' },
+        { id: 2, type: 'pos', color: '#10b981', points: [getPos(1,0), getPos(2,1), getPos(3,2)], text: '+ (0 · 0 · 3) = +0',  name: '2ª Diagonal Principal (+)' },
+        { id: 3, type: 'pos', color: '#10b981', points: [getPos(2,0), getPos(3,1), getPos(4,2)], text: '+ (1 · 2 · 5) = +10', name: '3ª Diagonal Principal (+)' },
+        // Negativas (Rojas, bajan hacia la izquierda)
+        { id: 4, type: 'neg', color: '#f43f5e', points: [getPos(0,2), getPos(1,1), getPos(2,0)], text: '- (3 · 4 · 1) = -12', name: '1ª Diagonal Secundaria (-)' },
+        { id: 5, type: 'neg', color: '#f43f5e', points: [getPos(1,2), getPos(2,1), getPos(3,0)], text: '- (5 · 0 · 1) = -0',  name: '2ª Diagonal Secundaria (-)' },
+        { id: 6, type: 'neg', color: '#f43f5e', points: [getPos(2,2), getPos(3,1), getPos(4,0)], text: '- (6 · 2 · 0) = -0',  name: '3ª Diagonal Secundaria (-)' }
+      ];
+
+      // Trazar diagonales
+      diagonals.forEach((diag) => {
+        const isActive = (step === 0) || (step === diag.id);
+        if (isActive) {
+          ctx.strokeStyle = diag.color;
+          ctx.lineWidth = (step === diag.id) ? 4.5 : 2.5;
+          ctx.beginPath();
+          // Alargar un poco los extremos de la recta
+          const p0 = diag.points[0];
+          const p2 = diag.points[2];
+          const dx = (p2.x - p0.x) * 0.18;
+          const dy = (p2.y - p0.y) * 0.18;
+          ctx.moveTo(p0.x - dx, p0.y - dy);
+          ctx.lineTo(p2.x + dx, p2.y + dy);
+          ctx.stroke();
+        }
+      });
+
+      // Dibujar números de la matriz
+      for (let r = 0; r < 5; r++) {
+        for (let c = 0; c < 3; c++) {
+          const pos = getPos(r, c);
+          const val = extMatrix[r][c];
+
+          // Círculo de fondo suave si está en fila repetida
+          if (r >= 3) {
+            ctx.fillStyle = isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.06)';
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, 16, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          ctx.fillStyle = r >= 3 ? (isLight ? '#64748b' : '#94a3b8') : (isLight ? '#0f172a' : '#ffffff');
+          ctx.font = r >= 3 ? 'bold 15px monospace' : 'bold 18px monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(val, pos.x, pos.y);
+        }
+      }
+
+      // Etiqueta lateral "Filas repetidas"
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = 'bold 10px monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText('◄ Filas 1 y 2', startX + 2 * colGap + 38, startY + 3.5 * rowGap);
+      ctx.fillText('  repetidas', startX + 2 * colGap + 38, startY + 3.5 * rowGap + 12);
+
+      // Actualizar texto explicativo
+      if (step === 0) {
+        lbl.textContent = 'Ver todas las 6 diagonales';
+        exp.innerHTML = `
+          <div style="font-size:1.05rem; font-weight:bold; color:var(--text-main);">
+            Suma de Diagonales Verdes (+) menos Diagonales Rojas (-):
+          </div>
+          <div style="color:#34d399; margin:0.3rem 0;">
+            🟢 Diagonales (+): (1·4·6) + (0·0·3) + (1·2·5) = 24 + 0 + 10 = <strong>+34</strong>
+          </div>
+          <div style="color:#fb7185; margin:0.3rem 0;">
+            🔴 Diagonales (-): (3·4·1) + (5·0·1) + (6·2·0) = 12 + 0 + 0 = <strong>-12</strong>
+          </div>
+          <div style="border-top:1px dashed var(--border-color); padding-top:0.4rem; color:var(--accent-gold); font-size:1.15rem; font-weight:bold;">
+            |A| = 34 - 12 = 22
+          </div>
+        `;
+      } else {
+        const activeDiag = diagonals[step - 1];
+        lbl.textContent = activeDiag.name;
+        exp.innerHTML = `
+          <div style="font-size:1.15rem; font-weight:bold; color:${activeDiag.color};">
+            ${activeDiag.name}: ${activeDiag.text}
+          </div>
+          <div style="color:var(--text-muted); font-size:0.9rem; margin-top:0.2rem;">
+            ${activeDiag.type === 'pos' ? 'Baja hacia la derecha: suma al total.' : 'Baja hacia la izquierda: resta al total.'}
+          </div>
+        `;
+      }
+    }
+
+    // =========================================================================
+    // ENTRENADOR PARAMÈTRIC DE DETERMINANTS 3X3
+    // =========================================================================
+    let currentDet = null;
+
+    function randomInt(min, max, exclude = []) {
+      let res;
+      do {
+        res = Math.floor(Math.random() * (max - min + 1)) + min;
+      } while (exclude.includes(res));
+      return res;
+    }
+
+    function generateDetChallenge() {
+      // Matriu amb nombres petits (-3 a 3) perquè els càlculs manuals siguin amables
+      const m = [
+        [randomInt(-2, 3), randomInt(-2, 3), randomInt(-2, 3)],
+        [randomInt(-2, 3), randomInt(-2, 3), randomInt(-2, 3)],
+        [randomInt(-2, 3), randomInt(-2, 3), randomInt(-2, 3)]
+      ];
+
+      // Sarrus
+      const p1 = m[0][0] * m[1][1] * m[2][2];
+      const p2 = m[0][1] * m[1][2] * m[2][0];
+      const p3 = m[0][2] * m[1][0] * m[2][1];
+      const posSum = p1 + p2 + p3;
+
+      const n1 = m[0][2] * m[1][1] * m[2][0];
+      const n2 = m[0][0] * m[1][2] * m[2][1];
+      const n3 = m[0][1] * m[1][0] * m[2][2];
+      const negSum = n1 + n2 + n3;
+
+      const totalDet = posSum - negSum;
+
+      currentDet = {
+        m: m,
+        p1: p1, p2: p2, p3: p3, posSum: posSum,
+        n1: n1, n2: n2, n3: n3, negSum: negSum,
+        val: totalDet
+      };
+
+      document.getElementById('detStatement').innerHTML = `
+        |A| = 
+        <span class="matrix-inline det-bars">
+          <span class="matrix-grid grid-3x3">
+            <span>${m[0][0]}</span><span>${m[0][1]}</span><span>${m[0][2]}</span>
+            <span>${m[1][0]}</span><span>${m[1][1]}</span><span>${m[1][2]}</span>
+            <span>${m[2][0]}</span><span>${m[2][1]}</span><span>${m[2][2]}</span>
+          </span>
+        </span>
+      `;
+
+      document.getElementById('detFeedback').style.display = 'none';
+      document.getElementById('in_det').value = '';
+    }
+
+    function checkDetChallenge() {
+      if (!currentDet) return;
+      const userVal = parseFloat(document.getElementById('in_det').value);
+
+      if (isNaN(userVal)) {
+        alert('Si us plau, introdueix un valor numèric.');
+        return;
+      }
+
+      const isOk = (userVal === currentDet.val);
+      const fb = document.getElementById('detFeedback');
+      const txt = document.getElementById('detFbText');
+      const steps = document.getElementById('detSteps');
+
+      fb.style.display = 'block';
+
+      if (isOk) {
+        fb.className = 'feedback-box feedback-success';
+        txt.textContent = '¡Correcte! Has aplicat la regla de Sarrus a la perfecció 🎯';
+      } else {
+        fb.className = 'feedback-box feedback-error';
+        txt.textContent = `Incorrecte. El valor exacte és ${currentDet.val}. Revisa el procediment:`;
+      }
+
+      steps.innerHTML = `
+        <strong>1. Diagonals que sumen (+):</strong><br>
+        &nbsp;&nbsp;&nbsp;(${currentDet.m[0][0]}·${currentDet.m[1][1]}·${currentDet.m[2][2]}) + (${currentDet.m[0][1]}·${currentDet.m[1][2]}·${currentDet.m[2][0]}) + (${currentDet.m[0][2]}·${currentDet.m[1][0]}·${currentDet.m[2][1]})<br>
+        &nbsp;&nbsp;&nbsp;= (${currentDet.p1}) + (${currentDet.p2}) + (${currentDet.p3}) = <strong>${currentDet.posSum}</strong><br><br>
+        <strong>2. Diagonals que resten (-):</strong><br>
+        &nbsp;&nbsp;&nbsp;(${currentDet.m[0][2]}·${currentDet.m[1][1]}·${currentDet.m[2][0]}) + (${currentDet.m[0][0]}·${currentDet.m[1][2]}·${currentDet.m[2][1]}) + (${currentDet.m[0][1]}·${currentDet.m[1][0]}·${currentDet.m[2][2]})<br>
+        &nbsp;&nbsp;&nbsp;= (${currentDet.n1}) + (${currentDet.n2}) + (${currentDet.n3}) = <strong>${currentDet.negSum}</strong><br><br>
+        <strong>3. Resultat final:</strong><br>
+        &nbsp;&nbsp;&nbsp;|A| = (${currentDet.posSum}) - (${currentDet.negSum}) = <strong style="color:var(--accent-gold);">${currentDet.val}</strong>
+      `;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      drawSarrusExtended();
+      generateDetChallenge();
+
+      document.getElementById('in_det').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') checkDetChallenge();
+      });
+    });
+  </script>
+</body>
+</html>

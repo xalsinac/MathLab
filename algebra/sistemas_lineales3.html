@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sistemas de Ecuaciones Lineales | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* MEJORAS VISUALES PARA GAUSS */
+    .gauss-triangle-preview {
+      display: inline-flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 0.8rem 0;
+      background: var(--bg-primary);
+      padding: 1rem 1.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+    }
+    .zero-target {
+      color: var(--accent-op);
+      font-weight: 900;
+      background: rgba(244, 63, 94, 0.15);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+    }
+    .zero-done {
+      color: var(--accent-success);
+      font-weight: 900;
+      background: rgba(16, 185, 129, 0.15);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+    }
+    .vertical-op-box {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.8rem 1.2rem;
+      font-family: monospace;
+      font-size: 1rem;
+      line-height: 1.6;
+      margin: 0.5rem 0;
+    }
+    .op-line {
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 0.2rem;
+      margin-bottom: 0.2rem;
+    }
+
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border-color: var(--accent-blue);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* TARJETAS DE PASO A PASO */
+    .step-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .step-num {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-blue);
+    }
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .math-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem 1.3rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      color: #fff;
+      line-height: 2.2;
+    }
+    [data-theme="light"] .math-block {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* COMPONENTES DE SISTEMAS Y MATRICES */
+    .system-bracket {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: monospace;
+      font-size: 1.1rem;
+      margin: 0.4rem 0;
+    }
+    .bracket-symbol {
+      font-size: 3.5rem;
+      font-family: Arial, sans-serif;
+      line-height: 1;
+      color: var(--accent-blue);
+      user-select: none;
+    }
+    .system-eqs {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      text-align: left;
+    }
+
+    .matrix-inline {
+      display: inline-flex;
+      align-items: center;
+      position: relative;
+      margin: 0 0.35rem;
+      vertical-align: middle;
+    }
+    .det-bars {
+      border-left: 2px solid currentColor;
+      border-right: 2px solid currentColor;
+      padding: 0.15rem 0.45rem;
+    }
+/* PARÉNTESIS MATEMÁTICOS REALES */
+    .matrix-bracket {
+      display: inline-flex;
+      align-items: center;
+      position: relative;
+      padding: 0 0.4rem;
+      border: none !important;
+    }
+    /* Paréntesis izquierdo '(' */
+    .matrix-bracket::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      bottom: 2px;
+      left: 0;
+      width: 10px;
+      border-left: 2px solid currentColor;
+      border-top: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      border-radius: 12px 0 0 12px;
+      pointer-events: none;
+    }
+    /* Paréntesis derecho ')' */
+    .matrix-bracket::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      bottom: 2px;
+      right: 0;
+      width: 10px;
+      border-right: 2px solid currentColor;
+      border-top: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      border-radius: 0 12px 12px 0;
+      pointer-events: none;
+    }
+
+    .matrix-grid {
+      display: inline-grid;
+      gap: 0.35rem 0.75rem;
+      text-align: center;
+      font-family: monospace;
+      font-weight: bold;
+    }
+    .grid-3x3 { grid-template-columns: repeat(3, auto); }
+    .grid-3x4 { grid-template-columns: repeat(4, auto); }
+
+    /* TABLA RESUMEN ROUCHÉ */
+    .table-responsive {
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+    .rouche-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+      text-align: left;
+    }
+    .rouche-table th {
+      background: var(--bg-primary);
+      padding: 0.8rem 1rem;
+      color: var(--accent-gold);
+      border-bottom: 1px solid var(--border-color);
+      font-weight: 700;
+    }
+    .rouche-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .rouche-table tr:hover { background: rgba(255,255,255,0.02); }
+
+    /* FRACCIONES VERTICALES */
+    .frac-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 0.25rem;
+      line-height: 1.15;
+      font-size: 0.95em;
+    }
+    .frac-num {
+      border-bottom: 1.8px solid currentColor;
+      padding: 0 0.2rem 2px 0.2rem;
+      display: block;
+    }
+    .frac-den {
+      padding: 2px 0.2rem 0 0.2rem;
+      display: block;
+    }
+
+    .badge-highlight {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid var(--accent-gold);
+      border-radius: 6px;
+      color: var(--accent-gold);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    /* INPUTS ENTRENADOR */
+    .ans-grid-cramer {
+      display: flex;
+      gap: 1.2rem;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .cramer-input-box {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--bg-primary);
+      padding: 0.5rem 0.8rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+    .ans-input {
+      width: 70px;
+      padding: 0.5rem 0.3rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      font-family: monospace;
+      text-align: center;
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
+      outline: none;
+    }
+    .ans-input:focus { border-color: var(--accent-blue); }
+
+    .feedback-box {
+      display: none;
+      border-radius: 8px;
+      padding: 1.2rem;
+      font-size: 0.95rem;
+      line-height: 2.1;
+    }
+    .feedback-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--accent-success);
+      color: #34d399;
+    }
+    .feedback-error {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--accent-op);
+      color: #fb7185;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Sistemas de Ecuaciones Lineales ⚖️</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+      <span class="badge" style="color: var(--accent-blue);">2º Bachillerato</span>
+      <div class="content-text">
+        Un sistema lineal de $m$ ecuaciones con $n$ incógnitas describe la intersección geométrica de rectas o planos en el espacio. Aprende a discutir su compatibilidad con el <strong>Teorema de Rouché-Fröbenius</strong> y a resolverlos de forma exacta mediante <strong>Gauss</strong> y <strong>Cramer</strong>.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('rouche', this)">1. Rouché-Fröbenius y Parámetros</button>
+      <button class="tab-btn" onclick="switchTab('gauss', this)">2. Método de Gauss</button>
+      <button class="tab-btn" onclick="switchTab('cramer', this)">3. Regla de Cramer</button>
+      <button class="tab-btn" onclick="switchTab('homogeneos', this)">4. Homogéneos y Problemas</button>
+      <button class="tab-btn" onclick="switchTab('entrenador', this)">5. 🎯 Entrenador de Cramer</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: ROUCHÉ-FRÖBENIUS Y PARÁMETRO K -->
+    <!-- ===================================================================== -->
+    <div id="tab-rouche" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem;">Teorema de Rouché-Fröbenius y Discusión con Parámetro</h2>
+
+      <div class="table-responsive">
+        <table class="rouche-table">
+          <thead>
+            <tr>
+              <th>Condición de Rangos</th>
+              <th>Tipo de Sistema</th>
+              <th>Número de Soluciones</th>
+              <th>Interpretación Geométrica (3 planos)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>rg(A) = rg(A|B) = n</strong></td>
+              <td style="color:#34d399; font-weight:bold;">SCD (Compatible Determinado)</td>
+              <td>Solución única (x, y, z)</td>
+              <td>Los 3 planos se cortan en un único <strong>punto</strong>.</td>
+            </tr>
+            <tr>
+              <td><strong>rg(A) = rg(A|B) &lt; n</strong></td>
+              <td style="color:var(--accent-gold); font-weight:bold;">SCI (Compatible Indeterminado)</td>
+              <td>Infinitas soluciones (dependen de parámetros)</td>
+              <td>Se cortan en una <strong>recta común</strong> o son planos coincidentes.</td>
+            </tr>
+            <tr>
+              <td><strong>rg(A) &lt; rg(A|B)</strong></td>
+              <td style="color:#fb7185; font-weight:bold;">SI (Incompatible)</td>
+              <td>No tiene solución</td>
+              <td>Planos paralelos o se cortan dos a dos formando un prisma.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- EJEMPLO ESTRELLA DE SELECTIVIDAD -->
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Ejercicio Típico de Selectividad: Discusión según el Parámetro k</span>
+        <div class="system-bracket">
+          <span class="bracket-symbol">{</span>
+          <div class="system-eqs">
+            <span>k·x + y + z = 1</span>
+            <span>x + k·y + z = 1</span>
+            <span>x + y + k·z = 1</span>
+          </div>
+        </div>
+
+        <div class="math-block">
+          <strong>Paso 1: Matriz de coeficientes A y matriz ampliada A|B:</strong><br>
+          A = 
+          <span class="matrix-inline matrix-bracket">
+            <span class="matrix-grid grid-3x3">
+              <span>k</span><span>1</span><span>1</span>
+              <span>1</span><span>k</span><span>1</span>
+              <span>1</span><span>1</span><span>k</span>
+            </span>
+          </span>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          A|B = 
+          <span class="matrix-inline matrix-bracket">
+            <span class="matrix-grid grid-3x4">
+              <span>k</span><span>1</span><span>1</span><span>1</span>
+              <span>1</span><span>k</span><span>1</span><span>1</span>
+              <span>1</span><span>1</span><span>k</span><span>1</span>
+            </span>
+          </span><br><br>
+
+          <strong>Paso 2: Calcular el determinante de A para hallar los valores críticos:</strong><br>
+          |A| = k³ + 1 + 1 - (k + k + k) = k³ - 3k + 2<br>
+          Factorizamos por Ruffini sabiendo que k = 1 anula la expresión:<br>
+          |A| = <strong>(k - 1)² · (k + 2)</strong><br><br>
+          Igualamos a cero: |A| = 0 ➔ <strong>k = 1</strong> &nbsp;y&nbsp; <strong>k = -2</strong>.<br><br>
+
+          <strong>Paso 3: Discusión exhaustiva de casos:</strong><br><br>
+          • <strong style="color:#34d399;">Caso 1: Si k ≠ 1 y k ≠ -2</strong><br>
+          &nbsp;&nbsp;&nbsp;|A| ≠ 0 ➔ <strong>rg(A) = 3 = rg(A|B) = n</strong>. Por Rouché-Fröbenius, es un <strong>SCD (Solución única)</strong>.<br><br>
+
+          • <strong style="color:var(--accent-gold);">Caso 2: Si k = 1</strong><br>
+          &nbsp;&nbsp;&nbsp;Las tres ecuaciones quedan idénticas: x + y + z = 1.<br>
+          &nbsp;&nbsp;&nbsp;<strong>rg(A) = 1 = rg(A|B) &lt; 3</strong>. Por Rouché-Fröbenius, es un <strong>SCI (Infinitas soluciones con 2 grados de libertad: un plano)</strong>.<br><br>
+
+          • <strong style="color:#fb7185;">Caso 3: Si k = -2</strong><br>
+          &nbsp;&nbsp;&nbsp;|A| = 0 ➔ rg(A) &lt; 3. Tomamos un menor 2×2 en A: |(-2·(-2)) - (1·1)| = 3 ≠ 0 ➔ <strong>rg(A) = 2</strong>.<br>
+          &nbsp;&nbsp;&nbsp;Orlamos con la columna de términos independientes en A|B:<br>
+          &nbsp;&nbsp;&nbsp;Menor = 
+          <span class="matrix-inline det-bars">
+            <span class="matrix-grid grid-3x3">
+              <span>-2</span><span>1</span><span>1</span>
+              <span>1</span><span>-2</span><span>1</span>
+              <span>1</span><span>1</span><span>1</span>
+            </span>
+          </span>
+          = 9 ≠ 0 ➔ <strong>rg(A|B) = 3</strong>.<br>
+          &nbsp;&nbsp;&nbsp;Como <strong>rg(A) = 2 ≠ rg(A|B) = 3</strong>, por Rouché-Fröbenius el sistema es <strong>SI (Incompatible, no tiene solución)</strong>.
+        </div>
+      </div>
+    </div>
+
+<!-- ===================================================================== -->
+    <!-- TAB 2: MÉTODO DE GAUSS (MEJORADO Y VISUAL) -->
+    <!-- ===================================================================== -->
+    <div id="tab-gauss" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Método de Triangulación de Gauss</h2>
+      
+      <!-- INTRODUCCIÓN PEDAGÓGICA -->
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">¿En qué consiste el "Truco" de Gauss?</span>
+        <div class="step-title">1. Retirar las letras y 2. Construir un triángulo de ceros</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Escribir una y otra vez las incógnitas <em>x, y, z</em> nos hace perder tiempo y espacio. Gauss nos dice: <strong>quédate solo con los números (coeficientes)</strong> ordenados en una tabla rectangular y separados de los resultados por una barra imaginaria.
+        </p>
+        <p style="margin:0.5rem 0 0 0; font-size:0.95rem; line-height:1.6;">
+          Nuestro objetivo absoluto es hacer <strong>3 ceros</strong> en la esquina inferior izquierda (debajo de la diagonal principal). Así, la última fila contendrá únicamente la <em>z</em> y podremos despejar todo el sistema en cascada hacia arriba.
+        </p>
+
+        <div class="gauss-triangle-preview">
+          <div style="text-align:center;">
+            <span style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:0.3rem;">Matriz Inicial:</span>
+            <span class="matrix-inline matrix-bracket">
+              <span class="matrix-grid grid-3x4">
+                <span>•</span><span>•</span><span>•</span><span>| •</span>
+                <span class="zero-target">?</span><span>•</span><span>•</span><span>| •</span>
+                <span class="zero-target">?</span><span class="zero-target">?</span><span>•</span><span>| •</span>
+              </span>
+            </span>
+          </div>
+          <span style="font-size:1.6rem; color:var(--accent-gold);">➔</span>
+          <div style="text-align:center;">
+            <span style="font-size:0.85rem; color:var(--text-muted); display:block; margin-bottom:0.3rem;">Objetivo: Triángulo de Ceros</span>
+            <span class="matrix-inline matrix-bracket">
+              <span class="matrix-grid grid-3x4">
+                <span>•</span><span>•</span><span>•</span><span>| •</span>
+                <span class="zero-done">0</span><span>•</span><span>•</span><span>| •</span>
+                <span class="zero-done">0</span><span class="zero-done">0</span><span>•</span><span>| •</span>
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SISTEMA MODELO -->
+      <div style="font-weight:700; font-size:1.1rem; margin-top:0.4rem;">
+        Ejemplo guiado: Resolver por triangulación de Gauss
+      </div>
+
+      <div class="system-bracket">
+        <span class="bracket-symbol">{</span>
+        <div class="system-eqs">
+          <span>x + 2y - z = 3 &nbsp;&nbsp;&nbsp;&nbsp;<em>(Fila 1)</em></span>
+          <span>2x - y + z = 7 &nbsp;&nbsp;&nbsp;&nbsp;<em>(Fila 2)</em></span>
+          <span>3x + y + 2z = 12 &nbsp;&nbsp;&nbsp;<em>(Fila 3)</em></span>
+        </div>
+      </div>
+
+      <!-- PASO 1 -->
+      <div class="step-card">
+        <span class="step-num">Paso 1: Montar la Matriz Ampliada (Sin letras)</span>
+        <div class="step-title">Escribimos las 3 filas con los coeficientes alineados</div>
+        <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">
+          Comprobamos que en la posición superior izquierda (Fila 1, Columna 1) haya preferiblemente un <strong>1</strong> o <strong>-1</strong> para usarlo como pivote cómodo.
+        </p>
+        <div class="math-block" style="text-align:center;">
+          <span class="matrix-inline matrix-bracket">
+            <span class="matrix-grid grid-3x4">
+              <span style="color:#38bdf8;">1</span><span>2</span><span>-1</span><span>3</span>
+              <span class="zero-target">2</span><span>-1</span><span>1</span><span>7</span>
+              <span class="zero-target">3</span><span>1</span><span>2</span><span>12</span>
+            </span>
+          </span>
+          <div style="font-size:0.85rem; color:var(--text-muted); margin-top:0.5rem;">
+            Debemos eliminar el <span class="zero-target">2</span> y el <span class="zero-target">3</span> usando la Fila 1 como referencia.
+          </div>
+        </div>
+      </div>
+
+      <!-- PASO 2 -->
+      <div class="step-card">
+        <span class="step-num">Paso 2: Ceros en la 1ª columna (Debajo del pivote 1)</span>
+        <div class="step-title">Operamos verticalmente fila a fila</div>
+
+        <p style="margin:0; font-weight:700; color:var(--accent-blue);">
+          A) Para anular el 2 de la Fila 2 hacemos: <strong>F₂ ← F₂ - 2·F₁</strong>
+        </p>
+        <div class="vertical-op-box">
+          &nbsp;&nbsp;&nbsp;F₂: &nbsp;&nbsp;&nbsp; 2 &nbsp;&nbsp;&nbsp; -1 &nbsp;&nbsp;&nbsp; 1 &nbsp;&nbsp;|&nbsp;&nbsp; 7<br>
+          -2·F₁: &nbsp;&nbsp;-2 &nbsp;&nbsp;&nbsp; -4 &nbsp;&nbsp;&nbsp; 2 &nbsp;&nbsp;|&nbsp; -6<br>
+          <div class="op-line"></div>
+          <strong>Nueva F₂: &nbsp;&nbsp;0 &nbsp;&nbsp;&nbsp; -5 &nbsp;&nbsp;&nbsp; 3 &nbsp;&nbsp;|&nbsp;&nbsp; 1</strong>
+        </div>
+
+        <p style="margin:0.8rem 0 0 0; font-weight:700; color:var(--accent-blue);">
+          B) Para anular el 3 de la Fila 3 hacemos: <strong>F₃ ← F₃ - 3·F₁</strong>
+        </p>
+        <div class="vertical-op-box">
+          &nbsp;&nbsp;&nbsp;F₃: &nbsp;&nbsp;&nbsp; 3 &nbsp;&nbsp;&nbsp;&nbsp; 1 &nbsp;&nbsp;&nbsp; 2 &nbsp;&nbsp;|&nbsp;&nbsp; 12<br>
+          -3·F₁: &nbsp;&nbsp;-3 &nbsp;&nbsp;&nbsp; -6 &nbsp;&nbsp;&nbsp; 3 &nbsp;&nbsp;|&nbsp;&nbsp; -9<br>
+          <div class="op-line"></div>
+          <strong>Nueva F₃: &nbsp;&nbsp;0 &nbsp;&nbsp;&nbsp; -5 &nbsp;&nbsp;&nbsp; 5 &nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; 3</strong>
+        </div>
+
+        <div class="math-block" style="text-align:center; margin-top:0.8rem;">
+          Matriz tras conseguir los dos primeros ceros:<br>
+          <span class="matrix-inline matrix-bracket">
+            <span class="matrix-grid grid-3x4">
+              <span>1</span><span>2</span><span>-1</span><span>3</span>
+              <span class="zero-done">0</span><span>-5</span><span>3</span><span>1</span>
+              <span class="zero-done">0</span><span class="zero-target">-5</span><span>5</span><span>3</span>
+            </span>
+          </span>
+          <div style="font-size:0.85rem; color:var(--text-muted); margin-top:0.4rem;">
+            ¡Solo nos queda transformar el <span class="zero-target">-5</span> de la 3ª fila en 0!
+          </div>
+        </div>
+      </div>
+
+      <!-- PASO 3 -->
+      <div class="step-card">
+        <span class="step-num">Paso 3: Último cero en la 2ª columna (Fila 3)</span>
+        <div class="step-title">Importante: Para no estropear el cero ya conseguido, usamos la Fila 2</div>
+        <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">
+          Como en F₂ y F₃ ambas tienen -5, basta con restar las filas: <strong>F₃ ← F₃ - F₂</strong>
+        </p>
+        <div class="vertical-op-box">
+          &nbsp;&nbsp;&nbsp;F₃: &nbsp;&nbsp;&nbsp; 0 &nbsp;&nbsp;&nbsp; -5 &nbsp;&nbsp;&nbsp; 5 &nbsp;&nbsp;|&nbsp;&nbsp; 3<br>
+          &nbsp;&nbsp;-F₂: &nbsp;&nbsp;&nbsp; 0 &nbsp;&nbsp;&nbsp; +5 &nbsp;&nbsp; -3 &nbsp;&nbsp;|&nbsp; -1<br>
+          <div class="op-line"></div>
+          <strong>Nueva F₃: &nbsp;&nbsp;0 &nbsp;&nbsp;&nbsp;&nbsp; 0 &nbsp;&nbsp;&nbsp; 2 &nbsp;&nbsp;|&nbsp;&nbsp; 2</strong>
+        </div>
+
+        <div class="math-block" style="text-align:center; margin-top:0.8rem;">
+          ¡Matriz Triangular Escalonada conseguida con éxito! 🎉<br>
+          <span class="matrix-inline matrix-bracket" style="color:var(--accent-gold);">
+            <span class="matrix-grid grid-3x4">
+              <span>1</span><span>2</span><span>-1</span><span>3</span>
+              <span class="zero-done">0</span><span>-5</span><span>3</span><span>1</span>
+              <span class="zero-done">0</span><span class="zero-done">0</span><span>2</span><span>2</span>
+            </span>
+          </span>
+        </div>
+      </div>
+
+      <!-- PASO 4 -->
+      <div class="step-card" style="border-left-color:var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">Paso 4: Sustitución Regresiva (Despejar hacia arriba)</span>
+        <div class="math-block">
+          Recuperamos las letras empezando por la fila más sencilla (la última):<br><br>
+          1. Fila 3: &nbsp;2z = 2 &nbsp;➔&nbsp; <strong style="color:var(--accent-gold); font-size:1.15rem;">z = 1</strong><br><br>
+          2. Fila 2: &nbsp;-5y + 3z = 1 &nbsp;➔&nbsp; -5y + 3(1) = 1 &nbsp;➔&nbsp; -5y = 1 - 3 = -2 &nbsp;➔&nbsp; <strong style="color:var(--accent-gold); font-size:1.15rem;">y = <span class="frac-wrap"><span class="frac-num">2</span><span class="frac-den">5</span></span> = 0,4</strong><br><br>
+          3. Fila 1: &nbsp;x + 2y - z = 3 &nbsp;➔&nbsp; x + 2(0,4) - 1 = 3 &nbsp;➔&nbsp; x + 0,8 - 1 = 3 &nbsp;➔&nbsp; <strong style="color:var(--accent-gold); font-size:1.15rem;">x = 3,2</strong>
+        </div>
+      </div>
+
+      <!-- SECCIÓN: QUÉ PASA CON EL RESTO DE CASOS (SCI y SI) -->
+      <div class="step-card" style="border-left-color: var(--accent-op);">
+        <span class="step-num" style="color:var(--accent-op);">¿Qué pasa con los otros casos en Gauss? (No todo es solución única)</span>
+        <div class="step-title">Aprende a interpretar la última fila escalonada</div>
+
+        <div class="math-block" style="line-height:2;">
+          <strong style="color:#34d399;">Caso A: Sistema Compatible Determinado (SCD)</strong><br>
+          Queda una ecuación normal con un coeficiente distinto de cero: <strong>[ 0 &nbsp; 0 &nbsp; a &nbsp;| b ] &nbsp;➔ &nbsp;a·z = b</strong>.<br>
+          Hay una única solución: <em>z = b / a</em>.<br><br>
+
+          <strong style="color:var(--accent-gold);">Caso B: Sistema Compatible Indeterminado (SCI - Infinitas Soluciones)</strong><br>
+          Una fila entera se anula por completo: <strong>[ 0 &nbsp; 0 &nbsp; 0 &nbsp;| 0 ] &nbsp;➔ &nbsp;0·z = 0</strong>.<br>
+          Esto es una tautología matemática que siempre se cumple (0 = 0). Significa que <em>esa ecuación era redundante</em>.<br>
+          <strong>¿Cómo se responde en el examen?</strong> Se elimina esa fila y se pasa una de las incógnitas al segundo miembro como parámetro libre (habitualmente <strong>z = λ</strong>), despejando <em>x</em> e <em>y</em> en función de λ.<br><br>
+
+          <strong style="color:#fb7185;">Caso C: Sistema Incompatible (SI - Sin Solución)</strong><br>
+          La parte izquierda se anula pero la derecha da un número distinto de cero: <strong>[ 0 &nbsp; 0 &nbsp; 0 &nbsp;| k ] &nbsp;➔ &nbsp;0·z = k</strong> (con k ≠ 0).<br>
+          Esto es una <strong>imposibilidad lógica</strong> (0 nunca puede ser igual a 5).<br>
+          En cuanto veas una fila así en Gauss, detén las operaciones inmediatamente y concluye: <em>«El sistema no tiene solución (SI)»</em>.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: REGLA DE CRAMER -->
+    <!-- ===================================================================== -->
+    <div id="tab-cramer" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Regla de Cramer</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Solo aplicable a sistemas con el <strong>mismo número de ecuaciones que de incógnitas</strong> y con <strong>|A| ≠ 0</strong> (SCD).
+      </p>
+
+      <div class="step-card">
+        <span class="step-num">Fórmula de Cramer</span>
+        <div class="math-block" style="text-align:center;">
+          x = <span class="frac-wrap"><span class="frac-num">|Aₓ|</span><span class="frac-den">|A|</span></span>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          y = <span class="frac-wrap"><span class="frac-num">|A_y|</span><span class="frac-den">|A|</span></span>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          z = <span class="frac-wrap"><span class="frac-num">|A_z|</span><span class="frac-den">|A|</span></span>
+        </div>
+        <p style="margin:0.4rem 0 0 0; font-size:0.9rem; color:var(--text-muted);">
+          Donde <strong>|Aₓ|</strong> es el determinante que resulta de sustituir la columna de las <em>x</em> por la columna de términos independientes <em>B</em>.
+        </p>
+      </div>
+
+      <div class="step-card" style="border-left-color:var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Ejemplo Numérico Guiado</span>
+        <div class="system-bracket">
+          <span class="bracket-symbol">{</span>
+          <div class="system-eqs">
+            <span>x + y + z = 6</span>
+            <span>x - y + z = 2</span>
+            <span>2x - y + 3z = 9</span>
+          </div>
+        </div>
+
+        <div class="math-block">
+          <strong>1. Determinante principal |A|:</strong><br>
+          |A| = 
+          <span class="matrix-inline det-bars">
+            <span class="matrix-grid grid-3x3">
+              <span>1</span><span>1</span><span>1</span>
+              <span>1</span><span>-1</span><span>1</span>
+              <span>2</span><span>-1</span><span>3</span>
+            </span>
+          </span>
+          = (-3 + 2 - 1) - (-2 - 1 + 3) = (-2) - (0) = <strong>-2 ≠ 0</strong> (Podemos aplicar Cramer)<br><br>
+
+          <strong>2. Determinante para x (|Aₓ|) (Columna 1 cambiada por [6, 2, 9]):</strong><br>
+          |Aₓ| = 
+          <span class="matrix-inline det-bars">
+            <span class="matrix-grid grid-3x3">
+              <span style="color:#f59e0b;">6</span><span>1</span><span>1</span>
+              <span style="color:#f59e0b;">2</span><span>-1</span><span>1</span>
+              <span style="color:#f59e0b;">9</span><span>-1</span><span>3</span>
+            </span>
+          </span>
+          = -2 &nbsp;➔&nbsp; x = <span class="frac-wrap"><span class="frac-num">-2</span><span class="frac-den">-2</span></span> = <strong style="color:var(--accent-gold);">1</strong><br><br>
+
+          <strong>3. Determinante para y (|A_y|) (Columna 2 cambiada por [6, 2, 9]):</strong><br>
+          |A_y| = 
+          <span class="matrix-inline det-bars">
+            <span class="matrix-grid grid-3x3">
+              <span>1</span><span style="color:#f59e0b;">6</span><span>1</span>
+              <span>1</span><span style="color:#f59e0b;">2</span><span>1</span>
+              <span>2</span><span style="color:#f59e0b;">9</span><span>3</span>
+            </span>
+          </span>
+          = -4 &nbsp;➔&nbsp; y = <span class="frac-wrap"><span class="frac-num">-4</span><span class="frac-den">-2</span></span> = <strong style="color:var(--accent-gold);">2</strong><br><br>
+
+          <strong>4. Determinante para z (|A_z|) (Columna 3 cambiada por [6, 2, 9]):</strong><br>
+          |A_z| = 
+          <span class="matrix-inline det-bars">
+            <span class="matrix-grid grid-3x3">
+              <span>1</span><span>1</span><span style="color:#f59e0b;">6</span>
+              <span>1</span><span>-1</span><span style="color:#f59e0b;">2</span>
+              <span>2</span><span>-1</span><span style="color:#f59e0b;">9</span>
+            </span>
+          </span>
+          = -6 &nbsp;➔&nbsp; z = <span class="frac-wrap"><span class="frac-num">-6</span><span class="frac-den">-2</span></span> = <strong style="color:var(--accent-gold);">3</strong><br><br>
+
+          <span class="badge-highlight">Solución final exacta: (x, y, z) = (1, 2, 3)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 4: HOMOGÉNEOS Y PROBLEMAS -->
+    <!-- ===================================================================== -->
+    <div id="tab-homogeneos" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Sistemas Homogéneos y Resolución de Problemas</h2>
+
+      <div class="step-card" style="border-left-color:var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Propiedad de los Sistemas Homogéneos (Términos independientes = 0)</span>
+        <div class="step-title">UN SISTEMA HOMOGÉNEO NUNCA PUEDE SER INCOMPATIBLE</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Siempre admite como mínimo la <strong>solución trivial</strong>: <em>(x, y, z) = (0, 0, 0)</em>.<br>
+          • Si <strong>|A| ≠ 0</strong> ➔ <strong>rg(A) = 3 = n</strong> ➔ Solo existe la solución trivial (0, 0, 0).<br>
+          • Si <strong>|A| = 0</strong> ➔ <strong>rg(A) &lt; 3</strong> ➔ Existen <strong>infinitas soluciones no triviales</strong> (se parametriza con λ).
+        </p>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Problema Contextualizado de Selectividad</span>
+        <div class="step-title">Traducción del enunciado al lenguaje matricial</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          <em>«En una empresa se fabrican tres tipos de piezas A, B y C. En total se producen 100 piezas al día. El número de piezas de tipo A excede en 10 a las de tipo B. Si el coste de fabricar cada pieza es de 2 €, 3 € y 5 € respectivamente, y el gasto total diario es de 310 €, ¿cuántas piezas de cada tipo se producen?»</em>
+        </p>
+
+        <div class="math-block">
+          <strong>1. Asignación de incógnitas:</strong><br>
+          x = piezas tipo A, &nbsp; y = piezas tipo B, &nbsp; z = piezas tipo C<br><br>
+          <strong>2. Planteamiento de ecuaciones:</strong><br>
+          • Total piezas: <strong>x + y + z = 100</strong><br>
+          • Relación A y B: x = y + 10 ➔ <strong>x - y = 10</strong><br>
+          • Coste total: <strong>2x + 3y + 5z = 310</strong><br><br>
+          <strong>3. Resolución por Gauss / Cramer:</strong><br>
+          Resolviendo el sistema obtenemos directamente:<br>
+          <strong style="color:var(--accent-success);">x = 50 piezas de tipo A</strong><br>
+          <strong style="color:var(--accent-success);">y = 40 piezas de tipo B</strong><br>
+          <strong style="color:var(--accent-success);">z = 10 piezas de tipo C</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 5: ENTRENADOR INTERACTIVO -->
+    <!-- ===================================================================== -->
+    <div id="tab-entrenador" class="tab-content">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; font-size:1.3rem;">Gimnasio de Sistemas 3 × 3 (Regla de Cramer)</h2>
+        <button class="btn btn-secondary" onclick="generateSystemChallenge()" style="padding:0.4rem 0.8rem; font-size:0.85rem;">
+          🎲 Nuevo Sistema
+        </button>
+      </div>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Resuelve el sistema compatible determinado y halla la terna de valores enteros <strong>(x, y, z)</strong>:
+      </p>
+
+      <div class="math-block" id="sysStatement" style="text-align:center; font-size:1.25rem; padding:1.25rem; color:var(--accent-blue);">
+        Cargando sistema...
+      </div>
+
+      <div class="ans-grid-cramer">
+        <div class="cramer-input-box">
+          <label style="font-weight:700;">x =</label>
+          <input type="number" id="in_x" class="ans-input" placeholder="x">
+        </div>
+        <div class="cramer-input-box">
+          <label style="font-weight:700;">y =</label>
+          <input type="number" id="in_y" class="ans-input" placeholder="y">
+        </div>
+        <div class="cramer-input-box">
+          <label style="font-weight:700;">z =</label>
+          <input type="number" id="in_z" class="ans-input" placeholder="z">
+        </div>
+        <button class="btn btn-primary" onclick="checkSystemChallenge()">Comprobar (x, y, z) 🎯</button>
+      </div>
+
+      <div id="sysFeedback" class="feedback-box">
+        <div id="sysFbText" style="font-weight:bold; font-size:1.05rem; margin-bottom:0.4rem;"></div>
+        <div id="sysSteps" style="font-family:monospace; line-height:2.2;"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+    }
+
+    // =========================================================================
+    // ENTRENADOR PARAMÉTRICO DE SISTEMAS 3x3 CON SOLUCIONES ENTERAS
+    // =========================================================================
+    let currentSys = null;
+
+    function randomInt(min, max, exclude = []) {
+      let res;
+      do {
+        res = Math.floor(Math.random() * (max - min + 1)) + min;
+      } while (exclude.includes(res));
+      return res;
+    }
+
+    function det3x3(m) {
+      return (
+        m[0][0]*m[1][1]*m[2][2] + m[0][1]*m[1][2]*m[2][0] + m[0][2]*m[1][0]*m[2][1]
+      ) - (
+        m[0][2]*m[1][1]*m[2][0] + m[0][0]*m[1][2]*m[2][1] + m[0][1]*m[1][0]*m[2][2]
+      );
+    }
+
+    function generateSystemChallenge() {
+      let A, detA, x, y, z, B;
+
+      // Generar matriz A con determinante amable (±1 o ±2) y soluciones enteras pequeñas
+      do {
+        A = [
+          [randomInt(-2, 2, [0]), randomInt(-2, 2), randomInt(-2, 2)],
+          [randomInt(-2, 2), randomInt(-2, 2, [0]), randomInt(-2, 2)],
+          [randomInt(-2, 2), randomInt(-2, 2), randomInt(-2, 2, [0])]
+        ];
+        detA = det3x3(A);
+      } while (Math.abs(detA) !== 1 && Math.abs(detA) !== 2);
+
+      // Soluciones limpias
+      x = randomInt(-3, 4);
+      y = randomInt(-3, 4);
+      z = randomInt(-3, 4);
+
+      // Vector B = A · X
+      B = [
+        A[0][0]*x + A[0][1]*y + A[0][2]*z,
+        A[1][0]*x + A[1][1]*y + A[1][2]*z,
+        A[2][0]*x + A[2][1]*y + A[2][2]*z
+      ];
+
+      currentSys = {
+        A: A,
+        B: B,
+        detA: detA,
+        x: x,
+        y: y,
+        z: z
+      };
+
+      const fmtRow = (r) => {
+        const a1 = A[r][0], a2 = A[r][1], a3 = A[r][2], b = B[r];
+        const s1 = a1 === 1 ? 'x' : (a1 === -1 ? '-x' : `${a1}x`);
+        const s2 = a2 === 0 ? '' : (a2 > 0 ? ` + ${a2 === 1 ? '' : a2}y` : ` - ${Math.abs(a2) === 1 ? '' : Math.abs(a2)}y`);
+        const s3 = a3 === 0 ? '' : (a3 > 0 ? ` + ${a3 === 1 ? '' : a3}z` : ` - ${Math.abs(a3) === 1 ? '' : Math.abs(a3)}z`);
+        return `${s1}${s2}${s3} = ${b}`;
+      };
+
+      document.getElementById('sysStatement').innerHTML = `
+        <div class="system-bracket">
+          <span class="bracket-symbol">{</span>
+          <div class="system-eqs">
+            <span>${fmtRow(0)}</span>
+            <span>${fmtRow(1)}</span>
+            <span>${fmtRow(2)}</span>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('sysFeedback').style.display = 'none';
+      document.getElementById('in_x').value = '';
+      document.getElementById('in_y').value = '';
+      document.getElementById('in_z').value = '';
+    }
+
+    function checkSystemChallenge() {
+      if (!currentSys) return;
+
+      const ux = parseFloat(document.getElementById('in_x').value);
+      const uy = parseFloat(document.getElementById('in_y').value);
+      const uz = parseFloat(document.getElementById('in_z').value);
+
+      if ([ux, uy, uz].some(isNaN)) {
+        alert('Por favor, rellena los tres valores (x, y, z).');
+        return;
+      }
+
+      const isOk = (ux === currentSys.x && uy === currentSys.y && uz === currentSys.z);
+      const fb = document.getElementById('sysFeedback');
+      const txt = document.getElementById('sysFbText');
+      const steps = document.getElementById('sysSteps');
+
+      fb.style.display = 'block';
+
+      if (isOk) {
+        fb.className = 'feedback-box feedback-success';
+        txt.textContent = '¡Correcto! Has determinado la solución única exacta 🎯';
+      } else {
+        fb.className = 'feedback-box feedback-error';
+        txt.textContent = `Solución incorrecta. Los valores exactos son x = ${currentSys.x}, y = ${currentSys.y}, z = ${currentSys.z}. Revisa la resolución:`;
+      }
+
+      const m = currentSys.A;
+      const b = currentSys.B;
+
+      // Matrices para Cramer
+      const Ax = [
+        [b[0], m[0][1], m[0][2]],
+        [b[1], m[1][1], m[1][2]],
+        [b[2], m[2][1], m[2][2]]
+      ];
+      const Ay = [
+        [m[0][0], b[0], m[0][2]],
+        [m[1][0], b[1], m[1][2]],
+        [m[2][0], b[2], m[2][2]]
+      ];
+      const Az = [
+        [m[0][0], m[0][1], b[0]],
+        [m[1][0], m[1][1], b[1]],
+        [m[2][0], m[2][1], b[2]]
+      ];
+
+      const detAx = det3x3(Ax);
+      const detAy = det3x3(Ay);
+      const detAz = det3x3(Az);
+
+      steps.innerHTML = `
+        1. Determinante principal: |A| = <strong>${currentSys.detA}</strong> ≠ 0 (Sistema Compatible Determinado)<br>
+        2. Regla de Cramer:<br>
+        &nbsp;&nbsp;&nbsp;• |Aₓ| = ${detAx} ➔ x = <span class="frac-wrap"><span class="frac-num">${detAx}</span><span class="frac-den">${currentSys.detA}</span></span> = <strong style="color:var(--accent-gold);">${currentSys.x}</strong><br>
+        &nbsp;&nbsp;&nbsp;• |A_y| = ${detAy} ➔ y = <span class="frac-wrap"><span class="frac-num">${detAy}</span><span class="frac-den">${currentSys.detA}</span></span> = <strong style="color:var(--accent-gold);">${currentSys.y}</strong><br>
+        &nbsp;&nbsp;&nbsp;• |A_z| = ${detAz} ➔ z = <span class="frac-wrap"><span class="frac-num">${detAz}</span><span class="frac-den">${currentSys.detA}</span></span> = <strong style="color:var(--accent-gold);">${currentSys.z}</strong>
+      `;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      generateSystemChallenge();
+
+      ['in_x', 'in_y', 'in_z'].forEach(id => {
+        document.getElementById(id).addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') checkSystemChallenge();
+        });
+      });
+    });
+  </script>
+</body>
+</html>

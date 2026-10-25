@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Introducción a las Derivadas | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #042f2e;
+      border-color: var(--accent-blue);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* TARJETAS DE PASO A PASO */
+    .step-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .step-num {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-blue);
+    }
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .math-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem 1.3rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      color: #fff;
+      line-height: 2.2;
+    }
+    [data-theme="light"] .math-block {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* COMPONENTES MATEMÁTICOS LIMPIOS: FRACCIONES VERTICALES */
+    .frac-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 0.25rem;
+      line-height: 1.15;
+      font-size: 0.95em;
+    }
+    .frac-num {
+      border-bottom: 1.8px solid currentColor;
+      padding: 0 0.2rem 2px 0.2rem;
+      display: block;
+    }
+    .frac-den {
+      padding: 2px 0.2rem 0 0.2rem;
+      display: block;
+    }
+
+    /* LABORATORIO DEL SLIDER Y CANVAS */
+    .slider-box {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .slider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .slider-row input[type="range"] {
+      flex: 1;
+      min-width: 220px;
+      accent-color: var(--accent-blue);
+      cursor: pointer;
+    }
+    .metric-badge {
+      font-family: monospace;
+      font-size: 1.05rem;
+      font-weight: 800;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    .canvas-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+    }
+    @media (max-width: 800px) {
+      .canvas-grid { grid-template-columns: 1fr; }
+    }
+
+    .graph-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .graph-canvas {
+      background: #060911;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      width: 100%;
+      height: 260px;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+    }
+    [data-theme="light"] .graph-canvas {
+      background: #ffffff !important;
+    }
+
+    .badge-highlight {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid var(--accent-gold);
+      border-radius: 6px;
+      color: var(--accent-gold);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    /* INPUTS ENTRENADOR */
+    .ans-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .ans-input {
+      width: 110px;
+      padding: 0.6rem 0.4rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      font-family: monospace;
+      text-align: center;
+      background: var(--bg-primary);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      outline: none;
+    }
+    .ans-input:focus { border-color: var(--accent-blue); }
+
+    .feedback-box {
+      display: none;
+      border-radius: 8px;
+      padding: 1.2rem;
+      font-size: 0.95rem;
+      line-height: 2;
+    }
+    .feedback-success {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--accent-success);
+      color: #34d399;
+    }
+    .feedback-error {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid var(--accent-op);
+      color: #fb7185;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Introducción a las Derivadas 📐</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+      <span class="badge" style="color: var(--accent-blue);">Bachillerato (Ciencias y CCSS)</span>
+      <div class="content-text">
+        Una derivada no es más que la medida del <strong>ritmo de cambio instantáneo</strong>. Geométricamente, representa la <strong>pendiente de la recta tangente</strong> a una curva en un punto específico.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('concepto', this)">1. ¿Qué es y Para qué sirve?</button>
+      <button class="tab-btn" onclick="switchTab('laboratorio', this)">2. Laboratorio Gráfico (Slider)</button>
+      <button class="tab-btn" onclick="switchTab('reglas', this)">3. Fórmulas y Regla de la Cadena</button>
+      <button class="tab-btn" onclick="switchTab('entrenador', this)">4. 🎯 Ponte a Prueba</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: ¿QUÉ ES Y PARA QUÉ SIRVE? -->
+    <!-- ===================================================================== -->
+    <div id="tab-concepto" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem;">La Derivada: El velocímetro de las Matemáticas</h2>
+      
+      <div class="step-card" style="border-left-color: var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Analogía Cotidiana: Velocidad Media vs. Instantánea</span>
+        <div class="step-title">El radar de tramo frente al radar de pistola</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Si viajas de Barcelona a Madrid (600 km) en 6 horas, tu <strong>velocidad media</strong> fue de 100 km/h:
+        </p>
+        <div class="math-block" style="text-align:center;">
+          Tasa de Variación Media (TVM) = <span class="frac-wrap"><span class="frac-num">Δy</span><span class="frac-den">Δx</span></span> = <span class="frac-wrap"><span class="frac-num">f(b) - f(a)</span><span class="frac-den">b - a</span></span> = <span class="frac-wrap"><span class="frac-num">600 km</span><span class="frac-den">6 h</span></span> = 100 km/h
+        </div>
+        <p style="margin:0.5rem 0 0 0; font-size:0.95rem; line-height:1.6;">
+          Sin embargo, un radar láser no espera 6 horas: calcula tu variación en un instante infinitesimal (cuando el intervalo de tiempo tiende a cero: <em>h ➔ 0</em>). Eso es exactamente la <strong>derivada</strong>.
+        </p>
+      </div>
+
+      <div class="step-card">
+        <span class="step-num">Definición Formal Rigurosa</span>
+        <div class="step-title">La derivada como el límite del cociente incremental</div>
+        <div class="math-block">
+          f'(a) = lim (h ➔ 0) <span class="frac-wrap"><span class="frac-num">f(a + h) - f(a)</span><span class="frac-den">h</span></span>
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color: var(--accent-success);">
+        <span class="step-num" style="color:var(--accent-success);">¿Para qué sirve en la vida real y en la EBAU?</span>
+        <ul style="margin:0; padding-left:1.2rem; font-size:0.95rem; line-height:1.7;">
+          <li><strong>Optimización (Máximos y Mínimos):</strong> Hallar las dimensiones para gastar el mínimo material, o el precio para maximizar los beneficios de una empresa (donde <em>f'(x) = 0</em>).</li>
+          <li><strong>Física:</strong> La derivada del espacio es la velocidad; la derivada de la velocidad es la aceleración.</li>
+          <li><strong>Economía (CCSS):</strong> Coste marginal y elasticidad de la demanda al variar la producción en una unidad.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: LABORATORIO GRÁFICO (SLIDER) -->
+    <!-- ===================================================================== -->
+    <div id="tab-laboratorio" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Interpretación Geométrica: La Pendiente</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Mueve el control deslizante para cambiar el punto <strong>x₀</strong>. Observa cómo la recta tangente (roja) se inclina en <strong>f(x)</strong>, y cómo la gráfica de la derivada <strong>f'(x)</strong> registra exactamente esa inclinación como su altura vertical.
+      </p>
+
+      <div class="slider-box">
+        <div class="slider-row">
+          <label style="font-weight:700;">Punto de tangencia x₀:</label>
+          <input type="range" id="sliderX" min="-2.2" max="2.2" step="0.05" value="0.5" oninput="updateLab()">
+          <span class="metric-badge" id="lblX">x₀ = 0.50</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.8rem; font-size:0.92rem; font-family:monospace;">
+          <span>Punto en la curva: <strong id="lblPoint" style="color:var(--accent-blue);">P(0.50, -1.38)</strong></span>
+          <span>Pendiente de la tangente (m = f'): <strong id="lblSlope" style="color:#f43f5e;">m = -2.25</strong></span>
+          <span id="lblBehavior" class="badge-highlight">Función Decreciente 📉</span>
+        </div>
+      </div>
+
+      <div class="canvas-grid">
+        <!-- GRÁFICA 1: f(x) CON TANGENTE -->
+        <div class="graph-card">
+          <div style="font-weight:700; font-size:0.95rem; color:var(--accent-blue);">
+            f(x) = x³ - 3x &nbsp;<span style="color:#f43f5e; font-size:0.85rem;">(Recta Tangente)</span>
+          </div>
+          <canvas id="canvasFx" class="graph-canvas" width="440" height="260"></canvas>
+        </div>
+
+        <!-- GRÁFICA 2: f'(x) -->
+        <div class="graph-card">
+          <div style="font-weight:700; font-size:0.95rem; color:var(--accent-gold);">
+            Función Derivada: f'(x) = 3x² - 3
+          </div>
+          <canvas id="canvasFprime" class="graph-canvas" width="440" height="260"></canvas>
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color:var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">Conclusión visual clave</span>
+        <div class="math-block">
+          • Si la recta tangente sube ➔ <strong>Pendiente positiva (f' > 0)</strong> ➔ La función original <strong>crece</strong>.<br>
+          • Si la recta tangente es horizontal ➔ <strong>Pendiente cero (f' = 0)</strong> ➔ Punto crítico: <strong>Máximo o Mínimo</strong> (pruébalo en x = -1 y x = 1).<br>
+          • Si la recta tangente baja ➔ <strong>Pendiente negativa (f' < 0)</strong> ➔ La función original <strong>decrece</strong>.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: REGLAS Y REGLA DE LA CADENA -->
+    <!-- ===================================================================== -->
+    <div id="tab-reglas" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Fórmulas Operativas y Regla de la Cadena</h2>
+
+      <div class="step-card">
+        <span class="step-num">1. Derivadas Inmediatas Fundamentales</span>
+        <div class="math-block">
+          • Constante: [ k ]' = <strong>0</strong><br>
+          • Identidad: [ x ]' = <strong>1</strong><br>
+          • Potencia: [ xⁿ ]' = <strong>n · xⁿ⁻¹</strong> &nbsp;&nbsp;&nbsp;<em>(Ejemplo: [ x⁴ ]' = 4x³)</em><br>
+          • Exponencial: [ eˣ ]' = <strong>eˣ</strong><br>
+          • Logaritmo neperiano: [ ln(x) ]' = <span class="frac-wrap"><span class="frac-num">1</span><span class="frac-den">x</span></span>
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color:var(--accent-blue);">
+        <span class="step-num" style="color:var(--accent-blue);">2. Operaciones con Derivadas</span>
+        <div class="math-block">
+          • <strong>Regla del Producto:</strong> [ u · v ]' = <strong>u' · v + u · v'</strong><br><br>
+          • <strong>Regla del Cociente:</strong> <span class="frac-wrap"><span class="frac-num">[ u ]</span><span class="frac-den">[ v ]</span></span>' = <span class="frac-wrap"><span class="frac-num">u' · v - u · v'</span><span class="frac-den">v²</span></span> &nbsp;&nbsp;&nbsp;<em>(¡Atención al signo menos en el numerador!)</em>
+        </div>
+      </div>
+
+      <div class="step-card" style="border-left-color:var(--accent-gold);">
+        <span class="step-num" style="color:var(--accent-gold);">3. Regla de la Cadena (Funciones Compuestas)</span>
+        <div class="step-title">El método de las "capas de cebolla" o muñecas rusas</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Cuando una función está metida dentro de otra <em>f(g(x))</em>, se deriva primero la capa exterior y luego se multiplica por la derivada de lo que hay dentro:
+        </p>
+        <div class="math-block">
+          [ f(g(x)) ]' = <strong>f'(g(x)) · g'(x)</strong>
+        </div>
+        <div style="font-weight:bold; margin-top:0.6rem; color:var(--text-main);">Ejemplo guiado: Derivar y = (3x² - 5)⁴</div>
+        <div class="math-block">
+          1. Capa externa: una potencia de algo elevado a 4 ➔ 4 · (...)³<br>
+          2. Capa interna: el polinomio (3x² - 5), cuya derivada es 6x<br>
+          3. Multiplicamos capas: y' = 4 · (3x² - 5)³ · (6x) = <strong>24x · (3x² - 5)³</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 4: ENTRENADOR INTERACTIVO -->
+    <!-- ===================================================================== -->
+    <div id="tab-entrenador" class="tab-content">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; font-size:1.3rem;">Gimnasio de Derivadas en un Punto</h2>
+        <button class="btn btn-secondary" onclick="generateDerivChallenge()" style="padding:0.4rem 0.8rem; font-size:0.85rem;">
+          🎲 Nuevo Reto
+        </button>
+      </div>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Halla el valor exacto de la derivada en el punto indicado <strong>f'(x₀)</strong> (la pendiente de su recta tangente):
+      </p>
+
+      <div class="math-block" id="derivStatement" style="text-align:center; font-size:1.35rem; padding:1.5rem; color:var(--accent-blue);">
+        Cargando reto...
+      </div>
+
+      <div class="ans-row">
+        <label style="font-weight:700;">f'(x₀) =</label>
+        <input type="number" step="any" id="in_deriv" class="ans-input" placeholder="0" autofocus>
+        <button class="btn btn-primary" onclick="checkDerivChallenge()">Comprobar 🎯</button>
+      </div>
+
+      <div id="derivFeedback" class="feedback-box">
+        <div id="derivFbText" style="font-weight:bold; font-size:1.05rem; margin-bottom:0.4rem;"></div>
+        <div id="derivSteps" style="font-family:monospace; line-height:2.2;"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      if (tabId === 'laboratorio') updateLab();
+    }
+
+    // =========================================================================
+    // DIBUJO SINCRONIZADO DE f(x) Y f'(x)
+    // =========================================================================
+    function drawGrid(ctx, w, h, originX, originY, scaleX, scaleY) {
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      ctx.clearRect(0, 0, w, h);
+
+      // Rejilla fina
+      ctx.strokeStyle = isLight ? '#e2e8f0' : '#1e293b';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let x = originX % scaleX; x < w; x += scaleX) {
+        ctx.moveTo(x, 0); ctx.lineTo(x, h);
+      }
+      for (let y = originY % scaleY; y < h; y += scaleY) {
+        ctx.moveTo(0, y); ctx.lineTo(w, y);
+      }
+      ctx.stroke();
+
+      // Ejes
+      ctx.strokeStyle = isLight ? '#94a3b8' : '#475569';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, originY); ctx.lineTo(w, originY);
+      ctx.moveTo(originX, 0); ctx.lineTo(originX, h);
+      ctx.stroke();
+    }
+
+    function updateLab() {
+      const x0 = parseFloat(document.getElementById('sliderX').value);
+      // f(x) = x³ - 3x
+      const y0 = Math.pow(x0, 3) - 3 * x0;
+      // f'(x) = 3x² - 3
+      const slope = 3 * Math.pow(x0, 2) - 3;
+
+      document.getElementById('lblX').textContent = `x₀ = ${x0.toFixed(2)}`;
+      document.getElementById('lblPoint').textContent = `P(${x0.toFixed(2)}, ${y0.toFixed(2)})`;
+      document.getElementById('lblSlope').textContent = `m = ${slope.toFixed(2)}`;
+
+      const beh = document.getElementById('lblBehavior');
+      if (Math.abs(slope) < 0.15) {
+        beh.textContent = 'Punto Crítico (Extremo Relativo) ⚖️';
+        beh.style.borderColor = 'var(--accent-gold)';
+        beh.style.color = 'var(--accent-gold)';
+      } else if (slope > 0) {
+        beh.textContent = 'Función Creciente 📈';
+        beh.style.borderColor = 'var(--accent-success)';
+        beh.style.color = '#34d399';
+      } else {
+        beh.textContent = 'Función Decreciente 📉';
+        beh.style.borderColor = 'var(--accent-op)';
+        beh.style.color = '#fb7185';
+      }
+
+      // Dibujar Canvas 1: f(x)
+      const cv1 = document.getElementById('canvasFx');
+      if (cv1) {
+        const ctx1 = cv1.getContext('2d');
+        const w = cv1.width, h = cv1.height;
+        const originX = w / 2, originY = h / 2;
+        const scaleX = 70, scaleY = 35;
+
+        drawGrid(ctx1, w, h, originX, originY, scaleX, scaleY);
+
+        // Curva f(x) = x³ - 3x
+        ctx1.strokeStyle = '#38bdf8';
+        ctx1.lineWidth = 2.5;
+        ctx1.beginPath();
+        for (let px = 0; px <= w; px += 2) {
+          const x = (px - originX) / scaleX;
+          const y = Math.pow(x, 3) - 3 * x;
+          const py = originY - y * scaleY;
+          if (px === 0) ctx1.moveTo(px, py);
+          else ctx1.lineTo(px, py);
+        }
+        ctx1.stroke();
+
+        // Recta Tangente: y - y0 = slope * (x - x0) ➔ y = slope*(x - x0) + y0
+        ctx1.strokeStyle = '#f43f5e';
+        ctx1.lineWidth = 2;
+        ctx1.beginPath();
+        const tLen = 1.6;
+        const tx1 = x0 - tLen, ty1 = slope * (tx1 - x0) + y0;
+        const tx2 = x0 + tLen, ty2 = slope * (tx2 - x0) + y0;
+        ctx1.moveTo(originX + tx1 * scaleX, originY - ty1 * scaleY);
+        ctx1.lineTo(originX + tx2 * scaleX, originY - ty2 * scaleY);
+        ctx1.stroke();
+
+        // Punto de tangencia P(x0, y0)
+        ctx1.fillStyle = '#f43f5e';
+        ctx1.beginPath();
+        ctx1.arc(originX + x0 * scaleX, originY - y0 * scaleY, 5, 0, Math.PI * 2);
+        ctx1.fill();
+      }
+
+      // Dibujar Canvas 2: f'(x)
+      const cv2 = document.getElementById('canvasFprime');
+      if (cv2) {
+        const ctx2 = cv2.getContext('2d');
+        const w = cv2.width, h = cv2.height;
+        const originX = w / 2, originY = h * 0.65;
+        const scaleX = 70, scaleY = 22;
+
+        drawGrid(ctx2, w, h, originX, originY, scaleX, scaleY);
+
+        // Curva Derivada f'(x) = 3x² - 3
+        ctx2.strokeStyle = '#f59e0b';
+        ctx2.lineWidth = 2.5;
+        ctx2.beginPath();
+        for (let px = 0; px <= w; px += 2) {
+          const x = (px - originX) / scaleX;
+          const y = 3 * Math.pow(x, 2) - 3;
+          const py = originY - y * scaleY;
+          if (px === 0) ctx2.moveTo(px, py);
+          else ctx2.lineTo(px, py);
+        }
+        ctx2.stroke();
+
+        // Punto que representa el valor de la pendiente en f'(x0)
+        ctx2.fillStyle = '#f59e0b';
+        ctx2.beginPath();
+        ctx2.arc(originX + x0 * scaleX, originY - slope * scaleY, 5, 0, Math.PI * 2);
+        ctx2.fill();
+        ctx2.strokeStyle = '#fff';
+        ctx2.lineWidth = 1.5;
+        ctx2.stroke();
+      }
+    }
+
+    // =========================================================================
+    // ENTRENADOR PARAMÉTRICO DE CÁLCULO DE DERIVADAS
+    // =========================================================================
+    let currentDeriv = null;
+
+    function randomInt(min, max, exclude = []) {
+      let res;
+      do {
+        res = Math.floor(Math.random() * (max - min + 1)) + min;
+      } while (exclude.includes(res));
+      return res;
+    }
+
+    function generateDerivChallenge() {
+      const archetypes = [
+        // 1. Polinomio de grado 3: f(x) = a·x³ + b·x² + c
+        () => {
+          const a = randomInt(1, 3);
+          const b = randomInt(-4, 4, [0]);
+          const c = randomInt(-5, 5, [0]);
+          const x0 = randomInt(-2, 3);
+
+          // f'(x) = 3a·x² + 2b·x
+          const sol = 3 * a * Math.pow(x0, 2) + 2 * b * x0;
+
+          const bStr = b > 0 ? `+ ${b}x²` : `- ${Math.abs(b)}x²`;
+          const cStr = c > 0 ? `+ ${c}` : `- ${Math.abs(c)}`;
+          const aStr = a === 1 ? 'x³' : `${a}x³`;
+
+          return {
+            statement: `Dada f(x) = ${aStr} ${bStr} ${cStr}, &nbsp;calcula <strong>f'(${x0})</strong>`,
+            sol: sol,
+            steps: [
+              `1. Calculamos la función derivada genérica usando la regla de la potencia:`,
+              `&nbsp;&nbsp;&nbsp;f'(x) = 3·(${a})x² + 2·(${b})x = <strong>${3*a}x² ${2*b >= 0 ? '+ ' + (2*b) : '- ' + Math.abs(2*b)}x</strong>`,
+              `2. Evaluamos en x₀ = ${x0}:`,
+              `&nbsp;&nbsp;&nbsp;f'(${x0}) = ${3*a}·(${x0})² + (${2*b})·(${x0}) = ${3*a*x0*x0} + (${2*b*x0}) = <strong>${sol}</strong>`
+            ]
+          };
+        },
+
+        // 2. Cociente simple con monomio: f(x) = (a·x + b) / x
+        () => {
+          const a = randomInt(2, 5);
+          const b = randomInt(2, 6);
+          const x0 = randomInt(1, 3);
+
+          // f(x) = a + b/x ➔ f'(x) = -b / x²
+          const sol = parseFloat((-b / Math.pow(x0, 2)).toFixed(2));
+
+          return {
+            statement: `Dada f(x) = <span class="frac-wrap"><span class="frac-num">${a}x + ${b}</span><span class="frac-den">x</span></span>, &nbsp;calcula <strong>f'(${x0})</strong>`,
+            sol: sol,
+            steps: [
+              `1. Aplicamos la regla del cociente o dividimos término a término:`,
+              `&nbsp;&nbsp;&nbsp;f(x) = ${a} + ${b}·x⁻¹`,
+              `2. Derivamos: f'(x) = 0 - ${b}·x⁻² = <span class="frac-wrap"><span class="frac-num">-${b}</span><span class="frac-den">x²</span></span>`,
+              `3. Sustituimos en x₀ = ${x0}:`,
+              `&nbsp;&nbsp;&nbsp;f'(${x0}) = <span class="frac-wrap"><span class="frac-num">-${b}</span><span class="frac-den">${x0}²</span></span> = <span class="frac-wrap"><span class="frac-num">-${b}</span><span class="frac-den">${x0*x0}</span></span> = <strong>${sol}</strong>`
+            ]
+          };
+        },
+
+        // 3. Cadena con potencia de binomio: f(x) = (x² + k)³
+        () => {
+          const k = randomInt(-2, 3, [0]);
+          const x0 = 1;
+          // f'(x) = 3·(x² + k)² · 2x = 6x·(x² + k)²
+          const sol = 6 * x0 * Math.pow(Math.pow(x0, 2) + k, 2);
+          const kStr = k > 0 ? `+ ${k}` : `- ${Math.abs(k)}`;
+
+          return {
+            statement: `Dada f(x) = (x² ${kStr})³, &nbsp;calcula <strong>f'(1)</strong>`,
+            sol: sol,
+            steps: [
+              `1. Aplicamos la regla de la cadena: [ u³ ]' = 3·u² · u'`,
+              `&nbsp;&nbsp;&nbsp;u = x² ${kStr} ➔ u' = 2x`,
+              `2. Función derivada: f'(x) = 3·(x² ${kStr})² · (2x) = <strong>6x·(x² ${kStr})²</strong>`,
+              `3. Evaluamos en x = 1:`,
+              `&nbsp;&nbsp;&nbsp;f'(1) = 6(1) · (1² ${kStr})² = 6 · (${1+k})² = 6 · ${Math.pow(1+k, 2)} = <strong>${sol}</strong>`
+            ]
+          };
+        }
+      ];
+
+      currentDeriv = archetypes[randomInt(0, archetypes.length - 1)]();
+      document.getElementById('derivStatement').innerHTML = currentDeriv.statement;
+      document.getElementById('derivFeedback').style.display = 'none';
+      document.getElementById('in_deriv').value = '';
+    }
+
+    function checkDerivChallenge() {
+      if (!currentDeriv) return;
+      const userVal = parseFloat(document.getElementById('in_deriv').value);
+
+      if (isNaN(userVal)) {
+        alert('Por favor, introduce un valor numérico.');
+        return;
+      }
+
+      const isOk = Math.abs(userVal - currentDeriv.sol) < 0.05;
+      const fb = document.getElementById('derivFeedback');
+      const txt = document.getElementById('derivFbText');
+      const steps = document.getElementById('derivSteps');
+
+      fb.style.display = 'block';
+
+      if (isOk) {
+        fb.className = 'feedback-box feedback-success';
+        txt.textContent = '¡Correcto! Has evaluado la derivada con exactitud 🎯';
+      } else {
+        fb.className = 'feedback-box feedback-error';
+        txt.textContent = `Incorrecto. El valor exacto es ${currentDeriv.sol}. Revisa el cálculo paso a paso:`;
+      }
+
+      steps.innerHTML = currentDeriv.steps.join('<br>');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateLab();
+      generateDerivChallenge();
+
+      document.getElementById('in_deriv').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') checkDerivChallenge();
+      });
+    });
+  </script>
+</body>
+</html>

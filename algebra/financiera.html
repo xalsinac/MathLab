@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Matemática Financiera | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* BARRA SUPERIOR */
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--accent-gold);
+      color: #042f2e;
+      border-color: var(--accent-gold);
+    }
+
+    /* PANELES DE CONTENIDO */
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* CONTROLES Y SLIDERS */
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.25rem;
+    }
+    .control-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .control-item label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-gold);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .control-item input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-gold);
+      cursor: pointer;
+    }
+    .val-badge {
+      font-family: monospace;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    [data-theme="light"] .val-badge { color: #0f172a; }
+
+    /* TARJETAS COMPARATIVAS */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+    }
+    @media (max-width: 700px) {
+      .results-grid { grid-template-columns: 1fr; }
+    }
+    .res-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .res-card.highlight {
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 15px rgba(251, 191, 36, 0.15);
+    }
+    .res-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .res-formula {
+      font-family: monospace;
+      font-size: 0.95rem;
+      color: var(--accent-blue);
+      background: rgba(56, 189, 248, 0.08);
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      border-left: 3px solid var(--accent-blue);
+    }
+    .res-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--text-main);
+      font-family: monospace;
+    }
+
+    /* TABLA RESUMEN */
+    .table-responsive {
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+    .fin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      text-align: right;
+    }
+    .fin-table th {
+      background: var(--bg-primary);
+      padding: 0.75rem 1rem;
+      color: var(--accent-gold);
+      border-bottom: 1px solid var(--border-color);
+      font-weight: 700;
+    }
+    .fin-table td {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      font-family: monospace;
+    }
+    .fin-table tr:hover { background: rgba(255,255,255,0.03); }
+
+    /* BARRAS DE AMORTIZACIÓN */
+    .amort-bar-wrap {
+      display: flex;
+      height: 35px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 1rem 0;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 35px;
+      text-align: center;
+    }
+    .amort-part-interest { background: var(--accent-op); transition: width 0.3s; }
+    .amort-part-capital { background: var(--accent-success); transition: width 0.3s; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Matemática Financiera 💰</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-gold);">
+      <span class="badge" style="color: var(--accent-gold);">Bachillerato Ciencias Sociales</span>
+      <div class="content-text">
+        El dinero no tiene el mismo valor hoy que mañana: el paso del tiempo y el riesgo generan <strong>intereses</strong>. Aprende a calcular el crecimiento del capital, la rentabilidad real con la TAE y el funcionamiento del Sistema Francés de préstamos.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('simpleCompuesto', this)">1. Simple vs. Compuesto</button>
+      <button class="tab-btn" onclick="switchTab('tae', this)">2. Periodicidad y TAE</button>
+      <button class="tab-btn" onclick="switchTab('prestamos', this)">3. Préstamos (Sistema Francés)</button>
+      <button class="tab-btn" onclick="switchTab('duplicar', this)">4. Duplicar Capital (Logaritmos)</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: SIMPLE VS COMPUESTO -->
+    <!-- ===================================================================== -->
+    <div id="tab-simpleCompuesto" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem; color:var(--text-main);">Comparador de Crecimiento de Capital</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        En el <strong>interés simple</strong> los intereses se retiran cada año (crecimiento lineal). En el <strong>compuesto</strong>, los intereses se reinvierten para generar nuevos intereses (crecimiento exponencial: "bola de nieve").
+      </p>
+
+      <div class="controls-grid">
+        <div class="control-item">
+          <label>Capital Inicial (C₀): <span id="lbl_c0" class="val-badge">1.000 €</span></label>
+          <input type="range" id="sl_c0" min="500" max="10000" step="500" value="1000" oninput="calcSimpleCompuesto()">
+        </div>
+        <div class="control-item">
+          <label>Interés Anual (r): <span id="lbl_r" class="val-badge">6 %</span></label>
+          <input type="range" id="sl_r" min="1" max="20" step="0.5" value="6" oninput="calcSimpleCompuesto()">
+        </div>
+        <div class="control-item">
+          <label>Tiempo (t años): <span id="lbl_t" class="val-badge">10 años</span></label>
+          <input type="range" id="sl_t" min="1" max="30" step="1" value="10" oninput="calcSimpleCompuesto()">
+        </div>
+      </div>
+
+      <div class="results-grid">
+        <div class="res-card">
+          <span class="res-title">Interés Simple</span>
+          <div class="res-formula">C_f = C₀ · (1 + i · t)</div>
+          <div class="res-value" id="res_simple_total">1.600 €</div>
+          <span style="font-size:0.85rem; color:var(--text-muted);">Intereses generados: <strong id="res_simple_int" style="color:var(--text-main);">600 €</strong></span>
+        </div>
+
+        <div class="res-card highlight">
+          <span class="res-title" style="color:var(--accent-gold);">Interés Compuesto 🚀</span>
+          <div class="res-formula" style="border-left-color:var(--accent-gold); color:var(--accent-gold); background:rgba(251,191,36,0.08);">C_f = C₀ · (1 + i)ᵗ</div>
+          <div class="res-value" id="res_comp_total" style="color:var(--accent-gold);">1.791 €</div>
+          <span style="font-size:0.85rem; color:var(--text-muted);">Ganancia extra por reinversión: <strong id="res_comp_diff" style="color:var(--accent-success);">+191 €</strong></span>
+        </div>
+      </div>
+
+      <h3 style="font-size:1.1rem; margin-bottom:0;">Evolución de los primeros 5 años</h3>
+      <div class="table-responsive">
+        <table class="fin-table" id="tabla_anios">
+          <!-- Inyectado por JS -->
+        </table>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: PERIODICIDAD Y TAE -->
+    <!-- ===================================================================== -->
+    <div id="tab-tae" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem; color:var(--text-main);">TIN vs. TAE (Fraccionamiento de Pagos)</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Si un banco te ofrece un 6% nominal (TIN) pero liquida los intereses mensualmente, esos pequeños intereses generan nuevos intereses a lo largo del año. Por eso la rentabilidad real efectiva (<strong>TAE</strong>) es siempre superior al tipo nominal.
+      </p>
+
+      <div class="controls-grid">
+        <div class="control-item">
+          <label>Tipo Nominal (TIN): <span id="lbl_tin" class="val-badge">6 %</span></label>
+          <input type="range" id="sl_tin" min="1" max="15" step="0.25" value="6" oninput="calcTAE()">
+        </div>
+        <div class="control-item">
+          <label>Frecuencia de liquidación (m):</label>
+          <select id="sel_m" class="topic-select" onchange="calcTAE()" style="padding:0.45rem; font-size:0.95rem;">
+            <option value="1">Anual (m = 1)</option>
+            <option value="2">Semestral (m = 2)</option>
+            <option value="4">Trimestral (m = 4)</option>
+            <option value="12" selected>Mensual (m = 12)</option>
+            <option value="365">Diaria (m = 365)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="results-grid">
+        <div class="res-card">
+          <span class="res-title">Interés del período (i_m)</span>
+          <div class="res-formula">i_m = r / m</div>
+          <div class="res-value" id="res_im">0,500 %</div>
+          <span style="font-size:0.85rem; color:var(--text-muted);">Porcentaje aplicado en cada pago</span>
+        </div>
+
+        <div class="res-card highlight">
+          <span class="res-title" style="color:var(--accent-gold);">Tasa Anual Equivalente (TAE)</span>
+          <div class="res-formula" style="border-left-color:var(--accent-gold); color:var(--accent-gold); background:rgba(251,191,36,0.08);">TAE = (1 + i_m)ᵐ - 1</div>
+          <div class="res-value" id="res_tae" style="color:var(--accent-gold);">6,17 %</div>
+          <span style="font-size:0.85rem; color:var(--text-muted);">Rendimiento real por reinversión periódica</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: PRÉSTAMOS - SISTEMA FRANCÉS -->
+    <!-- ===================================================================== -->
+    <div id="tab-prestamos" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem; color:var(--text-main);">Amortización de Préstamos: Cuota Constante</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        En el <strong>Sistema Francés</strong> (la hipoteca o préstamo habitual), pagas siempre la misma cuota mensual (<strong>a</strong>). Al inicio casi toda la cuota son <strong style="color:var(--accent-op);">intereses</strong> y al final casi todo es <strong style="color:var(--accent-success);">capital amortizado</strong>.
+      </p>
+
+      <div class="controls-grid">
+        <div class="control-item">
+          <label>Préstamo (C₀): <span id="lbl_p_c0" class="val-badge">10.000 €</span></label>
+          <input type="range" id="sl_p_c0" min="1000" max="50000" step="1000" value="10000" oninput="calcPrestamo()">
+        </div>
+        <div class="control-item">
+          <label>Interés Nominal Anual: <span id="lbl_p_r" class="val-badge">5 %</span></label>
+          <input type="range" id="sl_p_r" min="1" max="12" step="0.5" value="5" oninput="calcPrestamo()">
+        </div>
+        <div class="control-item">
+          <label>Plazo: <span id="lbl_p_anios" class="val-badge">5 años</span></label>
+          <input type="range" id="sl_p_anios" min="1" max="25" step="1" value="5" oninput="calcPrestamo()">
+        </div>
+      </div>
+
+      <div class="res-card highlight">
+        <span class="res-title" style="color:var(--accent-gold);">Cuota Mensual Constante (a)</span>
+        <div class="res-formula" style="border-left-color:var(--accent-gold); color:var(--accent-gold); background:rgba(251,191,36,0.08);">a = C₀ · [ i · (1+i)ⁿ ] / [ (1+i)ⁿ - 1 ]</div>
+        <div class="res-value" id="res_cuota_mes" style="color:var(--accent-gold);">188,71 € / mes</div>
+        <div style="font-size:0.9rem; color:var(--text-muted); margin-top:0.4rem;">
+          Total pagado al banco: <strong id="res_total_banco" style="color:#fff;">11.322 €</strong> 
+          (Intereses pagados: <strong id="res_total_intereses" style="color:var(--accent-op);">1.322 €</strong>)
+        </div>
+      </div>
+
+      <div>
+        <h3 style="font-size:1.05rem; margin-bottom:0.4rem;">Composición de la primera cuota vs. la última:</h3>
+        <div class="amort-bar-wrap" id="bar_cuota1">
+          <div class="amort-part-interest" id="b1_int" style="width: 35%;">Interés</div>
+          <div class="amort-part-capital" id="b1_cap" style="width: 65%;">Capital</div>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-muted);">
+          <span>🔴 Interés: <span id="txt_b1_int">41,67 €</span></span>
+          <span>🟢 Capital real devuelto: <span id="txt_b1_cap">147,04 €</span></span>
+        </div>
+      </div>
+    </div>
+
+<!-- ===================================================================== -->
+    <!-- TAB 4: DUPLICAR CAPITAL (LOGARITMOS Y EXPLICACIÓN PASO A PASO) -->
+    <!-- ===================================================================== -->
+    <div id="tab-duplicar" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem; color:var(--text-main);">¿En cuánto tiempo duplico mi dinero?</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Un clásico de examen en <strong>Bachillerato de Ciencias Sociales</strong>. Aquí la incógnita no es cuánto dinero ganas, sino <strong>cuántos años (t)</strong> necesitas esperar.
+      </p>
+
+      <!-- EXPLICACIÓN PEDAGÓGICA -->
+      <div class="explanation-card" style="border-left-color: var(--accent-blue); background: var(--bg-primary);">
+        <span class="badge" style="color: var(--accent-blue);">¿Por qué escribimos 2 · C₀?</span>
+        <div class="content-text" style="font-size: 0.95rem;">
+          <p style="margin: 0 0 0.5rem 0;">
+            Imagina que empiezas con <strong>1.000 €</strong> (tu Capital Inicial, <em>C₀</em>). Si tu objetivo es <strong>duplicar</strong> tu dinero, significa que tu Capital Final (<em>C_f</em>) tiene que ser exactamente <strong>2.000 €</strong>.
+          </p>
+          <p style="margin: 0 0 0.5rem 0;">
+            Es decir: <em>Capital Final = 2 veces el dinero inicial</em> ➔ <strong>C_f = 2 · C₀</strong>.
+          </p>
+          <p style="margin: 0; color: var(--accent-gold);">
+            💡 <strong>Dato clave:</strong> Da igual si inviertes 10 €, 1.000 € o 1.000.000 €. Al plantear la ecuación, el dinero inicial se simplifica y se cancela a ambos lados. ¡Tardarás exactamente los mismos años!
+          </p>
+        </div>
+      </div>
+
+      <!-- CONTROL SLIDER -->
+      <div class="controls-grid" style="grid-template-columns: 1fr;">
+        <div class="control-item">
+          <label>Interés Anual Compuesto (r): <span id="lbl_dup_r" class="val-badge">7 %</span></label>
+          <input type="range" id="sl_dup_r" min="1" max="15" step="0.5" value="7" oninput="calcDuplicar()">
+        </div>
+      </div>
+
+      <!-- DESGLOSE MATEMÁTICO SIN CÓDIGOS RAROS -->
+      <div class="res-card">
+        <span class="res-title">Deducción analítica paso a paso:</span>
+        
+        <div class="steps-box" style="margin-top:0.6rem; background:rgba(0,0,0,0.3); font-size:0.95rem; gap: 0.8rem;">
+          <div>
+            <strong style="color:var(--accent-blue);">Paso 1. Partimos de la fórmula general:</strong><br>
+            C_f = C₀ · (1 + i)ᵗ
+          </div>
+
+          <div>
+            <strong style="color:var(--accent-blue);">Paso 2. Sustituimos C_f por el doble de lo invertido (2 · C₀):</strong><br>
+            2 · C₀ = C₀ · (1 + i)ᵗ
+          </div>
+
+          <div>
+            <strong style="color:var(--accent-blue);">Paso 3. Tachamos C₀ en ambos lados (dividimos entre C₀):</strong><br>
+            2 = (1 + i)ᵗ
+          </div>
+
+          <div>
+            <strong style="color:var(--accent-blue);">Paso 4. ¿Cómo bajamos la "t" del exponente? Aplicando Logaritmos:</strong><br>
+            ln(2) = ln((1 + i)ᵗ)<br>
+            <em>(Por las propiedades de los logaritmos, el exponente t pasa delante multiplicando)</em><br>
+            ln(2) = t · ln(1 + i)
+          </div>
+
+          <div style="border-top: 1px dashed var(--border-color); padding-top: 0.6rem;">
+            <strong style="color:var(--accent-gold);">Paso 5. Despejamos el tiempo (t):</strong><br>
+            <span style="font-size: 1.15rem; font-weight: bold; color: var(--accent-gold);">
+              t = ln(2) / ln(1 + i)
+            </span>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.2rem; display: flex; flex-direction: column; gap: 0.3rem;">
+          <span style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Resultado para el interés seleccionado:</span>
+          <div class="res-value" id="res_tiempo_dup" style="color:var(--accent-gold);">10,24 años</div>
+          <span style="font-size:0.85rem; color:var(--text-muted);" id="txt_regla72">
+            Regla mental del 72: 72 / 7 ≈ 10,29 años
+          </span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+    }
+
+    // 1. SIMPLE VS COMPUESTO
+    function calcSimpleCompuesto() {
+      const c0 = parseFloat(document.getElementById('sl_c0').value);
+      const r = parseFloat(document.getElementById('sl_r').value);
+      const t = parseFloat(document.getElementById('sl_t').value);
+      const i = r / 100;
+
+      document.getElementById('lbl_c0').textContent = c0.toLocaleString('es-ES') + ' €';
+      document.getElementById('lbl_r').textContent = r + ' %';
+      document.getElementById('lbl_t').textContent = t + ' años';
+
+      // Simple
+      const iSimple = c0 * i * t;
+      const cSimple = c0 + iSimple;
+      document.getElementById('res_simple_total').textContent = Math.round(cSimple).toLocaleString('es-ES') + ' €';
+      document.getElementById('res_simple_int').textContent = Math.round(iSimple).toLocaleString('es-ES') + ' €';
+
+      // Compuesto
+      const cComp = c0 * Math.pow(1 + i, t);
+      const diff = cComp - cSimple;
+      document.getElementById('res_comp_total').textContent = Math.round(cComp).toLocaleString('es-ES') + ' €';
+      document.getElementById('res_comp_diff').textContent = '+' + Math.round(diff).toLocaleString('es-ES') + ' €';
+
+      // Tabla primeros 5 años
+      let html = `<tr><th style="text-align:left;">Año</th><th>Cap. Simple</th><th>Cap. Compuesto</th><th>Diferencia</th></tr>`;
+      for (let año = 1; año <= Math.min(5, t); año++) {
+        const s = c0 * (1 + i * año);
+        const c = c0 * Math.pow(1 + i, año);
+        html += `<tr>
+          <td style="text-align:left; font-weight:bold;">Año ${año}</td>
+          <td>${Math.round(s).toLocaleString('es-ES')} €</td>
+          <td style="color:var(--accent-gold); font-weight:bold;">${Math.round(c).toLocaleString('es-ES')} €</td>
+          <td style="color:var(--accent-success);">+${Math.round(c - s).toLocaleString('es-ES')} €</td>
+        </tr>`;
+      }
+      document.getElementById('tabla_anios').innerHTML = html;
+    }
+
+    // 2. TAE
+    function calcTAE() {
+      const tin = parseFloat(document.getElementById('sl_tin').value);
+      const m = parseInt(document.getElementById('sel_m').value);
+      const r = tin / 100;
+
+      document.getElementById('lbl_tin').textContent = tin.toFixed(2) + ' %';
+
+      const im = r / m;
+      document.getElementById('res_im').textContent = (im * 100).toFixed(3) + ' %';
+
+      const tae = (Math.pow(1 + im, m) - 1) * 100;
+      document.getElementById('res_tae').textContent = tae.toFixed(2) + ' %';
+    }
+
+    // 3. PRÉSTAMO FRANCÉS
+    function calcPrestamo() {
+      const c0 = parseFloat(document.getElementById('sl_p_c0').value);
+      const rAnual = parseFloat(document.getElementById('sl_p_r').value);
+      const anios = parseInt(document.getElementById('sl_p_anios').value);
+
+      document.getElementById('lbl_p_c0').textContent = c0.toLocaleString('es-ES') + ' €';
+      document.getElementById('lbl_p_r').textContent = rAnual + ' %';
+      document.getElementById('lbl_p_anios').textContent = anios + ' años';
+
+      const n = anios * 12; // meses
+      const iMes = (rAnual / 100) / 12;
+
+      // Cuota mensual constante a = C0 * [i*(1+i)^n] / [(1+i)^n - 1]
+      const factor = Math.pow(1 + iMes, n);
+      const cuota = c0 * (iMes * factor) / (factor - 1);
+
+      const totalBanco = cuota * n;
+      const totalIntereses = totalBanco - c0;
+
+      document.getElementById('res_cuota_mes').textContent = cuota.toFixed(2).replace('.', ',') + ' € / mes';
+      document.getElementById('res_total_banco').textContent = Math.round(totalBanco).toLocaleString('es-ES') + ' €';
+      document.getElementById('res_total_intereses').textContent = Math.round(totalIntereses).toLocaleString('es-ES') + ' €';
+
+      // Primera cuota
+      const intMes1 = c0 * iMes;
+      const capMes1 = cuota - intMes1;
+      const pctInt = (intMes1 / cuota) * 100;
+      const pctCap = 100 - pctInt;
+
+      document.getElementById('b1_int').style.width = pctInt + '%';
+      document.getElementById('b1_cap').style.width = pctCap + '%';
+      document.getElementById('txt_b1_int').textContent = intMes1.toFixed(2).replace('.', ',') + ' €';
+      document.getElementById('txt_b1_cap').textContent = capMes1.toFixed(2).replace('.', ',') + ' €';
+    }
+
+// 4. DUPLICAR CAPITAL
+    function calcDuplicar() {
+      const r = parseFloat(document.getElementById('sl_dup_r').value);
+      document.getElementById('lbl_dup_r').textContent = r + ' %';
+      const i = r / 100;
+
+      // Fórmula matemática exacta con logaritmos
+      const t = Math.log(2) / Math.log(1 + i);
+      document.getElementById('res_tiempo_dup').textContent = t.toFixed(2).replace('.', ',') + ' años';
+
+      // Regla práctica aproximada del 72
+      const aprox72 = (72 / r).toFixed(2).replace('.', ',');
+      document.getElementById('txt_regla72').textContent = `Regla práctica de aproximación (Regla del 72): 72 / ${r} ≈ ${aprox72} años`;
+    }
+    
+    // Inicializar al cargar
+    window.addEventListener('DOMContentLoaded', () => {
+      calcSimpleCompuesto();
+      calcTAE();
+      calcPrestamo();
+      calcDuplicar();
+    });
+  </script>
+</body>
+</html>

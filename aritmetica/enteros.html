@@ -297,16 +297,16 @@
 
   <main class="app-container">
     
-    <nav class="tabs-container">
-      <button class="tab-btn active" onclick="switchTab('recta', this)">1. La Recta</button>
-      <button class="tab-btn" onclick="switchTab('sumaresta', this)">2. Suma y Resta</button>
-      <button class="tab-btn" onclick="switchTab('multidivi', this)">3. Multi / Divi</button>
-      <button class="tab-btn" onclick="switchTab('reglasignos', this)">4. ⚠️ Trampas</button>
-      <button class="tab-btn" onclick="switchTab('problemas', this)">5. Problemas</button>
+    <nav class="tabs-container" role="tablist" aria-label="Apartados de Números Enteros">
+      <button type="button" id="tab-recta" class="tab-btn active" role="tab" aria-selected="true" aria-controls="recta" tabindex="0" onclick="switchTab('recta', this)">1. La Recta</button>
+      <button type="button" id="tab-sumaresta" class="tab-btn" role="tab" aria-selected="false" aria-controls="sumaresta" tabindex="-1" onclick="switchTab('sumaresta', this)">2. Suma y Resta</button>
+      <button type="button" id="tab-multidivi" class="tab-btn" role="tab" aria-selected="false" aria-controls="multidivi" tabindex="-1" onclick="switchTab('multidivi', this)">3. Multi / Divi</button>
+      <button type="button" id="tab-reglasignos" class="tab-btn" role="tab" aria-selected="false" aria-controls="reglasignos" tabindex="-1" onclick="switchTab('reglasignos', this)">4. Doble signo</button>
+      <button type="button" id="tab-problemas" class="tab-btn" role="tab" aria-selected="false" aria-controls="problemas" tabindex="-1" onclick="switchTab('problemas', this)">5. Problemas</button>
     </nav>
 
     <!-- ================= PESTAÑA 1: LA RECTA NUMÉRICA ================= -->
-    <div id="recta" class="tab-content active">
+    <div id="recta" class="tab-content active" role="tabpanel" aria-labelledby="tab-recta">
       <div class="explanation-card">
         <div class="badge">Navegando por la recta</div>
         <div class="content-text">
@@ -346,7 +346,7 @@
     </div>
 
     <!-- ================= PESTAÑA 2: SUMA Y RESTA ================= -->
-    <div id="sumaresta" class="tab-content">
+    <div id="sumaresta" class="tab-content" role="tabpanel" aria-labelledby="tab-sumaresta">
       <div class="explanation-card" style="border-left-color: var(--accent-op);">
         <div class="badge" style="color: var(--accent-op);">El método "Tengo / Debo"</div>
         <div class="content-text">
@@ -364,12 +364,12 @@
             </select>
           </label>
           <div class="slider-row">
-            <label>Número 1:</label>
+            <label for="sr_num1">Número 1:</label>
             <input type="range" id="sr_num1" min="-10" max="10" value="-5" oninput="updateSumaResta()">
             <span class="val-display" id="sr_val1">-5</span>
           </div>
           <div class="slider-row">
-            <label>Número 2:</label>
+            <label for="sr_num2">Número 2:</label>
             <input type="range" id="sr_num2" min="-10" max="10" value="3" oninput="updateSumaResta()">
             <span class="val-display" id="sr_val2">3</span>
           </div>
@@ -392,7 +392,7 @@
     </div>
 
     <!-- ================= PESTAÑA 3: MULTIPLICACIÓN Y DIVISIÓN ================= -->
-    <div id="multidivi" class="tab-content">
+    <div id="multidivi" class="tab-content" role="tabpanel" aria-labelledby="tab-multidivi">
       <div class="explanation-card" style="border-left-color: var(--accent-success);">
         <div class="badge" style="color: var(--accent-success);">Solo para multiplicar y dividir</div>
         <div class="content-text">
@@ -404,12 +404,12 @@
         <div class="panel-box">
           <div class="panel-title">Calculadora de Signos</div>
           <div class="slider-row">
-            <label>Factor A:</label>
+            <label for="md_num1">Número A:</label>
             <input type="range" id="md_num1" min="-10" max="10" value="-4" oninput="updateMultiDivi()">
             <span class="val-display" id="md_val1">-4</span>
           </div>
           <div class="slider-row">
-            <label>Factor B:</label>
+            <label for="md_num2">Número B:</label>
             <input type="range" id="md_num2" min="-10" max="10" value="-2" oninput="updateMultiDivi()">
             <span class="val-display" id="md_val2">-2</span>
           </div>
@@ -460,11 +460,11 @@
     </div>
 
     <!-- ================= PESTAÑA 4: TRAMPAS (DOBLE SIGNO) ================= -->
-    <div id="reglasignos" class="tab-content">
+    <div id="reglasignos" class="tab-content" role="tabpanel" aria-labelledby="tab-reglasignos">
       <div class="explanation-card" style="border-left-color: var(--accent-gold);">
-        <div class="badge" style="color: var(--accent-gold);">Peligro: Doble Signo y Paréntesis</div>
+        <div class="badge" style="color: var(--accent-gold);">Doble signo: suma y resta con paréntesis</div>
         <div class="content-text">
-          La regla de los signos también se utiliza cuando hay <strong>dos signos juntos</strong> separados por un paréntesis. Es como si el signo de fuera multiplicara al de dentro.
+          Aquí no aplicamos la tabla de multiplicar: usamos que restar un número equivale a sumar su opuesto. El signo delante del paréntesis indica si conservamos o cambiamos el signo de dentro.
         </div>
       </div>
 
@@ -497,24 +497,24 @@
         <p style="font-size: 1.8rem; font-family: monospace; font-weight: bold; margin: 1rem 0;">
           5 <span style="color:var(--accent-op)">- (-</span>4) = 5 <span style="color:var(--accent-blue)">+</span> 4 = 9
         </p>
-        <p style="color: var(--text-muted);">El menos delante del paréntesis convirtió el -4 en +4. Luego ya solo agrupamos.</p>
+        <p style="color: var(--text-muted);">Restar −4 equivale a sumar su opuesto, +4: 5 − (−4) = 5 + 4 = 9.</p>
       </div>
     </div>
 
     <!-- ================= PESTAÑA 5: PROBLEMAS CON SUBPESTAÑAS ================= -->
-    <div id="problemas" class="tab-content">
+    <div id="problemas" class="tab-content" role="tabpanel" aria-labelledby="tab-problemas">
       
       <!-- Menú de Subpestañas -->
-      <div class="subtabs-container">
-        <button class="subtab-btn active" onclick="switchSubTab('p_principal', this)">🌡️ Termómetro</button>
-        <button class="subtab-btn" onclick="switchSubTab('p_deuda', this)">💰 Deuda</button>
-        <button class="subtab-btn" onclick="switchSubTab('p_ascensor', this)">🏢 Ascensor</button>
-        <button class="subtab-btn" onclick="switchSubTab('p_pajaro', this)">🦅 Pájaro/Pez</button>
-        <button class="subtab-btn" onclick="switchSubTab('p_anios', this)">⏳ Años</button>
+      <div class="subtabs-container" role="tablist" aria-label="Situaciones con números enteros">
+        <button type="button" id="subtab-p_principal" class="subtab-btn active" role="tab" aria-selected="true" aria-controls="p_principal" tabindex="0" onclick="switchSubTab('p_principal', this)">🌡️ Termómetro</button>
+        <button type="button" id="subtab-p_deuda" class="subtab-btn" role="tab" aria-selected="false" aria-controls="p_deuda" tabindex="-1" onclick="switchSubTab('p_deuda', this)">💰 Deuda</button>
+        <button type="button" id="subtab-p_ascensor" class="subtab-btn" role="tab" aria-selected="false" aria-controls="p_ascensor" tabindex="-1" onclick="switchSubTab('p_ascensor', this)">🏢 Ascensor</button>
+        <button type="button" id="subtab-p_pajaro" class="subtab-btn" role="tab" aria-selected="false" aria-controls="p_pajaro" tabindex="-1" onclick="switchSubTab('p_pajaro', this)">🦅 Pájaro/Pez</button>
+        <button type="button" id="subtab-p_anios" class="subtab-btn" role="tab" aria-selected="false" aria-controls="p_anios" tabindex="-1" onclick="switchSubTab('p_anios', this)">⏳ Años</button>
       </div>
 
       <!-- 1. PROBLEMA INICIAL (TERMÓMETRO) -->
-      <div id="p_principal" class="subtab-content active">
+      <div id="p_principal" class="subtab-content active" role="tabpanel" aria-labelledby="subtab-p_principal">
         <div class="panel-box">
           <div class="panel-title">El Termómetro</div>
           <div class="thermometer-container">
@@ -530,10 +530,15 @@
                 <strong style="font-size: 3rem;" id="term_val">0 ºC</strong>
               </p>
               <div class="slider-row">
-                <input type="range" id="term_slider" min="-10" max="10" value="0" style="width: 100%;" oninput="updateTermometro()">
+                <input type="range" id="term_slider" aria-label="Ajusta la temperatura" min="-10" max="10" value="0" style="width: 100%;" oninput="updateTermometro()">
               </div>
-              <div style="margin-top: 2rem; padding: 1rem; background: #090d16; border-radius: 8px; border-left: 4px solid var(--accent-gold);">
-                <strong>Reto:</strong> Estábamos a <strong>3 ºC</strong> y vino una ola de frío que bajó la temperatura <strong>8 grados</strong>. ¿A qué temperatura estamos ahora?
+              <div class="challenge-card">
+                <strong>Reto:</strong> Estábamos a +3 °C y la temperatura bajó 8 grados. ¿Cuál es la temperatura final?
+                <label for="termChallengeAnswer">Tu respuesta (°C)
+                  <input type="number" id="termChallengeAnswer" inputmode="numeric">
+                </label>
+                <button type="button" class="btn btn-primary" id="checkTermChallenge">Comprobar</button>
+                <p id="termChallengeFeedback" role="status" aria-live="polite"></p>
               </div>
             </div>
           </div>
@@ -541,13 +546,13 @@
       </div>
 
       <!-- 2. PROBLEMA: DEUDA -->
-      <div id="p_deuda" class="subtab-content">
+      <div id="p_deuda" class="subtab-content" role="tabpanel" aria-labelledby="subtab-p_deuda">
         <div class="panel-box">
           <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">La Cuenta Bancaria</h3>
           <div class="grid-2">
             <div>
-              <div class="slider-row"><label style="width:110px;">Saldo (€)</label><input type="range" id="d_saldo" min="-50" max="50" value="20" step="5" oninput="updateDeuda()"><span class="val-badge" id="v_d_saldo">20</span></div>
-              <div class="slider-row"><label style="width:110px;">Movimiento</label><input type="range" id="d_mov" min="-50" max="50" value="-30" step="5" oninput="updateDeuda()"><span class="val-badge" id="v_d_mov">-30</span></div>
+              <div class="slider-row"><label for="d_saldo" style="width:110px;">Saldo (€)</label><input type="range" id="d_saldo" min="-50" max="50" value="20" step="5" oninput="updateDeuda()"><span class="val-badge" id="v_d_saldo">20</span></div>
+              <div class="slider-row"><label for="d_mov" style="width:110px;">Movimiento</label><input type="range" id="d_mov" min="-50" max="50" value="-30" step="5" oninput="updateDeuda()"><span class="val-badge" id="v_d_mov">-30</span></div>
             </div>
             <div style="text-align: center;">
               <div class="number-display" id="d_res" style="font-size: 2.5rem;">-10 €</div>
@@ -558,13 +563,13 @@
       </div>
 
       <!-- 3. PROBLEMA: ASCENSOR -->
-      <div id="p_ascensor" class="subtab-content">
+      <div id="p_ascensor" class="subtab-content" role="tabpanel" aria-labelledby="subtab-p_ascensor">
         <div class="panel-box">
           <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">El Edificio con Sótanos</h3>
           <div class="grid-2">
             <div>
-              <div class="slider-row"><label style="width:110px;">Planta Actual</label><input type="range" id="a_planta" min="-4" max="8" value="-2" oninput="updateAscensor()"><span class="val-badge" id="v_a_planta">-2</span></div>
-              <div class="slider-row"><label style="width:110px;">Sube/Baja</label><input type="range" id="a_mov" min="-5" max="5" value="5" oninput="updateAscensor()"><span class="val-badge" id="v_a_mov">+5</span></div>
+              <div class="slider-row"><label for="a_planta" style="width:110px;">Planta actual</label><input type="range" id="a_planta" min="-4" max="8" value="-2" oninput="updateAscensor()"><span class="val-badge" id="v_a_planta">-2</span></div>
+              <div class="slider-row"><label for="a_mov" style="width:110px;">Sube o baja</label><input type="range" id="a_mov" min="-5" max="5" value="5" oninput="updateAscensor()"><span class="val-badge" id="v_a_mov">+5</span></div>
             </div>
             <div style="text-align: center;">
               <div style="height: 150px; background: #090d16; position: relative; border-radius: 8px; border: 1px dashed var(--border-color); overflow: hidden;">
@@ -578,13 +583,13 @@
       </div>
 
       <!-- 4. PROBLEMA: PÁJARO/PEZ -->
-      <div id="p_pajaro" class="subtab-content">
+      <div id="p_pajaro" class="subtab-content" role="tabpanel" aria-labelledby="subtab-p_pajaro">
         <div class="panel-box">
           <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">Distancia: Pájaro y Pez</h3>
           <div class="grid-2">
             <div>
-              <div class="slider-row"><label style="width:110px;">Altura (m)</label><input type="range" id="pp_a" min="1" max="20" value="15" oninput="updatePajaro()"><span class="val-badge" id="v_pp_a">15</span></div>
-              <div class="slider-row"><label style="width:110px;">Profund. (m)</label><input type="range" id="pp_p" min="-20" max="-1" value="-8" oninput="updatePajaro()"><span class="val-badge" id="v_pp_p">-8</span></div>
+              <div class="slider-row"><label for="pp_a" style="width:110px;">Altura (m)</label><input type="range" id="pp_a" min="1" max="20" value="15" oninput="updatePajaro()"><span class="val-badge" id="v_pp_a">15</span></div>
+              <div class="slider-row"><label for="pp_p" style="width:110px;">Profundidad (m)</label><input type="range" id="pp_p" min="-20" max="-1" value="-8" oninput="updatePajaro()"><span class="val-badge" id="v_pp_p">-8</span></div>
             </div>
             <div style="text-align: center;">
               <div class="number-display" id="pp_res" style="font-size: 2.2rem;">15 - (-8) = 23m</div>
@@ -595,7 +600,7 @@
       </div>
 
       <!-- 5. PROBLEMA: AÑOS -->
-      <div id="p_anios" class="subtab-content">
+      <div id="p_anios" class="subtab-content" role="tabpanel" aria-labelledby="subtab-p_anios">
         <div class="panel-box">
           <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">Años antes y después de una referencia</h3><p class="context-note">Aquí el año 0 es un punto de referencia matemático, no una fecha histórica a. C./d. C.</p>
           <div class="grid-2">

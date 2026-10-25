@@ -528,12 +528,16 @@
         document.getElementById('sumTip').innerText = `Sumamos coeficientes: ${ca} + ${cb} = ${sumCoef}. Letras iguales.`;
       } else {
         document.getElementById('resSuma').innerHTML = `${formatMonoTerm(ca, ea, 0, true).full} ${formatMonoTerm(cb, eb, 0, false).full}`;
-        document.getElementById('sumTip').innerText = "Se deja indicado. Representan cosas distintas (como sumar peras y manzanas).";
+        document.getElementById('sumTip').innerText = "No se pueden reducir: sus partes literales son distintas. Se deja indicada la suma.";
       }
 
       const diffCoef=ca-cb;
-      document.getElementById('resResta').innerHTML=diffCoef===0?"0":formatMonoTerm(diffCoef,ea,0,true).full;
-      document.getElementById('subTip').textContent=semejantes?`Restamos coeficientes: ${ca} − (${cb}) = ${diffCoef} y conservamos la parte literal.`:"No son semejantes; dejamos indicada la resta.";
+      document.getElementById('resResta').innerHTML=semejantes
+        ? (diffCoef===0?"0":formatMonoTerm(diffCoef,ea,0,true).full)
+        : `${formatMonoTerm(ca,ea,0,true).full} − ${formatMonoTerm(cb,eb,0,true).full}`;
+      document.getElementById('subTip').textContent=semejantes
+        ? `Restamos coeficientes: ${ca} − (${cb}) = ${diffCoef} y conservamos la parte literal.`
+        : "No son semejantes; se deja indicada la diferencia entre ambos términos.";
       // Multiplicación A * B
       const multCoef = ca * cb;
       const multExp = ea + eb;
@@ -604,9 +608,15 @@
       const s=p.map((v,i)=>v+q[i]),d=p.map((v,i)=>v-q[i]);
       const m=[p[0]*q[0],p[0]*q[1]+p[1]*q[0],p[0]*q[2]+p[1]*q[1]+p[2]*q[0],p[1]*q[2]+p[2]*q[1],p[2]*q[2]];
       resPolySuma.innerHTML=buildPolyString(s);resPolyResta.innerHTML=buildPolyString(d);resPolyMult.innerHTML=buildPolyString(m);
-      polySumSteps.textContent="Agrupamos por potencias iguales: P + Q = "+plainPoly(s)+".";
-      polySubSteps.textContent="P − Q = P + (−Q): cambiamos los signos de Q y agrupamos: "+plainPoly(d)+".";
-      polyMultSteps.textContent="La distributiva produce nueve productos parciales ("+[p[0]*q[0],p[0]*q[1],p[0]*q[2],p[1]*q[0],p[1]*q[1],p[1]*q[2],p[2]*q[0],p[2]*q[1],p[2]*q[2]].join(", ")+"); al agrupar potencias iguales queda "+plainPoly(m)+".";
+      polySumSteps.textContent=`Suma: x²: ${p[0]}+${q[0]}=${s[0]}; x: ${p[1]}+${q[1]}=${s[1]}; constantes: ${p[2]}+${q[2]}=${s[2]}. Resultado: ${plainPoly(s)}.`;
+      polySubSteps.textContent=`Resta: cambiamos los signos de Q (${q.map(c=>-c).join(", ")}) y agrupamos: ${p[0]}−${q[0]}=${d[0]} en x², ${p[1]}−${q[1]}=${d[1]} en x y ${p[2]}−${q[2]}=${d[2]} en las constantes. Resultado: ${plainPoly(d)}.`;
+      const partials=[
+        `${p[0]}x²·${q[0]}x²=${p[0]*q[0]}x⁴`,`${p[0]}x²·${q[1]}x=${p[0]*q[1]}x³`,`${p[0]}x²·${q[2]}=${p[0]*q[2]}x²`,
+        `${p[1]}x·${q[0]}x²=${p[1]*q[0]}x³`,`${p[1]}x·${q[1]}x=${p[1]*q[1]}x²`,`${p[1]}x·${q[2]}=${p[1]*q[2]}x`,
+        `${p[2]}·${q[0]}x²=${p[2]*q[0]}x²`,`${p[2]}·${q[1]}x=${p[2]*q[1]}x`,`${p[2]}·${q[2]}=${p[2]*q[2]}`
+      ];
+      polyMultSteps.textContent="Productos de la distributiva: "+partials.join("; ")+". Después agrupamos potencias iguales: "+plainPoly(m)+".";
+
       updateCheck();
     }
     function updateCheck(){const x=Number(evalX.value),a=+p2.value*x*x + +p1.value*x + +p0.value,b=+q2.value*x*x + +q1.value*x + +q0.value,o=evalOperation.value,r=o==="sum"?a+b:o==="sub"?a-b:a*b,l=o==="sum"?"P(x)+Q(x)":o==="sub"?"P(x)−Q(x)":"P(x)·Q(x)";evalResult.textContent=`Para x=${x}, ${l}=${r}. Coinciden al sustituir en la operación original y en la desarrollada.`;}

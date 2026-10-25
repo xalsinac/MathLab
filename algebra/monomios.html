@@ -178,9 +178,9 @@
     .legend-p,.term-p { color:var(--accent-blue); }
     .legend-q,.term-q { color:var(--accent-gold); }
     .legend-result,.term-result { color:var(--accent-success); }
-    .term-p,.term-q,.term-result { display:inline-flex; padding:.08em .28em; border-radius:5px; font-weight:800; }
-    .term-p { background:rgba(56,189,248,.12); box-shadow:inset 0 -2px var(--accent-blue); }
-    .term-q { background:rgba(245,158,11,.12); box-shadow:inset 0 -2px var(--accent-gold); }
+    .term-a,.term-b,.term-p,.term-q,.term-result { display:inline-flex; padding:.08em .28em; border-radius:5px; font-weight:800; }
+    .term-a,.term-p { background:rgba(56,189,248,.12); box-shadow:inset 0 -2px var(--accent-blue); }
+    .term-b,.term-q { background:rgba(245,158,11,.12); box-shadow:inset 0 -2px var(--accent-gold); }
     .term-result { background:rgba(16,185,129,.12); box-shadow:inset 0 -2px var(--accent-success); }
     .operation-walkthrough { margin-top:1rem; padding:1rem; border:1px solid var(--border-color); border-radius:10px; background:var(--bg-primary); }
     .operation-walkthrough h4 { margin:0 0 .8rem; color:var(--text-main); }
@@ -493,6 +493,15 @@
       };
     }
 
+    function monoFactorHTML(coef, exponent, role) {
+      if (coef === 0) return '<span class="math-term term-result">0</span>';
+      const sign = coef < 0 ? '−' : '';
+      const magnitude = Math.abs(coef);
+      const coefficient = magnitude === 1 && exponent > 0 ? '' : `<span class="math-coef">${magnitude}</span>`;
+      const variable = exponent === 0 ? '' : `<span class="math-variable">x</span>${exponent > 1 ? `<sup class="math-power">${exponent}</sup>` : ''}`;
+      return `<span class="math-term term-${role}">${sign}${coefficient}${variable}</span>`;
+    }
+
     // Formateador para construir polinomios limpios
     function buildPolyString(coeffsArray) {
       let html = "";
@@ -601,7 +610,7 @@
       const multCoef = ca * cb;
       const multExp = ea + eb;
       document.getElementById('resMult').innerHTML = multCoef === 0 ? "0" : formatMonoTerm(multCoef, multExp, 0, true).full;
-      document.getElementById('multMonoTip').textContent=`${ca}·${cb}=${multCoef}; x^${ea}·x^${eb}=x^${multExp}. Al multiplicar potencias de la misma base, sumamos exponentes.`;
+      document.getElementById('multMonoTip').innerHTML=`${monoFactorHTML(ca,ea,"a")} <span class="step-operator">·</span> ${monoFactorHTML(cb,eb,"b")} <span class="step-operator">=</span> ${monoFactorHTML(multCoef,multExp,"result")}<br><span class="walkthrough-prompt">Multiplicamos coeficientes (${ca} · ${cb} = ${multCoef}) y sumamos exponentes de la misma base (${ea} + ${eb} = ${multExp}).</span>`;
     }
 
     // --- PESTAÑA 2: POLINOMIOS ---

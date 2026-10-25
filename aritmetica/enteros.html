@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-primary);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -69,7 +69,7 @@
       position: relative;
       width: 100%;
       padding: 4rem 1rem;
-      background: #090d16;
+      background: var(--bg-primary);
       border-radius: 12px;
       border: 1px solid var(--border-color);
       display: flex;
@@ -170,7 +170,7 @@
       width: 100%;
       border-collapse: collapse;
       text-align: center;
-      background: #090d16;
+      background: var(--bg-primary);
       border-radius: 8px;
       overflow: hidden;
       border: 1px solid var(--border-color);
@@ -189,7 +189,7 @@
     .thermometer {
       width: 40px;
       height: 300px;
-      background: #090d16;
+      background: var(--bg-primary);
       border: 2px solid var(--border-color);
       border-radius: 20px;
       position: relative;
@@ -237,6 +237,49 @@
     .subtab-content.active { display: flex; }
     
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+  
+    .number-line-container, .sign-table, .thermometer { background: var(--bg-primary); }
+    .btn-zero { background: var(--bg-plate); color: var(--text-main); border: 1px solid var(--border-color); }
+    .position-readout { margin-top: 3.6rem; font-size: 1.25rem; font-weight: 700; text-align: center; }
+    .line-equation { min-height: 1.5rem; color: var(--accent-gold); font-size: 1.1rem; font-weight: 700; text-align: center; }
+    .compare-panel { width: 100%; }
+    .compare-panel > p { color: var(--text-muted); line-height: 1.5; }
+    .compare-controls { display: flex; align-items: end; justify-content: center; gap: .75rem; flex-wrap: wrap; margin-top: 1rem; }
+    .compare-controls label, .operation-select-label, .practice-panel label, .challenge-card label { display: grid; gap: .35rem; color: var(--text-main); font-weight: 600; }
+    .compare-controls input, .operation-select-label select, .practice-panel input, .challenge-card input { min-height: 42px; max-width: 150px; padding: .5rem .65rem; color: var(--text-main); background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; }
+    .operation-select-label { margin-bottom: 1rem; }
+    .operation-select-label select { width: 100%; max-width: 100%; }
+    .operation-principle, .sign-table-note, .context-note { color: var(--text-muted); line-height: 1.5; }
+    .pattern-table { display: grid; gap: .45rem; margin: 1rem 0; font-family: ui-monospace, monospace; font-size: 1.05rem; }
+    .pattern-table span { padding: .55rem .75rem; border: 1px solid var(--border-color); border-radius: 7px; background: var(--bg-card); }
+    .pattern-table strong { color: var(--accent-success); }
+    .pattern-proof { padding: .85rem; border-left: 3px solid var(--accent-success); background: var(--bg-card); line-height: 1.6; }
+    .challenge-card, .practice-panel { display: grid; gap: .8rem; margin-top: 1rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-card); }
+    .challenge-card p, .practice-panel > p { min-height: 1.4rem; color: var(--text-muted); line-height: 1.5; }
+    .practice-panel { width: 100%; }
+    .practice-question { color: var(--text-main) !important; font-size: 1.05rem; font-weight: 700; }
+    .practice-buttons { display: flex; gap: .6rem; flex-wrap: wrap; }
+    .thermometer-container { flex-wrap: wrap; gap: 1.5rem; }
+    .tick span { white-space: nowrap; }
+    button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--accent-gold); outline-offset: 2px; }
+    @media (max-width: 600px) {
+      .tab-btn { flex: 0 0 auto; padding: .85rem .65rem; font-size: .86rem; }
+      .tab-content { padding: 1rem .7rem; }
+      .math-board { padding: 1rem .4rem; min-height: 260px; }
+      .thermometer-container { gap: 1rem; align-items: flex-start; }
+      .thermometer { height: 230px; }
+      .thermometer-container > div:last-child { min-width: 0; }
+      .therm-ticks { left: 40px; font-size: .75rem; }
+      .sr-equation { font-size: clamp(1.7rem, 8vw, 2.5rem); overflow-wrap: anywhere; }
+      .compare-controls { align-items: stretch; }
+      .compare-controls label, .compare-controls input { width: 100%; max-width: none; }
+      .practice-buttons { flex-direction: column; }
+      .practice-buttons .btn { justify-content: center; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+
   </style>
   <link rel="stylesheet" href="../tema.css">
   <script src="../tema.js"></script>
@@ -254,20 +297,20 @@
 
   <main class="app-container">
     
-    <nav class="tabs-container">
-      <button class="tab-btn active" onclick="switchTab('recta', this)">1. La Recta</button>
-      <button class="tab-btn" onclick="switchTab('sumaresta', this)">2. Suma y Resta</button>
-      <button class="tab-btn" onclick="switchTab('multidivi', this)">3. Multi / Divi</button>
-      <button class="tab-btn" onclick="switchTab('reglasignos', this)">4. ⚠️ Trampas</button>
-      <button class="tab-btn" onclick="switchTab('problemas', this)">5. Problemas</button>
+    <nav class="tabs-container" role="tablist" aria-label="Apartados de Números Enteros">
+      <button type="button" id="tab-recta" class="tab-btn active" role="tab" aria-selected="true" aria-controls="recta" tabindex="0" onclick="switchTab('recta', this)">1. La Recta</button>
+      <button type="button" id="tab-sumaresta" class="tab-btn" role="tab" aria-selected="false" aria-controls="sumaresta" tabindex="-1" onclick="switchTab('sumaresta', this)">2. Suma y Resta</button>
+      <button type="button" id="tab-multidivi" class="tab-btn" role="tab" aria-selected="false" aria-controls="multidivi" tabindex="-1" onclick="switchTab('multidivi', this)">3. Multi / Divi</button>
+      <button type="button" id="tab-reglasignos" class="tab-btn" role="tab" aria-selected="false" aria-controls="reglasignos" tabindex="-1" onclick="switchTab('reglasignos', this)">4. Doble signo</button>
+      <button type="button" id="tab-problemas" class="tab-btn" role="tab" aria-selected="false" aria-controls="problemas" tabindex="-1" onclick="switchTab('problemas', this)">5. Problemas</button>
     </nav>
 
     <!-- ================= PESTAÑA 1: LA RECTA NUMÉRICA ================= -->
-    <div id="recta" class="tab-content active">
+    <div id="recta" class="tab-content active" role="tabpanel" aria-labelledby="tab-recta">
       <div class="explanation-card">
         <div class="badge">Navegando por la recta</div>
         <div class="content-text">
-          Los números enteros extienden la recta más allá del cero. Hacia la derecha sumamos (valores <span class="pos">positivos</span>) y hacia la izquierda restamos (valores <span class="neg">negativos</span>).
+          Los positivos se sitúan a la derecha del cero y los negativos, a la izquierda. Al sumar un número, avanzamos o retrocedemos tantas unidades como indique su valor.
         </div>
       </div>
 
@@ -277,22 +320,33 @@
           <div class="ticks" id="ticksContainer"></div>
         </div>
 
-        <div style="margin-top: 4rem; font-size: 1.5rem; font-weight: bold;">
-          Posición actual: <span id="currentPosDisplay" class="zero">0</span>
-        </div>
+        <div class="position-readout" aria-live="polite">Posición actual: <strong id="currentPosDisplay" class="zero" aria-live="polite">0</strong></div>
+        <p id="lineEquation" class="line-equation" role="status">Empiezas en 0.</p>
 
         <div class="controls-recta">
-          <button class="btn-step btn-neg" onclick="movePlayer(-5)">-5</button>
-          <button class="btn-step btn-neg" onclick="movePlayer(-1)">-1</button>
-          <button class="btn-step" style="background: var(--bg-plate); color: white;" onclick="resetPlayer()">Cero</button>
-          <button class="btn-step btn-pos" onclick="movePlayer(1)">+1</button>
-          <button class="btn-step btn-pos" onclick="movePlayer(5)">+5</button>
+          <button type="button" class="btn-step btn-neg" aria-label="Mover cinco unidades a la izquierda" onclick="movePlayer(-5)">−5</button>
+          <button type="button" class="btn-step btn-neg" aria-label="Mover una unidad a la izquierda" onclick="movePlayer(-1)">−1</button>
+          <button type="button" class="btn-step btn-zero" onclick="resetPlayer()">Volver a 0</button>
+          <button type="button" class="btn-step btn-pos" aria-label="Mover una unidad a la derecha" onclick="movePlayer(1)">+1</button>
+          <button type="button" class="btn-step btn-pos" aria-label="Mover cinco unidades a la derecha" onclick="movePlayer(5)">+5</button>
         </div>
+      </div>
+
+      <div class="panel-box compare-panel">
+        <div class="panel-title">Compara y mide la distancia al cero</div>
+        <p>En la recta, el número que queda más a la derecha es mayor. El valor absoluto indica cuántas unidades separan un número del cero.</p>
+        <div class="compare-controls">
+          <label for="compareA">Primer entero <input type="number" id="compareA" min="-10" max="10" value="-5"></label>
+          <span aria-hidden="true">y</span>
+          <label for="compareB">Segundo entero <input type="number" id="compareB" min="-10" max="10" value="2"></label>
+          <button type="button" class="btn btn-primary" id="compareButton">Comparar</button>
+        </div>
+        <p id="compareResult" role="status" aria-live="polite">−5 es menor que 2. Distancias al cero: 5 y 2.</p>
       </div>
     </div>
 
     <!-- ================= PESTAÑA 2: SUMA Y RESTA ================= -->
-    <div id="sumaresta" class="tab-content">
+    <div id="sumaresta" class="tab-content" role="tabpanel" aria-labelledby="tab-sumaresta">
       <div class="explanation-card" style="border-left-color: var(--accent-op);">
         <div class="badge" style="color: var(--accent-op);">El método "Tengo / Debo"</div>
         <div class="content-text">
@@ -303,34 +357,42 @@
       <div class="sr-grid">
         <div class="panel-box">
           <div class="panel-title">Configura la Operación</div>
+          <label class="operation-select-label" for="sr_operation">Operación
+            <select id="sr_operation" onchange="updateSumaResta()">
+              <option value="add">Sumar (+)</option>
+              <option value="subtract">Restar (−)</option>
+            </select>
+          </label>
           <div class="slider-row">
-            <label>Número 1:</label>
+            <label for="sr_num1">Número 1:</label>
             <input type="range" id="sr_num1" min="-10" max="10" value="-5" oninput="updateSumaResta()">
-            <span class="val-display" id="sr_val1">-5</span>
+            <span class="val-display" id="sr_val1" aria-live="polite">-5</span>
           </div>
           <div class="slider-row">
-            <label>Número 2:</label>
+            <label for="sr_num2">Número 2:</label>
             <input type="range" id="sr_num2" min="-10" max="10" value="3" oninput="updateSumaResta()">
-            <span class="val-display" id="sr_val2">3</span>
+            <span class="val-display" id="sr_val2" aria-live="polite">3</span>
           </div>
         </div>
 
         <div class="panel-box" style="justify-content: center;">
           <div class="panel-title">Operación Matemática</div>
-          <div class="sr-equation" id="sr_eq"></div>
+          <div class="sr-equation" id="sr_eq" role="status" aria-live="polite"></div>
         </div>
       </div>
+
+      <p class="operation-principle" id="sr_principle" aria-live="polite">Sumar es añadir el segundo entero; si es negativo, avanzamos hacia la izquierda.</p>
 
       <div class="panel-box" style="text-align: center; border-color: var(--accent-gold);">
         <div class="panel-title" style="color: var(--accent-gold);">Traducción a la vida real</div>
         <p id="sr_texto1" style="font-size: 1.2rem; margin-bottom: 0.5rem;"></p>
         <p id="sr_texto2" style="font-size: 1.2rem; margin-bottom: 1.5rem;"></p>
-        <div style="background: #090d16; padding: 1.5rem; border-radius: 8px; font-size: 1.8rem; font-weight: bold; border: 1px dashed var(--border-color);" id="sr_resultado"></div>
+        <div style="background: var(--bg-primary); padding: 1.5rem; border-radius: 8px; font-size: 1.8rem; font-weight: bold; border: 1px dashed var(--border-color);" id="sr_resultado" role="status" aria-live="polite"></div>
       </div>
     </div>
 
     <!-- ================= PESTAÑA 3: MULTIPLICACIÓN Y DIVISIÓN ================= -->
-    <div id="multidivi" class="tab-content">
+    <div id="multidivi" class="tab-content" role="tabpanel" aria-labelledby="tab-multidivi">
       <div class="explanation-card" style="border-left-color: var(--accent-success);">
         <div class="badge" style="color: var(--accent-success);">Solo para multiplicar y dividir</div>
         <div class="content-text">
@@ -342,27 +404,28 @@
         <div class="panel-box">
           <div class="panel-title">Calculadora de Signos</div>
           <div class="slider-row">
-            <label>Factor A:</label>
+            <label for="md_num1">Número A:</label>
             <input type="range" id="md_num1" min="-10" max="10" value="-4" oninput="updateMultiDivi()">
-            <span class="val-display" id="md_val1">-4</span>
+            <span class="val-display" id="md_val1" aria-live="polite">-4</span>
           </div>
           <div class="slider-row">
-            <label>Factor B:</label>
+            <label for="md_num2">Número B:</label>
             <input type="range" id="md_num2" min="-10" max="10" value="-2" oninput="updateMultiDivi()">
-            <span class="val-display" id="md_val2">-2</span>
+            <span class="val-display" id="md_val2" aria-live="polite">-2</span>
           </div>
 
           <div style="margin-top: 1rem; text-align: center;">
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">MULTIPLICACIÓN</p>
-            <div id="md_res_mult" style="font-size: 2rem; font-family: monospace; font-weight: bold; background: #090d16; padding: 0.5rem; border-radius: 8px; margin-bottom: 1rem;"></div>
+            <div id="md_res_mult" role="status" aria-live="polite" style="font-size: 2rem; font-family: monospace; font-weight: bold; background: var(--bg-primary); padding: 0.5rem; border-radius: 8px; margin-bottom: 1rem;"></div>
             
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">DIVISIÓN (Si es exacta)</p>
-            <div id="md_res_div" style="font-size: 2rem; font-family: monospace; font-weight: bold; background: #090d16; padding: 0.5rem; border-radius: 8px;"></div>
+            <div id="md_res_div" role="status" aria-live="polite" style="font-size: 2rem; font-family: monospace; font-weight: bold; background: var(--bg-primary); padding: 0.5rem; border-radius: 8px;"></div>
           </div>
         </div>
 
         <div class="panel-box">
-          <div class="panel-title">La Regla Visual</div>
+          <div class="panel-title">Tabla fija de la regla de los signos</div>
+          <p class="sign-table-note">Consúltala cuando la necesites. Primero compara los signos; después multiplica o divide los valores absolutos.</p>
           <table class="sign-table">
             <thead>
               <tr><th>Signo 1</th><th>Signo 2</th><th>Resultado</th></tr>
@@ -375,19 +438,33 @@
             </tbody>
           </table>
           <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted); text-align: center;">
-            Amigo (+) de mi amigo (+) = Amigo (+)<br>
-            Enemigo (-) de mi enemigo (-) = Amigo (+)
+            Si uno de los factores es 0, el producto es 0. En una división, el divisor nunca puede ser 0.
           </p>
         </div>
+      </div>
+
+      <div class="panel-box sign-discovery">
+        <div class="panel-title">¿Por qué negativo por negativo es positivo?</div>
+        <p>Observa cómo cambia el producto cuando el segundo factor baja de uno en uno:</p>
+        <div class="pattern-table" aria-live="polite">
+          <span>(−3) × 3 = −9</span>
+          <span>(−3) × 2 = −6</span>
+          <span>(−3) × 1 = −3</span>
+          <span>(−3) × 0 = 0</span>
+          <span>(−3) × (−1) = <strong id="patternResult">?</strong></span>
+        </div>
+        <button type="button" class="btn btn-primary" id="revealPattern">Continuar el patrón</button>
+        <p id="patternExplanation" role="status" aria-live="polite">Cada vez que el segundo factor disminuye 1, el producto aumenta 3.</p>
+        <p id="patternProof" class="pattern-proof" hidden>La distributiva lo confirma: 0 = (−3) × 0 = (−3) × [1 + (−1)] = −3 + (−3) × (−1). Por tanto, (−3) × (−1) = +3.</p>
       </div>
     </div>
 
     <!-- ================= PESTAÑA 4: TRAMPAS (DOBLE SIGNO) ================= -->
-    <div id="reglasignos" class="tab-content">
+    <div id="reglasignos" class="tab-content" role="tabpanel" aria-labelledby="tab-reglasignos">
       <div class="explanation-card" style="border-left-color: var(--accent-gold);">
-        <div class="badge" style="color: var(--accent-gold);">Peligro: Doble Signo y Paréntesis</div>
+        <div class="badge" style="color: var(--accent-gold);">Doble signo: suma y resta con paréntesis</div>
         <div class="content-text">
-          La regla de los signos también se utiliza cuando hay <strong>dos signos juntos</strong> separados por un paréntesis. Es como si el signo de fuera multiplicara al de dentro.
+          Aquí no aplicamos la tabla de multiplicar: usamos que restar un número equivale a sumar su opuesto. El signo delante del paréntesis indica si conservamos o cambiamos el signo de dentro.
         </div>
       </div>
 
@@ -395,10 +472,10 @@
         <div class="panel-box">
           <div class="panel-title">Signo POSITIVO delante</div>
           <p style="font-size: 1.1rem; margin-bottom: 1rem;">Un '+' delante de un paréntesis <strong>deja lo de dentro IGUAL</strong>.</p>
-          <div style="background: #090d16; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 1.5rem; text-align: center; margin-bottom: 1rem;">
+          <div style="background: var(--bg-primary); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 1.5rem; text-align: center; margin-bottom: 1rem;">
             + (+5) = <span class="pos">+5</span>
           </div>
-          <div style="background: #090d16; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 1.5rem; text-align: center;">
+          <div style="background: var(--bg-primary); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 1.5rem; text-align: center;">
             + (-3) = <span class="neg">-3</span>
           </div>
         </div>
@@ -420,24 +497,24 @@
         <p style="font-size: 1.8rem; font-family: monospace; font-weight: bold; margin: 1rem 0;">
           5 <span style="color:var(--accent-op)">- (-</span>4) = 5 <span style="color:var(--accent-blue)">+</span> 4 = 9
         </p>
-        <p style="color: var(--text-muted);">El menos delante del paréntesis convirtió el -4 en +4. Luego ya solo agrupamos.</p>
+        <p style="color: var(--text-muted);">Restar −4 equivale a sumar su opuesto, +4: 5 − (−4) = 5 + 4 = 9.</p>
       </div>
     </div>
 
     <!-- ================= PESTAÑA 5: PROBLEMAS CON SUBPESTAÑAS ================= -->
-    <div id="problemas" class="tab-content">
+    <div id="problemas" class="tab-content" role="tabpanel" aria-labelledby="tab-problemas">
       
       <!-- Menú de Subpestañas -->
-      <div class="subtabs-container">
-        <button class="subtab-btn active" onclick="switchSubTab('p_principal', this)">🌡️ Termómetro</button>
-        <button class="subtab-btn" onclick="switchSubTab('p_deuda', this)">💰 Deuda</button>
-        <button class="subtab-btn" onclick="switchSubTab('p_ascensor', this)">🏢 Ascensor</button>
-        <button class="subtab-btn" onclick="switchSubTab('p_pajaro', this)">🦅 Pájaro/Pez</button>
-        <button class="subtab-btn" onclick="switchSubTab('p_anios', this)">⏳ Años</button>
+      <div class="subtabs-container" role="tablist" aria-label="Situaciones con números enteros">
+        <button type="button" id="subtab-p_principal" class="subtab-btn active" role="tab" aria-selected="true" aria-controls="p_principal" tabindex="0" onclick="switchSubTab('p_principal', this)">🌡️ Termómetro</button>
+        <button type="button" id="subtab-p_deuda" class="subtab-btn" role="tab" aria-selected="false" aria-controls="p_deuda" tabindex="-1" onclick="switchSubTab('p_deuda', this)">💰 Deuda</button>
+        <button type="button" id="subtab-p_ascensor" class="subtab-btn" role="tab" aria-selected="false" aria-controls="p_ascensor" tabindex="-1" onclick="switchSubTab('p_ascensor', this)">🏢 Ascensor</button>
+        <button type="button" id="subtab-p_pajaro" class="subtab-btn" role="tab" aria-selected="false" aria-controls="p_pajaro" tabindex="-1" onclick="switchSubTab('p_pajaro', this)">🦅 Pájaro/Pez</button>
+        <button type="button" id="subtab-p_anios" class="subtab-btn" role="tab" aria-selected="false" aria-controls="p_anios" tabindex="-1" onclick="switchSubTab('p_anios', this)">⏳ Años</button>
       </div>
 
       <!-- 1. PROBLEMA INICIAL (TERMÓMETRO) -->
-      <div id="p_principal" class="subtab-content active">
+      <div id="p_principal" class="subtab-content active" role="tabpanel" aria-labelledby="subtab-p_principal">
         <div class="panel-box">
           <div class="panel-title">El Termómetro</div>
           <div class="thermometer-container">
@@ -450,13 +527,18 @@
             <div style="flex: 1; max-width: 400px;">
               <p style="font-size: 1.2rem; margin-bottom: 1.5rem;">
                 La temperatura actual es de: <br>
-                <strong style="font-size: 3rem;" id="term_val">0 ºC</strong>
+                <strong style="font-size: 3rem;" id="term_val" aria-live="polite">0 ºC</strong>
               </p>
               <div class="slider-row">
-                <input type="range" id="term_slider" min="-10" max="10" value="0" style="width: 100%;" oninput="updateTermometro()">
+                <input type="range" id="term_slider" aria-label="Ajusta la temperatura" min="-10" max="10" value="0" style="width: 100%;" oninput="updateTermometro()">
               </div>
-              <div style="margin-top: 2rem; padding: 1rem; background: #090d16; border-radius: 8px; border-left: 4px solid var(--accent-gold);">
-                <strong>Reto:</strong> Estábamos a <strong>3 ºC</strong> y vino una ola de frío que bajó la temperatura <strong>8 grados</strong>. ¿A qué temperatura estamos ahora?
+              <div class="challenge-card">
+                <strong>Reto:</strong> Estábamos a +3 °C y la temperatura bajó 8 grados. ¿Cuál es la temperatura final?
+                <label for="termChallengeAnswer">Tu respuesta (°C)
+                  <input type="number" id="termChallengeAnswer" inputmode="numeric">
+                </label>
+                <button type="button" class="btn btn-primary" id="checkTermChallenge">Comprobar</button>
+                <p id="termChallengeFeedback" role="status" aria-live="polite"></p>
               </div>
             </div>
           </div>
@@ -464,16 +546,16 @@
       </div>
 
       <!-- 2. PROBLEMA: DEUDA -->
-      <div id="p_deuda" class="subtab-content">
+      <div id="p_deuda" class="subtab-content" role="tabpanel" aria-labelledby="subtab-p_deuda">
         <div class="panel-box">
           <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">La Cuenta Bancaria</h3>
           <div class="grid-2">
             <div>
-              <div class="slider-row"><label style="width:110px;">Saldo (€)</label><input type="range" id="d_saldo" min="-50" max="50" value="20" step="5" oninput="updateDeuda()"><span class="val-badge" id="v_d_saldo">20</span></div>
-              <div class="slider-row"><label style="width:110px;">Movimiento</label><input type="range" id="d_mov" min="-50" max="50" value="-30" step="5" oninput="updateDeuda()"><span class="val-badge" id="v_d_mov">-30</span></div>
+              <div class="slider-row"><label for="d_saldo" style="width:110px;">Saldo (€)</label><input type="range" id="d_saldo" min="-50" max="50" value="20" step="5" oninput="updateDeuda()"><span class="val-badge" id="v_d_saldo" aria-live="polite">20</span></div>
+              <div class="slider-row"><label for="d_mov" style="width:110px;">Movimiento</label><input type="range" id="d_mov" min="-50" max="50" value="-30" step="5" oninput="updateDeuda()"><span class="val-badge" id="v_d_mov" aria-live="polite">-30</span></div>
             </div>
             <div style="text-align: center;">
-              <div class="number-display" id="d_res" style="font-size: 2.5rem;">-10 €</div>
+              <div class="number-display" id="d_res" role="status" aria-live="polite" style="font-size: 2.5rem;">-10 €</div>
               <p id="d_text" style="color: var(--text-muted); margin-top: 1rem;"></p>
             </div>
           </div>
@@ -481,36 +563,36 @@
       </div>
 
       <!-- 3. PROBLEMA: ASCENSOR -->
-      <div id="p_ascensor" class="subtab-content">
+      <div id="p_ascensor" class="subtab-content" role="tabpanel" aria-labelledby="subtab-p_ascensor">
         <div class="panel-box">
           <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">El Edificio con Sótanos</h3>
           <div class="grid-2">
             <div>
-              <div class="slider-row"><label style="width:110px;">Planta Actual</label><input type="range" id="a_planta" min="-4" max="8" value="-2" oninput="updateAscensor()"><span class="val-badge" id="v_a_planta">-2</span></div>
-              <div class="slider-row"><label style="width:110px;">Sube/Baja</label><input type="range" id="a_mov" min="-5" max="5" value="5" oninput="updateAscensor()"><span class="val-badge" id="v_a_mov">+5</span></div>
+              <div class="slider-row"><label for="a_planta" style="width:110px;">Planta actual</label><input type="range" id="a_planta" min="-4" max="8" value="-2" oninput="updateAscensor()"><span class="val-badge" id="v_a_planta" aria-live="polite">-2</span></div>
+              <div class="slider-row"><label for="a_mov" style="width:110px;">Sube o baja</label><input type="range" id="a_mov" min="-5" max="5" value="5" oninput="updateAscensor()"><span class="val-badge" id="v_a_mov" aria-live="polite">+5</span></div>
             </div>
             <div style="text-align: center;">
-              <div style="height: 150px; background: #090d16; position: relative; border-radius: 8px; border: 1px dashed var(--border-color); overflow: hidden;">
+              <div style="height: 150px; background: var(--bg-primary); position: relative; border-radius: 8px; border: 1px dashed var(--border-color); overflow: hidden;">
                 <div style="position: absolute; bottom: 30%; width: 100%; border-top: 4px solid var(--accent-gold);"></div>
                 <div id="a_avatar" style="position: absolute; left: 45%; font-size: 2rem; transition: bottom 0.4s;">🏢</div>
               </div>
-              <p id="a_text" style="color: var(--text-main); font-weight: bold; margin-top: 1rem;">Planta 3</p>
+              <p id="a_text" role="status" aria-live="polite" style="color: var(--text-main); font-weight: bold; margin-top: 1rem;">Planta 3</p>
             </div>
           </div>
         </div>
       </div>
 
       <!-- 4. PROBLEMA: PÁJARO/PEZ -->
-      <div id="p_pajaro" class="subtab-content">
+      <div id="p_pajaro" class="subtab-content" role="tabpanel" aria-labelledby="subtab-p_pajaro">
         <div class="panel-box">
           <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">Distancia: Pájaro y Pez</h3>
           <div class="grid-2">
             <div>
-              <div class="slider-row"><label style="width:110px;">Altura (m)</label><input type="range" id="pp_a" min="1" max="20" value="15" oninput="updatePajaro()"><span class="val-badge" id="v_pp_a">15</span></div>
-              <div class="slider-row"><label style="width:110px;">Profund. (m)</label><input type="range" id="pp_p" min="-20" max="-1" value="-8" oninput="updatePajaro()"><span class="val-badge" id="v_pp_p">-8</span></div>
+              <div class="slider-row"><label for="pp_a" style="width:110px;">Altura (m)</label><input type="range" id="pp_a" min="1" max="20" value="15" oninput="updatePajaro()"><span class="val-badge" id="v_pp_a">15</span></div>
+              <div class="slider-row"><label for="pp_p" style="width:110px;">Profundidad (m)</label><input type="range" id="pp_p" min="-20" max="-1" value="-8" oninput="updatePajaro()"><span class="val-badge" id="v_pp_p">-8</span></div>
             </div>
             <div style="text-align: center;">
-              <div class="number-display" id="pp_res" style="font-size: 2.2rem;">15 - (-8) = 23m</div>
+              <div class="number-display" id="pp_res" role="status" aria-live="polite" style="font-size: 2.2rem;">15 - (-8) = 23m</div>
               <p id="pp_text" style="color: var(--text-muted); margin-top: 0.5rem;"></p>
             </div>
           </div>
@@ -518,40 +600,68 @@
       </div>
 
       <!-- 5. PROBLEMA: AÑOS -->
-      <div id="p_anios" class="subtab-content">
+      <div id="p_anios" class="subtab-content" role="tabpanel" aria-labelledby="subtab-p_anios">
         <div class="panel-box">
-          <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">Línea Temporal (Años)</h3>
+          <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">Años antes y después de una referencia</h3><p class="context-note">Aquí el año 0 es un punto de referencia matemático, no una fecha histórica a. C./d. C.</p>
           <div class="grid-2">
             <div>
-              <div class="slider-row"><label style="width:110px;">Nacimiento</label><input type="range" id="an_nac" min="-100" max="100" step="10" value="-40" oninput="updateAnios()"><span class="val-badge" id="v_an_nac">-40</span></div>
-              <div class="slider-row"><label style="width:110px;">Muerte</label><input type="range" id="an_mue" min="-50" max="150" step="10" value="30" oninput="updateAnios()"><span class="val-badge" id="v_an_mue">30</span></div>
+              <div class="slider-row"><label for="an_nac" style="width:110px;">Año inicial</label><input type="range" id="an_nac" min="-100" max="100" step="10" value="-40" oninput="updateAnios()"><span class="val-badge" id="v_an_nac">-40</span></div>
+              <div class="slider-row"><label for="an_mue" style="width:110px;">Año final</label><input type="range" id="an_mue" min="-50" max="150" step="10" value="30" oninput="updateAnios()"><span class="val-badge" id="v_an_mue">30</span></div>
             </div>
             <div style="text-align: center;">
-              <div class="number-display" id="an_res" style="font-size: 2.2rem;">30 - (-40) = 70 años</div>
+              <div class="number-display" id="an_res" role="status" aria-live="polite" style="font-size: 2.2rem;">30 - (-40) = 70 años</div>
               <p id="an_text" style="color: var(--text-muted); margin-top: 0.5rem;"></p>
             </div>
           </div>
         </div>
       </div>
 
+      <section class="practice-panel" aria-labelledby="integerPracticeTitle">
+        <div class="panel-title" id="integerPracticeTitle">Practica sin mirar la solución</div>
+        <p id="integerQuestion" class="practice-question"></p>
+        <label for="integerAnswer">Respuesta
+          <input type="number" id="integerAnswer" inputmode="numeric">
+        </label>
+        <div class="practice-buttons">
+          <button type="button" class="btn btn-primary" id="checkIntegerAnswer">Comprobar</button>
+          <button type="button" class="btn btn-secondary" id="showIntegerHint">Pista</button>
+          <button type="button" class="btn btn-secondary" id="nextIntegerQuestion">Otra pregunta</button>
+        </div>
+        <p id="integerHint" hidden></p>
+        <p id="integerFeedback" role="status" aria-live="polite"></p>
+      </section>
     </div>
 
   </main>
 
   <script>
     function switchTab(tabId, btn) {
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
-      if(tabId === 'recta') setTimeout(drawRecta, 10);
+      document.querySelectorAll('.tab-btn').forEach(item => {
+        const active = item === btn;
+        item.classList.toggle('active', active);
+        item.setAttribute('aria-selected', String(active));
+        item.tabIndex = active ? 0 : -1;
+      });
+      document.querySelectorAll('.tab-content').forEach(panel => {
+        const active = panel.id === tabId;
+        panel.classList.toggle('active', active);
+        panel.hidden = !active;
+      });
+      if (tabId === 'recta') setTimeout(drawRecta, 10);
     }
 
     function switchSubTab(tabId, btn) {
-      document.querySelectorAll('.subtab-content').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
+      document.querySelectorAll('.subtab-btn').forEach(item => {
+        const active = item === btn;
+        item.classList.toggle('active', active);
+        item.setAttribute('aria-selected', String(active));
+        item.tabIndex = active ? 0 : -1;
+      });
+      document.querySelectorAll('.subtab-content').forEach(panel => {
+        const active = panel.id === tabId;
+        panel.classList.toggle('active', active);
+        panel.hidden = !active;
+      });
     }
 
     // ================= RECTA NUMÉRICA =================
@@ -583,19 +693,32 @@
 
     function updatePlayerVisual() {
       const percent = ((currentPos - minVal) / (maxVal - minVal)) * 100;
-      player.style.left = `${percent}%`;
-      posDisplay.innerText = currentPos > 0 ? `+${currentPos}` : currentPos;
+      player.style.left = percent + "%";
+      posDisplay.textContent = currentPos > 0 ? "+" + currentPos : currentPos;
       posDisplay.className = currentPos > 0 ? 'pos' : currentPos < 0 ? 'neg' : 'zero';
+      document.querySelector('[onclick="movePlayer(-5)"]').disabled = currentPos - 5 < minVal;
+      document.querySelector('[onclick="movePlayer(-1)"]').disabled = currentPos <= minVal;
+      document.querySelector('[onclick="movePlayer(1)"]').disabled = currentPos >= maxVal;
+      document.querySelector('[onclick="movePlayer(5)"]').disabled = currentPos + 5 > maxVal;
     }
 
+    function signedInteger(value) { return value > 0 ? "+" + value : String(value); }
+
     function movePlayer(amount) {
-      currentPos += amount;
-      if (currentPos > maxVal) currentPos = maxVal;
-      if (currentPos < minVal) currentPos = minVal;
+      const start = currentPos;
+      currentPos = Math.max(minVal, Math.min(maxVal, currentPos + amount));
+      const moved = currentPos - start;
+      document.getElementById('lineEquation').textContent =
+        start + " + (" + signedInteger(moved) + ") = " + currentPos;
       updatePlayerVisual();
     }
 
-    function resetPlayer() { currentPos = 0; updatePlayerVisual(); }
+    function resetPlayer() {
+      currentPos = 0;
+      document.getElementById('lineEquation').textContent = "Empiezas en 0.";
+      updatePlayerVisual();
+    }
+
     drawRecta();
 
     // ================= SUMA Y RESTA =================
@@ -612,30 +735,34 @@
     }
 
     function updateSumaResta() {
-      const a = parseInt(document.getElementById('sr_num1').value);
-      const b = parseInt(document.getElementById('sr_num2').value);
-      document.getElementById('sr_val1').innerText = a;
-      document.getElementById('sr_val2').innerText = b;
-
-      let opSign = b >= 0 ? "+" : ""; 
-      let eqStr = `${formatNum(a)} <span style="color:var(--text-muted)">${opSign}</span> ${formatNum(b)}`;
-      if(b < 0) {
-        eqStr = `${formatNum(a)} <span style="color:var(--text-muted)">+ (</span>${formatNum(b)}<span style="color:var(--text-muted)">)</span>`;
-      }
-      document.getElementById('sr_eq').innerHTML = eqStr;
-      document.getElementById('sr_texto1').innerText = `1º Número: ${getTengoDeboText(a)}`;
-      document.getElementById('sr_texto2').innerText = `2º Número: ${getTengoDeboText(b)}`;
-
-      const res = a + b;
-      let resText = "";
-      if (a > 0 && b > 0) resText = `Agrupamos el dinero: Tengo ${res}€. → <span class="pos">+${res}</span>`;
-      else if (a < 0 && b < 0) resText = `Agrupamos las deudas: Debo ${Math.abs(res)}€. → <span class="neg">${res}</span>`;
-      else if (res === 0) resText = `Pago la deuda y me quedo a cero. → <span class="zero">0</span>`;
-      else if (res > 0) resText = `Pago la deuda y me sobran ${res}€. → <span class="pos">+${res}</span>`;
-      else resText = `Entrego el dinero pero aún debo ${Math.abs(res)}€. → <span class="neg">${res}</span>`;
-
-      document.getElementById('sr_resultado').innerHTML = resText;
+      const a = Number(document.getElementById('sr_num1').value);
+      const b = Number(document.getElementById('sr_num2').value);
+      const subtract = document.getElementById('sr_operation').value === 'subtract';
+      const effectiveB = subtract ? -b : b;
+      const result = a + effectiveB;
+      document.getElementById('sr_val1').textContent = a;
+      document.getElementById('sr_val2').textContent = b;
+      document.getElementById('sr_principle').textContent = subtract
+        ? "Restar un entero equivale a sumar su opuesto: a − b = a + (−b)."
+        : "Sumar es añadir el segundo entero; si es negativo, avanzamos hacia la izquierda.";
+      document.getElementById('sr_eq').innerHTML = subtract
+        ? formatNum(a) + ' <span style="color:var(--text-muted)">− (</span>' + formatNum(b) + '<span style="color:var(--text-muted)">)</span>'
+        : (b < 0
+          ? formatNum(a) + ' <span style="color:var(--text-muted)">+ (</span>' + formatNum(b) + '<span style="color:var(--text-muted)">)</span>'
+          : formatNum(a) + ' <span style="color:var(--text-muted)">+</span> ' + formatNum(b));
+      document.getElementById('sr_texto1').textContent = "Valor inicial: " + getTengoDeboText(a);
+      document.getElementById('sr_texto2').textContent = subtract
+        ? "Restamos " + (b > 0 ? "+" : "") + b + "; equivale a sumar " + (effectiveB > 0 ? "+" : "") + effectiveB + "."
+        : "Segundo entero: " + getTengoDeboText(b);
+      let explanation;
+      if (result === 0 && a === 0 && effectiveB === 0) explanation = "Ambos términos valen 0; el resultado es 0.";
+      else if (result === 0) explanation = "Los valores se compensan y el resultado es 0.";
+      else if (result > 0) explanation = "Resultado: queda un saldo a favor de " + result + "€.";
+      else explanation = "Resultado: queda una deuda de " + Math.abs(result) + "€.";
+      document.getElementById('sr_resultado').innerHTML =
+        explanation + " → " + formatNum(result, true);
     }
+
     updateSumaResta();
 
     // ================= MULTIPLICACIÓN Y DIVISIÓN =================
@@ -683,19 +810,26 @@
       document.getElementById('v_d_saldo').innerText = s; 
       document.getElementById('v_d_mov').innerText = (m > 0 ? "+" : "") + m;
       let res = s + m;
-      let cl = res >= 0 ? "positive" : "negative";
+      let cl = res > 0 ? "pos" : res < 0 ? "neg" : "zero";
       document.getElementById('d_res').innerHTML = `<span class="${cl}">${res} €</span>`;
-      document.getElementById('d_text').innerText = `Operación: ${s} + (${m}) = ${res}. ` + (res < 0 ? "En números rojos." : "Saldo a favor.");
+      document.getElementById('d_text').innerText = "Operación: " + s + " + (" + m + ") = " + res + ". " +
+        (res < 0 ? "En números rojos." : res > 0 ? "Saldo a favor." : "Saldo a cero.");
     }
 
     function updateAscensor() {
-      let p = parseInt(document.getElementById('a_planta').value);
-      let m = parseInt(document.getElementById('a_mov').value);
-      document.getElementById('v_a_planta').innerText = p; 
-      document.getElementById('v_a_mov').innerText = (m > 0 ? "+" : "") + m;
-      let res = p + m;
-      document.getElementById('a_text').innerText = `Operación: ${p} + (${m}) = Planta ${res}`;
-      let bottomPct = 30 + (res * 5);
+      const p = Number(document.getElementById('a_planta').value);
+      const moveInput = document.getElementById('a_mov');
+      const minFloor = -4, maxFloor = 8;
+      moveInput.min = Math.max(-5, minFloor - p);
+      moveInput.max = Math.min(5, maxFloor - p);
+      const m = Math.max(Number(moveInput.min), Math.min(Number(moveInput.max), Number(moveInput.value)));
+      moveInput.value = m;
+      document.getElementById('v_a_planta').textContent = p;
+      document.getElementById('v_a_mov').textContent = (m > 0 ? "+" : "") + m;
+      const result = p + m;
+      document.getElementById('a_text').textContent =
+        "Operación: " + p + " + (" + m + ") = planta " + result;
+      const bottomPct = 8 + ((result - minFloor) / (maxFloor - minFloor)) * 76;
       document.getElementById('a_avatar').style.bottom = bottomPct + "%";
     }
 
@@ -705,23 +839,122 @@
       document.getElementById('v_pp_a').innerText = a; 
       document.getElementById('v_pp_p').innerText = p;
       let dist = a - p;
-      document.getElementById('pp_res').innerHTML = `${a} - (<span class="negative">${p}</span>) = <span class="positive">${dist}m</span>`;
+      document.getElementById('pp_res').innerHTML = `${a} - (<span class="neg">${p}</span>) = <span class="pos">${dist}m</span>`;
       document.getElementById('pp_text').innerText = `Distancia total: ${a} + ${Math.abs(p)} = ${dist} metros.`;
     }
 
     function updateAnios() {
-      let n = parseInt(document.getElementById('an_nac').value);
-      let m = parseInt(document.getElementById('an_mue').value);
-      if(n > m) { document.getElementById('an_nac').value = m; n = m; }
-      document.getElementById('v_an_nac').innerText = n; 
-      document.getElementById('v_an_mue').innerText = m;
-      let edad = m - n;
-      document.getElementById('an_res').innerHTML = `${m} - (<span class="negative">${n}</span>) = <span class="positive">${edad} años</span>`;
-      let nText = n < 0 ? Math.abs(n)+" a.C." : n+" d.C.";
-      let mText = m < 0 ? Math.abs(m)+" a.C." : m+" d.C.";
-      document.getElementById('an_text').innerText = `Vivió del ${nText} al ${mText}.`;
+      const start = Number(document.getElementById('an_nac').value);
+      const end = Number(document.getElementById('an_mue').value);
+      if (start > end) document.getElementById('an_nac').value = end;
+      const firstYear = Number(document.getElementById('an_nac').value);
+      const lastYear = Number(document.getElementById('an_mue').value);
+      const elapsed = lastYear - firstYear;
+      document.getElementById('v_an_nac').textContent = firstYear;
+      document.getElementById('v_an_mue').textContent = lastYear;
+      document.getElementById('an_res').innerHTML =
+        lastYear + " − (" + '<span class="neg">' + firstYear + "</span>) = " +
+        '<span class="pos">' + elapsed + " años</span>";
+      const yearLabel = value => value > 0 ? "+" + value : String(value);
+      document.getElementById('an_text').textContent =
+        "Desde el año " + yearLabel(firstYear) + " hasta el año " + yearLabel(lastYear) +
+        " transcurren " + elapsed + " años en esta escala matemática.";
     }
 
+    const practiceQuestions = [
+      { question: "En un ascensor, estás en la planta −2 y subes 5 plantas. ¿Dónde llegas?", answer: 3, hint: "Empieza en −2 y avanza 5 lugares hacia la derecha.", explanation: "−2 + 5 = 3." },
+      { question: "¿Cuánto es 5 − (−3)?", answer: 8, hint: "Restar un negativo equivale a sumar su opuesto.", explanation: "5 − (−3) = 5 + 3 = 8." },
+      { question: "¿Cuánto es (−4) × (−2)?", answer: 8, hint: "Los dos factores tienen el mismo signo.", explanation: "Mismo signo: resultado positivo. 4 × 2 = 8." },
+      { question: "¿Cuánto es 18 ÷ (−3)?", answer: -6, hint: "Divide los valores absolutos y determina después el signo.", explanation: "Signos diferentes: resultado negativo. 18 ÷ 3 = 6, así que da −6." }
+    ];
+    let practiceIndex = 0;
+    function showPracticeQuestion() {
+      const item = practiceQuestions[practiceIndex];
+      document.getElementById('integerQuestion').textContent = item.question;
+      document.getElementById('integerAnswer').value = "";
+      document.getElementById('integerHint').hidden = true;
+      document.getElementById('integerHint').textContent = item.hint;
+      document.getElementById('integerFeedback').textContent = "";
+    }
+    document.getElementById('checkIntegerAnswer').addEventListener('click', () => {
+      const input = document.getElementById('integerAnswer');
+      const feedback = document.getElementById('integerFeedback');
+      if (input.value.trim() === "") {
+        feedback.textContent = "Escribe un entero antes de comprobar.";
+        return;
+      }
+      const item = practiceQuestions[practiceIndex];
+      feedback.textContent = Number(input.value) === item.answer
+        ? "¡Correcto! " + item.explanation
+        : "Todavía no. Revisa el signo y vuelve a intentarlo; puedes pedir una pista.";
+    });
+    document.getElementById('integerAnswer').addEventListener('keydown', event => {
+      if (event.key === 'Enter') document.getElementById('checkIntegerAnswer').click();
+    });
+    document.getElementById('showIntegerHint').addEventListener('click', () => {
+      document.getElementById('integerHint').hidden = false;
+    });
+    document.getElementById('nextIntegerQuestion').addEventListener('click', () => {
+      practiceIndex = (practiceIndex + 1) % practiceQuestions.length;
+      showPracticeQuestion();
+    });
+
+    document.getElementById('checkTermChallenge').addEventListener('click', () => {
+      const value = document.getElementById('termChallengeAnswer').value;
+      const feedback = document.getElementById('termChallengeFeedback');
+      if (value.trim() === "") {
+        feedback.textContent = "Escribe una temperatura para comprobarla.";
+      } else if (Number(value) === -5) {
+        feedback.textContent = "¡Correcto! +3 + (−8) = −5 °C. La marca del termómetro se ha situado en la respuesta.";
+        document.getElementById('term_slider').value = -5;
+        updateTermometro();
+      } else {
+        feedback.textContent = "Aún no. Desde +3, retrocede 8 grados en la recta: 3 + (−8).";
+      }
+    });
+
+    document.getElementById('compareButton').addEventListener('click', () => {
+      const firstInput = document.getElementById('compareA');
+      const secondInput = document.getElementById('compareB');
+      const a = Number(firstInput.value), b = Number(secondInput.value);
+      const result = document.getElementById('compareResult');
+      if (firstInput.value.trim() === "" || secondInput.value.trim() === "" ||
+          ![a, b].every(Number.isInteger) || a < minVal || a > maxVal || b < minVal || b > maxVal) {
+        result.textContent = "Introduce dos enteros entre −10 y 10.";
+      } else {
+        const relation = a < b ? "es menor que" : a > b ? "es mayor que" : "es igual a";
+        result.textContent = a + " " + relation + " " + b +
+          ". Distancias al cero: " + Math.abs(a) + " y " + Math.abs(b) +
+          (a === -b ? ". Son opuestos." : ".");
+      }
+    });
+
+    document.getElementById('revealPattern').addEventListener('click', event => {
+      document.getElementById('patternResult').textContent = "+3";
+      document.getElementById('patternProof').hidden = false;
+      document.getElementById('patternExplanation').textContent =
+        "El producto aumenta 3 al bajar el segundo factor en 1; la distributiva confirma que el resultado coherente es +3.";
+      event.currentTarget.disabled = true;
+      event.currentTarget.textContent = "Patrón completado";
+    });
+
+    document.querySelectorAll('[role="tablist"]').forEach(list => {
+      list.addEventListener('keydown', event => {
+        if (!["ArrowRight", "ArrowLeft", "Home", "End"].includes(event.key)) return;
+        const tabItems = [...list.querySelectorAll('[role="tab"]')];
+        const current = tabItems.indexOf(document.activeElement);
+        if (current < 0) return;
+        event.preventDefault();
+        const nextIndex = event.key === "Home" ? 0 :
+          event.key === "End" ? tabItems.length - 1 :
+          event.key === "ArrowRight" ? (current + 1) % tabItems.length :
+          (current - 1 + tabItems.length) % tabItems.length;
+        tabItems[nextIndex].focus();
+        tabItems[nextIndex].click();
+      });
+    });
+
+    showPracticeQuestion();
     updateDeuda(); updateAscensor(); updatePajaro(); updateAnios();
   </script>
 </body>

@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-primary);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -69,7 +69,7 @@
       position: relative;
       width: 100%;
       padding: 4rem 1rem;
-      background: #090d16;
+      background: var(--bg-primary);
       border-radius: 12px;
       border: 1px solid var(--border-color);
       display: flex;
@@ -237,6 +237,49 @@
     .subtab-content.active { display: flex; }
     
     @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+  
+    .number-line-container, .sign-table, .thermometer { background: var(--bg-primary); }
+    .btn-zero { background: var(--bg-plate); color: var(--text-main); border: 1px solid var(--border-color); }
+    .position-readout { margin-top: 3.6rem; font-size: 1.25rem; font-weight: 700; text-align: center; }
+    .line-equation { min-height: 1.5rem; color: var(--accent-gold); font-size: 1.1rem; font-weight: 700; text-align: center; }
+    .compare-panel { width: 100%; }
+    .compare-panel > p { color: var(--text-muted); line-height: 1.5; }
+    .compare-controls { display: flex; align-items: end; justify-content: center; gap: .75rem; flex-wrap: wrap; margin-top: 1rem; }
+    .compare-controls label, .operation-select-label, .practice-panel label, .challenge-card label { display: grid; gap: .35rem; color: var(--text-main); font-weight: 600; }
+    .compare-controls input, .operation-select-label select, .practice-panel input, .challenge-card input { min-height: 42px; max-width: 150px; padding: .5rem .65rem; color: var(--text-main); background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; }
+    .operation-select-label { margin-bottom: 1rem; }
+    .operation-select-label select { width: 100%; max-width: 100%; }
+    .operation-principle, .sign-table-note, .context-note { color: var(--text-muted); line-height: 1.5; }
+    .pattern-table { display: grid; gap: .45rem; margin: 1rem 0; font-family: ui-monospace, monospace; font-size: 1.05rem; }
+    .pattern-table span { padding: .55rem .75rem; border: 1px solid var(--border-color); border-radius: 7px; background: var(--bg-card); }
+    .pattern-table strong { color: var(--accent-success); }
+    .pattern-proof { padding: .85rem; border-left: 3px solid var(--accent-success); background: var(--bg-card); line-height: 1.6; }
+    .challenge-card, .practice-panel { display: grid; gap: .8rem; margin-top: 1rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-card); }
+    .challenge-card p, .practice-panel > p { min-height: 1.4rem; color: var(--text-muted); line-height: 1.5; }
+    .practice-panel { width: 100%; }
+    .practice-question { color: var(--text-main) !important; font-size: 1.05rem; font-weight: 700; }
+    .practice-buttons { display: flex; gap: .6rem; flex-wrap: wrap; }
+    .thermometer-container { flex-wrap: wrap; gap: 1.5rem; }
+    .tick span { white-space: nowrap; }
+    button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--accent-gold); outline-offset: 2px; }
+    @media (max-width: 600px) {
+      .tab-btn { flex: 0 0 auto; padding: .85rem .65rem; font-size: .86rem; }
+      .tab-content { padding: 1rem .7rem; }
+      .math-board { padding: 1rem .4rem; min-height: 260px; }
+      .thermometer-container { gap: 1rem; align-items: flex-start; }
+      .thermometer { height: 230px; }
+      .thermometer-container > div:last-child { min-width: 0; }
+      .therm-ticks { left: 40px; font-size: .75rem; }
+      .sr-equation { font-size: clamp(1.7rem, 8vw, 2.5rem); overflow-wrap: anywhere; }
+      .compare-controls { align-items: stretch; }
+      .compare-controls label, .compare-controls input { width: 100%; max-width: none; }
+      .practice-buttons { flex-direction: column; }
+      .practice-buttons .btn { justify-content: center; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+
   </style>
   <link rel="stylesheet" href="../tema.css">
   <script src="../tema.js"></script>
@@ -267,7 +310,7 @@
       <div class="explanation-card">
         <div class="badge">Navegando por la recta</div>
         <div class="content-text">
-          Los números enteros extienden la recta más allá del cero. Hacia la derecha sumamos (valores <span class="pos">positivos</span>) y hacia la izquierda restamos (valores <span class="neg">negativos</span>).
+          Los positivos se sitúan a la derecha del cero y los negativos, a la izquierda. Al sumar un número, avanzamos o retrocedemos tantas unidades como indique su valor.
         </div>
       </div>
 
@@ -277,17 +320,28 @@
           <div class="ticks" id="ticksContainer"></div>
         </div>
 
-        <div style="margin-top: 4rem; font-size: 1.5rem; font-weight: bold;">
-          Posición actual: <span id="currentPosDisplay" class="zero">0</span>
-        </div>
+        <div class="position-readout" aria-live="polite">Posición actual: <strong id="currentPosDisplay" class="zero">0</strong></div>
+        <p id="lineEquation" class="line-equation" role="status">Empiezas en 0.</p>
 
         <div class="controls-recta">
-          <button class="btn-step btn-neg" onclick="movePlayer(-5)">-5</button>
-          <button class="btn-step btn-neg" onclick="movePlayer(-1)">-1</button>
-          <button class="btn-step" style="background: var(--bg-plate); color: white;" onclick="resetPlayer()">Cero</button>
-          <button class="btn-step btn-pos" onclick="movePlayer(1)">+1</button>
-          <button class="btn-step btn-pos" onclick="movePlayer(5)">+5</button>
+          <button type="button" class="btn-step btn-neg" aria-label="Mover cinco unidades a la izquierda" onclick="movePlayer(-5)">−5</button>
+          <button type="button" class="btn-step btn-neg" aria-label="Mover una unidad a la izquierda" onclick="movePlayer(-1)">−1</button>
+          <button type="button" class="btn-step btn-zero" onclick="resetPlayer()">Volver a 0</button>
+          <button type="button" class="btn-step btn-pos" aria-label="Mover una unidad a la derecha" onclick="movePlayer(1)">+1</button>
+          <button type="button" class="btn-step btn-pos" aria-label="Mover cinco unidades a la derecha" onclick="movePlayer(5)">+5</button>
         </div>
+      </div>
+
+      <div class="panel-box compare-panel">
+        <div class="panel-title">Compara y mide la distancia al cero</div>
+        <p>En la recta, el número que queda más a la derecha es mayor. El valor absoluto indica cuántas unidades separan un número del cero.</p>
+        <div class="compare-controls">
+          <label for="compareA">Primer entero <input type="number" id="compareA" min="-10" max="10" value="-5"></label>
+          <span aria-hidden="true">y</span>
+          <label for="compareB">Segundo entero <input type="number" id="compareB" min="-10" max="10" value="2"></label>
+          <button type="button" class="btn btn-primary" id="compareButton">Comparar</button>
+        </div>
+        <p id="compareResult" role="status" aria-live="polite">−5 es menor que 2. Distancias al cero: 5 y 2.</p>
       </div>
     </div>
 
@@ -303,6 +357,12 @@
       <div class="sr-grid">
         <div class="panel-box">
           <div class="panel-title">Configura la Operación</div>
+          <label class="operation-select-label" for="sr_operation">Operación
+            <select id="sr_operation" onchange="updateSumaResta()">
+              <option value="add">Sumar (+)</option>
+              <option value="subtract">Restar (−)</option>
+            </select>
+          </label>
           <div class="slider-row">
             <label>Número 1:</label>
             <input type="range" id="sr_num1" min="-10" max="10" value="-5" oninput="updateSumaResta()">
@@ -320,6 +380,8 @@
           <div class="sr-equation" id="sr_eq"></div>
         </div>
       </div>
+
+      <p class="operation-principle" id="sr_principle" aria-live="polite">Sumar es añadir el segundo entero; si es negativo, avanzamos hacia la izquierda.</p>
 
       <div class="panel-box" style="text-align: center; border-color: var(--accent-gold);">
         <div class="panel-title" style="color: var(--accent-gold);">Traducción a la vida real</div>
@@ -362,7 +424,8 @@
         </div>
 
         <div class="panel-box">
-          <div class="panel-title">La Regla Visual</div>
+          <div class="panel-title">Tabla fija de la regla de los signos</div>
+          <p class="sign-table-note">Consúltala cuando la necesites. Primero compara los signos; después multiplica o divide los valores absolutos.</p>
           <table class="sign-table">
             <thead>
               <tr><th>Signo 1</th><th>Signo 2</th><th>Resultado</th></tr>
@@ -375,10 +438,24 @@
             </tbody>
           </table>
           <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted); text-align: center;">
-            Amigo (+) de mi amigo (+) = Amigo (+)<br>
-            Enemigo (-) de mi enemigo (-) = Amigo (+)
+            Si uno de los factores es 0, el producto es 0. En una división, el divisor nunca puede ser 0.
           </p>
         </div>
+      </div>
+
+      <div class="panel-box sign-discovery">
+        <div class="panel-title">¿Por qué negativo por negativo es positivo?</div>
+        <p>Observa cómo cambia el producto cuando el segundo factor baja de uno en uno:</p>
+        <div class="pattern-table" aria-live="polite">
+          <span>(−3) × 3 = −9</span>
+          <span>(−3) × 2 = −6</span>
+          <span>(−3) × 1 = −3</span>
+          <span>(−3) × 0 = 0</span>
+          <span>(−3) × (−1) = <strong id="patternResult">?</strong></span>
+        </div>
+        <button type="button" class="btn btn-primary" id="revealPattern">Continuar el patrón</button>
+        <p id="patternExplanation" role="status" aria-live="polite">Cada vez que el segundo factor disminuye 1, el producto aumenta 3.</p>
+        <p id="patternProof" class="pattern-proof" hidden>La distributiva lo confirma: 0 = (−3) × 0 = (−3) × [1 + (−1)] = −3 + (−3) × (−1). Por tanto, (−3) × (−1) = +3.</p>
       </div>
     </div>
 
@@ -520,11 +597,11 @@
       <!-- 5. PROBLEMA: AÑOS -->
       <div id="p_anios" class="subtab-content">
         <div class="panel-box">
-          <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">Línea Temporal (Años)</h3>
+          <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">Años antes y después de una referencia</h3><p class="context-note">Aquí el año 0 es un punto de referencia matemático, no una fecha histórica a. C./d. C.</p>
           <div class="grid-2">
             <div>
-              <div class="slider-row"><label style="width:110px;">Nacimiento</label><input type="range" id="an_nac" min="-100" max="100" step="10" value="-40" oninput="updateAnios()"><span class="val-badge" id="v_an_nac">-40</span></div>
-              <div class="slider-row"><label style="width:110px;">Muerte</label><input type="range" id="an_mue" min="-50" max="150" step="10" value="30" oninput="updateAnios()"><span class="val-badge" id="v_an_mue">30</span></div>
+              <div class="slider-row"><label for="an_nac" style="width:110px;">Año inicial</label><input type="range" id="an_nac" min="-100" max="100" step="10" value="-40" oninput="updateAnios()"><span class="val-badge" id="v_an_nac">-40</span></div>
+              <div class="slider-row"><label for="an_mue" style="width:110px;">Año final</label><input type="range" id="an_mue" min="-50" max="150" step="10" value="30" oninput="updateAnios()"><span class="val-badge" id="v_an_mue">30</span></div>
             </div>
             <div style="text-align: center;">
               <div class="number-display" id="an_res" style="font-size: 2.2rem;">30 - (-40) = 70 años</div>
@@ -534,6 +611,20 @@
         </div>
       </div>
 
+      <section class="practice-panel" aria-labelledby="integerPracticeTitle">
+        <div class="panel-title" id="integerPracticeTitle">Practica sin mirar la solución</div>
+        <p id="integerQuestion" class="practice-question"></p>
+        <label for="integerAnswer">Respuesta
+          <input type="number" id="integerAnswer" inputmode="numeric">
+        </label>
+        <div class="practice-buttons">
+          <button type="button" class="btn btn-primary" id="checkIntegerAnswer">Comprobar</button>
+          <button type="button" class="btn btn-secondary" id="showIntegerHint">Pista</button>
+          <button type="button" class="btn btn-secondary" id="nextIntegerQuestion">Otra pregunta</button>
+        </div>
+        <p id="integerHint" hidden></p>
+        <p id="integerFeedback" role="status" aria-live="polite"></p>
+      </section>
     </div>
 
   </main>
@@ -683,7 +774,7 @@
       document.getElementById('v_d_saldo').innerText = s; 
       document.getElementById('v_d_mov').innerText = (m > 0 ? "+" : "") + m;
       let res = s + m;
-      let cl = res >= 0 ? "positive" : "negative";
+      let cl = res >= 0 ? "pos" : "neg";
       document.getElementById('d_res').innerHTML = `<span class="${cl}">${res} €</span>`;
       document.getElementById('d_text').innerText = `Operación: ${s} + (${m}) = ${res}. ` + (res < 0 ? "En números rojos." : "Saldo a favor.");
     }
@@ -705,7 +796,7 @@
       document.getElementById('v_pp_a').innerText = a; 
       document.getElementById('v_pp_p').innerText = p;
       let dist = a - p;
-      document.getElementById('pp_res').innerHTML = `${a} - (<span class="negative">${p}</span>) = <span class="positive">${dist}m</span>`;
+      document.getElementById('pp_res').innerHTML = `${a} - (<span class="neg">${p}</span>) = <span class="pos">${dist}m</span>`;
       document.getElementById('pp_text').innerText = `Distancia total: ${a} + ${Math.abs(p)} = ${dist} metros.`;
     }
 

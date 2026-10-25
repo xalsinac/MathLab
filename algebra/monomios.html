@@ -207,7 +207,7 @@
         </div>
       </div>
 
-      <div class="anatomy-display" id="monoDisplay"></div>
+      <div class="anatomy-display" id="monoDisplay" aria-live="polite"></div>
 
       <div class="grid-2">
         <div class="panel-box">
@@ -251,7 +251,7 @@
       <div class="grid-2">
         <div class="panel-box">
           <div class="panel-title">Monomio A</div>
-          <div class="anatomy-display" style="font-size: 2.2rem; min-height: 80px;" id="dispA"></div>
+          <div class="anatomy-display" style="font-size: 2.2rem; min-height: 80px;" id="dispA" aria-live="polite"></div>
           <div class="slider-row">
             <label for="coefA">Coeficiente A</label>
             <input type="range" id="coefA" min="-5" max="5" value="2" oninput="updateOperacionesMonomios()">
@@ -264,7 +264,7 @@
         
         <div class="panel-box">
           <div class="panel-title">Monomio B</div>
-          <div class="anatomy-display" style="font-size: 2.2rem; min-height: 80px;" id="dispB"></div>
+          <div class="anatomy-display" style="font-size: 2.2rem; min-height: 80px;" id="dispB" aria-live="polite"></div>
           <div class="slider-row">
             <label for="coefB">Coeficiente B</label>
             <input type="range" id="coefB" min="-5" max="5" value="4" oninput="updateOperacionesMonomios()">
@@ -485,7 +485,7 @@
       document.getElementById('outGrado').innerText = c === 0 ? "No definido" : grado;
 
       let tip = "";
-      if (c === 0) tip = "La expresión vale 0. En esta lección no asignamos grado al polinomio cero; no se considera un monomio no nulo.";
+      if (c === 0) tip = "La expresión vale 0. El cero no tiene grado definido; por eso el simulador lo muestra como «No definido».";
       else if (ex === 0 && ey === 0) tip = "Al no tener letras, se le llama 'término independiente'. Su grado es 0.";
       else if (Math.abs(c) === 1) tip = "¡Ojo! En matemáticas el coeficiente 1 (o -1) no se escribe, ¡pero está ahí!";
       else tip = `El grado es la suma de exponentes: ${ex} + ${ey} = ${grado}.`;

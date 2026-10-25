@@ -189,7 +189,7 @@
     .thermometer {
       width: 40px;
       height: 300px;
-      background: #090d16;
+      background: var(--bg-primary);
       border: 2px solid var(--border-color);
       border-radius: 20px;
       position: relative;
@@ -320,7 +320,7 @@
           <div class="ticks" id="ticksContainer"></div>
         </div>
 
-        <div class="position-readout" aria-live="polite">Posición actual: <strong id="currentPosDisplay" class="zero">0</strong></div>
+        <div class="position-readout" aria-live="polite">Posición actual: <strong id="currentPosDisplay" class="zero" aria-live="polite">0</strong></div>
         <p id="lineEquation" class="line-equation" role="status">Empiezas en 0.</p>
 
         <div class="controls-recta">
@@ -366,18 +366,18 @@
           <div class="slider-row">
             <label for="sr_num1">Número 1:</label>
             <input type="range" id="sr_num1" min="-10" max="10" value="-5" oninput="updateSumaResta()">
-            <span class="val-display" id="sr_val1">-5</span>
+            <span class="val-display" id="sr_val1" aria-live="polite">-5</span>
           </div>
           <div class="slider-row">
             <label for="sr_num2">Número 2:</label>
             <input type="range" id="sr_num2" min="-10" max="10" value="3" oninput="updateSumaResta()">
-            <span class="val-display" id="sr_val2">3</span>
+            <span class="val-display" id="sr_val2" aria-live="polite">3</span>
           </div>
         </div>
 
         <div class="panel-box" style="justify-content: center;">
           <div class="panel-title">Operación Matemática</div>
-          <div class="sr-equation" id="sr_eq"></div>
+          <div class="sr-equation" id="sr_eq" role="status" aria-live="polite"></div>
         </div>
       </div>
 
@@ -387,7 +387,7 @@
         <div class="panel-title" style="color: var(--accent-gold);">Traducción a la vida real</div>
         <p id="sr_texto1" style="font-size: 1.2rem; margin-bottom: 0.5rem;"></p>
         <p id="sr_texto2" style="font-size: 1.2rem; margin-bottom: 1.5rem;"></p>
-        <div style="background: #090d16; padding: 1.5rem; border-radius: 8px; font-size: 1.8rem; font-weight: bold; border: 1px dashed var(--border-color);" id="sr_resultado"></div>
+        <div style="background: #090d16; padding: 1.5rem; border-radius: 8px; font-size: 1.8rem; font-weight: bold; border: 1px dashed var(--border-color);" id="sr_resultado" role="status" aria-live="polite"></div>
       </div>
     </div>
 
@@ -406,20 +406,20 @@
           <div class="slider-row">
             <label for="md_num1">Número A:</label>
             <input type="range" id="md_num1" min="-10" max="10" value="-4" oninput="updateMultiDivi()">
-            <span class="val-display" id="md_val1">-4</span>
+            <span class="val-display" id="md_val1" aria-live="polite">-4</span>
           </div>
           <div class="slider-row">
             <label for="md_num2">Número B:</label>
             <input type="range" id="md_num2" min="-10" max="10" value="-2" oninput="updateMultiDivi()">
-            <span class="val-display" id="md_val2">-2</span>
+            <span class="val-display" id="md_val2" aria-live="polite">-2</span>
           </div>
 
           <div style="margin-top: 1rem; text-align: center;">
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">MULTIPLICACIÓN</p>
-            <div id="md_res_mult" style="font-size: 2rem; font-family: monospace; font-weight: bold; background: #090d16; padding: 0.5rem; border-radius: 8px; margin-bottom: 1rem;"></div>
+            <div id="md_res_mult" role="status" aria-live="polite" style="font-size: 2rem; font-family: monospace; font-weight: bold; background: #090d16; padding: 0.5rem; border-radius: 8px; margin-bottom: 1rem;"></div>
             
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">DIVISIÓN (Si es exacta)</p>
-            <div id="md_res_div" style="font-size: 2rem; font-family: monospace; font-weight: bold; background: #090d16; padding: 0.5rem; border-radius: 8px;"></div>
+            <div id="md_res_div" role="status" aria-live="polite" style="font-size: 2rem; font-family: monospace; font-weight: bold; background: #090d16; padding: 0.5rem; border-radius: 8px;"></div>
           </div>
         </div>
 
@@ -527,7 +527,7 @@
             <div style="flex: 1; max-width: 400px;">
               <p style="font-size: 1.2rem; margin-bottom: 1.5rem;">
                 La temperatura actual es de: <br>
-                <strong style="font-size: 3rem;" id="term_val">0 ºC</strong>
+                <strong style="font-size: 3rem;" id="term_val" aria-live="polite">0 ºC</strong>
               </p>
               <div class="slider-row">
                 <input type="range" id="term_slider" aria-label="Ajusta la temperatura" min="-10" max="10" value="0" style="width: 100%;" oninput="updateTermometro()">
@@ -551,11 +551,11 @@
           <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">La Cuenta Bancaria</h3>
           <div class="grid-2">
             <div>
-              <div class="slider-row"><label for="d_saldo" style="width:110px;">Saldo (€)</label><input type="range" id="d_saldo" min="-50" max="50" value="20" step="5" oninput="updateDeuda()"><span class="val-badge" id="v_d_saldo">20</span></div>
-              <div class="slider-row"><label for="d_mov" style="width:110px;">Movimiento</label><input type="range" id="d_mov" min="-50" max="50" value="-30" step="5" oninput="updateDeuda()"><span class="val-badge" id="v_d_mov">-30</span></div>
+              <div class="slider-row"><label for="d_saldo" style="width:110px;">Saldo (€)</label><input type="range" id="d_saldo" min="-50" max="50" value="20" step="5" oninput="updateDeuda()"><span class="val-badge" id="v_d_saldo" aria-live="polite">20</span></div>
+              <div class="slider-row"><label for="d_mov" style="width:110px;">Movimiento</label><input type="range" id="d_mov" min="-50" max="50" value="-30" step="5" oninput="updateDeuda()"><span class="val-badge" id="v_d_mov" aria-live="polite">-30</span></div>
             </div>
             <div style="text-align: center;">
-              <div class="number-display" id="d_res" style="font-size: 2.5rem;">-10 €</div>
+              <div class="number-display" id="d_res" role="status" aria-live="polite" style="font-size: 2.5rem;">-10 €</div>
               <p id="d_text" style="color: var(--text-muted); margin-top: 1rem;"></p>
             </div>
           </div>
@@ -568,15 +568,15 @@
           <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">El Edificio con Sótanos</h3>
           <div class="grid-2">
             <div>
-              <div class="slider-row"><label for="a_planta" style="width:110px;">Planta actual</label><input type="range" id="a_planta" min="-4" max="8" value="-2" oninput="updateAscensor()"><span class="val-badge" id="v_a_planta">-2</span></div>
-              <div class="slider-row"><label for="a_mov" style="width:110px;">Sube o baja</label><input type="range" id="a_mov" min="-5" max="5" value="5" oninput="updateAscensor()"><span class="val-badge" id="v_a_mov">+5</span></div>
+              <div class="slider-row"><label for="a_planta" style="width:110px;">Planta actual</label><input type="range" id="a_planta" min="-4" max="8" value="-2" oninput="updateAscensor()"><span class="val-badge" id="v_a_planta" aria-live="polite">-2</span></div>
+              <div class="slider-row"><label for="a_mov" style="width:110px;">Sube o baja</label><input type="range" id="a_mov" min="-5" max="5" value="5" oninput="updateAscensor()"><span class="val-badge" id="v_a_mov" aria-live="polite">+5</span></div>
             </div>
             <div style="text-align: center;">
               <div style="height: 150px; background: #090d16; position: relative; border-radius: 8px; border: 1px dashed var(--border-color); overflow: hidden;">
                 <div style="position: absolute; bottom: 30%; width: 100%; border-top: 4px solid var(--accent-gold);"></div>
                 <div id="a_avatar" style="position: absolute; left: 45%; font-size: 2rem; transition: bottom 0.4s;">🏢</div>
               </div>
-              <p id="a_text" style="color: var(--text-main); font-weight: bold; margin-top: 1rem;">Planta 3</p>
+              <p id="a_text" role="status" aria-live="polite" style="color: var(--text-main); font-weight: bold; margin-top: 1rem;">Planta 3</p>
             </div>
           </div>
         </div>
@@ -592,7 +592,7 @@
               <div class="slider-row"><label for="pp_p" style="width:110px;">Profundidad (m)</label><input type="range" id="pp_p" min="-20" max="-1" value="-8" oninput="updatePajaro()"><span class="val-badge" id="v_pp_p">-8</span></div>
             </div>
             <div style="text-align: center;">
-              <div class="number-display" id="pp_res" style="font-size: 2.2rem;">15 - (-8) = 23m</div>
+              <div class="number-display" id="pp_res" role="status" aria-live="polite" style="font-size: 2.2rem;">15 - (-8) = 23m</div>
               <p id="pp_text" style="color: var(--text-muted); margin-top: 0.5rem;"></p>
             </div>
           </div>
@@ -609,7 +609,7 @@
               <div class="slider-row"><label for="an_mue" style="width:110px;">Año final</label><input type="range" id="an_mue" min="-50" max="150" step="10" value="30" oninput="updateAnios()"><span class="val-badge" id="v_an_mue">30</span></div>
             </div>
             <div style="text-align: center;">
-              <div class="number-display" id="an_res" style="font-size: 2.2rem;">30 - (-40) = 70 años</div>
+              <div class="number-display" id="an_res" role="status" aria-live="polite" style="font-size: 2.2rem;">30 - (-40) = 70 años</div>
               <p id="an_text" style="color: var(--text-muted); margin-top: 0.5rem;"></p>
             </div>
           </div>
@@ -751,10 +751,12 @@
           ? formatNum(a) + ' <span style="color:var(--text-muted)">+ (</span>' + formatNum(b) + '<span style="color:var(--text-muted)">)</span>'
           : formatNum(a) + ' <span style="color:var(--text-muted)">+</span> ' + formatNum(b));
       document.getElementById('sr_texto1').textContent = "Valor inicial: " + getTengoDeboText(a);
-      document.getElementById('sr_texto2').textContent =
-        (subtract ? "Valor que restamos: " : "Segundo entero: ") + getTengoDeboText(b);
+      document.getElementById('sr_texto2').textContent = subtract
+        ? "Restamos " + (b > 0 ? "+" : "") + b + "; equivale a sumar " + (effectiveB > 0 ? "+" : "") + effectiveB + "."
+        : "Segundo entero: " + getTengoDeboText(b);
       let explanation;
-      if (result === 0) explanation = "Los valores se compensan y el resultado es 0.";
+      if (result === 0 && a === 0 && effectiveB === 0) explanation = "Ambos términos valen 0; el resultado es 0.";
+      else if (result === 0) explanation = "Los valores se compensan y el resultado es 0.";
       else if (result > 0) explanation = "Resultado: queda un saldo a favor de " + result + "€.";
       else explanation = "Resultado: queda una deuda de " + Math.abs(result) + "€.";
       document.getElementById('sr_resultado').innerHTML =
@@ -808,9 +810,10 @@
       document.getElementById('v_d_saldo').innerText = s; 
       document.getElementById('v_d_mov').innerText = (m > 0 ? "+" : "") + m;
       let res = s + m;
-      let cl = res >= 0 ? "pos" : "neg";
+      let cl = res > 0 ? "pos" : res < 0 ? "neg" : "zero";
       document.getElementById('d_res').innerHTML = `<span class="${cl}">${res} €</span>`;
-      document.getElementById('d_text').innerText = `Operación: ${s} + (${m}) = ${res}. ` + (res < 0 ? "En números rojos." : "Saldo a favor.");
+      document.getElementById('d_text').innerText = "Operación: " + s + " + (" + m + ") = " + res + ". " +
+        (res < 0 ? "En números rojos." : res > 0 ? "Saldo a favor." : "Saldo a cero.");
     }
 
     function updateAscensor() {

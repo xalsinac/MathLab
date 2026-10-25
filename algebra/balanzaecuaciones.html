@@ -803,23 +803,24 @@
       });
     }));
 
-    let demoLeft = 6, demoRight = 6, demoHistory = "";
+    let demoLeft = 6, demoRight = 6, demoExpression = "6";
     function renderDemo() {
-      document.getElementById('demoLeft').textContent = demoHistory || String(demoLeft);
-      document.getElementById('demoRight').textContent = demoHistory || String(demoRight);
+      document.getElementById('demoLeft').textContent = demoExpression;
+      document.getElementById('demoRight').textContent = demoExpression;
       document.getElementById('demoStatus').textContent = demoLeft === demoRight
         ? "Equilibrio conservado: " + demoLeft + " = " + demoRight + "."
         : "La balanza se ha desequilibrado.";
     }
     document.querySelectorAll('[data-demo-op]').forEach(button => button.addEventListener('click', () => {
-      const amount = button.dataset.demoOp === 'add' ? 3 : -2;
+      const adding = button.dataset.demoOp === 'add';
+      const amount = adding ? 3 : -2;
       demoLeft += amount;
       demoRight += amount;
-      demoHistory = demoLeft + " = " + demoRight;
+      demoExpression += adding ? " + 3" : " − 2";
       renderDemo();
     }));
     document.getElementById('demoReset').addEventListener('click', () => {
-      demoLeft = 6; demoRight = 6; demoHistory = ""; renderDemo();
+      demoLeft = 6; demoRight = 6; demoExpression = "6"; renderDemo();
     });
 
     // Eventos de Navegación

@@ -178,6 +178,10 @@
     .legend-p,.term-p { color:var(--accent-blue); }
     .legend-q,.term-q { color:var(--accent-gold); }
     .legend-result,.term-result { color:var(--accent-success); }
+    .term-p,.term-q,.term-result { display:inline-flex; padding:.08em .28em; border-radius:5px; font-weight:800; }
+    .term-p { background:rgba(56,189,248,.12); box-shadow:inset 0 -2px var(--accent-blue); }
+    .term-q { background:rgba(245,158,11,.12); box-shadow:inset 0 -2px var(--accent-gold); }
+    .term-result { background:rgba(16,185,129,.12); box-shadow:inset 0 -2px var(--accent-success); }
     .operation-walkthrough { margin-top:1rem; padding:1rem; border:1px solid var(--border-color); border-radius:10px; background:var(--bg-primary); }
     .operation-walkthrough h4 { margin:0 0 .8rem; color:var(--text-main); }
     .coefficient-rows { display:grid; gap:.45rem; overflow-x:auto; }
@@ -414,13 +418,13 @@
           <p class="step-legend"><span class="legend-p">P(x)</span><span class="legend-q">Q(x)</span><span class="legend-result">Resultado</span></p>
           <article class="operation-walkthrough">
             <h4>1. Suma: agrupamos términos semejantes</h4>
-            <div id="polySumSteps" class="coefficient-rows" role="table" aria-label="Suma por coeficientes"></div>
+            <div id="polySumSteps" class="coefficient-rows" role="table" aria-live="polite" aria-label="Suma por coeficientes"></div>
             <div id="polySumConclusion" class="step-conclusion"></div>
           </article>
           <article class="operation-walkthrough">
             <h4>2. Resta: cambiamos los signos de Q</h4>
             <p id="polySubSignChange" class="sign-change"></p>
-            <div id="polySubSteps" class="coefficient-rows" role="table" aria-label="Resta por coeficientes"></div>
+            <div id="polySubSteps" class="coefficient-rows" role="table" aria-live="polite" aria-label="Resta por coeficientes"></div>
             <div id="polySubConclusion" class="step-conclusion"></div>
           </article>
           <article class="operation-walkthrough">

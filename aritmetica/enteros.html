@@ -858,6 +858,100 @@
         " transcurren " + elapsed + " años en esta escala matemática.";
     }
 
+    const practiceQuestions = [
+      { question: "En un ascensor, estás en la planta −2 y subes 5 plantas. ¿Dónde llegas?", answer: 3, hint: "Empieza en −2 y avanza 5 lugares hacia la derecha.", explanation: "−2 + 5 = 3." },
+      { question: "¿Cuánto es 5 − (−3)?", answer: 8, hint: "Restar un negativo equivale a sumar su opuesto.", explanation: "5 − (−3) = 5 + 3 = 8." },
+      { question: "¿Cuánto es (−4) × (−2)?", answer: 8, hint: "Los dos factores tienen el mismo signo.", explanation: "Mismo signo: resultado positivo. 4 × 2 = 8." },
+      { question: "¿Cuánto es 18 ÷ (−3)?", answer: -6, hint: "Divide los valores absolutos y determina después el signo.", explanation: "Signos diferentes: resultado negativo. 18 ÷ 3 = 6, así que da −6." }
+    ];
+    let practiceIndex = 0;
+    function showPracticeQuestion() {
+      const item = practiceQuestions[practiceIndex];
+      document.getElementById('integerQuestion').textContent = item.question;
+      document.getElementById('integerAnswer').value = "";
+      document.getElementById('integerHint').hidden = true;
+      document.getElementById('integerHint').textContent = item.hint;
+      document.getElementById('integerFeedback').textContent = "";
+    }
+    document.getElementById('checkIntegerAnswer').addEventListener('click', () => {
+      const input = document.getElementById('integerAnswer');
+      const feedback = document.getElementById('integerFeedback');
+      if (input.value.trim() === "") {
+        feedback.textContent = "Escribe un entero antes de comprobar.";
+        return;
+      }
+      const item = practiceQuestions[practiceIndex];
+      feedback.textContent = Number(input.value) === item.answer
+        ? "¡Correcto! " + item.explanation
+        : "Todavía no. Revisa el signo y vuelve a intentarlo; puedes pedir una pista.";
+    });
+    document.getElementById('integerAnswer').addEventListener('keydown', event => {
+      if (event.key === 'Enter') document.getElementById('checkIntegerAnswer').click();
+    });
+    document.getElementById('showIntegerHint').addEventListener('click', () => {
+      document.getElementById('integerHint').hidden = false;
+    });
+    document.getElementById('nextIntegerQuestion').addEventListener('click', () => {
+      practiceIndex = (practiceIndex + 1) % practiceQuestions.length;
+      showPracticeQuestion();
+    });
+
+    document.getElementById('checkTermChallenge').addEventListener('click', () => {
+      const value = document.getElementById('termChallengeAnswer').value;
+      const feedback = document.getElementById('termChallengeFeedback');
+      if (value.trim() === "") {
+        feedback.textContent = "Escribe una temperatura para comprobarla.";
+      } else if (Number(value) === -5) {
+        feedback.textContent = "¡Correcto! +3 + (−8) = −5 °C. La marca del termómetro se ha situado en la respuesta.";
+        document.getElementById('term_slider').value = -5;
+        updateTermometro();
+      } else {
+        feedback.textContent = "Aún no. Desde +3, retrocede 8 grados en la recta: 3 + (−8).";
+      }
+    });
+
+    document.getElementById('compareButton').addEventListener('click', () => {
+      const firstInput = document.getElementById('compareA');
+      const secondInput = document.getElementById('compareB');
+      const a = Number(firstInput.value), b = Number(secondInput.value);
+      const result = document.getElementById('compareResult');
+      if (firstInput.value.trim() === "" || secondInput.value.trim() === "" ||
+          ![a, b].every(Number.isInteger) || a < minVal || a > maxVal || b < minVal || b > maxVal) {
+        result.textContent = "Introduce dos enteros entre −10 y 10.";
+      } else {
+        const relation = a < b ? "es menor que" : a > b ? "es mayor que" : "es igual a";
+        result.textContent = a + " " + relation + " " + b +
+          ". Distancias al cero: " + Math.abs(a) + " y " + Math.abs(b) +
+          (a === -b ? ". Son opuestos." : ".");
+      }
+    });
+
+    document.getElementById('revealPattern').addEventListener('click', event => {
+      document.getElementById('patternResult').textContent = "+3";
+      document.getElementById('patternProof').hidden = false;
+      document.getElementById('patternExplanation').textContent =
+        "El producto aumenta 3 al bajar el segundo factor en 1; la distributiva confirma que el resultado coherente es +3.";
+      event.currentTarget.disabled = true;
+      event.currentTarget.textContent = "Patrón completado";
+    });
+
+    document.querySelectorAll('[role="tablist"]').forEach(list => {
+      list.addEventListener('keydown', event => {
+        if (!["ArrowRight", "ArrowLeft", "Home", "End"].includes(event.key)) return;
+        const tabItems = [...list.querySelectorAll('[role="tab"]')];
+        const current = tabItems.indexOf(document.activeElement);
+        if (current < 0) return;
+        event.preventDefault();
+        const nextIndex = event.key === "Home" ? 0 :
+          event.key === "End" ? tabItems.length - 1 :
+          event.key === "ArrowRight" ? (current + 1) % tabItems.length :
+          (current - 1 + tabItems.length) % tabItems.length;
+        tabItems[nextIndex].focus();
+        tabItems[nextIndex].click();
+      });
+    });
+
+    showPracticeQuestion();
     updateDeuda(); updateAscensor(); updatePajaro(); updateAnios();
   </script>
 </body>

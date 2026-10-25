@@ -366,7 +366,7 @@
     .practice-card p, .error-card p { color: var(--text-muted); line-height: 1.5; }
     .practice-option { min-height: 44px; padding: .7rem .9rem; color: var(--text-main); background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 9px; cursor: pointer; text-align: left; }
     .practice-option:hover:not(:disabled) { border-color: var(--accent-blue); }
-    .practice-option:disabled { cursor: default; opacity: .75; }
+    .practice-option:disabled, .btn:disabled { cursor: default; opacity: .75; }
     .practice-option.correct { border-color: var(--accent-success); background: rgba(16,185,129,.12); }
     .practice-option.incorrect { border-color: var(--accent-op); }
     .practice-feedback { min-height: 1.5rem; margin: .5rem 0; }
@@ -440,12 +440,12 @@
         </div>
       </section>
       <!-- Representación de la Balanza -->
-      <div class="balance-container" role="img" aria-label="Balanza equilibrada que representa una igualdad">
+      <div class="balance-container" aria-label="Balanza equilibrada">
         <div class="balance-action" id="balanceAction" hidden aria-live="polite">
           <span>En el lado izquierdo</span><strong id="leftAction"></strong>
           <span>En el lado derecho</span><strong id="rightAction"></strong>
         </div>
-        <svg class="scale-svg" viewBox="0 0 600 240">
+        <svg class="scale-svg" viewBox="0 0 600 240" aria-hidden="true">
           <!-- Soporte central y base -->
           <polygon points="300,70 280,210 320,210" class="fulcrum" />
           <line x1="220" y1="210" x2="380" y2="210" class="base" stroke-width="6" />
@@ -468,8 +468,8 @@
         </svg>
 
         <!-- Cuadros con las expresiones en los platos -->
-        <div class="expression-box left-expr" id="leftExpr">3x - 5</div>
-        <div class="expression-box right-expr" id="rightExpr">10</div>
+        <div class="expression-box left-expr" id="leftExpr" aria-live="polite" aria-label="Miembro izquierdo">3x - 5</div>
+        <div class="expression-box right-expr" id="rightExpr" aria-live="polite" aria-label="Miembro derecho">10</div>
       </div>
 
       <!-- Tarjeta Explicativa Pedagógica -->
@@ -807,6 +807,7 @@
     function renderDemo() {
       document.getElementById('demoLeft').textContent = demoExpression;
       document.getElementById('demoRight').textContent = demoExpression;
+      document.querySelector('[data-demo-op="subtract"]').disabled = demoLeft < 2;
       document.getElementById('demoStatus').textContent = demoLeft === demoRight
         ? "Equilibrio conservado: " + demoLeft + " = " + demoRight + "."
         : "La balanza se ha desequilibrado.";

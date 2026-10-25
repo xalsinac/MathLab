@@ -394,6 +394,46 @@
       .radical-symbol { font-size: 2rem; }
     }
   
+
+    .nav-container { position: relative; }
+    .nav-links {
+      position: absolute; left: 50%; top: 50%;
+      transform: translate(-50%, -50%); flex-wrap: nowrap;
+      justify-content: center; width: max-content;
+    }
+    .nav-btn-cursos { color: var(--accent-blue); border-color: rgba(56, 189, 248, .3); background: rgba(56, 189, 248, .08); }
+    .nav-btn-practicar { color: var(--accent-gold); border-color: rgba(245, 158, 11, .35); background: rgba(245, 158, 11, .08); }
+    .nav-btn-favoritos { color: var(--accent-op); border-color: rgba(244, 63, 94, .3); background: rgba(244, 63, 94, .08); cursor: pointer; font-family: inherit; }
+    .nav-btn-favoritos span { display: inline-flex; align-items: center; justify-content: center; min-width: 1.2rem; height: 1.2rem; margin-left: .15rem; border-radius: 999px; background: rgba(244, 63, 94, .18); font-size: .72rem; }
+    .favorites-overlay { position: fixed; inset: 0; z-index: 1100; display: grid; place-items: center; padding: 1rem; background: rgba(2, 6, 23, .72); backdrop-filter: blur(5px); }
+    .favorites-dialog { width: min(100%, 620px); max-height: min(80vh, 760px); overflow-y: auto; padding: 1.35rem; border: 1px solid var(--border-color); border-radius: 16px; background: var(--bg-card); color: var(--text-main); box-shadow: 0 24px 70px rgba(0,0,0,.35); }
+    .favorites-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+    .favorites-header h2 { margin-top: .2rem; color: var(--text-main); }
+    .favorites-count { color: var(--accent-blue); font-size: .9em; }
+    .favorites-note, .favorites-empty { color: var(--text-muted); line-height: 1.5; margin: .75rem 0 1rem; }
+    .favorites-close { border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-primary); color: var(--text-main); font-size: 1.4rem; line-height: 1; padding: .35rem .65rem; cursor: pointer; }
+    .favorites-list { display: grid; gap: .65rem; }
+    .favorite-row { display: flex; align-items: stretch; gap: .5rem; }
+    .favorite-link { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .2rem; padding: .85rem 1rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-primary); color: var(--text-main); text-decoration: none; }
+    .favorite-link:hover { border-color: var(--accent-blue); }
+    .favorite-link strong { font-size: .98rem; }
+    .favorite-link span { color: var(--text-muted); font-size: .84rem; line-height: 1.4; }
+    .favorite-remove { align-self: center; border: 0; background: transparent; color: var(--text-muted); padding: .55rem; font-size: 1.2rem; cursor: pointer; }
+    .favorite-remove:hover { color: var(--accent-op); }
+    .favorites-footer { display: flex; justify-content: flex-end; border-top: 1px solid var(--border-color); margin-top: 1rem; padding-top: .8rem; }
+    @media (max-width: 780px) {
+      .nav-container { flex-wrap: wrap; justify-content: center; padding: .75rem .75rem .55rem; }
+      .brand-wrap { margin: 0 auto; }
+      .nav-links { position: static; transform: none; order: 3; width: 100%; display: flex; gap: .15rem; overflow-x: auto; justify-content: center; padding-top: .35rem; }
+      .nav-link-btn { font-size: .74rem; padding: .4rem .42rem; gap: .2rem; }
+      #theme-toggle { position: absolute; right: .75rem; top: .65rem; }
+      .favorites-dialog { padding: 1rem; }
+    }
+    @media (max-width: 360px) {
+      .nav-links { justify-content: flex-start; }
+      .nav-link-btn { font-size: .7rem; padding: .4rem .35rem; }
+    }
+
     [hidden] { display: none !important; }
     .home-hub, .course-view-controls {
       width: min(calc(100% - 2rem), 1180px);
@@ -486,20 +526,20 @@
   <header class="top-header">
     <div class="nav-container">
       
-      <div style="display:flex; align-items:center; gap:1.5rem;">
-        <div class="brand-wrap">
-          <a href="index.html" class="radical-logo">
-            <span class="radical-symbol">√</span>
-            <span class="radical-content">MATH <span>LAB</span></span>
-          </a>
-          <span class="author-sub">por Xavi Profe</span>
-        </div>
-
-        <nav class="nav-links">
-          <a href="tablas/index.html" class="nav-link-btn nav-btn-tablas">📋 Fórmulas</a>
-          <a href="ejercicios/entrenador.html" class="nav-link-btn" style="color:var(--accent-gold); border-color:rgba(251,191,36,0.3); background:rgba(251,191,36,0.08);">🎯 Practicar</a>
-        </nav>
+      <div class="brand-wrap">
+        <a href="index.html" class="radical-logo">
+          <span class="radical-symbol">√</span>
+          <span class="radical-content">MATH <span>LAB</span></span>
+        </a>
+        <span class="author-sub">por Xavi Profe</span>
       </div>
+
+      <nav class="nav-links" aria-label="Navegación principal">
+        <a href="#homeHub" class="nav-link-btn nav-btn-cursos" onclick="returnToCourses(); return false;">📚 Cursos</a>
+        <a href="tablas/index.html" class="nav-link-btn nav-btn-tablas">📋 Fórmulas</a>
+        <a href="ejercicios/entrenador.html" class="nav-link-btn nav-btn-practicar">🎯 Practicar</a>
+        <button type="button" class="nav-link-btn nav-btn-favoritos" onclick="openFavorites()">⭐ Favoritos <span id="headerFavCount">0</span></button>
+      </nav>
 
       <!-- BOTÓN FIJO EN LA ESQUINA DERECHA -->
       <button id="theme-toggle" onclick="toggleTheme()" title="Cambiar tema" style="flex-shrink:0; background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; cursor:pointer; padding:0.55rem 0.85rem; font-size:1.15rem; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.1); color: var(--text-main);">
@@ -508,6 +548,24 @@
 
     </div>
   </header>
+
+  <div class="favorites-overlay" id="favoritesOverlay" hidden onclick="if(event.target===this) closeFavorites()">
+    <section class="favorites-dialog" role="dialog" aria-modal="true" aria-labelledby="favoritesTitle">
+      <header class="favorites-header">
+        <div>
+          <span class="home-eyebrow">TU ESPACIO DE REPASO</span>
+          <h2 id="favoritesTitle">Mis favoritos <span class="favorites-count" id="favoritesCount">0</span></h2>
+        </div>
+        <button type="button" class="favorites-close" aria-label="Cerrar favoritos" onclick="closeFavorites()">×</button>
+      </header>
+      <p class="favorites-note">Se guardan en este navegador y dispositivo.</p>
+      <div class="favorites-list" id="favoritesList"></div>
+      <p class="favorites-empty" id="favoritesEmpty" hidden>Aún no has guardado ninguna lección. Marca la estrella ☆ en un tema para tenerlo a mano.</p>
+      <div class="favorites-footer">
+        <button type="button" class="back-to-courses" onclick="closeFavorites(); returnToCourses()">Explorar cursos</button>
+      </div>
+    </section>
+  </div>
 
   <!-- SECCIÓN HERO -->
   <section class="home-hub" id="homeHub" aria-labelledby="homeTitle">
@@ -1346,8 +1404,19 @@
     // 3. FAVORITOS Y FILTRADO
     // =========================================================================
     function getFavorites() {
-      try { return JSON.parse(localStorage.getItem('mathlab_favs')) || []; }
-      catch (e) { return []; }
+      try {
+        const saved = JSON.parse(localStorage.getItem('mathlab_favs')) || [];
+        const redirects = {
+          'algebra/sistemas_lineales.html': 'algebra/sistemas_lineales3.html',
+          'geometria/conicas_circunferencia.html': 'geometria/conicas_circumferencia.html',
+          'analisis/derivadas_aplicaciones.html': 'algebra/derivadas_aplicaciones.html'
+        };
+        const normalized = [...new Set(saved.map(href => redirects[href] || href))];
+        if (normalized.length !== saved.length || normalized.some((href, index) => href !== saved[index])) {
+          localStorage.setItem('mathlab_favs', JSON.stringify(normalized));
+        }
+        return normalized;
+      } catch (e) { return []; }
     }
 
     function saveFavorites(favs) {
@@ -1372,8 +1441,78 @@
 
     function updateFavCounter() {
       const countEl = document.getElementById('favCount');
-      if (countEl) countEl.textContent = getFavorites().length;
+      const total = getFavorites().length;
+      if (countEl) countEl.textContent = total;
+      const headerCount = document.getElementById('headerFavCount');
+      if (headerCount) headerCount.textContent = total;
     }
+
+
+    function renderFavorites() {
+      const favorites = getFavorites();
+      const list = document.getElementById('favoritesList');
+      const empty = document.getElementById('favoritesEmpty');
+      const count = document.getElementById('favoritesCount');
+      list.replaceChildren();
+      let shown = 0;
+
+      favorites.forEach(href => {
+        const card = [...document.querySelectorAll('.topic-card')].find(item => item.getAttribute('href') === href);
+        if (!card) return;
+        const title = card.querySelector('.topic-name')?.innerText.trim() || href;
+        const description = card.querySelector('.topic-desc')?.innerText.trim() || 'Abrir lección';
+        const category = card.querySelector('.branch-tag')?.innerText.trim() || 'Lección';
+        const row = document.createElement('div');
+        row.className = 'favorite-row';
+
+        const link = document.createElement('a');
+        link.className = 'favorite-link';
+        link.href = href;
+        const heading = document.createElement('strong');
+        heading.textContent = title;
+        const details = document.createElement('span');
+        details.textContent = category + ' · ' + description;
+        link.append(heading, details);
+
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'favorite-remove';
+        remove.textContent = '×';
+        remove.setAttribute('aria-label', 'Quitar ' + title + ' de favoritos');
+        remove.addEventListener('click', event => {
+          toggleFavorite(event, href);
+          renderFavorites();
+        });
+
+        row.append(link, remove);
+        list.appendChild(row);
+        shown++;
+      });
+
+      count.textContent = shown;
+      empty.hidden = shown > 0;
+      updateFavCounter();
+    }
+
+    function openFavorites() {
+      const overlay = document.getElementById('favoritesOverlay');
+      renderFavorites();
+      overlay.hidden = false;
+      document.body.style.overflow = 'hidden';
+      overlay.querySelector('.favorites-close').focus();
+    }
+
+    function closeFavorites() {
+      document.getElementById('favoritesOverlay').hidden = true;
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !document.getElementById('favoritesOverlay').hidden) {
+        closeFavorites();
+        document.querySelector('.nav-btn-favoritos').focus();
+      }
+    });
 
     function setupFavoriteButtons() {
       const cards = document.querySelectorAll('.topic-card');
@@ -1386,8 +1525,11 @@
         if (cardTop && !cardTop.querySelector('.fav-btn')) {
           const btn = document.createElement('button');
           btn.className = 'fav-btn';
+          btn.type = 'button';
           btn.title = 'Guardar en Favoritos';
           const isFav = favs.includes(href);
+          btn.title = isFav ? 'Quitar de favoritos' : 'Guardar en Favoritos';
+          btn.setAttribute('aria-label', btn.title);
           btn.textContent = isFav ? '★' : '☆';
           if (isFav) btn.classList.add('is-favorite');
 
@@ -1406,6 +1548,8 @@
           const isFav = favs.includes(card.getAttribute('href'));
           btn.textContent = isFav ? '★' : '☆';
           btn.classList.toggle('is-favorite', isFav);
+          btn.title = isFav ? 'Quitar de favoritos' : 'Guardar en Favoritos';
+          btn.setAttribute('aria-label', btn.title);
         }
       });
     }

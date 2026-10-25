@@ -106,6 +106,7 @@
     .practice-option.is-correct { border-color: var(--accent-success); }
     .practice-option.is-incorrect { border-color: var(--accent-op); }
     .practice-feedback { min-height: 1.4rem; margin: .6rem 0 0; color: var(--text-main); line-height: 1.5; }
+    .practice-hint-text { margin-top: .5rem; color: var(--accent-gold); line-height: 1.5; }
     .tab-btn:focus-visible, .btn:focus-visible, .practice-option:focus-visible, .practice-hint:focus-visible { outline: 3px solid var(--accent-gold); outline-offset: 2px; }
     .tab-content[hidden] { display: none !important; }
     @media (max-width: 600px) {
@@ -205,6 +206,7 @@
           <button type="button" class="practice-option">La multiplicación por 2</button>
         </div>
         <button type="button" class="practice-hint">Ver una pista</button>
+        <p class="practice-hint-text" hidden></p>
         <p class="practice-feedback" role="status" aria-live="polite"></p>
       </section>
 
@@ -217,6 +219,7 @@
           <button type="button" class="practice-option">La multiplicación 1/2 · 2/3</button>
         </div>
         <button type="button" class="practice-hint">Ver una pista</button>
+        <p class="practice-hint-text" hidden></p>
         <p class="practice-feedback" role="status" aria-live="polite"></p>
       </section>
 
@@ -229,6 +232,7 @@
           <button type="button" class="practice-option">Restar los denominadores 5 − 3</button>
         </div>
         <button type="button" class="practice-hint">Ver una pista</button>
+        <p class="practice-hint-text" hidden></p>
         <p class="practice-feedback" role="status" aria-live="polite"></p>
       </section>
 
@@ -299,10 +303,27 @@
   <script>
     // --- NAVEGACIÓN ENTRE PESTAÑAS ---
     function switchTab(tabId, btn) {
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
+      document.querySelectorAll('.tab-btn').forEach(tab => {
+        const active = tab === btn;
+        tab.classList.toggle('active', active);
+        tab.setAttribute('aria-selected', String(active));
+        tab.tabIndex = active ? 0 : -1;
+      });
+      document.querySelectorAll('.tab-content').forEach(panel => {
+        const active = panel.id === tabId;
+        panel.classList.toggle('active', active);
+        panel.hidden = !active;
+      });
+    }
+
+    function updateStepMeta(prefix, steps, index) {
+      document.getElementById('counter_' + prefix).textContent =
+        'Paso ' + (index + 1) + ' de ' + steps.length;
+      const previous = index === 0 ? null : steps[index - 1].hist;
+      const current = steps[index].hist;
+      document.getElementById('transition_' + prefix).textContent = previous
+        ? 'Antes: ' + previous + ' → Ahora: ' + current
+        : current;
     }
 
     // =========================================================================
@@ -340,6 +361,7 @@
     let currentEnt = 0;
     function updateEnt() {
       const s = stepsEnt[currentEnt];
+      updateStepMeta('ent', stepsEnt, currentEnt);
       document.getElementById('expr_ent').innerHTML = s.html;
       document.getElementById('desc_ent').innerHTML = s.text;
 
@@ -406,6 +428,7 @@
     let currentFrac = 0;
     function updateFrac() {
       const s = stepsFrac[currentFrac];
+      updateStepMeta('frac', stepsFrac, currentFrac);
       document.getElementById('expr_frac').innerHTML = s.html;
       document.getElementById('desc_frac').innerHTML = s.text;
 
@@ -467,6 +490,7 @@
     let currentRaiz = 0;
     function updateRaiz() {
       const s = stepsRaiz[currentRaiz];
+      updateStepMeta('raiz', stepsRaiz, currentRaiz);
       document.getElementById('expr_raiz').innerHTML = s.html;
       document.getElementById('desc_raiz').innerHTML = s.text;
 
@@ -487,6 +511,45 @@
     function prevStepRaiz() { if (currentRaiz > 0) { currentRaiz--; updateRaiz(); } }
     function resetRaiz() { currentRaiz = 0; updateRaiz(); }
     updateRaiz();
+
+    document.querySelectorAll('[role="tablist"]').forEach(list => {
+      list.addEventListener('keydown', event => {
+        if (!["ArrowRight", "ArrowLeft", "Home", "End"].includes(event.key)) return;
+        const tabs = [...list.querySelectorAll('[role="tab"]')];
+        const current = tabs.indexOf(document.activeElement);
+        if (current < 0) return;
+        event.preventDefault();
+        const next = event.key === "Home" ? 0 :
+          event.key === "End" ? tabs.length - 1 :
+          event.key === "ArrowRight" ? (current + 1) % tabs.length :
+          (current - 1 + tabs.length) % tabs.length;
+        tabs[next].focus();
+        tabs[next].click();
+      });
+    });
+
+    document.querySelectorAll('.mini-practice').forEach(practice => {
+      const options = [...practice.querySelectorAll('.practice-option')];
+      const feedback = practice.querySelector('.practice-feedback');
+      const hintText = practice.querySelector('.practice-hint-text');
+
+      options.forEach((option, index) => option.addEventListener('click', () => {
+        const correct = index === Number(practice.dataset.correct);
+        options.forEach((choice, choiceIndex) => {
+          choice.classList.toggle('is-correct', correct && choiceIndex === index);
+          choice.classList.toggle('is-incorrect', !correct && choiceIndex === index);
+          if (correct) choice.disabled = true;
+        });
+        feedback.textContent = correct
+          ? '¡Correcto! ' + practice.dataset.explanation
+          : 'Todavía no. ' + practice.dataset.hint;
+      }));
+
+      practice.querySelector('.practice-hint').addEventListener('click', () => {
+        hintText.textContent = 'Pista: ' + practice.dataset.hint;
+        hintText.hidden = false;
+      });
+    });
 
   </script>
 </body>

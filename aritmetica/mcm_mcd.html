@@ -338,7 +338,27 @@
     <!-- ================= PESTAÑA 3: PROBLEMAS CLÁSICOS CON SUBPESTAÑAS ================= -->
     <div id="problemas" class="tab-content" role="tabpanel" aria-labelledby="tab-problemas" hidden>
       
-      <div class="subtabs-container" role="tablist" aria-label="Tipos de problemas">
+      <section class="panel-box method-choice" aria-labelledby="methodChoiceTitle">
+        <div class="panel-title" id="methodChoiceTitle">Antes de calcular: ¿m.c.m. o M.C.D.?</div>
+        <div class="choice-question" data-correct="0" data-explanation="Buscamos cuándo vuelven a coincidir, así que comparamos múltiplos: usamos el m.c.m.">
+          <p>Unas luces se encienden a intervalos de 6 y 8 minutos. ¿Qué herramienta elegirías?</p>
+          <div class="choice-buttons">
+            <button type="button" class="choice-button">m.c.m.: queremos saber cuándo coinciden</button>
+            <button type="button" class="choice-button">M.C.D.: queremos repartir en grupos iguales</button>
+          </div>
+          <p class="choice-feedback" role="status" aria-live="polite"></p>
+        </div>
+        <div class="choice-question" data-correct="1" data-explanation="Queremos formar el mayor número de grupos iguales sin sobras, así que buscamos un divisor común máximo: el M.C.D.">
+          <p>Se reparten 20 fresas y 30 caramelos de menta en bolsas idénticas, sin que sobre nada. ¿Qué buscamos?</p>
+          <div class="choice-buttons">
+            <button type="button" class="choice-button">m.c.m.: queremos que dos sucesos coincidan</button>
+            <button type="button" class="choice-button">M.C.D.: queremos el mayor número de bolsas iguales</button>
+          </div>
+          <p class="choice-feedback" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <div class="subtabs-container role="tablist" aria-label="Tipos de problemas">
         <button type="button" id="subtab-prob_mcm" class="subtab-btn active" role="tab" aria-selected="true" aria-controls="prob_mcm" tabindex="0" onclick="switchSubTab('prob_mcm', this)">⏱️ Problema de Coincidencia (m.c.m.)</button>
         <button type="button" id="subtab-prob_mcd" class="subtab-btn" role="tab" aria-selected="false" aria-controls="prob_mcd" tabindex="-1" onclick="switchSubTab('prob_mcd', this)">📦 Problema de Reparto Máximo (M.C.D.)</button>
       </div>
@@ -370,6 +390,7 @@
               <p style="margin-top: 0.8rem; font-weight: bold; color: var(--text-main);">
                 Respuesta: Coincidirán de nuevo dentro de <strong>24 horas</strong> (exactamente al día siguiente a las 8:00).
               </p>
+              <p class="verification-note">Comprobación: 24 es múltiplo de 6 y de 8 (24 ÷ 6 = 4; 24 ÷ 8 = 3).</p>
             </div>
           </div>
         </div>
@@ -402,6 +423,7 @@
               <p style="margin-top: 0.8rem; font-weight: bold; color: var(--text-main);">
                 Respuesta: Podemos hacer <strong>10 bolsas</strong>. Cada bolsa tendrá 2 caramelos de fresa (20÷10) y 3 de menta (30÷10).
               </p>
+              <p class="verification-note">Comprobación: 10 divide exactamente a 20 y a 30. Como es el mayor divisor común, no se pueden formar más bolsas idénticas sin que sobre nada.</p>
             </div>
           </div>
         </div>

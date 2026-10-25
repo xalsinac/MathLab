@@ -393,6 +393,89 @@
       .radical-content { font-size: 1.3rem; }
       .radical-symbol { font-size: 2rem; }
     }
+  
+    [hidden] { display: none !important; }
+    .home-hub, .course-view-controls {
+      width: min(calc(100% - 2rem), 1180px);
+      margin: 2.5rem auto;
+    }
+    .home-intro { margin-bottom: 2.25rem; }
+    .home-eyebrow {
+      color: var(--accent-blue); font-size: .78rem; font-weight: 800;
+      letter-spacing: .14em; text-transform: uppercase;
+    }
+    .home-intro h1 {
+      color: var(--text-main); font-size: clamp(2rem, 4vw, 3rem);
+      margin: .45rem 0 .6rem;
+    }
+    .home-intro p, .course-note {
+      color: var(--text-muted); font-size: 1rem; line-height: 1.6;
+      max-width: 760px;
+    }
+    .hub-section-heading {
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: 1rem; margin-bottom: 1rem;
+    }
+    .hub-section-heading h2 { color: var(--text-main); font-size: 1.25rem; }
+    .heading-note { color: var(--text-muted); font-size: .84rem; }
+    .course-grid {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem;
+    }
+    .course-card, .quick-card {
+      color: var(--text-main); background: var(--bg-card);
+      border: 1px solid var(--border-color); border-radius: 14px;
+      text-align: left; text-decoration: none; transition: transform .18s ease,
+      border-color .18s ease, box-shadow .18s ease;
+    }
+    .course-card {
+      display: flex; flex-direction: column; align-items: flex-start;
+      min-height: 174px; padding: 1.2rem 1.35rem; cursor: pointer;
+      border-top: 3px solid var(--course-accent, var(--accent-blue));
+    }
+    .course-c1 { --course-accent: #10b981; }
+    .course-c2 { --course-accent: #38bdf8; }
+    .course-bach1 { --course-accent: #a78bfa; }
+    .course-bach2 { --course-accent: #f59e0b; }
+    .course-card:hover, .quick-card:hover {
+      transform: translateY(-3px); border-color: var(--course-accent, var(--accent-blue));
+      box-shadow: 0 12px 28px rgba(0,0,0,.18);
+    }
+    .course-card:focus-visible, .quick-card:focus-visible, .back-to-courses:focus-visible {
+      outline: 3px solid var(--accent-blue); outline-offset: 3px;
+    }
+    .course-icon { font-size: 1.35rem; margin-bottom: .55rem; }
+    .course-title, .quick-title { font-size: 1.08rem; font-weight: 800; }
+    .course-description, .quick-description {
+      color: var(--text-muted); line-height: 1.5; margin-top: .35rem;
+    }
+    .course-arrow {
+      color: var(--course-accent, var(--accent-blue)); font-size: .88rem;
+      font-weight: 700; margin-top: auto; padding-top: .75rem;
+    }
+    .course-note { font-size: .82rem; margin: .75rem 0 0; }
+    .quick-section { margin-top: 2.5rem; }
+    .quick-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .quick-card { display: flex; flex-direction: column; min-height: 158px; padding: 1.2rem 1.35rem; }
+    .quick-formulas { --course-accent: var(--accent-blue); }
+    .quick-practice { --course-accent: var(--accent-gold); }
+    .quick-icon { color: var(--course-accent); font-size: 1.45rem; margin-bottom: .45rem; }
+    .course-view-controls { margin-top: 1.5rem; margin-bottom: .5rem; }
+    .course-view-controls h1 { color: var(--text-main); font-size: 1.65rem; margin-top: .8rem; }
+    .course-view-controls p { color: var(--text-muted); margin-top: .25rem; }
+    .back-to-courses {
+      background: transparent; color: var(--accent-blue); border: 0; padding: .4rem 0;
+      font-weight: 700; font-size: .95rem; cursor: pointer;
+    }
+    @media (max-width: 680px) {
+      .home-hub { width: min(calc(100% - 1.25rem), 1180px); margin: 1.5rem auto; }
+      .home-intro { margin-bottom: 1.5rem; }
+      .course-grid, .quick-grid { grid-template-columns: 1fr; gap: .75rem; }
+      .course-card { min-height: 150px; }
+      .quick-card { min-height: 140px; }
+      .hub-section-heading { align-items: flex-start; flex-direction: column; gap: .2rem; }
+      .heading-note { display: none; }
+    }
+
   </style>
   <link rel="stylesheet" href="tema.css">
   <script src="tema.js"></script>
@@ -413,12 +496,8 @@
         </div>
 
         <nav class="nav-links">
-          <a href="#tablas-rapidas" class="nav-link-btn nav-btn-tablas">📋 Tablas Rápidas</a>
-          <a href="#ciclo1" class="nav-link-btn nav-btn-c1">🌱 1r Ciclo</a>
-          <a href="#ciclo2" class="nav-link-btn nav-btn-c2">🌿 2º Ciclo</a>
-          <a href="#bachillerato" class="nav-link-btn nav-btn-bach">🎓 Bachillerato</a>
-          <!-- ENLACE AL ENTRENADOR -->
-          <a href="ejercicios/entrenador.html" class="nav-link-btn" style="color:var(--accent-gold); border-color:rgba(251,191,36,0.3); background:rgba(251,191,36,0.08);">Ejercicios 🚀</a>
+          <a href="tablas/index.html" class="nav-link-btn nav-btn-tablas">📋 Fórmulas</a>
+          <a href="ejercicios/entrenador.html" class="nav-link-btn" style="color:var(--accent-gold); border-color:rgba(251,191,36,0.3); background:rgba(251,191,36,0.08);">🎯 Practicar</a>
         </nav>
       </div>
 
@@ -431,13 +510,76 @@
   </header>
 
   <!-- SECCIÓN HERO -->
-  <section class="app-header" style="padding: 2.5rem 1.5rem 1rem;">
-    <h1>Laboratorio Visual e Interactivo de Matemáticas</h1>
-    <p>Aprende secundaria y bachillerato comprendiendo los conceptos mediante manipulativos gráficos, deslizadores en tiempo real y chuletas imprimibles.</p>
+  <section class="home-hub" id="homeHub" aria-labelledby="homeTitle">
+    <div class="home-intro">
+      <span class="home-eyebrow">MATH LAB · APRENDER PASO A PASO</span>
+      <h1 id="homeTitle">¿Qué necesitas hoy?</h1>
+      <p>Elige tu curso para encontrar las lecciones adecuadas. También puedes ir directamente a una fórmula o practicar.</p>
+    </div>
+
+    <section aria-labelledby="courseHeading">
+      <div class="hub-section-heading">
+        <h2 id="courseHeading">Elige tu curso</h2>
+        <span class="heading-note">Lecciones organizadas por nivel</span>
+      </div>
+      <div class="course-grid">
+        <button class="course-card course-c1" type="button" onclick="openCourse('ciclo1')">
+          <span class="course-icon" aria-hidden="true">🌱</span>
+          <span class="course-title">1.º–2.º ESO</span>
+          <span class="course-description">Números, fracciones, operaciones y primeros conceptos de álgebra.</span>
+          <span class="course-arrow" aria-hidden="true">Explorar curso →</span>
+        </button>
+        <button class="course-card course-c2" type="button" onclick="openCourse('ciclo2')">
+          <span class="course-icon" aria-hidden="true">📐</span>
+          <span class="course-title">3.º–4.º ESO</span>
+          <span class="course-description">Álgebra, funciones, geometría, estadística y probabilidad.</span>
+          <span class="course-arrow" aria-hidden="true">Explorar curso →</span>
+        </button>
+        <button class="course-card course-bach1" type="button" onclick="openCourse('bach1')">
+          <span class="course-icon" aria-hidden="true">📈</span>
+          <span class="course-title">1.º Bachillerato</span>
+          <span class="course-description">Trigonometría, geometría, límites y primeras derivadas.</span>
+          <span class="course-arrow" aria-hidden="true">Explorar curso →</span>
+        </button>
+        <button class="course-card course-bach2" type="button" onclick="openCourse('bach2')">
+          <span class="course-icon" aria-hidden="true">🎓</span>
+          <span class="course-title">2.º Bachillerato</span>
+          <span class="course-description">Matrices, cálculo, integrales, probabilidad e inferencia.</span>
+          <span class="course-arrow" aria-hidden="true">Explorar curso →</span>
+        </button>
+      </div>
+      <p class="course-note">La organización de Bachillerato es orientativa; el programa puede variar según el centro.</p>
+    </section>
+
+    <section class="quick-section" aria-labelledby="quickHeading">
+      <div class="hub-section-heading">
+        <h2 id="quickHeading">¿Solo necesitas repasar algo?</h2>
+        <span class="heading-note">Acceso directo</span>
+      </div>
+      <div class="quick-grid">
+        <a class="quick-card quick-formulas" href="tablas/index.html">
+          <span class="quick-icon" aria-hidden="true">▤</span>
+          <span class="quick-title">Tablas y chuletas</span>
+          <span class="quick-description">Encuentra e imprime una fórmula o ficha de consulta.</span>
+          <span class="course-arrow">Ver fórmulas →</span>
+        </a>
+        <a class="quick-card quick-practice" href="ejercicios/entrenador.html">
+          <span class="quick-icon" aria-hidden="true">◎</span>
+          <span class="quick-title">Practicar</span>
+          <span class="quick-description">Resuelve un reto, pide una pista y revisa los pasos.</span>
+          <span class="course-arrow">Ir al entrenador →</span>
+        </a>
+      </div>
+    </section>
   </section>
+  <div class="course-view-controls" id="courseViewControls" hidden>
+    <button type="button" class="back-to-courses" onclick="returnToCourses()">← Cambiar de curso</button>
+    <h1 id="courseViewTitle"></h1>
+    <p id="courseViewNote"></p>
+  </div>
 
   <!-- BUSCADOR Y FILTROS POR TEMÁTICA -->
-  <div class="filter-section">
+  <div class="filter-section" id="filterSection" hidden>
     <div class="search-bar-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" class="search-input" placeholder="Buscar cualquier tema: Derivadas, Pitágoras, Factorial, Fracciones..." oninput="handleSearchInput()">
@@ -457,7 +599,7 @@
   </div>
 
   <!-- CATÁLOGO GENERAL -->
-  <main class="catalog-wrapper">
+  <main class="catalog-wrapper" id="catalogWrapper" hidden>
 
     <!-- TABLAS RÁPIDAS -->
     <section id="tablas-rapidas" class="cycle-block">
@@ -968,7 +1110,7 @@
             </div>
           </a>
 
-          <a href="algebra/sistemas_lineales.html" class="topic-card card-bach" data-title="sistemas ecuaciones lineales rouche frobenius gauss cramer homogeneos parametros batxillerat bachillerato">
+          <a href="algebra/sistemas_lineales3.html" class="topic-card card-bach" data-title="sistemas ecuaciones lineales rouche frobenius gauss cramer homogeneos parametros batxillerat bachillerato">
             <div class="card-top">
               <span class="branch-tag tag-algebra">Álgebra</span>
               <span style="font-size:1.3rem;">⚖️</span>
@@ -1025,7 +1167,7 @@
             <div class="mini-preview"><span>Vol = ⅙|[u,v,w]|</span></div>
           </a>
 
-          <a href="geometria/conicas_circunferencia.html" class="topic-card card-bach" data-title="conicas circunferencia centro radio puntos potencia tangencias bachillerato">
+          <a href="geometria/conicas_circumferencia.html" class="topic-card card-bach" data-title="conicas circunferencia centro radio puntos potencia tangencias bachillerato">
             <div class="card-top">
               <span class="branch-tag tag-geometria">Geometría</span>
               <span style="font-size:1.3rem;">⭕</span>
@@ -1068,7 +1210,7 @@
             </div>
           </a>
 
-          <a href="analisis/derivadas_aplicaciones.html" class="topic-card card-bach" data-title="aplicaciones derivadas maximos minimos extremos relativos monotonia curvatura puntos inflexion optimizacion graficas batxillerat bachillerato">
+          <a href="algebra/derivadas_aplicaciones.html" class="topic-card card-bach" data-title="aplicaciones derivadas maximos minimos extremos relativos monotonia curvatura puntos inflexion optimizacion graficas batxillerat bachillerato">
             <div class="card-top">
               <span class="branch-tag tag-funciones">Análisis</span>
               <span style="font-size:1.3rem;">🏔️</span>
@@ -1270,6 +1412,98 @@
 
     let currentFilterBranch = 'all';
 
+    const BACHILLERATO_COURSES = {
+      bach1: {
+        title: '1.º Bachillerato',
+        note: 'Contenidos orientativos; el orden puede variar según el programa de tu centro.',
+        hrefs: [
+          'algebra/numeros_complejos.html',
+          'geometria/trigonometria_avanzada.html',
+          'tablas/geometria_vectorial.html',
+          'geometria/conicas_circumferencia.html',
+          'analisis/limites_continuidad.html',
+          'analisis/derivadas_intro.html',
+          'estadistica/probabilidad.html'
+        ]
+      },
+      bach2: {
+        title: '2.º Bachillerato',
+        note: 'Contenidos orientativos; el orden puede variar según el programa de tu centro.',
+        hrefs: [
+          'algebra/sistemas_lineales3.html',
+          'algebra/determinantes.html',
+          'algebra/intro_matrices.html',
+          'algebra/derivadas_aplicaciones.html',
+          'analisis/derivadas_avanzadas.html',
+          'analisis/integrales.html',
+          'analisis/aplicaciones_integrales.html',
+          'estadistica/inferencia.html'
+        ]
+      }
+    };
+    let currentCourseCardSet = null;
+
+    function openCourse(courseId) {
+      const home = document.getElementById('homeHub');
+      const controls = document.getElementById('courseViewControls');
+      const filter = document.getElementById('filterSection');
+      const catalog = document.getElementById('catalogWrapper');
+      const courseSectionId = courseId.startsWith('bach') ? 'bachillerato' : courseId;
+      const courseSection = document.getElementById(courseSectionId);
+      if (!courseSection) return;
+
+      home.hidden = true;
+      controls.hidden = false;
+      filter.hidden = false;
+      catalog.hidden = false;
+
+      document.querySelectorAll('.cycle-block').forEach(section => {
+        section.hidden = section !== courseSection;
+        section.style.display = '';
+      });
+      document.querySelectorAll('.topic-card').forEach(card => { card.style.display = 'flex'; });
+      document.querySelectorAll('.branch-group').forEach(group => { group.style.display = 'block'; });
+
+      const bachCourse = BACHILLERATO_COURSES[courseId];
+      currentCourseCardSet = bachCourse
+        ? new Set(bachCourse.hrefs)
+        : new Set([...courseSection.querySelectorAll('.topic-card')].map(card => card.getAttribute('href')));
+
+      document.getElementById('courseViewTitle').textContent =
+        bachCourse?.title || courseSection.querySelector('.cycle-title').innerText.replace(/\s+/g, ' ').trim();
+      document.getElementById('courseViewNote').textContent =
+        bachCourse?.note || 'Elige una lección o busca un tema dentro de este curso.';
+      document.getElementById('searchInput').value = '';
+      document.getElementById('clearSearch').style.display = 'none';
+      currentFilterBranch = 'all';
+      document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
+      document.querySelector('.filter-chip[onclick*="all"]').classList.add('active');
+      filterTopics();
+      courseSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function returnToCourses() {
+      currentCourseCardSet = null;
+      document.getElementById('homeHub').hidden = false;
+      document.getElementById('courseViewControls').hidden = true;
+      document.getElementById('filterSection').hidden = true;
+      document.getElementById('catalogWrapper').hidden = true;
+      document.querySelectorAll('.cycle-block').forEach(section => {
+        section.hidden = false;
+        section.style.display = '';
+      });
+      document.querySelectorAll('.topic-card').forEach(card => { card.style.display = 'flex'; });
+      document.querySelectorAll('.branch-group').forEach(group => { group.style.display = 'block'; });
+      document.getElementById('searchInput').value = '';
+      document.getElementById('clearSearch').style.display = 'none';
+      currentFilterBranch = 'all';
+      document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
+      document.querySelector('.filter-chip[onclick*="all"]').classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+
+
     function filterTopics() {
       const q = document.getElementById('searchInput').value.toLowerCase().trim();
       const cards = document.querySelectorAll('.topic-card');
@@ -1280,6 +1514,7 @@
         const text = card.innerText.toLowerCase();
         const href = card.getAttribute('href');
         const matchesQuery = q === "" || title.includes(q) || text.includes(q);
+        const matchesCourse = !currentCourseCardSet || currentCourseCardSet.has(href);
 
         let matchesBranch = true;
         if (currentFilterBranch === 'favoritos') {
@@ -1289,7 +1524,7 @@
           matchesBranch = (cardBranch === currentFilterBranch);
         }
 
-        card.style.display = (matchesQuery && matchesBranch) ? 'flex' : 'none';
+        card.style.display = (matchesCourse && matchesQuery && matchesBranch) ? 'flex' : 'none';
       });
 
       document.querySelectorAll('.branch-group').forEach(group => {

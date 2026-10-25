@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ca">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../estilos.css">
 
   <style>
-    /* NAVEGACIÓ I PESTANYES */
+    /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
       background: #0b1120;
       border-bottom: 1px solid var(--border-color);
@@ -28,7 +28,7 @@
     
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* PANELLS I ESTRUCTURA */
+    /* PANELES Y ESTRUCTURA */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
     .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
     .panel-box {
@@ -43,7 +43,7 @@
       border: 1px solid var(--border-color); display: block;
     }
 
-    /* ESCALA D'ESGLAONS (HTML/CSS) */
+    /* ESCALA DE UNIDADES */
     .staircase-box {
       display: flex; flex-direction: column; gap: 0.4rem; margin: 1rem 0;
     }
@@ -59,13 +59,13 @@
     .stair-step.multi { color: var(--accent-blue); }
     .stair-step.submulti { color: var(--accent-success); }
 
-    /* TARGETA REGLES D'OR */
+    /* TARJETAS DE REGLAS */
     .rule-card {
       background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
       border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.4rem;
     }
 
-    /* FORMULARI CONVERTIDOR */
+    /* FORMULARIO DEL CONVERTIDOR */
     .conv-grid {
       display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; align-items: center;
       margin-bottom: 1.2rem;
@@ -86,6 +86,11 @@
     .tabs-container { background: var(--bg-card); }
     .tab-content[hidden] { display: none !important; }
     .tab-btn:focus-visible, .conv-input-group select:focus-visible, .conv-input-group input:focus-visible, .practice-controls button:focus-visible { outline: 3px solid var(--accent-gold); outline-offset: 2px; }
+    .equivalence-table-wrap { margin-top: 1.25rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-card); }
+    .equivalence-table-wrap h3 { margin: 0 0 .75rem; color: var(--text-main); }
+    .equivalence-grid { display: grid; grid-template-columns: .7fr .7fr 1.6fr; gap: .4rem; align-items: center; }
+    .equivalence-grid > * { padding: .55rem; border-bottom: 1px solid var(--border-color); }
+    .equivalence-note { color: var(--text-muted); line-height: 1.5; margin: .8rem 0 0; }
     .unit-ladder { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .4rem; margin: 1rem 0; }
     .unit-ladder-step { min-height: 54px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .2rem; border: 1px solid var(--border-color); border-radius: 7px; background: var(--bg-card); color: var(--text-muted); }
     .unit-ladder-step span { font-size: .72rem; }
@@ -130,7 +135,7 @@
       <button type="button" id="tab-laboratori" class="tab-btn" role="tab" aria-selected="false" aria-controls="laboratori" tabindex="-1" onclick="switchTab('laboratori', this)">🧮 5. Convertidor paso a paso</button>
     </nav>
 
-    <!-- ================= PESTANYA 1: L'ESCALA LINEAL ================= -->
+    <!-- ================= PESTAÑA 1: ESCALAS ================= -->
     <div id="lineal" class="tab-content active" role="tabpanel" aria-labelledby="tab-lineal">
       <div class="explanation-card">
         <div class="badge">La regla de oro del sistema decimal</div>
@@ -144,13 +149,13 @@
           <div class="panel-title">Escala de longitud (metros)</div>
           
           <div class="staircase-box">
-            <div class="stair-step multi"><span>km (quilòmetre)</span><span>1.000 m</span></div>
-            <div class="stair-step multi"><span>hm (hectòmetre)</span><span>100 m</span></div>
-            <div class="stair-step multi"><span>dam (decàmetre)</span><span>10 m</span></div>
-            <div class="stair-step base"><span>⭐ m (METRE - Unitat Base)</span><span>1 m</span></div>
-            <div class="stair-step submulti"><span>dm (decímetre)</span><span>0,1 m</span></div>
-            <div class="stair-step submulti"><span>cm (centímetre)</span><span>0,01 m</span></div>
-            <div class="stair-step submulti"><span>mm (mil·límetre)</span><span>0,001 m</span></div>
+            <div class="stair-step multi"><span>km (kilómetro)</span><span>1.000 m</span></div>
+            <div class="stair-step multi"><span>hm (hectómetro)</span><span>100 m</span></div>
+            <div class="stair-step multi"><span>dam (decámetro)</span><span>10 m</span></div>
+            <div class="stair-step base"><span>⭐ m (METRO - Unidad base)</span><span>1 m</span></div>
+            <div class="stair-step submulti"><span>dm (decímetro)</span><span>0,1 m</span></div>
+            <div class="stair-step submulti"><span>cm (centímetro)</span><span>0,01 m</span></div>
+            <div class="stair-step submulti"><span>mm (milímetro)</span><span>0,001 m</span></div>
           </div>
         </div>
 
@@ -161,13 +166,13 @@
             <div class="rule-card" style="border-left:3px solid var(--accent-blue);">
               <strong style="color:var(--accent-blue);">Masa (gramos):</strong>
               <p>kg ➔ hg ➔ dag ➔ <strong>g</strong> ➔ dg ➔ cg ➔ mg.<br>
-              <em>Exemple: 5 kg = 5 · 1.000 = 5.000 g (baixem 3 esglaons ➔ afegim 3 zeros).</em></p>
+              <em>Ejemplo: 5 kg = 5 × 1.000 = 5.000 g (pasamos tres posiciones a unidades menores).</em></p>
             </div>
 
             <div class="rule-card" style="border-left:3px solid var(--accent-gold);">
               <strong style="color:var(--accent-gold);">Capacidad (litros):</strong>
               <p>kL ➔ hL ➔ daL ➔ <strong>L</strong> ➔ dL ➔ cL ➔ mL.<br>
-              <em>Exemple: 350 cL = 350 ÷ 100 = 3,5 L (pugem 2 esglaons ➔ movem la coma 2 llocs a l'esquerra).</em></p>
+              <em>Ejemplo: 350 cL = 350 ÷ 100 = 3,5 L (pasamos dos posiciones a una unidad mayor).</em></p>
             </div>
 
             <div style="background:rgba(16,185,129,0.08); border:1px solid var(--accent-success); border-radius:8px; padding:0.9rem; text-align:center; font-size:0.95rem;">
@@ -178,12 +183,12 @@
       </div>
     </div>
 
-    <!-- ================= PESTANYA 2: SUPERFÍCIE (m²) ================= -->
+    <!-- ================= PESTAÑA 2: SUPERFICIE ================= -->
     <div id="superficie" class="tab-content" role="tabpanel" aria-labelledby="tab-superficie" hidden>
       <div class="explanation-card" style="border-left-color: var(--accent-gold);">
-        <div class="badge" style="color: var(--accent-gold);">Superfície = 2 Dimensions (Llargada × Amplada)</div>
+        <div class="badge" style="color: var(--accent-gold);">Superficie: 2 dimensiones (largo × ancho)</div>
         <div class="content-text">
-          Quan mesurem àrees en metres quadrats (m²), cada esglaó <strong>NO val 10, sinó 100 (dos zeros: 10² = 100)</strong>. Vegem per què físicament.
+          Al medir áreas en metros cuadrados (m²), cada paso entre unidades cambia por <strong>100 (10²)</strong>. Veamos por qué.
         </div>
       </div>
 
@@ -195,7 +200,7 @@
           </p>
 
           <svg class="svg-canvas" viewBox="0 0 260 220" role="img" aria-labelledby="areaSvgTitle areaSvgDesc"><title id="areaSvgTitle">Un metro cuadrado dividido en decímetros cuadrados</title><desc id="areaSvgDesc">Una cuadrícula de diez filas por diez columnas muestra que un metro cuadrado contiene cien decímetros cuadrados.</desc>
-            <!-- Quadrat 10x10 quadrícules -->
+            <!-- Cuadrícula de 10 por 10 -->
             <defs>
               <pattern id="grid_dm2" width="16" height="16" patternUnits="userSpaceOnUse">
                 <rect width="16" height="16" fill="rgba(251, 191, 36, 0.08)" stroke="rgba(251, 191, 36, 0.25)" stroke-width="1" />
@@ -203,12 +208,12 @@
             </defs>
             <rect x="50" y="30" width="160" height="160" fill="url(#grid_dm2)" stroke="var(--accent-gold)" stroke-width="3" />
 
-            <!-- Indicadors de mesura -->
-            <text x="75" y="20" fill="var(--accent-gold)" font-weight="bold" font-size="12">1 m = 10 decímetres</text>
+            <!-- Indicadores de medida -->
+            <text x="75" y="20" fill="var(--accent-gold)" font-weight="bold" font-size="12">1 m = 10 decímetros</text>
             <text x="215" y="115" fill="var(--accent-gold)" font-weight="bold" font-size="12" transform="rotate(90, 215, 115)">1 m = 10 dm</text>
             
             <text x="80" y="115" fill="var(--text-main)" font-weight="bold" font-size="13">10 × 10 = 100</text>
-            <text x="90" y="135" fill="var(--accent-gold)" font-weight="bold" font-size="12">quadrats de 1 dm²</text>
+            <text x="90" y="135" fill="var(--accent-gold)" font-weight="bold" font-size="12">cuadrados de 1 dm²</text>
           </svg>
         </div>
 
@@ -216,11 +221,11 @@
           <div class="panel-title">La regla del factor 100</div>
           
           <div style="font-family:monospace; font-size:1.15rem; background:var(--bg-card); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); line-height:1.9;">
-            <div>1 paso a una unidad menor ➔ <span style="color:var(--accent-success);">· 100</span> (2 zeros)</div>
-            <div>2 pasos a unidades menores ➔ <span style="color:var(--accent-success);">· 10.000</span> (4 zeros)</div>
+            <div>1 paso a una unidad menor ➔ <span style="color:var(--accent-success);">· 100</span> (2 ceros)</div>
+            <div>2 pasos a unidades menores ➔ <span style="color:var(--accent-success);">· 10.000</span> (4 ceros)</div>
             <hr style="border:0; border-top:1px solid var(--border-color); margin:0.5rem 0;">
-            <div>1 paso a una unidad mayor ➔ <span style="color:var(--accent-op);">÷ 100</span> (2 llocs a l'esquerra)</div>
-            <div>2 pasos a unidades mayores ➔ <span style="color:var(--accent-op);">÷ 10.000</span> (4 llocs a l'esquerra)</div>
+            <div>1 paso a una unidad mayor ➔ <span style="color:var(--accent-op);">÷ 100</span> (2 posiciones a la izquierda)</div>
+            <div>2 pasos a unidades mayores ➔ <span style="color:var(--accent-op);">÷ 10.000</span> (4 posiciones a la izquierda)</div>
           </div>
 
           <div style="background:rgba(251,191,36,0.1); border:1px solid var(--accent-gold); border-radius:8px; padding:1rem; margin-top:1rem;">
@@ -235,7 +240,7 @@
       </div>
     </div>
 
-    <!-- ================= PESTANYA 3: VOLUM (m³) ================= -->
+    <!-- ================= PESTAÑA 3: VOLUMEN ================= -->
     <div id="volum" class="tab-content" role="tabpanel" aria-labelledby="tab-volum" hidden>
       <div class="explanation-card" style="border-left-color: var(--accent-op);">
         <div class="badge" style="color: var(--accent-op);">Volumen: 3 dimensiones (largo × ancho × alto)</div>
@@ -249,12 +254,12 @@
           <div class="panel-title">Demostración visual del cubo (10 × 10 × 10)</div>
           
           <svg class="svg-canvas" viewBox="0 0 280 240" role="img" aria-labelledby="volumeSvgTitle volumeSvgDesc"><title id="volumeSvgTitle">Un metro cúbico</title><desc id="volumeSvgDesc">El cubo se divide en diez unidades por cada dimensión: diez por diez por diez son mil decímetros cúbicos.</desc>
-            <!-- Cub isomètric 3D -->
+            <!-- Cubo isométrico 3D -->
             <!-- Cara frontal -->
             <polygon points="60,110 160,110 160,210 60,210" fill="rgba(244, 63, 94, 0.15)" stroke="var(--accent-op)" stroke-width="2.5" />
             <!-- Cara superior -->
             <polygon points="60,110 120,50 220,50 160,110" fill="rgba(244, 63, 94, 0.25)" stroke="var(--accent-op)" stroke-width="2.5" />
-            <!-- Cara lateral dreta -->
+            <!-- Cara lateral derecha -->
             <polygon points="160,110 220,50 220,150 160,210" fill="rgba(244, 63, 94, 0.35)" stroke="var(--accent-op)" stroke-width="2.5" />
 
             <text x="75" y="165" fill="var(--text-main)" font-weight="bold" font-size="13">10 × 10 × 10 =</text>
@@ -266,16 +271,16 @@
           <div class="panel-title">La regla del factor 1.000</div>
           
           <div style="font-family:monospace; font-size:1.15rem; background:var(--bg-card); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); line-height:1.9;">
-            <div>1 paso a una unidad menor ➔ <span style="color:var(--accent-success);">· 1.000</span> (3 zeros)</div>
-            <div>2 pasos a unidades menores ➔ <span style="color:var(--accent-success);">· 1.000.000</span> (6 zeros)</div>
+            <div>1 paso a una unidad menor ➔ <span style="color:var(--accent-success);">· 1.000</span> (3 ceros)</div>
+            <div>2 pasos a unidades menores ➔ <span style="color:var(--accent-success);">· 1.000.000</span> (6 ceros)</div>
             <hr style="border:0; border-top:1px solid var(--border-color); margin:0.5rem 0;">
-            <div>1 paso a una unidad mayor ➔ <span style="color:var(--accent-op);">÷ 1.000</span> (3 llocs a l'esquerra)</div>
+            <div>1 paso a una unidad mayor ➔ <span style="color:var(--accent-op);">÷ 1.000</span> (3 posiciones a la izquierda)</div>
           </div>
 
           <div style="background:rgba(244,63,94,0.1); border:1px solid var(--accent-op); border-radius:8px; padding:1rem; margin-top:1rem;">
             <strong>Ejemplo:</strong>
             <p style="font-size:0.95rem; color:var(--text-muted); margin-top:0.3rem;">
-              Passar <strong>2.500 dm³ a m³</strong>:<br>
+              Convertir <strong>2.500 dm³ a m³</strong>:<br>
               Pasamos a una unidad mayor (de dm³ a m³), así que dividimos entre 1.000.<br>
               <strong>2.500 ÷ 1.000 = 2,5 m³</strong>.
             </p>
@@ -284,7 +289,7 @@
       </div>
     </div>
 
-    <!-- ================= PESTANYA 4: EL PONT MÀGIC ================= -->
+    <!-- ================= PESTAÑA 4: EQUIVALENCIAS ================= -->
     <div id="pont" class="tab-content" role="tabpanel" aria-labelledby="tab-pont" hidden>
       <div class="explanation-card" style="border-left-color: var(--accent-blue);">
         <div class="badge" style="color: var(--accent-blue);">Conexión entre volumen, capacidad y masa</div>
@@ -297,8 +302,8 @@
         <div class="panel-box" style="align-items:center; text-align:center; border-top:4px solid var(--accent-blue);">
           <div style="font-size:3rem; margin-bottom:0.5rem;">🥛</div>
           <h4 style="color:var(--accent-blue); margin-bottom:0.4rem;">El recipiente de 1 litro</h4>
-          <div style="font-family:monospace; font-size:1.3rem; font-weight:bold; color:#fff;">
-            1 dm³ = 1 L = 1 kg
+          <div style="font-family:monospace; font-size:1.3rem; font-weight:bold; color:var(--text-main);">
+            1 dm³ = 1 L; 1 L de agua ≈ 1 kg
           </div>
           <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.5rem; line-height:1.4;">
             Un cubo de 10 cm de lado ocupa <strong>1 dm³</strong> y tiene capacidad de <strong>1 litro</strong>. Un litro de agua tiene una masa de aproximadamente <strong>1 kg</strong>.
@@ -308,8 +313,8 @@
         <div class="panel-box" style="align-items:center; text-align:center; border-top:4px solid var(--accent-gold);">
           <div style="font-size:3rem; margin-bottom:0.5rem;">🏊</div>
           <h4 style="color:var(--accent-gold); margin-bottom:0.4rem;">El depósito</h4>
-          <div style="font-family:monospace; font-size:1.3rem; font-weight:bold; color:#fff;">
-            1 m³ = 1.000 L = 1 t
+          <div style="font-family:monospace; font-size:1.3rem; font-weight:bold; color:var(--text-main);">
+            1 m³ = 1.000 L; agua ≈ 1 t
           </div>
           <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.5rem; line-height:1.4;">
             Un depósito de <strong>1 m³</strong> tiene capacidad para <strong>1.000 litros</strong>. Si contiene agua, su masa es de aproximadamente 1.000 kg (1 tonelada).
@@ -319,17 +324,27 @@
         <div class="panel-box" style="align-items:center; text-align:center; border-top:4px solid var(--accent-success);">
           <div style="font-size:3rem; margin-bottom:0.5rem;">💉</div>
           <h4 style="color:var(--accent-success); margin-bottom:0.4rem;">El cubo de 1 cm³</h4>
-          <div style="font-family:monospace; font-size:1.3rem; font-weight:bold; color:#fff;">
-            1 cm³ = 1 mL = 1 g
+          <div style="font-family:monospace; font-size:1.3rem; font-weight:bold; color:var(--text-main);">
+            1 cm³ = 1 mL; agua ≈ 1 g
           </div>
           <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.5rem; line-height:1.4;">
             Un cubo de 1 cm de arista ocupa <strong>1 cm³</strong>, equivalente a <strong>1 mL</strong>. Si contiene agua, su masa es de aproximadamente <strong>1 g</strong>.
           </p>
         </div>
       </div>
+      <div class="equivalence-table-wrap">
+        <h3>Tabla rápida de equivalencias</h3>
+        <div class="equivalence-grid" role="table" aria-label="Equivalencias exactas entre volumen y capacidad">
+          <strong role="columnheader">Volumen</strong><strong role="columnheader">Capacidad</strong><strong role="columnheader">Relación</strong>
+          <span>1 m³</span><span>1.000 L</span><span>1 m³ = 1.000 dm³ = 1.000 L</span>
+          <span>1 dm³</span><span>1 L</span><span>1 dm³ = 1 L</span>
+          <span>1 cm³</span><span>1 mL</span><span>1 cm³ = 1 mL</span>
+        </div>
+        <p class="equivalence-note">Estas igualdades entre volumen y capacidad son exactas. La relación con la masa depende de la sustancia: las aproximaciones anteriores son para agua.</p>
+      </div>
     </div>
 
-    <!-- ================= PESTANYA 5: CONVERTIDOR INTERACTIU ================= -->
+    <!-- ================= PESTAÑA 5: CONVERTIDOR INTERACTIVO ================= -->
     <div id="laboratori" class="tab-content" role="tabpanel" aria-labelledby="tab-laboratori" hidden>
       <div class="explanation-card" style="border-left-color: var(--accent-success);">
         <div class="badge" style="color: var(--accent-success);">Comprueba tus conversiones</div>
@@ -355,7 +370,7 @@
         <div class="conv-grid">
           <div class="conv-input-group">
             <label>Cantidad:</label>
-            <input type="number" id="inp_val" value="25" step="any" aria-label="Cantidad que se va a convertir" oninput="calculateConversion()">
+            <input type="number" id="inp_val" min="0" value="25" step="any" aria-label="Cantidad que se va a convertir" oninput="calculateConversion()">
           </div>
 
           <div class="conv-input-group">
@@ -369,7 +384,7 @@
           </div>
         </div>
 
-        <!-- RESOLUCIÓ PAS A PAS -->
+        <!-- RESOLUCIÓN PASO A PASO -->
         <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:1.8; margin-top:0.5rem;">
           <div style="color:var(--text-muted); font-size:0.9rem;" id="calc_step_steps"></div>
           <div style="font-size:1.2rem; margin-top:0.3rem;" id="calc_step_math"></div>
@@ -381,7 +396,7 @@
           <p id="practicePrompt">Pulsa «Nuevo reto» para practicar una conversión.</p>
           <div class="practice-controls">
             <label for="practiceAnswer">Tu respuesta
-              <input type="number" id="practiceAnswer" step="any" inputmode="decimal" aria-describedby="practiceFeedback">
+              <input type="number" id="practiceAnswer" min="0" step="any" inputmode="decimal" aria-describedby="practiceFeedback">
             </label>
             <span id="practiceTargetUnit"></span>
             <button type="button" class="btn btn-primary" id="checkPractice">Comprobar</button>
@@ -395,7 +410,7 @@
   </main>
 
   <script>
-    // --- NAVEGACIÓ ENTRE PESTANYES ---
+    // --- NAVEGACIÓN ENTRE PESTAÑAS ---
     function switchTab(tabId, btn) {
       const tabs = Array.from(btn.closest('[role="tablist"]').querySelectorAll('[role="tab"]'));
       tabs.forEach(tab => {

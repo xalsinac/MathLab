@@ -524,6 +524,7 @@
     const equationLevels = [
       {
         title: "Lineal Simple: 3x - 5 = 10",
+        check: "Sustituimos x = 5: 3 · 5 − 5 = 10, y el otro miembro también vale 10.",
         steps: [
           {
             left: "3x - 5",
@@ -559,6 +560,7 @@
       },
       {
         title: "Con Paréntesis: 2(x + 4) = 14",
+        check: "Sustituimos x = 3: 2 · (3 + 4) = 14; ambos miembros valen 14.",
         steps: [
           {
             left: "2(x + 4)",
@@ -606,6 +608,7 @@
       },
       {
         title: "Con Fracciones: (2x - 1) / 3 = 5",
+        check: "Sustituimos x = 8: (2 · 8 − 1) / 3 = 5; ambos miembros valen 5.",
         steps: [
           {
             left: f('2x - 1', '3'),
@@ -653,6 +656,7 @@
       },
       {
         title: "Irracional: √(2x + 1) = 5",
+        check: "Sustituimos x = 12: √(2 · 12 + 1) = √25 = 5; la solución cumple la ecuación original.",
         steps: [
           {
             left: sq('2x + 1'),
@@ -725,6 +729,18 @@
       // Textos informativos
       stepIndicator.textContent = `Paso ${currentStep} de ${level.steps.length - 1}`;
       pedagogicalText.innerHTML = step.why;
+      document.getElementById('lessonPanel').setAttribute('aria-labelledby', 'level-tab-' + currentLevel);
+      const checkCard = document.getElementById('verificationCard');
+      checkCard.hidden = currentStep !== level.steps.length - 1;
+      document.getElementById('verificationText').textContent = level.check;
+      const actionBox = document.getElementById('balanceAction');
+      const actionMatch = step.label.match(/(?:Sumamos|Restamos|Dividimos|Multiplicamos|Elevamos)[^:,.]*/i);
+      actionBox.hidden = !actionMatch;
+      if (actionMatch) {
+        document.getElementById('leftAction').textContent = actionMatch[0];
+        document.getElementById('rightAction').textContent = actionMatch[0];
+      }
+      updatePractice();
       opLabel.innerHTML = `<strong>Acción:</strong> ${step.label}`;
 
       // Botones
@@ -739,6 +755,72 @@
         btnNext.textContent = "Aplicar Operación →";
       }
     }
+
+    const practiceChallenges = [
+      { question: "En 3x − 5 = 10, ¿qué operación ayuda a neutralizar el −5?", options: ["Sumar 5 a ambos miembros", "Restar 5 solo al izquierdo", "Dividir ambos miembros entre 3"], correct: 0, explanation: "Sumamos 5 a los dos miembros: el −5 se neutraliza y la igualdad se conserva." },
+      { question: "En 2(x + 4) = 14, ¿qué paso permite quitar el paréntesis?", options: ["Aplicar la distributiva: 2x + 8 = 14", "Restar 4 solo al lado izquierdo", "Restar 14 a ambos miembros"], correct: 0, explanation: "El 2 multiplica a cada término del paréntesis: 2·x + 2·4." },
+      { question: "En (2x − 1) / 3 = 5, ¿cómo eliminamos el denominador?", options: ["Multiplicar ambos miembros por 3", "Sumar 3 a ambos miembros", "Multiplicar solo el miembro izquierdo por 3"], correct: 0, explanation: "Multiplicamos ambos miembros por 3; así la división de la izquierda se cancela sin alterar la igualdad." },
+      { question: "En √(2x + 1) = 5, ¿qué operación deshace la raíz?", options: ["Elevar ambos miembros al cuadrado", "Elevar solo la izquierda al cuadrado", "Restar 1 a ambos miembros"], correct: 0, explanation: "Elevamos los dos miembros al cuadrado. Después hay que comprobar la solución en la ecuación original." }
+    ];
+
+    function updatePractice() {
+      const item = practiceChallenges[currentLevel];
+      document.getElementById('practiceQuestion').textContent = item.question;
+      const options = document.getElementById('practiceOptions');
+      options.replaceChildren();
+      document.getElementById('practiceFeedback').textContent = "";
+      item.options.forEach((label, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'practice-option';
+        button.textContent = label;
+        button.addEventListener('click', () => {
+          const correct = index === item.correct;
+          document.getElementById('practiceFeedback').textContent =
+            (correct ? '¡Correcto! ' : 'Aún no. ') + item.explanation;
+          options.querySelectorAll('button').forEach((option, optionIndex) => {
+            option.disabled = true;
+            if (optionIndex === item.correct) option.classList.add('correct');
+            else if (optionIndex === index) option.classList.add('incorrect');
+          });
+        });
+        options.appendChild(button);
+      });
+    }
+
+    document.getElementById('practiceReset').addEventListener('click', updatePractice);
+
+    const errorOptions = document.querySelectorAll('#errorOptions .practice-option');
+    errorOptions.forEach(option => option.addEventListener('click', () => {
+      const correct = option.dataset.correct === 'true';
+      document.getElementById('errorFeedback').textContent = correct
+        ? "¡Exacto! Si quitamos 3 en el miembro izquierdo, también restamos 3 en el derecho: 2x = 11 − 3 = 8, luego x = 4."
+        : "Revisa la regla de la balanza: cualquier operación debe hacerse en los dos miembros. Para quitar +3, restamos 3 a ambos.";
+      errorOptions.forEach(button => {
+        button.disabled = true;
+        if (button.dataset.correct === 'true') button.classList.add('correct');
+        else if (button === option) button.classList.add('incorrect');
+      });
+    }));
+
+    let demoLeft = 6, demoRight = 6, demoHistory = "";
+    function renderDemo() {
+      document.getElementById('demoLeft').textContent = demoHistory || String(demoLeft);
+      document.getElementById('demoRight').textContent = demoHistory || String(demoRight);
+      document.getElementById('demoStatus').textContent = demoLeft === demoRight
+        ? "Equilibrio conservado: " + demoLeft + " = " + demoRight + "."
+        : "La balanza se ha desequilibrado.";
+    }
+    document.querySelectorAll('[data-demo-op]').forEach(button => button.addEventListener('click', () => {
+      const amount = button.dataset.demoOp === 'add' ? 3 : -2;
+      demoLeft += amount;
+      demoRight += amount;
+      demoHistory = demoLeft + " = " + demoRight;
+      renderDemo();
+    }));
+    document.getElementById('demoReset').addEventListener('click', () => {
+      demoLeft = 6; demoRight = 6; demoHistory = ""; renderDemo();
+    });
 
     // Eventos de Navegación
     btnNext.addEventListener('click', () => {
@@ -761,13 +843,29 @@
     });
 
     // Cambio de Pestañas
-    tabs.forEach(tab => {
-      tab.addEventListener('click', (e) => {
-        tabs.forEach(t => t.classList.remove('active'));
-        e.target.classList.add('active');
-        currentLevel = parseInt(e.target.dataset.level);
-        currentStep = 0;
-        updateView();
+    function selectLevel(tab) {
+      tabs.forEach(t => {
+        const active = t === tab;
+        t.classList.toggle('active', active);
+        t.setAttribute('aria-selected', String(active));
+        t.tabIndex = active ? 0 : -1;
+      });
+      currentLevel = Number(tab.dataset.level);
+      currentStep = 0;
+      updateView();
+    }
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => selectLevel(tab));
+      tab.addEventListener('keydown', event => {
+        let nextIndex = null;
+        if (event.key === 'ArrowRight') nextIndex = (index + 1) % tabs.length;
+        if (event.key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length;
+        if (nextIndex !== null) {
+          event.preventDefault();
+          tabs[nextIndex].focus();
+          selectLevel(tabs[nextIndex]);
+        }
       });
     });
 

@@ -100,6 +100,48 @@
     @media (max-width: 768px) {
       .grid-2 { grid-template-columns: 1fr; }
     }
+  
+    .explorer-panel { gap: 1rem; }
+    .explorer-intro, .explorer-card > p { color: var(--text-muted); line-height: 1.5; }
+    .explorer-card { min-width: 0; padding: 1rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-card); }
+    .explorer-card h3 { margin-bottom: .4rem; color: var(--text-main); }
+    .explorer-inputs { display: flex; align-items: end; flex-wrap: wrap; gap: .65rem; margin: .85rem 0; }
+    .explorer-inputs label { display: grid; gap: .3rem; color: var(--text-main); font-weight: 600; }
+    .explorer-inputs input { width: 105px; min-height: 40px; padding: .4rem .55rem; color: var(--text-main); background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 7px; }
+    .dynamic-tracks, .dynamic-divisors { display: grid; gap: .5rem; max-width: 100%; overflow-x: auto; }
+    .dynamic-track { display: flex; align-items: center; gap: .35rem; min-width: max-content; }
+    .dynamic-track strong { min-width: 2.3rem; }
+    .dynamic-track .num-chip { flex: 0 0 auto; min-width: 38px; height: 38px; font-size: .95rem; }
+    .dynamic-track .first-match { outline: 3px solid var(--accent-gold); outline-offset: 1px; }
+    .dynamic-divisor-row { display: grid; grid-template-columns: 5.5rem 1fr; gap: .5rem; align-items: start; }
+    .dynamic-divisor-row strong { padding-top: .35rem; }
+    .dynamic-divisor-row .div-chip-list { min-width: 0; }
+    .explorer-result { min-height: 1.5rem; color: var(--accent-success); font-weight: 800; }
+    .method-choice { gap: .8rem; }
+    .method-choice > p { color: var(--text-muted); line-height: 1.5; }
+    .choice-second-question { border-top: 1px solid var(--border-color); padding-top: .8rem; }
+    .choice-buttons { display: flex; flex-wrap: wrap; gap: .6rem; }
+    .choice-button { min-height: 42px; padding: .65rem .85rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-card); color: var(--text-main); text-align: left; cursor: pointer; }
+    .choice-button:hover { border-color: var(--accent-blue); }
+    .choice-button.correct { border-color: var(--accent-success); }
+    .choice-button.incorrect { border-color: var(--accent-op); }
+    .choice-feedback { min-height: 1.4rem; color: var(--text-main) !important; }
+    .verification-note { margin-top: .75rem; color: var(--text-muted); line-height: 1.5; font-size: .9rem; }
+    .tab-btn:focus-visible, .subtab-btn:focus-visible, .choice-button:focus-visible, .explorer-inputs input:focus-visible { outline: 3px solid var(--accent-gold); outline-offset: 2px; }
+    .tab-content[hidden], .subtab-content[hidden] { display: none !important; }
+    @media (max-width: 600px) {
+      .tab-btn { flex: 0 0 auto; padding: .85rem .65rem; font-size: .88rem; }
+      .tab-content { padding: 1rem .7rem; }
+      .explorer-inputs { align-items: stretch; }
+      .explorer-inputs label, .explorer-inputs input { width: 100%; }
+      .choice-buttons { flex-direction: column; }
+      .choice-button { width: 100%; }
+      .dynamic-divisor-row { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+
   </style>
   <link rel="stylesheet" href="../tema.css">
   <script src="../tema.js"></script>
@@ -117,14 +159,14 @@
 
   <main class="app-container">
     
-    <nav class="tabs-container">
-      <button class="tab-btn active" onclick="switchTab('curiosidad', this)">💡 1. ¿Qué son realmente?</button>
-      <button class="tab-btn" onclick="switchTab('factorizar', this)">🌲 2. Paso a Paso (Factores)</button>
-      <button class="tab-btn" onclick="switchTab('problemas', this)">📝 3. Problemas Clásicos</button>
+    <nav class="tabs-container" role="tablist" aria-label="Apartados de m.c.m. y M.C.D.">
+      <button type="button" id="tab-curiosidad" class="tab-btn active" role="tab" aria-selected="true" aria-controls="curiosidad" tabindex="0" onclick="switchTab('curiosidad', this)">💡 1. ¿Qué son realmente?</button>
+      <button type="button" id="tab-factorizar" class="tab-btn" role="tab" aria-selected="false" aria-controls="factorizar" tabindex="-1" onclick="switchTab('factorizar', this)">🌲 2. Paso a Paso (Factores)</button>
+      <button type="button" id="tab-problemas" class="tab-btn" role="tab" aria-selected="false" aria-controls="problemas" tabindex="-1" onclick="switchTab('problemas', this)">📝 3. Problemas Clásicos</button>
     </nav>
 
     <!-- ================= PESTAÑA 1: LA CURIOSIDAD VISUAL ================= -->
-    <div id="curiosidad" class="tab-content active">
+    <div id="curiosidad" class="tab-content active" role="tabpanel" aria-labelledby="tab-curiosidad">
       <div class="explanation-card">
         <div class="badge">El Secreto Detrás de las Letras</div>
         <div class="content-text">
@@ -172,13 +214,13 @@
           <div class="div-item">
             <span style="min-width: 140px; font-weight: bold; color: var(--accent-blue);">Divisores de 24:</span>
             <div class="div-chip-list">
-              <span class="div-chip common">1</span><span class="div-chip common">2</span><span class="div-chip common">3</span><span class="div-chip common">4</span><span class="div-chip common greatest">6</span><span class="div-chip common">12</span><span class="div-chip">24</span>
+              <span class="div-chip common">1</span><span class="div-chip common">2</span><span class="div-chip common">3</span><span class="div-chip common">4</span><span class="div-chip common">6</span><span class="div-chip common greatest">12</span><span class="div-chip">24</span>
             </div>
           </div>
           <div class="div-item">
             <span style="min-width: 140px; font-weight: bold; color: var(--accent-gold);">Divisores de 36:</span>
             <div class="div-chip-list">
-              <span class="div-chip common">1</span><span class="div-chip common">2</span><span class="div-chip common">3</span><span class="div-chip common">4</span><span class="div-chip common greatest">6</span><span class="div-chip">9</span><span class="div-chip common">12</span><span class="div-chip">18</span><span class="div-chip">36</span>
+              <span class="div-chip common">1</span><span class="div-chip common">2</span><span class="div-chip common">3</span><span class="div-chip common">4</span><span class="div-chip common">6</span><span class="div-chip">9</span><span class="div-chip common greatest">12</span><span class="div-chip">18</span><span class="div-chip">36</span>
             </div>
           </div>
         </div>
@@ -188,21 +230,50 @@
           <span style="font-family: monospace; font-size: 1.3rem; font-weight: bold; color: var(--accent-op);">M.C.D.(24, 36) = 12</span>
         </div>
       </div>
+    
+      <div class="panel-box explorer-panel">
+        <div class="panel-title">Prueba con otros números</div>
+        <p class="explorer-intro">Cambia los números para ver cómo se construyen los múltiplos comunes y los divisores comunes.</p>
+        <div class="grid-2">
+          <section class="explorer-card" aria-labelledby="mcmExplorerTitle">
+            <h3 id="mcmExplorerTitle">Explora el m.c.m.</h3>
+            <p>Buscamos el primer múltiplo positivo que aparece en las dos listas.</p>
+            <div class="explorer-inputs">
+              <label for="mcmNumberA">Primer número <input type="number" id="mcmNumberA" min="2" max="8" value="4"></label>
+              <label for="mcmNumberB">Segundo número <input type="number" id="mcmNumberB" min="2" max="8" value="6"></label>
+              <button type="button" class="btn btn-primary" id="exploreMcm">Ver múltiplos</button>
+            </div>
+            <div id="mcmTracks" class="dynamic-tracks" aria-live="polite"></div>
+            <p id="mcmExploreResult" class="explorer-result" role="status" aria-live="polite"></p>
+          </section>
+          <section class="explorer-card" aria-labelledby="mcdExplorerTitle">
+            <h3 id="mcdExplorerTitle">Explora el M.C.D.</h3>
+            <p>Comparamos los divisores y resaltamos el mayor que comparten.</p>
+            <div class="explorer-inputs">
+              <label for="mcdNumberA">Primer número <input type="number" id="mcdNumberA" min="2" max="60" value="24"></label>
+              <label for="mcdNumberB">Segundo número <input type="number" id="mcdNumberB" min="2" max="60" value="36"></label>
+              <button type="button" class="btn btn-primary" id="exploreMcd">Ver divisores</button>
+            </div>
+            <div id="mcdDivisors" class="dynamic-divisors" aria-live="polite"></div>
+            <p id="mcdExploreResult" class="explorer-result" role="status" aria-live="polite"></p>
+          </section>
+        </div>
+      </div>
     </div>
 
-    <!-- ================= PESTAÑA 2: FACTORIZACIÓN PASO A PASO ================= -->
-    <div id="factorizar" class="tab-content">
+      <!-- ================= PESTAÑA 2: FACTORIZACIÓN PASO A PASO ================= -->
+    <div id="factorizar" class="tab-content" role="tabpanel" aria-labelledby="tab-factorizar" hidden>
       <div class="explanation-card" style="border-left-color: var(--accent-gold);">
         <div class="badge" style="color: var(--accent-gold);">El Método Universal</div>
         <div class="content-text">
-          Hacer listas de números es lento cuando son cifras grandes. Por eso se descompone en <strong>factores primos</strong> (2, 3, 5, 7, 11...). Observa cómo se eligen los factores para <strong>40</strong> y <strong>60</strong>.
+          Las divisiones sucesivas descomponen un número en <strong>factores primos</strong> (2, 3, 5, 7, 11...). Observa cómo se eligen los factores para <strong>40</strong> y <strong>60</strong>.
         </div>
       </div>
 
       <div class="grid-2">
         <!-- ÁRBOLES DE FACTORIZACIÓN -->
         <div class="panel-box">
-          <div class="panel-title">1. Descomposición en Factores Primos</div>
+          <div class="panel-title">1. Descomposición en factores primos por divisiones sucesivas</div>
           <div style="display: flex; justify-content: space-around; margin: 1.5rem 0;">
             
             <!-- Tabla 40 -->
@@ -241,9 +312,9 @@
           <div class="panel-title">2. ¿Cuáles escogemos?</div>
           
           <div style="margin-bottom: 1.5rem; background: rgba(56, 189, 248, 0.05); padding: 1rem; border-radius: 8px; border: 1px solid var(--accent-blue);">
-            <h4 style="color: var(--accent-blue); margin-bottom: 0.4rem;">Regla del m.c.m. (El glotón)</h4>
+            <h4 style="color: var(--accent-blue); margin-bottom: 0.4rem;">Regla del m.c.m. (mayor exponente)</h4>
             <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5;">
-              Coge <strong>TODOS</strong> los factores (comunes y no comunes). Si alguno se repite, coge el del <strong>MAYOR exponente</strong>.
+              Coge cada factor primo que aparezca en alguno de los números. Para cada primo, usa el <strong>mayor exponente</strong> que aparezca.
             </p>
             <div style="margin-top: 0.5rem; font-family: monospace; font-size: 1.1rem; font-weight: bold;">
               m.c.m.(40, 60) = 2³ · 3 · 5 = 8 · 3 · 5 = <span style="color:var(--accent-success)">120</span>
@@ -251,9 +322,9 @@
           </div>
 
           <div style="background: rgba(244, 63, 94, 0.05); padding: 1rem; border-radius: 8px; border: 1px solid var(--accent-op);">
-            <h4 style="color: var(--accent-op); margin-bottom: 0.4rem;">Regla del M.C.D. (El selecto)</h4>
+            <h4 style="color: var(--accent-op); margin-bottom: 0.4rem;">Regla del M.C.D. (menor exponente común)</h4>
             <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5;">
-              Solo coge los factores que estén en <strong>AMBOS</strong> números a la vez (comunes) y con el <strong>MENOR exponente</strong>.
+              Coge solo los factores primos que aparezcan en <strong>ambos</strong> números y usa, para cada uno, el <strong>menor exponente</strong>.
             </p>
             <div style="margin-top: 0.5rem; font-family: monospace; font-size: 1.1rem; font-weight: bold;">
               M.C.D.(40, 60) = 2² · 5 = 4 · 5 = <span style="color:var(--accent-op)">20</span>
@@ -265,15 +336,35 @@
     </div>
 
     <!-- ================= PESTAÑA 3: PROBLEMAS CLÁSICOS CON SUBPESTAÑAS ================= -->
-    <div id="problemas" class="tab-content">
+    <div id="problemas" class="tab-content" role="tabpanel" aria-labelledby="tab-problemas" hidden>
       
-      <div class="subtabs-container">
-        <button class="subtab-btn active" onclick="switchSubTab('prob_mcm', this)">⏱️ Problema de Coincidencia (m.c.m.)</button>
-        <button class="subtab-btn" onclick="switchSubTab('prob_mcd', this)">📦 Problema de Reparto Máximo (M.C.D.)</button>
+      <section class="panel-box method-choice" aria-labelledby="methodChoiceTitle">
+        <div class="panel-title" id="methodChoiceTitle">Antes de calcular: ¿m.c.m. o M.C.D.?</div>
+        <div class="choice-question" data-correct="0" data-explanation="Buscamos cuándo vuelven a coincidir, así que comparamos múltiplos: usamos el m.c.m.">
+          <p>Unas luces se encienden a intervalos de 6 y 8 minutos. ¿Qué herramienta elegirías?</p>
+          <div class="choice-buttons">
+            <button type="button" class="choice-button">m.c.m.: queremos saber cuándo coinciden</button>
+            <button type="button" class="choice-button">M.C.D.: queremos repartir en grupos iguales</button>
+          </div>
+          <p class="choice-feedback" role="status" aria-live="polite"></p>
+        </div>
+        <div class="choice-question" data-correct="1" data-explanation="Queremos formar el mayor número de grupos iguales sin sobras, así que buscamos un divisor común máximo: el M.C.D.">
+          <p>Se reparten 20 fresas y 30 caramelos de menta en bolsas idénticas, sin que sobre nada. ¿Qué buscamos?</p>
+          <div class="choice-buttons">
+            <button type="button" class="choice-button">m.c.m.: queremos que dos sucesos coincidan</button>
+            <button type="button" class="choice-button">M.C.D.: queremos el mayor número de bolsas iguales</button>
+          </div>
+          <p class="choice-feedback" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <div class="subtabs-container" role="tablist" aria-label="Tipos de problemas">
+        <button type="button" id="subtab-prob_mcm" class="subtab-btn active" role="tab" aria-selected="true" aria-controls="prob_mcm" tabindex="0" onclick="switchSubTab('prob_mcm', this)">⏱️ Problema de Coincidencia (m.c.m.)</button>
+        <button type="button" id="subtab-prob_mcd" class="subtab-btn" role="tab" aria-selected="false" aria-controls="prob_mcd" tabindex="-1" onclick="switchSubTab('prob_mcd', this)">📦 Problema de Reparto Máximo (M.C.D.)</button>
       </div>
 
       <!-- PROBLEMA 1: MCM -->
-      <div id="prob_mcm" class="subtab-content active">
+      <div id="prob_mcm" class="subtab-content active" role="tabpanel" aria-labelledby="subtab-prob_mcm">
         <div class="panel-box">
           <div class="panel-title" style="color: var(--accent-success);">El problema de las pastillas / alarmas</div>
           <div class="explanation-card" style="border-left-color: var(--accent-success); margin: 0 0 1rem 0;">
@@ -299,18 +390,19 @@
               <p style="margin-top: 0.8rem; font-weight: bold; color: var(--text-main);">
                 Respuesta: Coincidirán de nuevo dentro de <strong>24 horas</strong> (exactamente al día siguiente a las 8:00).
               </p>
+              <p class="verification-note">Comprobación: 24 es múltiplo de 6 y de 8 (24 ÷ 6 = 4; 24 ÷ 8 = 3).</p>
             </div>
           </div>
         </div>
       </div>
 
       <!-- PROBLEMA 2: MCD -->
-      <div id="prob_mcd" class="subtab-content">
+      <div id="prob_mcd" class="subtab-content" role="tabpanel" aria-labelledby="subtab-prob_mcd" hidden>
         <div class="panel-box">
           <div class="panel-title" style="color: var(--accent-op);">El problema de las bolsitas de golosinas</div>
           <div class="explanation-card" style="border-left-color: var(--accent-op); margin: 0 0 1rem 0;">
             <div class="content-text" style="font-size: 1.1rem;">
-              <strong>Enunciado:</strong> Para una fiesta de cumpleaños tenemos <strong>20 caramelos de fresa</strong> y <strong>30 de menta</strong>. Queremos preparar bolsas idénticas con el <strong>máximo número posible</strong> de golosinas en cada una, sin que sobre ningún caramelo. ¿Cuántas bolsas podemos hacer y qué llevará cada una?
+              <strong>Enunciado:</strong> Para una fiesta de cumpleaños tenemos <strong>20 caramelos de fresa</strong> y <strong>30 de menta</strong>. Queremos preparar el <strong>mayor número posible de bolsas idénticas</strong>, usando todos los caramelos y poniendo la misma cantidad de cada sabor en cada bolsa. ¿Cuántas bolsas podemos hacer y qué llevará cada una?
             </div>
           </div>
 
@@ -331,6 +423,7 @@
               <p style="margin-top: 0.8rem; font-weight: bold; color: var(--text-main);">
                 Respuesta: Podemos hacer <strong>10 bolsas</strong>. Cada bolsa tendrá 2 caramelos de fresa (20÷10) y 3 de menta (30÷10).
               </p>
+              <p class="verification-note">Comprobación: 10 divide exactamente a 20 y a 30. Como es el mayor divisor común, no se pueden formar más bolsas idénticas sin que sobre nada.</p>
             </div>
           </div>
         </div>
@@ -341,21 +434,145 @@
   </main>
 
   <script>
-    // --- NAVEGACIÓN ENTRE PESTAÑAS PRINCIPALES ---
-    function switchTab(tabId, btn) {
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
+    // Navegación accesible por ratón, teclado y tecnologías de asistencia.
+    function activateTab(tabId, btn, buttonSelector, panelSelector) {
+      const tablist = btn.closest('[role="tablist"]');
+      tablist.querySelectorAll(buttonSelector).forEach(tab => {
+        const selected = tab === btn;
+        tab.classList.toggle('active', selected);
+        tab.setAttribute('aria-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+      });
+      tablist.parentElement.querySelectorAll(panelSelector).forEach(panel => {
+        const selected = panel.id === tabId;
+        panel.classList.toggle('active', selected);
+        panel.hidden = !selected;
+      });
     }
 
-    // --- NAVEGACIÓN ENTRE SUBPESTAÑAS DE PROBLEMAS ---
-    function switchSubTab(subtabId, btn) {
-      document.querySelectorAll('.subtab-content').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(subtabId).classList.add('active');
-      btn.classList.add('active');
+    function switchTab(tabId, btn) {
+      activateTab(tabId, btn, '.tab-btn', '.tab-content');
     }
+
+    function switchSubTab(tabId, btn) {
+      activateTab(tabId, btn, '.subtab-btn', '.subtab-content');
+    }
+
+    document.querySelectorAll('[role="tablist"]').forEach(tablist => {
+      tablist.addEventListener('keydown', event => {
+        const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+        const current = tabs.indexOf(document.activeElement);
+        if (current < 0) return;
+        let next = current;
+        if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (current + 1) % tabs.length;
+        else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (current - 1 + tabs.length) % tabs.length;
+        else if (event.key === 'Home') next = 0;
+        else if (event.key === 'End') next = tabs.length - 1;
+        else return;
+        event.preventDefault();
+        tabs[next].focus();
+        tabs[next].click();
+      });
+    });
+
+    function readPair(firstId, secondId, min, max) {
+      const first = document.getElementById(firstId);
+      const second = document.getElementById(secondId);
+      const a = Number(first.value);
+      const b = Number(second.value);
+      const valid = Number.isInteger(a) && Number.isInteger(b) && a >= min && a <= max && b >= min && b <= max;
+      [first, second].forEach(input => input.setAttribute('aria-invalid', String(!valid)));
+      return valid ? [a, b] : null;
+    }
+
+    function gcd(a, b) {
+      while (b) [a, b] = [b, a % b];
+      return a;
+    }
+
+    function renderMcmExplorer() {
+      const pair = readPair('mcmNumberA', 'mcmNumberB', 2, 8);
+      const tracks = document.getElementById('mcmTracks');
+      const result = document.getElementById('mcmExploreResult');
+      tracks.replaceChildren();
+      if (!pair) {
+        result.textContent = 'Introduce dos números enteros entre 2 y 8.';
+        return;
+      }
+      const [a, b] = pair;
+      const lcm = a / gcd(a, b) * b;
+      [[a, 'Múltiplos de ' + a], [b, 'Múltiplos de ' + b]].forEach(([n, label]) => {
+        const row = document.createElement('div');
+        row.className = 'dynamic-track';
+        const title = document.createElement('strong');
+        title.textContent = label + ':';
+        row.append(title);
+        for (let value = n; value <= lcm; value += n) {
+          const chip = document.createElement('span');
+          chip.className = 'num-chip' + (value % a === 0 && value % b === 0 ? ' match' : '');
+          if (value === lcm) chip.classList.add('first-match');
+          chip.textContent = value;
+          row.append(chip);
+        }
+        tracks.append(row);
+      });
+      result.textContent = 'm.c.m.(' + a + ', ' + b + ') = ' + lcm + '. El primer múltiplo común es ' + lcm + '.';
+    }
+
+    function renderMcdExplorer() {
+      const pair = readPair('mcdNumberA', 'mcdNumberB', 2, 60);
+      const list = document.getElementById('mcdDivisors');
+      const result = document.getElementById('mcdExploreResult');
+      list.replaceChildren();
+      if (!pair) {
+        result.textContent = 'Introduce dos números enteros entre 2 y 60.';
+        return;
+      }
+      const [a, b] = pair;
+      const greatest = gcd(a, b);
+      [[a, 'Divisores de ' + a], [b, 'Divisores de ' + b]].forEach(([n, label]) => {
+        const row = document.createElement('div');
+        row.className = 'dynamic-divisor-row';
+        const title = document.createElement('strong');
+        title.textContent = label + ':';
+        const chips = document.createElement('div');
+        chips.className = 'div-chip-list';
+        for (let divisor = 1; divisor <= n; divisor++) {
+          if (n % divisor !== 0) continue;
+          const chip = document.createElement('span');
+          const common = a % divisor === 0 && b % divisor === 0;
+          chip.className = 'div-chip' + (common ? ' common' : '') + (divisor === greatest ? ' greatest' : '');
+          chip.textContent = divisor;
+          chips.append(chip);
+        }
+        row.append(title, chips);
+        list.append(row);
+      });
+      result.textContent = 'M.C.D.(' + a + ', ' + b + ') = ' + greatest + '. Es el mayor divisor que comparten.';
+    }
+
+    document.getElementById('exploreMcm').addEventListener('click', renderMcmExplorer);
+    document.getElementById('exploreMcd').addEventListener('click', renderMcdExplorer);
+    renderMcmExplorer();
+    renderMcdExplorer();
+
+    document.querySelectorAll('.choice-question').forEach(question => {
+      const feedback = question.querySelector('.choice-feedback');
+      const options = Array.from(question.querySelectorAll('.choice-button'));
+      options.forEach((option, index) => option.addEventListener('click', () => {
+        if (question.dataset.completed === 'true') return;
+        options.forEach(button => button.classList.remove('correct', 'incorrect'));
+        if (index === Number(question.dataset.correct)) {
+          option.classList.add('correct');
+          question.dataset.completed = 'true';
+          options.forEach(button => { button.disabled = true; });
+          feedback.textContent = '¡Correcto! ' + question.dataset.explanation;
+        } else {
+          option.classList.add('incorrect');
+          feedback.textContent = 'Aún no. Fíjate en si buscamos una coincidencia de múltiplos o repartir en grupos iguales.';
+        }
+      }));
+    });
   </script>
 </body>
 </html>

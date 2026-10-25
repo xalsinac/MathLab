@@ -230,9 +230,8 @@
           <span style="font-family: monospace; font-size: 1.3rem; font-weight: bold; color: var(--accent-op);">M.C.D.(24, 36) = 12</span>
         </div>
       </div>
-    </div>
-
-          <div class="panel-box explorer-panel">
+    
+      <div class="panel-box explorer-panel">
         <div class="panel-title">Prueba con otros números</div>
         <p class="explorer-intro">Cambia los números para ver cómo se construyen los múltiplos comunes y los divisores comunes.</p>
         <div class="grid-2">
@@ -260,6 +259,7 @@
           </section>
         </div>
       </div>
+    </div>
 
       <!-- ================= PESTAÑA 2: FACTORIZACIÓN PASO A PASO ================= -->
     <div id="factorizar" class="tab-content" role="tabpanel" aria-labelledby="tab-factorizar" hidden>
@@ -358,7 +358,7 @@
         </div>
       </section>
 
-      <div class="subtabs-container role="tablist" aria-label="Tipos de problemas">
+      <div class="subtabs-container" role="tablist" aria-label="Tipos de problemas">
         <button type="button" id="subtab-prob_mcm" class="subtab-btn active" role="tab" aria-selected="true" aria-controls="prob_mcm" tabindex="0" onclick="switchSubTab('prob_mcm', this)">⏱️ Problema de Coincidencia (m.c.m.)</button>
         <button type="button" id="subtab-prob_mcd" class="subtab-btn" role="tab" aria-selected="false" aria-controls="prob_mcd" tabindex="-1" onclick="switchSubTab('prob_mcd', this)">📦 Problema de Reparto Máximo (M.C.D.)</button>
       </div>
@@ -434,21 +434,145 @@
   </main>
 
   <script>
-    // --- NAVEGACIÓN ENTRE PESTAÑAS PRINCIPALES ---
-    function switchTab(tabId, btn) {
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
+    // Navegación accesible por ratón, teclado y tecnologías de asistencia.
+    function activateTab(tabId, btn, buttonSelector, panelSelector) {
+      const tablist = btn.closest('[role="tablist"]');
+      tablist.querySelectorAll(buttonSelector).forEach(tab => {
+        const selected = tab === btn;
+        tab.classList.toggle('active', selected);
+        tab.setAttribute('aria-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+      });
+      tablist.parentElement.querySelectorAll(panelSelector).forEach(panel => {
+        const selected = panel.id === tabId;
+        panel.classList.toggle('active', selected);
+        panel.hidden = !selected;
+      });
     }
 
-    // --- NAVEGACIÓN ENTRE SUBPESTAÑAS DE PROBLEMAS ---
-    function switchSubTab(subtabId, btn) {
-      document.querySelectorAll('.subtab-content').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(subtabId).classList.add('active');
-      btn.classList.add('active');
+    function switchTab(tabId, btn) {
+      activateTab(tabId, btn, '.tab-btn', '.tab-content');
     }
+
+    function switchSubTab(tabId, btn) {
+      activateTab(tabId, btn, '.subtab-btn', '.subtab-content');
+    }
+
+    document.querySelectorAll('[role="tablist"]').forEach(tablist => {
+      tablist.addEventListener('keydown', event => {
+        const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+        const current = tabs.indexOf(document.activeElement);
+        if (current < 0) return;
+        let next = current;
+        if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (current + 1) % tabs.length;
+        else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (current - 1 + tabs.length) % tabs.length;
+        else if (event.key === 'Home') next = 0;
+        else if (event.key === 'End') next = tabs.length - 1;
+        else return;
+        event.preventDefault();
+        tabs[next].focus();
+        tabs[next].click();
+      });
+    });
+
+    function readPair(firstId, secondId, min, max) {
+      const first = document.getElementById(firstId);
+      const second = document.getElementById(secondId);
+      const a = Number(first.value);
+      const b = Number(second.value);
+      const valid = Number.isInteger(a) && Number.isInteger(b) && a >= min && a <= max && b >= min && b <= max;
+      [first, second].forEach(input => input.setAttribute('aria-invalid', String(!valid)));
+      return valid ? [a, b] : null;
+    }
+
+    function gcd(a, b) {
+      while (b) [a, b] = [b, a % b];
+      return a;
+    }
+
+    function renderMcmExplorer() {
+      const pair = readPair('mcmNumberA', 'mcmNumberB', 2, 8);
+      const tracks = document.getElementById('mcmTracks');
+      const result = document.getElementById('mcmExploreResult');
+      tracks.replaceChildren();
+      if (!pair) {
+        result.textContent = 'Introduce dos números enteros entre 2 y 8.';
+        return;
+      }
+      const [a, b] = pair;
+      const lcm = a / gcd(a, b) * b;
+      [[a, 'Múltiplos de ' + a], [b, 'Múltiplos de ' + b]].forEach(([n, label]) => {
+        const row = document.createElement('div');
+        row.className = 'dynamic-track';
+        const title = document.createElement('strong');
+        title.textContent = label + ':';
+        row.append(title);
+        for (let value = n; value <= lcm; value += n) {
+          const chip = document.createElement('span');
+          chip.className = 'num-chip' + (value % a === 0 && value % b === 0 ? ' match' : '');
+          if (value === lcm) chip.classList.add('first-match');
+          chip.textContent = value;
+          row.append(chip);
+        }
+        tracks.append(row);
+      });
+      result.textContent = 'm.c.m.(' + a + ', ' + b + ') = ' + lcm + '. El primer múltiplo común es ' + lcm + '.';
+    }
+
+    function renderMcdExplorer() {
+      const pair = readPair('mcdNumberA', 'mcdNumberB', 2, 60);
+      const list = document.getElementById('mcdDivisors');
+      const result = document.getElementById('mcdExploreResult');
+      list.replaceChildren();
+      if (!pair) {
+        result.textContent = 'Introduce dos números enteros entre 2 y 60.';
+        return;
+      }
+      const [a, b] = pair;
+      const greatest = gcd(a, b);
+      [[a, 'Divisores de ' + a], [b, 'Divisores de ' + b]].forEach(([n, label]) => {
+        const row = document.createElement('div');
+        row.className = 'dynamic-divisor-row';
+        const title = document.createElement('strong');
+        title.textContent = label + ':';
+        const chips = document.createElement('div');
+        chips.className = 'div-chip-list';
+        for (let divisor = 1; divisor <= n; divisor++) {
+          if (n % divisor !== 0) continue;
+          const chip = document.createElement('span');
+          const common = a % divisor === 0 && b % divisor === 0;
+          chip.className = 'div-chip' + (common ? ' common' : '') + (divisor === greatest ? ' greatest' : '');
+          chip.textContent = divisor;
+          chips.append(chip);
+        }
+        row.append(title, chips);
+        list.append(row);
+      });
+      result.textContent = 'M.C.D.(' + a + ', ' + b + ') = ' + greatest + '. Es el mayor divisor que comparten.';
+    }
+
+    document.getElementById('exploreMcm').addEventListener('click', renderMcmExplorer);
+    document.getElementById('exploreMcd').addEventListener('click', renderMcdExplorer);
+    renderMcmExplorer();
+    renderMcdExplorer();
+
+    document.querySelectorAll('.choice-question').forEach(question => {
+      const feedback = question.querySelector('.choice-feedback');
+      const options = Array.from(question.querySelectorAll('.choice-button'));
+      options.forEach((option, index) => option.addEventListener('click', () => {
+        if (question.dataset.completed === 'true') return;
+        options.forEach(button => button.classList.remove('correct', 'incorrect'));
+        if (index === Number(question.dataset.correct)) {
+          option.classList.add('correct');
+          question.dataset.completed = 'true';
+          options.forEach(button => { button.disabled = true; });
+          feedback.textContent = '¡Correcto! ' + question.dataset.explanation;
+        } else {
+          option.classList.add('incorrect');
+          feedback.textContent = 'Aún no. Fíjate en si buscamos una coincidencia de múltiplos o repartir en grupos iguales.';
+        }
+      }));
+    });
   </script>
 </body>
 </html>

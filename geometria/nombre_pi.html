@@ -60,8 +60,46 @@
       border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.4rem;
     }
 
-    @media (max-width: 800px) {
-      .grid-2 { grid-template-columns: 1fr; }
+    .tab-scroll-hint {display:none}
+    .measurement-panel,.advanced-panel,.exercise-card {background:var(--bg-primary);border:1px solid var(--border-color);border-radius:10px;padding:1.25rem}
+    .measurement-panel h2,.exercise-card h3,.advanced-panel h3 {color:var(--accent-blue);margin-bottom:.65rem}
+    .measurement-form {display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:.8rem;align-items:end;margin:1rem 0}
+    .measurement-form label,.calculator-controls label {display:flex;flex-direction:column;gap:.35rem;color:var(--text-main);font-weight:600}
+    .measurement-form input,.calculator-controls input,.exercise-card input {width:100%;min-height:2.7rem;padding:.5rem .65rem;border:1px solid var(--border-color);border-radius:7px;background:var(--bg-card);color:var(--text-main);font:inherit}
+    .action-button,.exercise-card button {border:1px solid var(--accent-blue);border-radius:7px;padding:.65rem .9rem;background:var(--bg-card);color:var(--text-main);font:inherit;font-weight:700;cursor:pointer}
+    .action-button:hover,.exercise-card button:hover {background:var(--accent-blue);color:#042f2e}
+    .measurement-table-wrap {overflow-x:auto;margin-top:1rem}
+    .measurement-table {width:100%;border-collapse:collapse;min-width:440px}
+    .measurement-table th,.measurement-table td {padding:.6rem;border-bottom:1px solid var(--border-color);text-align:left}
+    .ratio-track {position:relative;height:.8rem;min-width:120px;border-radius:8px;background:var(--bg-plate)}
+    .ratio-track::after {content:"";position:absolute;left:89.76%;top:-.25rem;height:1.3rem;border-left:2px dashed var(--accent-gold)}
+    .ratio-fill {height:100%;border-radius:inherit;background:var(--accent-success)}
+    .calculator-layout {display:grid;grid-template-columns:minmax(180px,.8fr) 1.2fr;gap:1rem;align-items:center}
+    .calculator-controls {display:grid;gap:.75rem}
+    .calculator-visual {width:100%;max-width:320px;margin:auto}
+    .calculator-results {padding:.9rem;border-left:3px solid var(--accent-success);background:var(--bg-card);border-radius:6px;line-height:1.7}
+    .advanced-panel {margin-top:1rem}
+    .advanced-panel summary {cursor:pointer;font-weight:700;color:var(--accent-purple);padding:.25rem}
+    .advanced-content {padding-top:1rem;line-height:1.7}
+    .polygon-layout {display:grid;grid-template-columns:220px 1fr;gap:1rem;align-items:center}
+    .polygon-visual {width:100%;max-width:220px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:8px}
+    .exercise-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+    .exercise-card {display:flex;flex-direction:column;align-items:flex-start;gap:.7rem}
+    .exercise-card input {max-width:240px}
+    .exercise-actions {display:flex;flex-wrap:wrap;gap:.5rem}
+    .exercise-hint,.exercise-feedback {min-height:1.5em;line-height:1.5}
+    .exercise-feedback {color:var(--accent-success);font-weight:600}
+    .formula-row {display:flex;flex-wrap:wrap;gap:.6rem;margin:.75rem 0}
+    .formula-pill {padding:.5rem .75rem;border-radius:7px;background:var(--bg-card);border:1px solid var(--border-color);font-family:monospace}
+    .sim-note {color:var(--text-muted);font-size:.9rem;margin-top:.7rem;line-height:1.5}
+    .tab-btn:focus-visible,input:focus-visible,button:focus-visible,summary:focus-visible {outline:3px solid var(--accent-gold);outline-offset:3px}
+    @media(max-width:800px) {
+      .grid-2,.calculator-layout,.polygon-layout,.exercise-grid,.measurement-form {grid-template-columns:1fr}
+      .tabs-container {justify-content:flex-start}
+      .tab-btn {flex:0 0 auto;padding:.9rem .85rem;font-size:.92rem}
+      .tab-scroll-hint {display:block;padding:.45rem 1rem;color:var(--text-muted);font-size:.8rem}
+      .polygon-visual {margin:auto}.tab-content {padding:1rem}
+      .svg-canvas-wide {height:auto;min-height:190px}.pi-calc-box {font-size:1rem;padding:.8rem}
     }
   </style>
   <link rel="stylesheet" href="../tema.css">
@@ -80,19 +118,20 @@
 
   <main class="app-container">
     
-    <nav class="tabs-container">
-      <button class="tab-btn active" onclick="switchTab('laboratorio', this)">🎡 1. Despliega la Rueda (Demostración)</button>
-      <button class="tab-btn" onclick="switchTab('explicacion', this)">📜 2. ¿Qué es π?</button>
-      <button class="tab-btn" onclick="switchTab('historia', this)">🏛️ 3. ¿Cómo se descubrió?</button>
+    <nav class="tabs-container" role="tablist" aria-label="Secciones de la lección">
+      <button class="tab-btn active" role="tab" aria-selected="true" onclick="switchTab('laboratorio', this)">🎡 1. Experimenta</button>
+      <button class="tab-btn" role="tab" aria-selected="false" onclick="switchTab('explicacion', this)">📐 2. Entiende</button>
+      <button class="tab-btn" role="tab" aria-selected="false" onclick="switchTab('historia', this)">🏛️ 3. Explora</button>
+      <button class="tab-btn" role="tab" aria-selected="false" onclick="switchTab('practica', this)">✍️ 4. Practica</button>
     </nav>
+    <p class="tab-scroll-hint" aria-hidden="true">En móvil, desliza las pestañas para ver todas.</p>
 
     <!-- ================= PESTAÑA 1: LABORATORIO INTERACTIVO ================= -->
     <div id="laboratorio" class="tab-content active">
       <div class="explanation-card">
         <div class="badge">El Experimento de la Rueda</div>
         <div class="content-text">
-          Elige el radio de la rueda (empieza con <strong>r = 1</strong>) y <strong>arrastra el deslizador para hacerla rodar una vuelta completa (360º)</strong>. 
-          Observa cómo el borde exterior se desenrolla sobre el suelo como una alfombra. Al terminar la vuelta, dividimos la distancia recorrida entre el diámetro.
+          Cambia el radio y el giro para ver cuánto avanza una rueda ideal. Las marcas comparan el recorrido con el diámetro: una vuelta completa mide aproximadamente <strong>3,14 diámetros</strong>. El simulador usa la fórmula de la circunferencia; más abajo podrás estimar π con medidas reales.
         </div>
       </div>
 
@@ -101,20 +140,20 @@
         
         <div class="grid-2">
           <div class="slider-row">
-            <label style="color:var(--accent-gold);">Radio de la rueda (r):</label>
+            <label for="wheel_r" style="color:var(--accent-gold);">Radio de la rueda (r):</label>
             <input type="range" id="wheel_r" min="1" max="5" value="1" oninput="updateWheelSim()">
             <span class="val-badge" id="v_wheel_r" style="color:var(--accent-gold);">1</span>
           </div>
 
           <div class="slider-row">
-            <label style="color:var(--accent-blue);">Giro de la rueda:</label>
+            <label for="wheel_rot" style="color:var(--accent-blue);">Giro de la rueda:</label>
             <input type="range" id="wheel_rot" min="0" max="360" value="0" oninput="updateWheelSim()">
             <span class="val-badge" id="v_wheel_deg" style="color:var(--accent-blue);">0º</span>
           </div>
         </div>
 
         <!-- LIENZO SVG PANORÁMICO (ANCHO COMPLETO 950 PX) -->
-        <svg class="svg-canvas-wide" viewBox="0 0 950 240" id="wheel_svg">
+        <svg class="svg-canvas-wide" viewBox="0 0 950 240" id="wheel_svg" role="img" aria-labelledby="wheel-title wheel-description"><title id="wheel-title">Rueda que se desplaza y deja una huella</title><desc id="wheel-description">El recorrido equivale a tres diámetros completos y un tramo adicional de aproximadamente catorce centésimas de diámetro.</desc>
           <!-- Suelo horizontal a y=180 -->
           <line x1="20" y1="180" x2="930" y2="180" stroke="#64748b" stroke-width="2.5" />
 
@@ -154,11 +193,25 @@
             <span style="color:var(--accent-op);">L</span> / <span style="color:var(--accent-gold);">d</span> = 
             <span id="txt_calc_pi_res" style="color:var(--accent-success); font-weight:bold; font-size:1.7rem;">0.00</span>
           </div>
-          <div id="txt_conclusion" style="font-size:0.95rem; color:var(--text-muted); margin-top:0.5rem;">
-            Arrastra el deslizador hasta 360º para completar la vuelta entera.
+          <div id="txt_conclusion" aria-live="polite" aria-atomic="true" style="font-size:0.95rem; color:var(--text-muted); margin-top:0.5rem;">
+            Arrastra el deslizador hasta 360° para completar la vuelta entera.
           </div>
+          <p class="sim-note" id="sim_note">La escala visual mantiene la misma longitud de vuelta al cambiar el radio, para comparar la proporción. Es un modelo ideal: calcula el avance usando π, así que no constituye una medición independiente.</p>
         </div>
       </div>
+      <section class="measurement-panel" aria-labelledby="measure-title">
+        <h2 id="measure-title">Mide un objeto real y estima π</h2>
+        <p>Con una cinta flexible o un hilo, mide la circunferencia y el diámetro pasando por el centro. Usa la misma unidad en ambas medidas y calcula <strong>circunferencia ÷ diámetro</strong>. Las diferencias pequeñas son normales por la precisión de la medida.</p>
+        <form class="measurement-form" id="measurement-form">
+          <label for="measure-object">Objeto<input id="measure-object" name="object" type="text" maxlength="40" placeholder="Tapa, vaso..." required></label>
+          <label for="measure-circumference">Circunferencia (cm)<input id="measure-circumference" name="circumference" type="number" min="0.01" step="any" required></label>
+          <label for="measure-diameter">Diámetro (cm)<input id="measure-diameter" name="diameter" type="number" min="0.01" step="any" required></label>
+          <button class="action-button" type="submit">Añadir medida</button>
+        </form>
+        <div class="exercise-actions"><button class="action-button" type="button" onclick="loadSampleMeasurements()">Ver medidas de ejemplo</button><button class="action-button" type="button" onclick="clearMeasurements()">Borrar medidas</button></div>
+        <p id="measurement-summary" class="sim-note" aria-live="polite">Añade varias medidas para comparar los cocientes con π ≈ 3,14159.</p>
+        <div class="measurement-table-wrap"><table class="measurement-table"><thead><tr><th>Objeto</th><th>Circunferencia</th><th>Diámetro</th><th>C ÷ d</th><th>Comparación con π</th></tr></thead><tbody id="measurement-rows"></tbody></table></div>
+      </section>
     </div>
 
     <!-- ================= PESTAÑA 2: QUÉ ES PI ================= -->
@@ -166,7 +219,7 @@
       <div class="explanation-card" style="border-left-color: var(--accent-gold);">
         <div class="badge" style="color: var(--accent-gold);">La Proporción Universal</div>
         <div class="content-text">
-          El número <strong>π (pi)</strong> no es un número inventado para memorizar: es una <strong>constante de la naturaleza</strong> que aparece en todos los círculos del universo, desde una moneda de 1 euro hasta la rueda de un camión o la órbita de la Tierra.
+          El número <strong>π (pi)</strong> es una constante geométrica: en cualquier círculo del plano, la longitud de la circunferencia dividida por su diámetro da el mismo valor. No depende del tamaño del círculo.
         </div>
       </div>
 
@@ -177,12 +230,10 @@
             Si coges una cinta métrica, mides el perímetro completo de cualquier objeto circular y lo divides por su diámetro (el ancho de lado a lado pasando por el centro):
           </p>
 
-          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; text-align:center; font-family:monospace; font-size:1.6rem; color:var(--accent-success); font-weight:bold;">
-            π = Longitud / Diámetro ≈ 3,14159265...
-          </div>
+          <div class="formula-row" aria-label="Definición de pi"><span class="formula-pill">π = L / d</span><span class="formula-pill">π ≈ 3,14159...</span></div>
 
           <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-top:1rem;">
-            Esto significa que <strong>el perímetro de una circunferencia siempre mide algo más de 3 veces su diámetro</strong>. Concretamente, 3 diámetros enteros y el 14,159% de otro.
+            Una vuelta mide <strong>3 diámetros completos y aproximadamente un 14,16% de otro</strong>. En medidas reales el cociente puede variar un poco por errores de medición.
           </p>
         </div>
 
@@ -205,14 +256,31 @@
           </div>
         </div>
       </div>
+      <section class="panel-box" style="margin-top:1rem;" aria-labelledby="circle-calculator-title">
+        <div class="panel-title" id="circle-calculator-title">Prueba las fórmulas con un círculo</div>
+        <div class="calculator-layout">
+          <div class="calculator-controls">
+            <label for="calc-radius">Radio del círculo (cm)<input id="calc-radius" type="range" min="1" max="10" step="0.5" value="3" oninput="updateCircleCalculator()"></label>
+            <output id="calc-radius-value" for="calc-radius">3 cm</output><div class="calculator-results" id="circle-results" aria-live="polite" aria-atomic="true"></div>
+          </div>
+          <svg class="calculator-visual" viewBox="0 0 220 220" role="img" aria-labelledby="circle-title circle-desc"><title id="circle-title">Círculo con radio y diámetro</title><desc id="circle-desc">Diagrama del radio desde el centro y del diámetro completo.</desc>
+            <circle id="calc-circle" cx="110" cy="110" r="60" fill="rgba(56,189,248,0.12)" stroke="var(--accent-blue)" stroke-width="3"/><line x1="50" y1="110" x2="170" y2="110" stroke="var(--accent-gold)" stroke-width="2"/><line id="calc-radius-line" x1="110" y1="110" x2="170" y2="110" stroke="var(--accent-op)" stroke-width="3"/><circle cx="110" cy="110" r="4" fill="var(--text-main)"/><text x="112" y="101" fill="var(--text-main)" font-size="12">r</text><text x="102" y="130" fill="var(--text-main)" font-size="12">d</text>
+          </svg>
+        </div>
+      </section>
+      <details class="advanced-panel"><summary>Ampliación para cursos superiores: ¿por qué funciona?</summary><div class="advanced-content">
+        <h3>La proporción no depende del tamaño</h3><p>Si ampliamos un círculo por un factor <em>k</em>, su diámetro pasa de <em>d</em> a <em>kd</em> y su circunferencia de <em>L</em> a <em>kL</em>. El cociente se conserva: <strong>(kL)/(kd) = L/d = π</strong>.</p>
+        <h3>La misma fórmula con radianes</h3><p>La longitud de un arco es <strong>s = rθ</strong> cuando θ se mide en radianes. Una vuelta completa son <strong>2π rad</strong>, así que <strong>L = r·2π = 2πr</strong>. Como <strong>d = 2r</strong>, se obtiene <strong>L/d = π</strong>.</p>
+        <p>La medición permite estimar π; esta deducción justifica la fórmula.</p>
+      </div></details>
     </div>
 
     <!-- ================= PESTAÑA 3: HISTORIA Y ARQUÍMEDES ================= -->
     <div id="historia" class="tab-content">
       <div class="explanation-card" style="border-left-color: var(--accent-success);">
-        <div class="badge" style="color: var(--accent-success);">¿Cómo se calculó por primera vez?</div>
+        <div class="badge" style="color: var(--accent-success);">¿Cómo acotó Arquímedes el valor de π?</div>
         <div class="content-text">
-          En la antigüedad resultaba muy difícil medir curvas sin cometer errores. El sabio griego <strong>Arquímedes de Siracusa</strong> (siglo III a.C.) ideó un método brillante: acorralar el círculo entre dos polígonos de líneas rectas.
+          Ya existían aproximaciones antiguas obtenidas mediante medidas. En el siglo III a. C., <strong>Arquímedes de Siracusa</strong> encontró una forma geométrica de encerrar π entre dos fracciones: el perímetro de un polígono inscrito queda por debajo de la circunferencia y el de uno circunscrito, por encima.
         </div>
       </div>
 
@@ -230,8 +298,12 @@
             Fue duplicando el número de lados: 6, 12, 24, 48 hasta llegar a polígonos de <strong>96 lados</strong>. Con ellos demostró que el valor de π estaba atrapado entre:
           </p>
           <div style="background:#090d16; padding:0.8rem; border-radius:6px; font-family:monospace; font-size:1.15rem; text-align:center; color:var(--accent-gold); margin-top:0.5rem;">
-            3 + 10/71 &lt; π &lt; 3 + 1/7 &nbsp; (3,1408 &lt; π &lt; 3,1428)
+            223/71 &lt; π &lt; 22/7<br><small>3,140845... &lt; π &lt; 3,142857...</small>
           </div>
+          <details class="advanced-panel"><summary>Visualiza los polígonos que acotan la circunferencia</summary><div class="advanced-content polygon-layout">
+            <svg class="polygon-visual" viewBox="0 0 220 180" role="img" aria-labelledby="polygon-title polygon-desc"><title id="polygon-title">Polígonos inscritos y circunscritos</title><desc id="polygon-desc">Un polígono inscrito y otro circunscrito rodean una circunferencia.</desc><circle cx="110" cy="85" r="55" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="4"/><polygon id="polygon-inner" points="" fill="rgba(16,185,129,0.12)" stroke="var(--accent-success)" stroke-width="2"/><polygon id="polygon-outer" points="" fill="none" stroke="var(--accent-op)" stroke-width="2"/></svg>
+            <div><label for="polygon-level">Número de lados: <output id="polygon-sides">6</output></label><input id="polygon-level" type="range" min="0" max="4" step="1" value="0" oninput="updatePolygonBounds()"><p id="polygon-bounds" aria-live="polite"></p><p>El inscrito se acerca a π desde abajo y el circunscrito desde arriba. Al duplicar los lados, el intervalo se estrecha.</p></div>
+          </div></details>
         </div>
 
         <div class="panel-box">
@@ -242,6 +314,7 @@
               <p>Tiene <strong>infinitos decimales</strong> que jamás se repiten de forma periódica. No existe ninguna fracción exacta de números enteros que sea igual a π.</p>
             </div>
 
+            <div class="info-card-item"><strong style="color:var(--accent-purple);">Ampliación: irracional y trascendente</strong><p>Irracional significa que π no es una fracción exacta de enteros. En cursos superiores puede añadirse que también es trascendente: no es raíz de ningún polinomio no nulo con coeficientes enteros.</p></div>
             <div class="info-card-item">
               <strong style="color:var(--accent-op);">El Día Internacional de Pi (14 de marzo):</strong>
               <p>En el formato anglosajón de fechas, el 14 de marzo se escribe <strong>3/14</strong> (los tres primeros dígitos de π). Se celebra en colegios y universidades de todo el mundo.</p>
@@ -250,142 +323,59 @@
         </div>
       </div>
     </div>
+    <div id="practica" class="tab-content">
+      <div class="explanation-card"><div class="badge">Practica paso a paso</div><div class="content-text">Empieza con una circunferencia y prueba después un arco. Pide una pista, comprueba tu respuesta y genera otro ejercicio.</div></div>
+      <div class="exercise-grid">
+        <section class="exercise-card" id="basic-exercise"><h3>Nivel inicial: calcula una vuelta</h3><p id="basic-prompt"></p><label for="basic-answer">Longitud aproximada (cm)<input id="basic-answer" type="number" step="any" inputmode="decimal"></label><div class="exercise-actions"><button type="button" onclick="checkExercise('basic')">Comprobar</button><button type="button" onclick="toggleHint('basic')">Ver pista</button><button type="button" onclick="generateBasicExercise()">Otro ejercicio</button></div><p id="basic-hint" class="exercise-hint" hidden>Usa L = π·d y π ≈ 3,14. Si te dan el radio, calcula primero d = 2r.</p><p id="basic-feedback" class="exercise-feedback" aria-live="polite"></p></section>
+        <section class="exercise-card" id="arc-exercise"><h3>Nivel superior: longitud de un arco</h3><p id="arc-prompt"></p><label for="arc-answer">Longitud aproximada (cm)<input id="arc-answer" type="number" step="any" inputmode="decimal"></label><div class="exercise-actions"><button type="button" onclick="checkExercise('arc')">Comprobar</button><button type="button" onclick="toggleHint('arc')">Ver pista</button><button type="button" onclick="generateArcExercise()">Otro ejercicio</button></div><p id="arc-hint" class="exercise-hint" hidden>Convierte a radianes con θ = grados·π/180 y aplica s = rθ.</p><p id="arc-feedback" class="exercise-feedback" aria-live="polite"></p></section>
+        <section class="exercise-card"><h3>Comprueba las unidades</h3><p>Para un círculo de radio 3 cm, ¿qué unidades corresponden a la circunferencia y al área?</p><div class="exercise-actions" role="group" aria-label="Respuesta sobre las unidades"><button type="button" aria-pressed="false" onclick="checkUnits(this,false)">Ambas en cm</button><button type="button" aria-pressed="false" onclick="checkUnits(this,true)">Circunferencia en cm y área en cm²</button><button type="button" aria-pressed="false" onclick="checkUnits(this,false)">Circunferencia en cm² y área en cm</button></div><p id="units-feedback" class="exercise-feedback" aria-live="polite"></p></section>
+      </div>
+      <div class="panel-box"><div class="panel-title">Soluciones exactas y aproximadas</div><p>Dejar π en la respuesta da una forma exacta (por ejemplo, 12π cm). Sustituirlo por 3,14 da una aproximación (37,68 cm). Conserva las unidades y redondea al final.</p></div>
+    </div>
 
   </main>
 
   <script>
-    // --- NAVEGACIÓN ENTRE PESTAÑAS ---
-    function switchTab(tabId, btn) {
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
-      if (tabId === 'laboratorio') updateWheelSim();
+    function switchTab(id,button){
+      document.querySelectorAll('.tab-content').forEach(p=>p.classList.toggle('active',p.id===id));
+      document.querySelectorAll('.tab-btn').forEach(t=>{const active=t===button;t.classList.toggle('active',active);t.setAttribute('aria-selected',String(active));});
+      if(id==='laboratorio')updateWheelSim();if(id==='explicacion')updateCircleCalculator();if(id==='historia')updatePolygonBounds();
     }
-
-    // =========================================================================
-    // 1. SIMULADOR DE LA RUEDA DESPLEGABLE
-    // =========================================================================
-    function updateWheelSim() {
-      const rUser = parseInt(document.getElementById('wheel_r').value);
-      const deg = parseInt(document.getElementById('wheel_rot').value);
-
-      document.getElementById('v_wheel_r').innerText = rUser;
-      document.getElementById('v_wheel_deg').innerText = `${deg}º`;
-
-      const diamUser = 2 * rUser;
-      const groundY = 180;
-      const startX = 60;
-      const totalAvailableWidth = 820; // Ancho visual en el SVG para 1 vuelta completa
-
-      // Escala visual adaptativa: 1 unidad matemática = pixelsPerUnit en SVG
-      // La vuelta completa mide (2 * PI * rUser). Queremos que mida ~820 px en pantalla
-      const pixelsPerUnit = totalAvailableWidth / (2 * Math.PI * rUser);
-      const visualRadius = Math.max(22, Math.min(65, rUser * pixelsPerUnit));
-
-      // Longitudes matemáticas reales
-      const mathCircumference = 2 * Math.PI * rUser;
-      const fraction = deg / 360;
-      const mathRolled = fraction * mathCircumference;
-
-      // Posición SVG
-      const visualTrackLength = fraction * totalAvailableWidth;
-      const currentWheelX = startX + visualTrackLength;
-
-      // 1. Mover rueda
-      const wheelGroup = document.getElementById('wheel_group');
-      wheelGroup.setAttribute('transform', `translate(${currentWheelX}, ${groundY - visualRadius}) rotate(${deg})`);
-
-      // Radio de la rueda visual
-      const circle = document.getElementById('svg_wheel_circle');
-      circle.setAttribute('r', visualRadius);
-
-      document.getElementById('spoke_1').setAttribute('y2', visualRadius);
-      document.getElementById('spoke_2').setAttribute('y2', -visualRadius);
-      document.getElementById('spoke_3').setAttribute('x1', -visualRadius);
-      document.getElementById('spoke_3').setAttribute('x2', visualRadius);
-
-      // 2. Trazo en el suelo
-      const track = document.getElementById('unrolled_track');
-      track.setAttribute('x1', startX);
-      track.setAttribute('x2', currentWheelX);
-
-      // 3. Marcas de los 3 Diámetros en el suelo
-      const diamGroup = document.getElementById('diameters_group');
-      diamGroup.innerHTML = "";
-
-      const visualDiamLength = diamUser * pixelsPerUnit;
-
-      for (let i = 1; i <= 3; i++) {
-        const markX = startX + (i * visualDiamLength);
-
-        // Línea vertical
-        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        line.setAttribute("x1", markX);
-        line.setAttribute("y1", groundY - 6);
-        line.setAttribute("x2", markX);
-        line.setAttribute("y2", groundY + 12);
-        line.setAttribute("stroke", "var(--accent-gold)");
-        line.setAttribute("stroke-width", "2");
-        diamGroup.appendChild(line);
-
-        // Texto con el múltiplo de diámetro
-        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.setAttribute("x", markX - (visualDiamLength / 2) - 10);
-        text.setAttribute("y", groundY + 28);
-        text.setAttribute("fill", "var(--accent-gold)");
-        text.setAttribute("font-size", "12");
-        text.setAttribute("font-weight", "bold");
-        text.textContent = `${i}·d`;
-        diamGroup.appendChild(text);
-      }
-
-      // Marca final exacta: 1 vuelta completa (pi * d)
-      const finalX = startX + totalAvailableWidth;
-      const finalLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      finalLine.setAttribute("x1", finalX);
-      finalLine.setAttribute("y1", groundY - 16);
-      finalLine.setAttribute("x2", finalX);
-      finalLine.setAttribute("y2", groundY + 16);
-      finalLine.setAttribute("stroke", "var(--accent-success)");
-      finalLine.setAttribute("stroke-width", "2.5");
-      finalLine.setAttribute("stroke-dasharray", "4");
-      diamGroup.appendChild(finalLine);
-
-      const endText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      endText.setAttribute("x", finalX - 25);
-      endText.setAttribute("y", groundY - 22);
-      endText.setAttribute("fill", "var(--accent-success)");
-      endText.setAttribute("font-size", "12");
-      endText.setAttribute("font-weight", "bold");
-      endText.textContent = "3.1415·d";
-      diamGroup.appendChild(endText);
-
-      // 4. Actualizar textos matemáticos
-      document.getElementById('txt_calc_len').innerText = mathRolled.toFixed(3);
-      document.getElementById('txt_calc_diam').innerText = diamUser;
-
-      const quotient = (mathRolled / diamUser);
-      const resDisplay = document.getElementById('txt_calc_pi_res');
-      const conclusion = document.getElementById('txt_conclusion');
-
-      if (deg === 0) {
-        resDisplay.innerText = "0.00";
-        conclusion.innerText = "Arrastra el deslizador de giro para hacer rodar la rueda.";
-        conclusion.style.color = "var(--text-muted)";
-      } else if (deg < 360) {
-        resDisplay.innerText = quotient.toFixed(3);
-        conclusion.innerText = `La rueda ha completado el ${(fraction * 100).toFixed(0)}% de la vuelta...`;
-        conclusion.style.color = "var(--accent-blue)";
-      } else {
-        resDisplay.innerText = quotient.toFixed(5);
-        conclusion.innerHTML = `🎉 <strong>¡Vuelta completa (360º)!</strong> La longitud recorrida mide exactamente <strong>${quotient.toFixed(5)} diámetros</strong> = <strong>NÚMERO π</strong>.`;
-        conclusion.style.color = "var(--accent-success)";
-      }
+    const fmt=(n,d=2)=>Number(n).toFixed(d).replace('.',',');
+    const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+    function updateWheelSim(){
+      const r=Number(wheel_r.value),deg=Number(wheel_rot.value),d=2*r,start=60,ground=180,width=820,frac=deg/360,scale=width/(2*Math.PI*r),vr=r*scale,rolled=frac*2*Math.PI*r,x=start+frac*width;
+      v_wheel_r.textContent=fmt(r,0);v_wheel_deg.textContent=deg+'°';
+      wheel_group.setAttribute('transform','translate('+x+','+(ground-vr)+') rotate('+deg+')');svg_wheel_circle.setAttribute('r',vr);
+      spoke_1.setAttribute('y2',vr);spoke_2.setAttribute('y2',-vr);spoke_3.setAttribute('x1',-vr);spoke_3.setAttribute('x2',vr);unrolled_track.setAttribute('x2',x);
+      const marks=diameters_group;marks.replaceChildren();const vd=d*scale,finalX=start+width;
+      const extra=document.createElementNS('http://www.w3.org/2000/svg','line');extra.setAttribute('x1',start+3*vd);extra.setAttribute('y1',ground);extra.setAttribute('x2',finalX);extra.setAttribute('y2',ground);extra.setAttribute('stroke','var(--accent-success)');extra.setAttribute('stroke-width','5');marks.appendChild(extra);
+      for(let i=1;i<=3;i++){const px=start+i*vd,line=document.createElementNS('http://www.w3.org/2000/svg','line');line.setAttribute('x1',px);line.setAttribute('x2',px);line.setAttribute('y1',ground-7);line.setAttribute('y2',ground+12);line.setAttribute('stroke','var(--accent-gold)');line.setAttribute('stroke-width','2');marks.appendChild(line);const label=document.createElementNS('http://www.w3.org/2000/svg','text');label.setAttribute('x',px-vd/2-10);label.setAttribute('y',ground+28);label.setAttribute('fill','var(--accent-gold)');label.setAttribute('font-size','12');label.textContent=i+'·d';marks.appendChild(label);}
+      const end=document.createElementNS('http://www.w3.org/2000/svg','line');end.setAttribute('x1',finalX);end.setAttribute('x2',finalX);end.setAttribute('y1',ground-18);end.setAttribute('y2',ground+18);end.setAttribute('stroke','var(--accent-success)');end.setAttribute('stroke-width','2.5');marks.appendChild(end);
+      const label=document.createElementNS('http://www.w3.org/2000/svg','text');label.setAttribute('x',finalX-55);label.setAttribute('y',ground-23);label.setAttribute('fill','var(--accent-success)');label.setAttribute('font-size','12');label.textContent='≈3,14·d';marks.appendChild(label);
+      const tail=document.createElementNS('http://www.w3.org/2000/svg','text');tail.setAttribute('x',start+3*vd+(finalX-start-3*vd)/2-15);tail.setAttribute('y',ground-9);tail.setAttribute('fill','var(--accent-success)');tail.setAttribute('font-size','10');tail.textContent='≈0,14·d';marks.appendChild(tail);
+      txt_calc_len.textContent=fmt(rolled,3);txt_calc_diam.textContent=fmt(d,0);txt_calc_pi_res.textContent=fmt(deg?rolled/d:0,deg===360?5:3);
+      txt_conclusion.textContent=deg===0?'Avanza la rueda para comparar el recorrido con su diámetro.':deg<360?'Modelo ideal: '+fmt(frac*100,0)+'% de una vuelta; L/d ≈ '+fmt(rolled/d,3)+'.':'Vuelta completa: L/d ≈ '+fmt(rolled/d,5)+' ≈ π. El modelo calcula este valor usando π; no es una medición independiente.';
     }
-
-    // Inicializar al cargar
-    updateWheelSim();
+    const measurements=[];
+    function renderMeasurements(){
+      const body=document.getElementById('measurement-rows');body.replaceChildren();
+      measurements.forEach(m=>{const row=document.createElement('tr');[m.name,fmt(m.c,3)+' cm',fmt(m.d,3)+' cm',fmt(m.c/m.d,5)].forEach(v=>{const td=document.createElement('td');td.textContent=v;row.appendChild(td);});const td=document.createElement('td'),track=document.createElement('div'),fill=document.createElement('div');track.className='ratio-track';track.setAttribute('role','img');track.setAttribute('aria-label','Cociente '+fmt(m.c/m.d,5)+'; línea de referencia para pi');fill.className='ratio-fill';fill.style.width=Math.max(0,Math.min(100,m.c/m.d/3.5*100))+'%';track.appendChild(fill);td.appendChild(track);row.appendChild(td);body.appendChild(row);});
+      const out=document.getElementById('measurement-summary');if(!measurements.length){out.textContent='Añade medidas para comparar C/d con π ≈ 3,14159.';return;}
+      const mean=measurements.reduce((sum,m)=>sum+m.c/m.d,0)/measurements.length;out.textContent=measurements.length+' medidas. Media de C/d = '+fmt(mean,5); 
+    }
+    document.getElementById('measurement-form').addEventListener('submit',e=>{e.preventDefault();const f=e.currentTarget;if(!f.reportValidity())return;measurements.push({name:f.elements.object.value.trim(),c:Number(f.elements.circumference.value),d:Number(f.elements.diameter.value)});f.reset();renderMeasurements();});
+    function loadSampleMeasurements(){measurements.splice(0,measurements.length,{name:'Tapa',c:31.4,d:10},{name:'Vaso',c:25.1,d:8},{name:'Plato',c:75.4,d:24});renderMeasurements();}
+    function clearMeasurements(){measurements.splice(0,measurements.length);renderMeasurements();}
+    function updateCircleCalculator(){const r=Number(document.getElementById('calc-radius').value),pr=12+r/10*58,d=2*r,L=2*Math.PI*r,A=Math.PI*r*r;document.getElementById('calc-radius-value').value=fmt(r,Number.isInteger(r)?0:1)+' cm';document.getElementById('calc-circle').setAttribute('r',pr);document.getElementById('calc-radius-line').setAttribute('x2',110+pr);document.getElementById('circle-results').innerHTML='d = 2r = '+fmt(d,1)+' cm<br>L = 2πr = '+fmt(d,1)+'π cm ≈ '+fmt(L,2)+' cm<br>A = πr² = '+fmt(r*r,2)+'π cm² ≈ '+fmt(A,2)+' cm²';}
+    const sideCounts=[6,12,24,48,96];
+    function updatePolygonBounds(){const n=sideCounts[Number(document.getElementById('polygon-level').value)],cx=110,cy=85,r=55,inn=[],out=[],ro=r/Math.cos(Math.PI/n);for(let i=0;i<n;i++){const a=-Math.PI/2+2*Math.PI*i/n;inn.push((cx+r*Math.cos(a))+','+(cy+r*Math.sin(a)));out.push((cx+ro*Math.cos(a))+','+(cy+ro*Math.sin(a)));}document.getElementById('polygon-inner').setAttribute('points',inn.join(' '));document.getElementById('polygon-outer').setAttribute('points',out.join(' '));document.getElementById('polygon-sides').value=n;document.getElementById('polygon-bounds').textContent='Con '+n+' lados: '+fmt(n*Math.sin(Math.PI/n),5)+' < π < '+fmt(n*Math.tan(Math.PI/n),5)+'.';}
+    function generateBasicExercise(){const radius=Math.random()<.5,value=radius?rand(2,10):rand(4,20),d=radius?2*value:value,c=3.14*d,card=document.getElementById('basic-exercise');card.dataset.answer=c;card.dataset.exact=d+'π cm';card.dataset.approx=fmt(c,2)+' cm';document.getElementById('basic-prompt').textContent=radius?'Un círculo tiene radio '+value+' cm. Calcula una vuelta usando π ≈ 3,14.':'Una circunferencia tiene diámetro '+value+' cm. Calcula su longitud con π ≈ 3,14.';document.getElementById('basic-answer').value='';document.getElementById('basic-feedback').textContent='';document.getElementById('basic-hint').hidden=true;}
+    function generateArcExercise(){const r=rand(3,9),deg=[60,90,120,150][rand(0,3)],num=r*deg,gcd=(a,b)=>b?gcd(b,a%b):a,g=gcd(num,180),top=num/g,bottom=180/g,exact=bottom===1?top+'π cm':top+'π/'+bottom+' cm',answer=r*deg*Math.PI/180,card=document.getElementById('arc-exercise');card.dataset.answer=answer;card.dataset.exact=exact;card.dataset.approx=fmt(answer,2)+' cm';document.getElementById('arc-prompt').textContent='Un arco tiene radio '+r+' cm y ángulo central '+deg+'°. Calcula su longitud aproximada.';document.getElementById('arc-answer').value='';document.getElementById('arc-feedback').textContent='';document.getElementById('arc-hint').hidden=true;}
+    function checkExercise(id){const card=document.getElementById(id+'-exercise'),input=document.getElementById(id+'-answer'),out=document.getElementById(id+'-feedback');if(!input.value||!Number.isFinite(Number(input.value))){out.textContent='Escribe primero una respuesta numérica.';input.focus();return;}out.textContent=Math.abs(Number(input.value)-Number(card.dataset.answer))<=.03?'¡Correcto! Forma exacta: '+card.dataset.exact+'; aproximación: '+card.dataset.approx+'.':'Aún no. Revisa la fórmula y prueba con la pista.';}
+    function toggleHint(id){const hint=document.getElementById(id+'-hint');hint.hidden=!hint.hidden;}
+    function checkUnits(button,correct){document.querySelectorAll('[aria-label="Respuesta sobre las unidades"] button').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));document.getElementById('units-feedback').textContent=correct?'Correcto: longitud en cm y área en cm².':'Revisa las fórmulas: la circunferencia es una longitud y el área combina dos longitudes.';}
+    updateWheelSim();updateCircleCalculator();updatePolygonBounds();generateBasicExercise();generateArcExercise();renderMeasurements();
   </script>
 </body>
 </html>

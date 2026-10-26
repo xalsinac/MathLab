@@ -101,9 +101,54 @@
       border: 1px solid var(--border-color); display: block; margin-top: 1rem;
     }
 
+    /* VISUALES EXPLORABLES */
+    .number-map { display: grid; grid-template-columns: 1.5fr .8fr; gap: .75rem; padding: .8rem; border: 2px solid #c084fc; border-radius: 14px; background: #090d16; }
+    .number-map.highlight { box-shadow: 0 0 0 3px #c084fc; }
+    .number-map > .map-title { grid-column: 1 / -1; color: #c084fc; font-weight: 900; text-align: center; }
+    .map-rationals, .map-irrationals { min-height: 210px; padding: 1rem; border: 2px solid var(--accent-success); border-radius: 11px; background: rgba(16,185,129,.04); }
+    .map-irrationals { border-color: #f472b6; background: rgba(244,114,182,.04); }
+    .map-label { display: block; margin-bottom: .6rem; font-weight: 900; }
+    .map-z { margin-top: .8rem; padding: .8rem; border: 2px solid var(--accent-blue); border-radius: 9px; background: rgba(56,189,248,.04); }
+    .map-n { margin-top: .7rem; padding: .7rem; border: 2px solid var(--accent-gold); border-radius: 8px; background: rgba(251,191,36,.04); }
+    .map-examples { display: flex; flex-wrap: wrap; gap: .45rem; }
+    .map-chip { padding: .35rem .55rem; border-radius: 99px; background: var(--bg-card); color: var(--text-main); font-family: monospace; }
+    .map-rationals.highlight, .map-irrationals.highlight, .map-z.highlight, .map-n.highlight { box-shadow: 0 0 0 3px currentColor; transform: translateY(-1px); }
+    .visual-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem; margin: .8rem 0; }
+    .visual-controls label { color: var(--text-muted); font-weight: 700; }
+    .visual-controls select, .visual-controls button, .practice-controls button { padding: .65rem .85rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-card); color: var(--text-main); font: inherit; }
+    .visual-controls input[type="range"] { flex: 1; min-width: 130px; accent-color: var(--accent-blue); }
+    .approximation-card, .root-explorer, .practice-card { padding: 1.1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-primary); }
+    .decimal-display { display: flex; flex-wrap: wrap; justify-content: center; gap: .12em; margin: .7rem 0; color: #f472b6; font-family: monospace; font-size: clamp(1.2rem,4vw,2rem); font-weight: 900; }
+    .decimal-display .known { color: var(--accent-success); }
+    .interval-caption { color: var(--text-muted); text-align: center; }
+    .model-note { margin: .6rem 0 0; color: var(--text-muted); text-align: center; line-height: 1.5; }
+    .root-visual { display: grid; grid-template-columns: minmax(130px, .7fr) 1fr; gap: 1rem; align-items: center; }
+    .root-square { width: min(100%, 220px); aspect-ratio: 1; border: 2px solid var(--accent-blue); background: rgba(56,189,248,.08); position: relative; }
+    .root-square svg { width: 100%; height: 100%; overflow: visible; }
+    .root-square line { stroke: var(--accent-gold); stroke-width: 3; }
+    .root-equation { color: var(--text-main); font-size: clamp(1.05rem,3vw,1.6rem); font-weight: 800; line-height: 1.7; }
+    .factor-groups { display: flex; flex-wrap: wrap; justify-content: center; gap: .55rem; margin: .9rem 0; }
+    .factor-group { display: grid; grid-template-columns: repeat(3, 24px); gap: 3px; padding: .5rem; border: 2px solid var(--accent-success); border-radius: 8px; color: var(--accent-success); }
+    .factor-group span { display: grid; width: 22px; height: 22px; place-items: center; border-radius: 50%; background: rgba(16,185,129,.18); font-size: .75rem; }
+    .factor-leftovers { display: flex; gap: 4px; padding: .45rem; border: 2px dashed var(--accent-gold); border-radius: 8px; }
+    .visual-flow { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr); gap: .6rem; align-items: stretch; margin: .8rem 0; }
+    .flow-step { padding: .75rem; border-radius: 9px; background: var(--bg-card); text-align: center; line-height: 1.5; }
+    .flow-arrow { display: grid; place-items: center; color: var(--accent-gold); font-size: 1.4rem; font-weight: 900; }
+    .practice-card { display: grid; grid-template-columns: 1fr auto; gap: .9rem; align-items: center; }
+    .practice-task { grid-column: 1 / -1; color: var(--text-main); font-size: clamp(1.5rem,4vw,2.5rem); font-weight: 900; text-align: center; }
+    .practice-card input { width: min(100%, 19rem); min-height: 2.8rem; padding: .6rem; border: 2px solid var(--border-color); border-radius: 8px; background: var(--bg-card); color: var(--text-main); font: inherit; font-size: 1.1rem; }
+    .practice-feedback { grid-column: 1 / -1; min-height: 1.5em; font-weight: 800; text-align: center; }
+    .practice-solution { grid-column: 1 / -1; padding: .8rem; border-radius: 8px; background: var(--bg-card); color: var(--text-main); line-height: 1.6; }
+    button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--accent-gold); outline-offset: 2px; }
+
     @media (max-width: 800px) {
       .grid-2 { grid-template-columns: 1fr; }
+      .visual-flow { grid-template-columns: 1fr; }
+      .flow-arrow { transform: rotate(90deg); }
+      .root-visual { grid-template-columns: 1fr; justify-items: center; }
+      .practice-card { grid-template-columns: 1fr; }
     }
+    @media (max-width: 520px) { .number-map { grid-template-columns: 1fr; } .number-map > .map-title { grid-column: auto; } .map-rationals, .map-irrationals { min-height: auto; } }
   </style>
   <link rel="stylesheet" href="../tema.css">
   <script src="../tema.js"></script>
@@ -121,16 +166,17 @@
 
   <main class="app-container">
     
-    <nav class="tabs-container">
-      <button class="tab-btn active" onclick="switchTab('universo', this)">🌌 1. Universo Numérico</button>
-      <button class="tab-btn" onclick="switchTab('irracionales', this)">😵‍💫 2. Irracionales</button>
-      <button class="tab-btn" onclick="switchTab('radicales', this)">√ 3. Radicales</button>
-      <button class="tab-btn" onclick="switchTab('operaciones', this)">🛠️ 4. Operando</button>
-      <button class="tab-btn" onclick="switchTab('racionalizar', this)">🧹 5. Racionalizar</button>
+    <nav class="tabs-container" role="tablist" aria-label="Bloques de números reales y radicales">
+      <button id="tab-universo" class="tab-btn active" type="button" role="tab" aria-selected="true" aria-controls="universo" tabindex="0" onclick="switchTab('universo', this)">🌌 1. Universo Numérico</button>
+      <button id="tab-irracionales" class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="irracionales" tabindex="-1" onclick="switchTab('irracionales', this)">😵‍💫 2. Irracionales</button>
+      <button id="tab-radicales" class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="radicales" tabindex="-1" onclick="switchTab('radicales', this)">√ 3. Radicales</button>
+      <button id="tab-operaciones" class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="operaciones" tabindex="-1" onclick="switchTab('operaciones', this)">🛠️ 4. Operando</button>
+      <button id="tab-racionalizar" class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="racionalizar" tabindex="-1" onclick="switchTab('racionalizar', this)">🧹 5. Racionalizar</button>
+      <button id="tab-practica" class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="practica" tabindex="-1" onclick="switchTab('practica', this)">🎯 6. Practicar</button>
     </nav>
 
     <!-- ================= PESTAÑA 1: UNIVERSO NUMÉRICO ================= -->
-    <div id="universo" class="tab-content active">
+    <div id="universo" class="tab-content active" role="tabpanel" aria-labelledby="tab-universo" aria-hidden="false">
       <div class="explanation-card">
         <div class="badge">Bolsas dentro de bolsas</div>
         <div class="content-text">
@@ -145,12 +191,12 @@
             Pulsa un número para ver a qué conjuntos pertenece y dónde cae exactamente en la Recta Real. Fíjate cómo el número "2" no es solo Natural, ¡es un pack completo!
           </p>
 
-          <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;">
-            <button onclick="highlightSet(2, 'n')" style="padding:0.5rem 1rem; border-radius:6px; border:none; font-weight:bold; cursor:pointer; background:var(--accent-gold);">2</button>
-            <button onclick="highlightSet(-5, 'z')" style="padding:0.5rem 1rem; border-radius:6px; border:none; font-weight:bold; cursor:pointer; background:var(--accent-blue); color:#fff;">-5</button>
-            <button onclick="highlightSet('3/4', 'q', 0.75)" style="padding:0.5rem 1rem; border-radius:6px; border:none; font-weight:bold; cursor:pointer; background:var(--accent-success);">3/4</button>
-            <button onclick="highlightSet('π', 'i', 3.14)" style="padding:0.5rem 1rem; border-radius:6px; border:none; font-weight:bold; cursor:pointer; background:#f472b6; color:#fff;">π</button>
-            <button onclick="highlightSet('√2', 'i', 1.41)" style="padding:0.5rem 1rem; border-radius:6px; border:none; font-weight:bold; cursor:pointer; background:#f472b6; color:#fff;">√2</button>
+          <div class="visual-controls" role="group" aria-label="Selecciona un número para clasificar">
+            <button type="button" onclick="highlightSet(2, 'n')">2</button>
+            <button type="button" onclick="highlightSet(-5, 'z')">−5</button>
+            <button type="button" onclick="highlightSet('3/4', 'q', 0.75)">¾</button>
+            <button type="button" onclick="highlightSet('π', 'i', 3.14159)">π</button>
+            <button type="button" onclick="highlightSet('√2', 'i', 1.41421)">√2</button>
           </div>
 
           <div id="set_explanation" style="min-height: 80px; background:#090d16; padding:1rem; border-radius:8px; border:1px dashed var(--border-color); font-size:0.9rem; color:var(--text-muted); line-height:1.5;">
@@ -161,49 +207,22 @@
         <div class="panel-box">
           <div class="panel-title">El Esquema Real (ℝ)</div>
           
-          <div class="set-container">
-            <!-- BOLSA REALES -->
-            <div class="bag bag-r" id="bag_r">
-              <span class="bag-label">ℝ Reales (Toda la Recta)</span>
-              
-              <div style="display:flex; gap:1rem; width:100%;">
-                <!-- BOLSA RACIONALES -->
-                <div class="bag bag-q" id="bag_q" style="flex:2; margin-top:0;">
-                  <span class="bag-label">ℚ Racionales (Fracciones)</span>
-                  <div class="bag-content">1/2, -0.3, 0.777...</div>
-                  
-                  <!-- BOLSA ENTEROS -->
-                  <div class="bag bag-z" id="bag_z">
-                    <span class="bag-label">ℤ Enteros (Deudas)</span>
-                    <div class="bag-content">0, -1, -5</div>
-                    
-                    <!-- BOLSA NATURALES -->
-                    <div class="bag bag-n" id="bag_n">
-                      <span class="bag-label">ℕ Naturales (Contar)</span>
-                      <div class="bag-content" style="justify-content:center;">1, 2, 3...</div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- BOLSA IRRACIONALES -->
-                <div class="bag bag-i" id="bag_i" style="flex:1; margin-top:0;">
-                  <span class="bag-label">𝕀 Irracionales</span>
-                  <div class="bag-content" style="flex-direction:column; align-items:center; margin-top:1rem;">
-                    <span>π</span>
-                    <span>√2</span>
-                    <span>Φ</span>
-                  </div>
-                </div>
+          <div class="number-map" id="bag_r" role="group" aria-label="Los racionales y los irracionales son subconjuntos disjuntos de los números reales; naturales dentro de enteros dentro de racionales">
+            <div class="map-title">ℝ · Números reales</div>
+            <div class="map-rationals" id="bag_q"><span class="map-label" style="color:var(--accent-success)">ℚ · Racionales</span><div class="map-examples"><span class="map-chip">½</span><span class="map-chip">−0,3</span><span class="map-chip">0,7̅</span></div>
+              <div class="map-z" id="bag_z"><span class="map-label" style="color:var(--accent-blue)">ℤ · Enteros</span><div class="map-examples"><span class="map-chip">0</span><span class="map-chip">−1</span><span class="map-chip">−5</span></div>
+                <div class="map-n" id="bag_n"><span class="map-label" style="color:var(--accent-gold)">ℕ · Naturales</span><div class="map-examples"><span class="map-chip">1</span><span class="map-chip">2</span><span class="map-chip">3…</span></div></div>
               </div>
-
             </div>
+          <div class="map-irrationals" id="bag_i"><span class="map-label" style="color:#f472b6">ℝ \ ℚ · Irracionales</span><div class="map-examples"><span class="map-chip">π</span><span class="map-chip">√2</span><span class="map-chip">φ</span></div></div>
           </div>
+          <p class="model-note">Convención de esta lección: ℕ = {1, 2, 3, …}. Algunos cursos incluyen también el 0 en ℕ.</p>
         </div>
       </div>
 
       <div class="panel-box" style="margin-top:0;">
         <div class="panel-title">La Recta Real</div>
-        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0;">Todo número real, sea de la bolsa que sea, tiene un único punto exacto asignado en esta línea infinita.</p>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0;">Todo número real corresponde a un punto. Elige un ejemplo para situar su valor; los irracionales se marcan usando una aproximación decimal.</p>
         
         <svg class="svg-canvas" viewBox="-60 -30 120 60" id="svg_real_line">
           <!-- Eje principal -->
@@ -216,15 +235,16 @@
           <circle id="line_point" cx="0" cy="0" r="2.5" fill="var(--accent-gold)" style="opacity:0; transition: all 0.4s ease;" />
           <text id="line_label" x="0" y="-8" fill="var(--accent-gold)" font-size="6" font-family="monospace" font-weight="bold" text-anchor="middle" style="opacity:0; transition: all 0.4s ease;"></text>
         </svg>
+        <div class="visual-controls"><label for="lineExplorer">Explora la recta:</label><input id="lineExplorer" type="range" min="-5" max="5" step="0.01" value="1.41" oninput="setLineExplorer(this.value)"><output id="lineExplorerValue">1,41</output></div>
       </div>
     </div>
 
     <!-- ================= PESTAÑA 2: IRRACIONALES ================= -->
-    <div id="irracionales" class="tab-content">
+    <div id="irracionales" class="tab-content" role="tabpanel" aria-labelledby="tab-irracionales" aria-hidden="true">
       <div class="explanation-card" style="border-left-color: #f472b6;">
         <div class="badge" style="color: #f472b6;">Los Rebeldes del Universo</div>
         <div class="content-text">
-          Los números <strong>Irracionales (𝕀)</strong> son aquellos que tienen <strong>infinitos decimales que nunca siguen un patrón</strong> (no son periódicos). Como no tienen un patrón que se repita, es matemáticamente imposible escribirlos como una fracción exacta con un numerador y un denominador.
+          Los números <strong>irracionales</strong> tienen un desarrollo decimal infinito y <strong>no periódico</strong>: sus cifras no terminan ni forman un bloque que se repita para siempre. Por eso no pueden expresarse como el cociente exacto de dos enteros.
         </div>
       </div>
 
@@ -238,11 +258,11 @@
             </div>
             <div class="info-card-item" style="border-left:3px solid #f472b6;">
               <strong style="color:#f472b6; font-size:1.2rem;">√2 ≈ 1.41421...</strong>
-              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">La primera crisis matemática de la historia. Es lo que mide la diagonal de un cuadrado de lado 1.</p>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">Es la diagonal de un cuadrado de lado 1: por Pitágoras, d² = 1² + 1² = 2, así que d = √2.</p>
             </div>
             <div class="info-card-item" style="border-left:3px solid #f472b6;">
               <strong style="color:#f472b6; font-size:1.2rem;">Φ (Phi) ≈ 1.61803...</strong>
-              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">El Número de Oro. Representa la proporción de la belleza en la naturaleza y el arte.</p>
+              <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.2rem;">El número áureo aparece en algunas construcciones y patrones; no es una medida universal de la belleza.</p>
             </div>
           </div>
         </div>
@@ -252,7 +272,7 @@
           
           <div class="warning-box">
             🚨 <strong>Prohibido redondear a lo loco.</strong><br>
-            Si cortas el número π a 3.14 y calculas la trayectoria de un cohete espacial, fallarás la órbita del planeta por miles de kilómetros. 
+            Redondear introduce un error. En los ejercicios exactos conserva π; en una medida aproximada, indica cuántos decimales has usado.
           </div>
 
           <p style="color:var(--text-main); font-size:0.95rem; margin-top:1rem;">
@@ -273,14 +293,23 @@
           </div>
         </div>
       </div>
+
+      <div class="approximation-card">
+        <div class="panel-title">Acercarse a un irracional sin alcanzarlo con decimales finitos</div>
+        <p style="color:var(--text-muted)">Cada paso añade una cifra a la aproximación. El intervalo se estrecha y sigue conteniendo al número.</p>
+        <div class="visual-controls"><label for="irrationalChoice">Número</label><select id="irrationalChoice" onchange="resetApproximation()"><option value="sqrt2">√2</option><option value="pi">π</option></select><button type="button" onclick="stepApproximation()">Añadir una cifra</button><button type="button" onclick="resetApproximation()">Reiniciar</button></div>
+        <div id="decimalDisplay" class="decimal-display" aria-live="polite"></div>
+        <svg class="svg-canvas" viewBox="0 0 400 90" role="img" aria-label="Intervalo decimal que se estrecha hasta contener el valor irracional"><line x1="25" y1="48" x2="375" y2="48" stroke="#64748b" stroke-width="2"/><line id="approxInterval" x1="160" y1="48" x2="300" y2="48" stroke="#f472b6" stroke-width="8" stroke-linecap="round"/><circle id="approxMarker" cx="230" cy="48" r="7" fill="#f472b6"/><text id="approxIntervalLabel" x="200" y="78" fill="#cbd5e1" font-size="13" text-anchor="middle">1 &lt; √2 &lt; 2</text></svg>
+        <p id="approxCaption" class="interval-caption" aria-live="polite"></p>
+      </div>
     </div>
 
     <!-- ================= PESTAÑA 3: RADICALES Y PROPIEDADES ================= -->
-    <div id="radicales" class="tab-content">
+    <div id="radicales" class="tab-content" role="tabpanel" aria-labelledby="tab-radicales" aria-hidden="true">
       <div class="explanation-card" style="border-left-color: var(--accent-success);">
         <div class="badge" style="color: var(--accent-success);">Fracciones disfrazadas</div>
         <div class="content-text">
-          Un radical (√) no es más que una potencia que tiene <strong>una fracción en el exponente</strong>. Entender este secreto te permitirá aplicar todas las propiedades de las potencias a las raíces, ya que en el fondo son la misma cosa.
+          Una raíz deshace una potencia: si xⁿ = a, entonces x es una raíz n-ésima de a. También puede escribirse como potencia de exponente fraccionario: ⁿ√(aᵐ) = aᵐ⁄ⁿ. En los reales, las raíces de índice par requieren un radicando no negativo.
         </div>
       </div>
 
@@ -323,7 +352,7 @@
         <div class="panel-box">
           <div class="panel-title">Propiedades de Fusión</div>
           <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
-            Las raíces solo pueden fusionarse si están <strong>multiplicando o dividiendo</strong>. Nunca sumando.
+            Al multiplicar o dividir raíces del mismo índice, podemos aplicar las propiedades y agrupar los radicandos. Para sumar, primero simplificamos y luego reunimos solo términos semejantes.
           </p>
           
           <div style="display:flex; flex-direction:column; gap:0.8rem;">
@@ -334,6 +363,7 @@
                 <span class="radical-box"><span class="rad-index">n</span><span class="rad-symbol">√</span><span class="rad-content">b</span></span> = 
                 <span class="radical-box"><span class="rad-index">n</span><span class="rad-symbol">√</span><span class="rad-content">a · b</span></span>
               </div>
+              <p class="model-note">Si n es par, los radicandos deben permitir raíces reales (por ejemplo, a y b ≥ 0). En un cociente, el denominador no puede ser 0.</p>
             </div>
 
             <div class="info-card-item">
@@ -347,10 +377,19 @@
           </div>
         </div>
       </div>
+      <div class="root-explorer">
+        <div class="panel-title">La raíz cuadrada como longitud</div>
+        <div class="root-visual">
+          <div class="root-square" role="img" aria-label="Cuadrado unidad con su diagonal de longitud raíz de dos"><svg viewBox="0 0 100 100"><rect x="4" y="4" width="92" height="92" fill="none" stroke="#38bdf8" stroke-width="2"/><line x1="4" y1="96" x2="96" y2="4"/><text x="50" y="57" fill="#fbbf24" font-size="9" text-anchor="middle">√2</text></svg></div>
+          <div class="root-equation">Un cuadrado de lado 1 tiene diagonal d.<br>Por Pitágoras: d² = 1² + 1² = 2.<br><strong style="color:var(--accent-gold)">Por tanto, d = √2 ≈ 1,414…</strong><br>La raíz responde: «¿qué número, al cuadrado, da 2?»</div>
+        </div>
+        <div class="visual-controls"><label for="rootRadicand">Prueba otra raíz cuadrada: √<output id="rootRadicandValue">2</output></label><input id="rootRadicand" type="range" min="1" max="25" value="2" step="1" oninput="updateRootExplorer()"></div>
+        <div id="rootExplorerResult" class="model-equation" aria-live="polite"></div>
+      </div>
     </div>
 
     <!-- ================= PESTAÑA 4: OPERACIONES ================= -->
-    <div id="operaciones" class="tab-content">
+    <div id="operaciones" class="tab-content" role="tabpanel" aria-labelledby="tab-operaciones" aria-hidden="true">
       <div class="explanation-card" style="border-left-color: var(--accent-gold);">
         <div class="badge" style="color: var(--accent-gold);">Trabajando en el taller de raíces</div>
         <div class="content-text">
@@ -387,7 +426,7 @@
               ¿Y si tienen distinto índice? (ej: √2 · ³√3)
             </div>
             <p style="color:var(--text-muted); font-size:0.85rem;">
-              Debes calcular el m.c.m. de los índices (2 y 3 -> 6) para que todos compartan el mismo. Lo que le multipliques al índice, se lo multiplicas también al exponente de dentro.
+              Puedes reescribirlas con índice común (m.c.m. 6): √2 = ⁶√8 y ³√3 = ⁶√9; entonces el producto es ⁶√72.
             </p>
           </div>
         </div>
@@ -427,17 +466,28 @@
                 <span class="rad-content" id="ext_in"></span>
               </span>
             </div>
+            <div id="factorGroups" class="factor-groups" aria-label="Grupos de tres factores"></div>
           </div>
         </div>
+      </div>
+      <div class="panel-box" style="border-color:var(--accent-blue)">
+        <div class="panel-title" style="color:var(--accent-blue)">Primero simplifica; luego suma términos semejantes</div>
+        <p style="color:var(--text-muted)">Las raíces con radicandos distintos a veces se pueden sumar después de extraer cuadrados perfectos.</p>
+        <div class="visual-flow" aria-label="Simplificación y suma de raíces">
+          <div class="flow-step"><strong style="color:var(--accent-blue)">√8 + √18</strong><br>Descomponemos los radicandos en cuadrados perfectos.</div><div class="flow-arrow" aria-hidden="true">→</div>
+          <div class="flow-step"><strong style="color:var(--accent-gold)">√(4·2) + √(9·2)</strong><br>Separamos el factor que sale de cada raíz.</div><div class="flow-arrow" aria-hidden="true">→</div>
+          <div class="flow-step"><strong style="color:var(--accent-success)">2√2 + 3√2 = 5√2</strong><br>Ahora sí son términos semejantes.</div>
+        </div>
+        <p class="model-note">No sumamos 8 + 18 dentro de una raíz. Simplificamos cada término y después sumamos sus coeficientes.</p>
       </div>
     </div>
 
     <!-- ================= PESTAÑA 5: RACIONALIZACIÓN ================= -->
-    <div id="racionalizar" class="tab-content">
+    <div id="racionalizar" class="tab-content" role="tabpanel" aria-labelledby="tab-racionalizar" aria-hidden="true">
       <div class="explanation-card" style="border-left-color: #c084fc;">
         <div class="badge" style="color: #c084fc;">Limpiando el sótano</div>
         <div class="content-text">
-          En matemáticas existe una norma estética no escrita: <strong>"Prohibido dejar raíces en el denominador de una fracción"</strong>. El proceso para eliminarlas se llama Racionalización y consiste en multiplicar arriba y abajo por el mismo elemento para forzar que la raíz de abajo desaparezca. Hay 3 casos.
+          En algunos cursos se pide dejar el denominador sin radicales. Racionalizar consiste en multiplicar numerador y denominador por el mismo factor: así la fracción conserva su valor y la raíz del denominador puede desaparecer. Aquí vemos tres casos habituales.
         </div>
       </div>
 
@@ -464,7 +514,7 @@
         <div class="panel-box">
           <div class="panel-title">Caso 2: Raíz de Índice Mayor</div>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">
-            Si el índice no es 2, no basta con copiarla. Debemos multiplicar por una raíz que tenga los <strong>exponentes que faltan</strong> para llegar al índice y poder escapar.
+            Si el índice no es 2, no basta con copiarla. Debemos multiplicar por una raíz que tenga los <strong>exponentes que faltan</strong> para llegar al índice y poder escapar. En este ejemplo, x ≠ 0.
           </p>
 
           <div style="font-family:monospace; font-size:1.1rem; color:#fff; background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); text-align:center; line-height:2;">
@@ -497,28 +547,57 @@
         </div>
 
       </div>
+      <div class="panel-box" style="margin-top:1rem">
+        <div class="panel-title">¿Por qué la fracción sigue valiendo lo mismo?</div>
+        <div class="visual-flow">
+          <div class="flow-step"><strong>Fracción original</strong><br><span class="fraction-vertical"><span class="num">3</span><span class="den">√5</span></span></div><div class="flow-arrow" aria-hidden="true">→</div>
+          <div class="flow-step"><strong>Multiplicamos por 1</strong><br><span class="fraction-vertical"><span class="num">√5</span><span class="den">√5</span></span> = 1</div><div class="flow-arrow" aria-hidden="true">→</div>
+          <div class="flow-step"><strong>Fracción equivalente</strong><br><span class="fraction-vertical"><span class="num">3√5</span><span class="den">5</span></span></div>
+        </div>
+        <p class="model-note">El valor no cambia porque multiplicar por √5/√5 equivale a multiplicar por 1; el denominador pasa a ser √25 = 5.</p>
+      </div>
     </div>
+
+    <section id="practica" class="tab-content" role="tabpanel" aria-labelledby="tab-practica" aria-hidden="true">
+      <div class="explanation-card"><div class="badge">Practica y comprueba</div><div class="content-text">Elige un bloque, resuelve y pide una pista si te atascas. Cada ejercicio incluye una explicación al comprobarlo.</div></div>
+      <div class="visual-controls"><label for="practiceTopic">Bloque</label><select id="practiceTopic" onchange="newRadicalExercise()"><option value="classify">Clasificar números</option><option value="approx">Aproximar irracionales</option><option value="simplify">Simplificar radicales</option><option value="operate">Operar radicales</option><option value="rationalize">Racionalizar</option></select><button type="button" onclick="newRadicalExercise()">Nuevo ejercicio</button></div>
+      <div class="practice-card">
+        <div id="practiceTask" class="practice-task" aria-live="polite"></div>
+        <label for="practiceInput">Respuesta<br><input id="practiceInput" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')checkRadicalExercise()"></label>
+        <div class="practice-controls"><button type="button" onclick="checkRadicalExercise()">Comprobar</button><button type="button" onclick="showRadicalHint()">Pista</button><button type="button" onclick="revealRadicalSolution()">Ver solución</button></div>
+        <div id="practiceFeedback" class="practice-feedback" aria-live="polite"></div>
+        <div id="practiceHint" class="practice-solution" hidden></div>
+        <div id="practiceSolution" class="practice-solution" hidden></div>
+      </div>
+    </section>
 
   </main>
 
   <script>
     // --- NAVEGACIÓN ---
     function switchTab(tabId, btn) {
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => { c.classList.remove('active'); c.setAttribute('aria-hidden', 'true'); });
+      document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); b.tabIndex = -1; });
       document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
+      document.getElementById(tabId).setAttribute('aria-hidden', 'false');
+      btn.classList.add('active'); btn.setAttribute('aria-selected', 'true'); btn.tabIndex = 0;
       
       if(tabId === 'universo') initRealLine();
       if(tabId === 'operaciones') updateExtract();
     }
+    document.querySelectorAll('[role="tab"]').forEach((tab, index, tabs) => tab.addEventListener('keydown', event => {
+      if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length;
+      tabs[next].focus(); switchTab(tabs[next].getAttribute('aria-controls'), tabs[next]);
+    }));
 
     // =========================================================================
     // 1. UNIVERSO NUMÉRICO (BOLSAS Y RECTA SVG)
     // =========================================================================
     function highlightSet(numVal, baseSet, exactPos = numVal) {
       // Limpiar highlights
-      document.querySelectorAll('.bag').forEach(b => b.classList.remove('highlight'));
+      document.querySelectorAll('.number-map, .map-rationals, .map-irrationals, .map-z, .map-n').forEach(b => b.classList.remove('highlight'));
       
       const bagsToHighlight = [];
       let explanation = "";
@@ -532,10 +611,10 @@
         explanation = `El número <strong>${numVal}</strong> es Entero (sirve para medir deudas o temperaturas bajo cero). No es Natural porque es negativo. Sí es Racional (-5/1) y Real.`;
       } else if (baseSet === 'q') {
         bagsToHighlight.push('bag_q', 'bag_r');
-        explanation = `El número <strong>${numVal}</strong> es Racional puro porque no da un salto exacto en la recta. No sirve para contar (No ℕ) ni es entero (No ℤ), pero es Real.`;
+        explanation = `El número <strong>${numVal}</strong> es racional porque puede escribirse como cociente de enteros. En este ejemplo no es entero ni natural, pero sí real.`;
       } else if (baseSet === 'i') {
         bagsToHighlight.push('bag_i', 'bag_r');
-        explanation = `El número <strong>${numVal}</strong> es un rebelde Irracional. Tiene infinitos decimales impredecibles. No puede meterse en la bolsa de las fracciones (ℚ), pero sigue siendo un número Real.`;
+        explanation = `El número <strong>${numVal}</strong> es irracional: su decimal no termina ni es periódico. No pertenece a ℚ, pero sí a ℝ.`;
       }
 
       bagsToHighlight.forEach(id => document.getElementById(id).classList.add('highlight'));
@@ -595,6 +674,36 @@
       lbl.setAttribute('fill', color);
     }
 
+    function setLineExplorer(value) {
+      const n = Number(value);
+      document.getElementById('lineExplorerValue').textContent = n.toFixed(2).replace('.', ',');
+      movePointOnLine(n, n.toFixed(2), n < 0 && Number.isInteger(n) ? 'z' : 'q');
+    }
+
+    let approximationStep = 1;
+    function resetApproximation() { approximationStep = 1; renderApproximation(); }
+    function stepApproximation() { approximationStep = Math.min(approximationStep + 1, 8); renderApproximation(); }
+    function renderApproximation() {
+      const key = document.getElementById('irrationalChoice').value;
+      const data = key === 'pi' ? { symbol: 'π', digits: '3.14159265', low: 3, high: 4, exact: Math.PI } : { symbol: '√2', digits: '1.41421356', low: 1, high: 2, exact: Math.sqrt(2) };
+      const prefix = data.digits.slice(0, approximationStep + 1);
+      const lower = Number(prefix), upper = lower + Math.pow(10, -approximationStep);
+      const scale = value => 25 + ((value - data.low) / (data.high - data.low)) * 350;
+      const interval = document.getElementById('approxInterval');
+      interval.setAttribute('x1', scale(lower)); interval.setAttribute('x2', scale(upper));
+      document.getElementById('approxMarker').setAttribute('cx', scale(data.exact));
+      document.getElementById('approxIntervalLabel').textContent = `${lower.toLocaleString('es-ES')} < ${data.symbol} < ${upper.toLocaleString('es-ES')}`;
+      document.getElementById('decimalDisplay').innerHTML = `<span class="known">${prefix.replace('.', ',')}</span><span>…</span>`;
+      document.getElementById('approxCaption').textContent = `Aproximación por truncamiento: ${prefix.replace('.', ',')}. El intervalo sigue encerrando ${data.symbol}; ampliar decimales mejora la aproximación, pero no da su valor exacto.`;
+    }
+
+    function updateRootExplorer() {
+      const n = Number(document.getElementById('rootRadicand').value);
+      const root = Math.sqrt(n), exact = Number.isInteger(root);
+      document.getElementById('rootRadicandValue').textContent = n;
+      document.getElementById('rootExplorerResult').innerHTML = `√${n} ≈ <strong style="color:var(--accent-success)">${root.toLocaleString('es-ES', { maximumFractionDigits: 4 })}</strong>${exact ? `; es exacta: ${root}² = ${n}.` : `; no es exacta como decimal finito, porque ${n} no es un cuadrado perfecto.`}`;
+    }
+
     // =========================================================================
     // 4. SIMULADOR EXTRACCIÓN RADICALES
     // =========================================================================
@@ -631,12 +740,75 @@
         if (inCount > 1) inStr = `x<sup style="color:var(--text-main);">${inCount}</sup>`;
         document.getElementById('ext_in').innerHTML = inStr;
       }
+      const groupHtml = Array.from({ length: outCount }, () => '<div class="factor-group" aria-label="Grupo de tres factores">' + '<span>x</span>'.repeat(3) + '</div>').join('');
+      const leftovers = inCount ? `<div class="factor-leftovers" aria-label="${inCount} factores que quedan dentro">${'<span class="factor-group" style="border:0;padding:.1rem"><span>x</span></span>'.repeat(inCount)}</div>` : '';
+      document.getElementById('factorGroups').innerHTML = `${groupHtml}${leftovers}`;
+    }
+
+    // =========================================================================
+    // PRÁCTICA DE LOS CONCEPTOS DE LA LECCIÓN
+    // =========================================================================
+    let currentRadicalExercise;
+    function newRadicalExercise() {
+      const topic = document.getElementById('practiceTopic').value;
+      const sets = {
+        classify: [
+          { task: '¿A qué conjunto más pequeño pertenece 2?', answers: ['ℕ', 'n', 'naturales'], hint: 'Es positivo y se usa para contar.', solution: '2 ∈ ℕ. Por inclusión, también pertenece a ℤ, ℚ y ℝ.' },
+          { task: '¿A qué conjunto más pequeño pertenece −5?', answers: ['ℤ', 'z', 'enteros'], hint: 'Es un número negativo sin parte decimal.', solution: '−5 ∈ ℤ. Todo entero también es racional (−5/1) y real.' },
+          { task: '¿A qué conjunto más pequeño pertenece ¾?', answers: ['ℚ', 'q', 'racionales'], hint: 'Se puede escribir como cociente de dos enteros.', solution: '¾ ∈ ℚ, pero no es entero. Por ello tampoco es natural.' },
+          { task: '¿A qué conjunto más pequeño pertenece √2?', answers: ['irracional', 'i', '𝕀'], hint: 'Su decimal no termina ni es periódico.', solution: '√2 es irracional: no puede expresarse como cociente exacto de dos enteros.' },
+          { task: '¿A qué conjunto más pequeño pertenece π?', answers: ['irracional', 'i', '𝕀'], hint: 'Su desarrollo decimal no termina ni se repite.', solution: 'π es irracional y, como todo irracional, pertenece a ℝ.' }
+        ],
+        approx: [
+          { task: 'Aproxima √2 a las centésimas (usa coma o punto).', answers: ['1,41', '1.41'], hint: '√2 ≈ 1,414…; redondea la tercera cifra decimal.', solution: '√2 ≈ 1,414…; a las centésimas es 1,41.' },
+          { task: 'Aproxima π a las centésimas (usa coma o punto).', answers: ['3,14', '3.14'], hint: 'π ≈ 3,14159…; mira la tercera cifra decimal.', solution: 'π ≈ 3,14159…; a las centésimas es 3,14.' }
+        ],
+        simplify: [
+          { task: 'Simplifica √8.', answers: ['2√2', '2sqrt2', '2*sqrt(2)'], hint: 'Escribe 8 como 4·2 y extrae √4.', solution: '√8 = √(4·2) = √4·√2 = 2√2.' },
+          { task: 'Simplifica √18.', answers: ['3√2', '3sqrt2', '3*sqrt(2)'], hint: 'Escribe 18 como 9·2 y extrae √9.', solution: '√18 = √(9·2) = √9·√2 = 3√2.' }
+        ],
+        operate: [
+          { task: 'Calcula 3√2 + 2√2.', answers: ['5√2', '5sqrt2', '5*sqrt(2)'], hint: 'Son términos semejantes: suma los coeficientes y conserva √2.', solution: '3√2 + 2√2 = (3 + 2)√2 = 5√2.' },
+          { task: 'Calcula √8 + √18.', answers: ['5√2', '5sqrt2', '5*sqrt(2)'], hint: 'Simplifica cada raíz por separado antes de sumar.', solution: '√8 + √18 = 2√2 + 3√2 = 5√2.' }
+        ],
+        rationalize: [
+          { task: 'Racionaliza 1/√2.', answers: ['√2/2', 'sqrt2/2'], hint: 'Multiplica arriba y abajo por √2.', solution: '1/√2 · √2/√2 = √2/2, porque √2·√2 = 2.' },
+          { task: 'Racionaliza 3/√5.', answers: ['3√5/5', '3sqrt5/5', '3*sqrt(5)/5'], hint: 'Multiplica arriba y abajo por √5.', solution: '3/√5 · √5/√5 = 3√5/5.' }
+        ]
+      };
+      const choices = sets[topic];
+      currentRadicalExercise = choices[Math.floor(Math.random() * choices.length)];
+      document.getElementById('practiceTask').textContent = currentRadicalExercise.task;
+      document.getElementById('practiceInput').value = '';
+      document.getElementById('practiceFeedback').textContent = '';
+      document.getElementById('practiceHint').hidden = true;
+      document.getElementById('practiceSolution').hidden = true;
+    }
+    function normalizeMathAnswer(value) {
+      return value.toLowerCase().replace(/\s+/g, '').replace(/−/g, '-').replace(/,/g, '.').replace(/\\sqrt\((\d+)\)/g, '√$1').replace(/sqrt\((\d+)\)/g, '√$1').replace(/sqrt(\d+)/g, '√$1').replace(/\*/g, '');
+    }
+    function checkRadicalExercise() {
+      const answer = normalizeMathAnswer(document.getElementById('practiceInput').value);
+      const ok = currentRadicalExercise.answers.some(option => normalizeMathAnswer(option) === answer);
+      const feedback = document.getElementById('practiceFeedback');
+      feedback.textContent = ok ? '¡Correcto! Buen trabajo.' : 'Todavía no. Revisa el paso clave y vuelve a intentarlo.';
+      feedback.style.color = ok ? 'var(--accent-success)' : 'var(--accent-op)';
+    }
+    function showRadicalHint() {
+      const hint = document.getElementById('practiceHint'); hint.textContent = `Pista: ${currentRadicalExercise.hint}`; hint.hidden = false;
+    }
+    function revealRadicalSolution() {
+      const solution = document.getElementById('practiceSolution'); solution.textContent = `Solución: ${currentRadicalExercise.solution}`; solution.hidden = false;
     }
 
     // Inicializar visuales al cargar
     setTimeout(() => {
       initRealLine();
       updateExtract();
+      setLineExplorer(document.getElementById('lineExplorer').value);
+      renderApproximation();
+      updateRootExplorer();
+      newRadicalExercise();
     }, 100);
 
   </script>

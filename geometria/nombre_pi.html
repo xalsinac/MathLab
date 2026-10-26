@@ -119,15 +119,15 @@
   <main class="app-container">
     
     <nav class="tabs-container" role="tablist" aria-label="Secciones de la lección">
-      <button class="tab-btn active" role="tab" aria-selected="true" onclick="switchTab('laboratorio', this)">🎡 1. Experimenta</button>
-      <button class="tab-btn" role="tab" aria-selected="false" onclick="switchTab('explicacion', this)">📐 2. Entiende</button>
-      <button class="tab-btn" role="tab" aria-selected="false" onclick="switchTab('historia', this)">🏛️ 3. Explora</button>
-      <button class="tab-btn" role="tab" aria-selected="false" onclick="switchTab('practica', this)">✍️ 4. Practica</button>
+      <button id="tab-lab" class="tab-btn active" role="tab" aria-selected="true" aria-controls="laboratorio" tabindex="0" onclick="switchTab('laboratorio', this)">🎡 1. Experimenta</button>
+      <button id="tab-explain" class="tab-btn" role="tab" aria-selected="false" aria-controls="explicacion" tabindex="-1" onclick="switchTab('explicacion', this)">📐 2. Entiende</button>
+      <button id="tab-history" class="tab-btn" role="tab" aria-selected="false" aria-controls="historia" tabindex="-1" onclick="switchTab('historia', this)">🏛️ 3. Explora</button>
+      <button id="tab-practice" class="tab-btn" role="tab" aria-selected="false" aria-controls="practica" tabindex="-1" onclick="switchTab('practica', this)">✍️ 4. Practica</button>
     </nav>
     <p class="tab-scroll-hint" aria-hidden="true">En móvil, desliza las pestañas para ver todas.</p>
 
     <!-- ================= PESTAÑA 1: LABORATORIO INTERACTIVO ================= -->
-    <div id="laboratorio" class="tab-content active">
+    <div id="laboratorio" class="tab-content active" role="tabpanel" aria-labelledby="tab-lab" aria-hidden="false">
       <div class="explanation-card">
         <div class="badge">El Experimento de la Rueda</div>
         <div class="content-text">
@@ -215,7 +215,7 @@
     </div>
 
     <!-- ================= PESTAÑA 2: QUÉ ES PI ================= -->
-    <div id="explicacion" class="tab-content">
+    <div id="explicacion" class="tab-content" role="tabpanel" aria-labelledby="tab-explain" aria-hidden="true">
       <div class="explanation-card" style="border-left-color: var(--accent-gold);">
         <div class="badge" style="color: var(--accent-gold);">La Proporción Universal</div>
         <div class="content-text">
@@ -264,7 +264,7 @@
             <output id="calc-radius-value" for="calc-radius">3 cm</output><div class="calculator-results" id="circle-results" aria-live="polite" aria-atomic="true"></div>
           </div>
           <svg class="calculator-visual" viewBox="0 0 220 220" role="img" aria-labelledby="circle-title circle-desc"><title id="circle-title">Círculo con radio y diámetro</title><desc id="circle-desc">Diagrama del radio desde el centro y del diámetro completo.</desc>
-            <circle id="calc-circle" cx="110" cy="110" r="60" fill="rgba(56,189,248,0.12)" stroke="var(--accent-blue)" stroke-width="3"/><line x1="50" y1="110" x2="170" y2="110" stroke="var(--accent-gold)" stroke-width="2"/><line id="calc-radius-line" x1="110" y1="110" x2="170" y2="110" stroke="var(--accent-op)" stroke-width="3"/><circle cx="110" cy="110" r="4" fill="var(--text-main)"/><text x="112" y="101" fill="var(--text-main)" font-size="12">r</text><text x="102" y="130" fill="var(--text-main)" font-size="12">d</text>
+            <circle id="calc-circle" cx="110" cy="110" r="60" fill="rgba(56,189,248,0.12)" stroke="var(--accent-blue)" stroke-width="3"/><line id="calc-diameter-line" x1="50" y1="110" x2="170" y2="110" stroke="var(--accent-gold)" stroke-width="2"/><line id="calc-radius-line" x1="110" y1="110" x2="170" y2="110" stroke="var(--accent-op)" stroke-width="3"/><circle cx="110" cy="110" r="4" fill="var(--text-main)"/><text x="112" y="101" fill="var(--text-main)" font-size="12">r</text><text x="102" y="130" fill="var(--text-main)" font-size="12">d</text>
           </svg>
         </div>
       </section>
@@ -276,7 +276,7 @@
     </div>
 
     <!-- ================= PESTAÑA 3: HISTORIA Y ARQUÍMEDES ================= -->
-    <div id="historia" class="tab-content">
+    <div id="historia" class="tab-content" role="tabpanel" aria-labelledby="tab-history" aria-hidden="true">
       <div class="explanation-card" style="border-left-color: var(--accent-success);">
         <div class="badge" style="color: var(--accent-success);">¿Cómo acotó Arquímedes el valor de π?</div>
         <div class="content-text">
@@ -323,7 +323,7 @@
         </div>
       </div>
     </div>
-    <div id="practica" class="tab-content">
+    <div id="practica" class="tab-content" role="tabpanel" aria-labelledby="tab-practice" aria-hidden="true">
       <div class="explanation-card"><div class="badge">Practica paso a paso</div><div class="content-text">Empieza con una circunferencia y prueba después un arco. Pide una pista, comprueba tu respuesta y genera otro ejercicio.</div></div>
       <div class="exercise-grid">
         <section class="exercise-card" id="basic-exercise"><h3>Nivel inicial: calcula una vuelta</h3><p id="basic-prompt"></p><label for="basic-answer">Longitud aproximada (cm)<input id="basic-answer" type="number" step="any" inputmode="decimal"></label><div class="exercise-actions"><button type="button" onclick="checkExercise('basic')">Comprobar</button><button type="button" onclick="toggleHint('basic')">Ver pista</button><button type="button" onclick="generateBasicExercise()">Otro ejercicio</button></div><p id="basic-hint" class="exercise-hint" hidden>Usa L = π·d y π ≈ 3,14. Si te dan el radio, calcula primero d = 2r.</p><p id="basic-feedback" class="exercise-feedback" aria-live="polite"></p></section>
@@ -337,25 +337,26 @@
 
   <script>
     function switchTab(id,button){
-      document.querySelectorAll('.tab-content').forEach(p=>p.classList.toggle('active',p.id===id));
-      document.querySelectorAll('.tab-btn').forEach(t=>{const active=t===button;t.classList.toggle('active',active);t.setAttribute('aria-selected',String(active));});
+      document.querySelectorAll('.tab-content').forEach(p=>{const active=p.id===id;p.classList.toggle('active',active);p.setAttribute('aria-hidden',String(!active));});
+      document.querySelectorAll('.tab-btn').forEach(t=>{const active=t===button;t.classList.toggle('active',active);t.setAttribute('aria-selected',String(active));t.tabIndex=active?0:-1;});
       if(id==='laboratorio')updateWheelSim();if(id==='explicacion')updateCircleCalculator();if(id==='historia')updatePolygonBounds();
     }
+    document.querySelector('[role="tablist"]').addEventListener('keydown',event=>{const tabs=Array.from(document.querySelectorAll('[role="tab"]'));const i=tabs.indexOf(document.activeElement);if(i<0)return;let next=i;if(event.key==='ArrowRight')next=(i+1)%tabs.length;else if(event.key==='ArrowLeft')next=(i-1+tabs.length)%tabs.length;else if(event.key==='Home')next=0;else if(event.key==='End')next=tabs.length-1;else return;event.preventDefault();tabs[next].focus();tabs[next].click();});
     const fmt=(n,d=2)=>Number(n).toFixed(d).replace('.',',');
     const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
     function updateWheelSim(){
-      const r=Number(wheel_r.value),deg=Number(wheel_rot.value),d=2*r,start=60,ground=180,width=820,frac=deg/360,scale=width/(2*Math.PI*r),vr=r*scale,rolled=frac*2*Math.PI*r,x=start+frac*width;
-      v_wheel_r.textContent=fmt(r,0);v_wheel_deg.textContent=deg+'°';
-      wheel_group.setAttribute('transform','translate('+x+','+(ground-vr)+') rotate('+deg+')');svg_wheel_circle.setAttribute('r',vr);
-      spoke_1.setAttribute('y2',vr);spoke_2.setAttribute('y2',-vr);spoke_3.setAttribute('x1',-vr);spoke_3.setAttribute('x2',vr);unrolled_track.setAttribute('x2',x);
+      const r=Number(document.getElementById('wheel_r').value),deg=Number(document.getElementById('wheel_rot').value),d=2*r,start=110,ground=180,width=660,frac=deg/360,scale=width/(2*Math.PI*r),vr=r*scale,rolled=frac*2*Math.PI*r,x=start+frac*width;
+      document.getElementById('v_wheel_r').textContent=fmt(r,0);document.getElementById('v_wheel_deg').textContent=deg+'°';
+      document.getElementById('wheel_group').setAttribute('transform','translate('+x+','+(ground-vr)+') rotate('+deg+')');document.getElementById('svg_wheel_circle').setAttribute('r',vr);
+      document.getElementById('spoke_1').setAttribute('y2',vr);document.getElementById('spoke_2').setAttribute('y2',-vr);document.getElementById('spoke_3').setAttribute('x1',-vr);document.getElementById('spoke_3').setAttribute('x2',vr);document.getElementById('unrolled_track').setAttribute('x2',x);
       const marks=diameters_group;marks.replaceChildren();const vd=d*scale,finalX=start+width;
       const extra=document.createElementNS('http://www.w3.org/2000/svg','line');extra.setAttribute('x1',start+3*vd);extra.setAttribute('y1',ground);extra.setAttribute('x2',finalX);extra.setAttribute('y2',ground);extra.setAttribute('stroke','var(--accent-success)');extra.setAttribute('stroke-width','5');marks.appendChild(extra);
       for(let i=1;i<=3;i++){const px=start+i*vd,line=document.createElementNS('http://www.w3.org/2000/svg','line');line.setAttribute('x1',px);line.setAttribute('x2',px);line.setAttribute('y1',ground-7);line.setAttribute('y2',ground+12);line.setAttribute('stroke','var(--accent-gold)');line.setAttribute('stroke-width','2');marks.appendChild(line);const label=document.createElementNS('http://www.w3.org/2000/svg','text');label.setAttribute('x',px-vd/2-10);label.setAttribute('y',ground+28);label.setAttribute('fill','var(--accent-gold)');label.setAttribute('font-size','12');label.textContent=i+'·d';marks.appendChild(label);}
       const end=document.createElementNS('http://www.w3.org/2000/svg','line');end.setAttribute('x1',finalX);end.setAttribute('x2',finalX);end.setAttribute('y1',ground-18);end.setAttribute('y2',ground+18);end.setAttribute('stroke','var(--accent-success)');end.setAttribute('stroke-width','2.5');marks.appendChild(end);
       const label=document.createElementNS('http://www.w3.org/2000/svg','text');label.setAttribute('x',finalX-55);label.setAttribute('y',ground-23);label.setAttribute('fill','var(--accent-success)');label.setAttribute('font-size','12');label.textContent='≈3,14·d';marks.appendChild(label);
       const tail=document.createElementNS('http://www.w3.org/2000/svg','text');tail.setAttribute('x',start+3*vd+(finalX-start-3*vd)/2-15);tail.setAttribute('y',ground-9);tail.setAttribute('fill','var(--accent-success)');tail.setAttribute('font-size','10');tail.textContent='≈0,14·d';marks.appendChild(tail);
-      txt_calc_len.textContent=fmt(rolled,3);txt_calc_diam.textContent=fmt(d,0);txt_calc_pi_res.textContent=fmt(deg?rolled/d:0,deg===360?5:3);
-      txt_conclusion.textContent=deg===0?'Avanza la rueda para comparar el recorrido con su diámetro.':deg<360?'Modelo ideal: '+fmt(frac*100,0)+'% de una vuelta; L/d ≈ '+fmt(rolled/d,3)+'.':'Vuelta completa: L/d ≈ '+fmt(rolled/d,5)+' ≈ π. El modelo calcula este valor usando π; no es una medición independiente.';
+      document.getElementById('txt_calc_len').textContent=fmt(rolled,3);document.getElementById('txt_calc_diam').textContent=fmt(d,0);document.getElementById('txt_calc_pi_res').textContent=fmt(deg?rolled/d:0,deg===360?5:3);
+      document.getElementById('txt_conclusion').textContent=deg===0?'Avanza la rueda para comparar el recorrido con su diámetro.':deg<360?'Modelo ideal: '+fmt(frac*100,0)+'% de una vuelta; L/d ≈ '+fmt(rolled/d,3)+'.':'Vuelta completa: L/d ≈ '+fmt(rolled/d,5)+' ≈ π. El modelo calcula este valor usando π; no es una medición independiente.';
     }
     const measurements=[];
     function renderMeasurements(){
@@ -367,7 +368,7 @@
     document.getElementById('measurement-form').addEventListener('submit',e=>{e.preventDefault();const f=e.currentTarget;if(!f.reportValidity())return;measurements.push({name:f.elements.object.value.trim(),c:Number(f.elements.circumference.value),d:Number(f.elements.diameter.value)});f.reset();renderMeasurements();});
     function loadSampleMeasurements(){measurements.splice(0,measurements.length,{name:'Tapa',c:31.4,d:10},{name:'Vaso',c:25.1,d:8},{name:'Plato',c:75.4,d:24});renderMeasurements();}
     function clearMeasurements(){measurements.splice(0,measurements.length);renderMeasurements();}
-    function updateCircleCalculator(){const r=Number(document.getElementById('calc-radius').value),pr=12+r/10*58,d=2*r,L=2*Math.PI*r,A=Math.PI*r*r;document.getElementById('calc-radius-value').value=fmt(r,Number.isInteger(r)?0:1)+' cm';document.getElementById('calc-circle').setAttribute('r',pr);document.getElementById('calc-radius-line').setAttribute('x2',110+pr);document.getElementById('circle-results').innerHTML='d = 2r = '+fmt(d,1)+' cm<br>L = 2πr = '+fmt(d,1)+'π cm ≈ '+fmt(L,2)+' cm<br>A = πr² = '+fmt(r*r,2)+'π cm² ≈ '+fmt(A,2)+' cm²';}
+    function updateCircleCalculator(){const r=Number(document.getElementById('calc-radius').value),pr=12+r/10*58,d=2*r,L=2*Math.PI*r,A=Math.PI*r*r;document.getElementById('calc-radius-value').value=fmt(r,Number.isInteger(r)?0:1)+' cm';document.getElementById('calc-circle').setAttribute('r',pr);document.getElementById('calc-radius-line').setAttribute('x2',110+pr);document.getElementById('calc-diameter-line').setAttribute('x1',110-pr);document.getElementById('calc-diameter-line').setAttribute('x2',110+pr);document.getElementById('circle-results').innerHTML='d = 2r = '+fmt(d,1)+' cm<br>L = 2πr = '+fmt(d,1)+'π cm ≈ '+fmt(L,2)+' cm<br>A = πr² = '+fmt(r*r,2)+'π cm² ≈ '+fmt(A,2)+' cm²';}
     const sideCounts=[6,12,24,48,96];
     function updatePolygonBounds(){const n=sideCounts[Number(document.getElementById('polygon-level').value)],cx=110,cy=85,r=55,inn=[],out=[],ro=r/Math.cos(Math.PI/n);for(let i=0;i<n;i++){const a=-Math.PI/2+2*Math.PI*i/n;inn.push((cx+r*Math.cos(a))+','+(cy+r*Math.sin(a)));out.push((cx+ro*Math.cos(a))+','+(cy+ro*Math.sin(a)));}document.getElementById('polygon-inner').setAttribute('points',inn.join(' '));document.getElementById('polygon-outer').setAttribute('points',out.join(' '));document.getElementById('polygon-sides').value=n;document.getElementById('polygon-bounds').textContent='Con '+n+' lados: '+fmt(n*Math.sin(Math.PI/n),5)+' < π < '+fmt(n*Math.tan(Math.PI/n),5)+'.';}
     function generateBasicExercise(){const radius=Math.random()<.5,value=radius?rand(2,10):rand(4,20),d=radius?2*value:value,c=3.14*d,card=document.getElementById('basic-exercise');card.dataset.answer=c;card.dataset.exact=d+'π cm';card.dataset.approx=fmt(c,2)+' cm';document.getElementById('basic-prompt').textContent=radius?'Un círculo tiene radio '+value+' cm. Calcula una vuelta usando π ≈ 3,14.':'Una circunferencia tiene diámetro '+value+' cm. Calcula su longitud con π ≈ 3,14.';document.getElementById('basic-answer').value='';document.getElementById('basic-feedback').textContent='';document.getElementById('basic-hint').hidden=true;}

@@ -90,8 +90,55 @@
     .problem-statement { font-weight: bold; color: var(--text-main); margin-bottom: 0.8rem; font-size: 1.05rem; }
     .problem-solution { font-family: monospace; color: var(--text-muted); font-size: 1rem; line-height: 1.8; }
 
+    .tab-scroll-hint { display: none; }
+    .tab-btn:focus-visible, input[type="range"]:focus-visible, .quick-check button:focus-visible {
+      outline: 3px solid var(--accent-gold);
+      outline-offset: 3px;
+    }
+    .slider-row label { flex: 0 0 160px; }
+    .slider-row input[type="range"] { min-width: 0; flex: 1; }
+    .step-feedback {
+      min-height: 3.5rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      background: var(--bg-primary);
+      border-left: 3px solid var(--accent-blue);
+      color: var(--text-main);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    .table-scroll { max-width: 100%; overflow-x: auto; }
+    .quick-check {
+      width: 100%;
+      padding: 1.25rem;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      background: var(--bg-primary);
+    }
+    .quick-check h3 { color: var(--accent-blue); margin-bottom: 0.6rem; }
+    .quick-check-options { display: flex; flex-wrap: wrap; gap: 0.65rem; margin: 1rem 0; }
+    .quick-check button {
+      padding: 0.7rem 0.9rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-card);
+      color: var(--text-main);
+      font: inherit;
+      cursor: pointer;
+    }
+    .quick-check button[aria-pressed="true"] { border-color: var(--accent-blue); box-shadow: 0 0 0 2px var(--accent-blue); }
+    .quick-check-feedback { min-height: 1.5em; color: var(--text-main); line-height: 1.5; }
+
     @media (max-width: 800px) {
       .grid-2 { grid-template-columns: 1fr; }
+      .tabs-container { justify-content: flex-start; }
+      .tab-btn { flex: 0 0 auto; padding: 0.9rem 0.85rem; font-size: 0.95rem; }
+      .tab-scroll-hint { display: block; padding: 0.45rem 1rem; color: var(--text-muted); font-size: 0.8rem; }
+      .comma-table { min-width: 580px; }
+      .comma-display { font-size: clamp(1.25rem, 6vw, 2rem); letter-spacing: 2px; padding: 1rem 0.6rem; }
+      .formula-hero { font-size: clamp(1.7rem, 8vw, 2.2rem); padding: 1rem 1.5rem; }
+      .slider-row { gap: 0.55rem; }
+      .slider-row label { flex-basis: 115px; font-size: 0.9rem; }
     }
   </style>
   <link rel="stylesheet" href="../tema.css">
@@ -110,15 +157,16 @@
 
   <main class="app-container">
     
-    <nav class="tabs-container">
-      <button class="tab-btn active" onclick="switchTab('concepto', this)">🔭 1. ¿Qué es? y Escalas</button>
-      <button class="tab-btn" onclick="switchTab('conversion', this)">⏪ 2. Convertir Números</button>
-      <button class="tab-btn" onclick="switchTab('operaciones', this)">🧮 3. Operaciones</button>
-      <button class="tab-btn" onclick="switchTab('problemas', this)">🧠 4. Problemas Resueltos</button>
+    <nav class="tabs-container" role="tablist" aria-label="Secciones de la lección">
+      <button id="tab-concepto" class="tab-btn active" role="tab" aria-selected="true" aria-controls="concepto" tabindex="0" onclick="switchTab('concepto', this)">🔭 1. ¿Qué es? y Escalas</button>
+      <button id="tab-conversion" class="tab-btn" role="tab" aria-selected="false" aria-controls="conversion" tabindex="-1" onclick="switchTab('conversion', this)">⏪ 2. Convertir Números</button>
+      <button id="tab-operaciones" class="tab-btn" role="tab" aria-selected="false" aria-controls="operaciones" tabindex="-1" onclick="switchTab('operaciones', this)">🧮 3. Operaciones</button>
+      <button id="tab-problemas" class="tab-btn" role="tab" aria-selected="false" aria-controls="problemas" tabindex="-1" onclick="switchTab('problemas', this)">🧠 4. Problemas Resueltos</button>
     </nav>
+    <p class="tab-scroll-hint" aria-hidden="true">En móvil, desliza las pestañas para ver todas.</p>
 
     <!-- ================= PESTAÑA 1: CONCEPTO Y ESCALAS ================= -->
-    <div id="concepto" class="tab-content active">
+    <div id="concepto" class="tab-content active" role="tabpanel" aria-labelledby="tab-concepto">
       <div class="explanation-card">
         <div class="badge">Escribir sin Ceros de Más</div>
         <div class="content-text">
@@ -131,8 +179,7 @@
           <span style="color:var(--accent-gold);">a</span> · 10<sup style="color:var(--accent-blue);">n</sup>
         </div>
         <p style="color:var(--text-muted); font-size:0.95rem; margin-top:0.5rem;">
-          Donde <strong style="color:var(--accent-gold);">a</strong> es un número entre 1 y 9,99... (solo un dígito delante de la coma)<br>
-          y <strong style="color:var(--accent-blue);">n</strong> es un exponente entero (positivo o negativo).
+          En esta lección trabajamos con números positivos: <strong style="color:var(--accent-gold);">a</strong> debe estar entre 1 y 10 (incluye 1, pero no 10), y <strong style="color:var(--accent-blue);">n</strong> es un número entero. El cero se trata aparte.
         </p>
       </div>
 
@@ -141,7 +188,7 @@
         <div class="panel-box" style="border-top:4px solid var(--accent-blue);">
           <div class="panel-title" style="color:var(--accent-blue);">Exponente Positivo (+n)</div>
           <p style="color:var(--text-main); font-size:0.95rem; margin-bottom:1rem;">
-            Se usa para representar cosas <strong>gigantescas (macroscópicas)</strong>. El exponente positivo indica cuántos ceros hay (o cuántos saltos a la derecha ha dado la coma originalmente).
+            Se usa para representar cantidades grandes. El exponente positivo indica cuántos lugares mover la coma <strong>hacia la derecha para recuperar el número decimal</strong>. No siempre equivale a añadir esa cantidad de ceros.
           </p>
 
           <svg class="svg-canvas" viewBox="0 0 300 200">
@@ -161,7 +208,7 @@
         <div class="panel-box" style="border-top:4px solid var(--accent-gold);">
           <div class="panel-title" style="color:var(--accent-gold);">Exponente Negativo (-n)</div>
           <p style="color:var(--text-main); font-size:0.95rem; margin-bottom:1rem;">
-            Se usa para cosas <strong>diminutas (microscópicas)</strong>. El exponente negativo indica cuántos lugares salta la coma hacia la izquierda.
+            Se usa para representar cantidades pequeñas. El exponente negativo indica cuántos lugares mover la coma <strong>hacia la izquierda para recuperar el número decimal</strong>.
           </p>
 
           <svg class="svg-canvas" viewBox="0 0 300 200">
@@ -183,13 +230,14 @@
     </div>
 
     <!-- ================= PESTAÑA 2: CONVERTIR NÚMEROS ================= -->
-    <div id="conversion" class="tab-content">
+    <div id="conversion" class="tab-content" role="tabpanel" aria-labelledby="tab-conversion" hidden>
       <div class="explanation-card" style="border-left-color: var(--accent-success);">
         <div class="badge" style="color: var(--accent-success);">El Baile de la Coma</div>
         <div class="content-text">
-          Para pasar a notación científica, debemos mover la coma hasta que quede <strong>un solo número distinto de cero a su izquierda</strong>.
-          <br>• Si movemos la coma hacia la izquierda, ganamos exponente (+).
-          <br>• Si la movemos hacia la derecha, perdemos exponente (-).
+          Desde el número decimal, mueve la coma hasta que quede un solo dígito distinto de cero a su izquierda.
+          <br>• Si el número es grande, la coma va a la izquierda y el exponente es positivo.
+          <br>• Si es pequeño, la coma va a la derecha y el exponente es negativo.
+          <br><strong>Al volver a la forma decimal, el movimiento se invierte.</strong>
         </div>
       </div>
 
@@ -201,13 +249,13 @@
           </p>
 
           <div class="slider-row">
-            <label>Mover coma:</label>
-            <input type="range" id="slide_macro" min="0" max="7" value="0" oninput="updateMacro()">
-            <span class="val-badge" id="v_macro">0</span>
+            <label for="slide_macro">Saltos hacia la izquierda:</label>
+            <input type="range" id="slide_macro" min="0" max="7" value="0" aria-describedby="msg_macro" oninput="updateMacro()">
+            <output class="val-badge" id="v_macro" for="slide_macro">0</output>
           </div>
 
-          <div class="comma-display" id="disp_macro"></div>
-          <div id="msg_macro" style="text-align:center; font-weight:bold; font-size:1.1rem; height:24px; color:var(--accent-success);"></div>
+          <div class="comma-display" id="disp_macro" aria-hidden="true"></div>
+          <p class="step-feedback" id="msg_macro" aria-live="polite" aria-atomic="true"></p>
         </div>
 
         <div class="panel-box">
@@ -217,19 +265,19 @@
           </p>
 
           <div class="slider-row">
-            <label>Mover coma:</label>
-            <input type="range" id="slide_micro" min="0" max="5" value="0" oninput="updateMicro()">
-            <span class="val-badge" id="v_micro">0</span>
+            <label for="slide_micro">Saltos hacia la derecha:</label>
+            <input type="range" id="slide_micro" min="0" max="5" value="0" aria-describedby="msg_micro" oninput="updateMicro()">
+            <output class="val-badge" id="v_micro" for="slide_micro">0</output>
           </div>
 
-          <div class="comma-display" id="disp_micro"></div>
-          <div id="msg_micro" style="text-align:center; font-weight:bold; font-size:1.1rem; height:24px; color:var(--accent-success);"></div>
+          <div class="comma-display" id="disp_micro" aria-hidden="true"></div>
+          <p class="step-feedback" id="msg_micro" aria-live="polite" aria-atomic="true"></p>
         </div>
       </div>
     </div>
 
     <!-- ================= PESTAÑA 3: OPERACIONES ================= -->
-    <div id="operaciones" class="tab-content">
+    <div id="operaciones" class="tab-content" role="tabpanel" aria-labelledby="tab-operaciones" hidden>
       <div class="explanation-card" style="border-left-color: var(--accent-blue);">
         <div class="badge" style="color: var(--accent-blue);">Sumar peras con peras</div>
         <div class="content-text">
@@ -255,6 +303,7 @@
             <div>(3 · 10⁴) · (2 · 10⁵)</div>
             <div>= (3 · 2) · 10⁴⁺⁵</div>
             <div style="color:var(--accent-success); font-weight:bold; font-size:1.2rem; margin-top:0.3rem;">= 6 · 10⁹</div>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-top:0.5rem;">Al final, comprueba que el primer número quede entre 1 y 10. Si no, ajusta la coma y el exponente.</p>
 
             <hr style="border:0; border-top:1px solid var(--border-color); margin:1rem 0;">
 
@@ -277,6 +326,7 @@
           </div>
 
           <!-- LA CHULETA DE LOS 4 MOVIMIENTOS -->
+          <div class="table-scroll" role="region" aria-label="Tabla para ajustar el exponente y la coma" tabindex="0">
           <table class="comma-table">
             <thead>
               <tr>
@@ -313,6 +363,7 @@
               </tr>
             </tbody>
           </table>
+          </div>
 
           <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:1.9; margin-top:1rem; font-size:1.05rem;">
             <div style="color:var(--text-muted); font-size:0.9rem;">Ejemplo de Suma:</div>
@@ -327,7 +378,7 @@
     </div>
 
     <!-- ================= PESTAÑA 4: PROBLEMAS RESUELTOS ================= -->
-    <div id="problemas" class="tab-content">
+    <div id="problemas" class="tab-content" role="tabpanel" aria-labelledby="tab-problemas" hidden>
       <div class="explanation-card" style="border-left-color: var(--accent-gold);">
         <div class="badge" style="color: var(--accent-gold);">Aplicaciones Reales</div>
         <div class="content-text">
@@ -373,77 +424,109 @@
           </div>
         </div>
       </div>
+
+      <section class="quick-check" aria-labelledby="quick-check-title">
+        <h3 id="quick-check-title">Comprueba lo que has aprendido</h3>
+        <p>¿Cuál es la notación científica de <strong>0,00032</strong>?</p>
+        <div class="quick-check-options" role="group" aria-label="Elige una respuesta">
+          <button type="button" aria-pressed="false" onclick="checkQuickAnswer(this, false)">3,2 · 10⁴</button>
+          <button type="button" aria-pressed="false" onclick="checkQuickAnswer(this, true)">3,2 · 10⁻⁴</button>
+          <button type="button" aria-pressed="false" onclick="checkQuickAnswer(this, false)">32 · 10⁻⁴</button>
+        </div>
+        <p id="quick-check-feedback" class="quick-check-feedback" aria-live="polite" aria-atomic="true">Elige una respuesta; puedes cambiarla para volver a intentarlo.</p>
+      </section>
     </div>
 
   </main>
 
   <script>
     function switchTab(tabId, btn) {
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
+      document.querySelectorAll('[role="tab"]').forEach(tab => {
+        const selected = tab === btn;
+        tab.classList.toggle('active', selected);
+        tab.setAttribute('aria-selected', String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+      });
+      document.querySelectorAll('[role="tabpanel"]').forEach(panel => {
+        const selected = panel.id === tabId;
+        panel.classList.toggle('active', selected);
+        panel.hidden = !selected;
+      });
       if (tabId === 'conversion') {
         updateMacro();
         updateMicro();
       }
     }
 
-    const macroStr = "28500000";
+    document.querySelector('[role="tablist"]').addEventListener('keydown', event => {
+      const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+      const current = tabs.indexOf(document.activeElement);
+      if (current < 0) return;
+      let next = current;
+      if (event.key === 'ArrowRight') next = (current + 1) % tabs.length;
+      else if (event.key === 'ArrowLeft') next = (current - 1 + tabs.length) % tabs.length;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = tabs.length - 1;
+      else return;
+      event.preventDefault();
+      tabs[next].focus();
+      tabs[next].click();
+    });
+
+    const macroDigits = '28500000';
+    const microDigits = '00047';
 
     function updateMacro() {
-      const shifts = parseInt(document.getElementById('slide_macro').value);
-      document.getElementById('v_macro').innerText = shifts;
-
-      const len = macroStr.length;
-      const commaPos = len - shifts;
-
-      let html = "";
-      for (let i = 0; i < len; i++) {
-        if (i === commaPos) {
-          html += `<span class="comma-active">,</span>`;
-        }
-        html += `<span class="digit">${macroStr[i]}</span>`;
-      }
-      if (commaPos === len) {
-        html += `<span class="comma-active">,</span><span class="digit">0</span>`;
-      }
-
-      html += `<span class="multiplier">· 10<sup style="color:#fff;">${shifts}</sup></span>`;
-      document.getElementById('disp_macro').innerHTML = html;
-
-      const msgBox = document.getElementById('msg_macro');
-      if (shifts === 7) {
-        msgBox.innerHTML = "¡Correcto! 2,85 · 10⁷ (Un solo dígito a la izquierda)";
+      const shifts = Number(document.getElementById('slide_macro').value);
+      document.getElementById('v_macro').value = shifts;
+      let mantissa;
+      if (shifts === 0) {
+        mantissa = '28.500.000';
       } else {
-        msgBox.innerHTML = "";
+        const commaPos = macroDigits.length - shifts;
+        const integer = macroDigits.slice(0, commaPos);
+        const fraction = macroDigits.slice(commaPos).replace(/0+$/, '') || '0';
+        mantissa = integer + ',' + fraction;
       }
+      document.getElementById('disp_macro').innerHTML =
+        '<span class="digit">' + mantissa + '</span><span class="multiplier"> · 10<sup>' + shifts + '</sup></span>';
+
+      const movement = shifts === 0 ? 'Aún no has movido la coma.' :
+        'Has movido la coma ' + shifts + (shifts === 1 ? ' lugar' : ' lugares') + ' hacia la izquierda.';
+      const feedback = shifts === 7
+        ? '¡Correcto! 28.500.000 = 2,85 · 10^7. El coeficiente ya está entre 1 y 10.'
+        : 'Paso ' + shifts + ' de 7. ' + movement + ' 28.500.000 = ' + mantissa + ' · 10^' + shifts + '.';
+      document.getElementById('msg_macro').textContent = feedback;
     }
 
     function updateMicro() {
-      const shifts = parseInt(document.getElementById('slide_micro').value);
-      document.getElementById('v_micro').innerText = shifts;
+      const shifts = Number(document.getElementById('slide_micro').value);
+      document.getElementById('v_micro').value = shifts;
+      const integerDigits = microDigits.slice(0, shifts).replace(/^0+/, '') || '0';
+      const fractionalDigits = microDigits.slice(shifts) || '0';
+      const mantissa = integerDigits + ',' + fractionalDigits;
+      document.getElementById('disp_micro').innerHTML =
+        '<span class="digit">' + mantissa + '</span><span class="multiplier"> · 10<sup>-' + shifts + '</sup></span>';
 
-      let displayStr = "";
-      
-      if (shifts === 0) displayStr = "0<span class='comma-active'>,</span>00047";
-      else if (shifts === 1) displayStr = "0<span class='comma-active'>,</span>0047";
-      else if (shifts === 2) displayStr = "0<span class='comma-active'>,</span>047";
-      else if (shifts === 3) displayStr = "0<span class='comma-active'>,</span>47";
-      else if (shifts === 4) displayStr = "4<span class='comma-active'>,</span>7";
-      else if (shifts === 5) displayStr = "47<span class='comma-active'>,</span>0";
-
-      const html = `${displayStr}<span class="multiplier">· 10<sup style="color:#fff;">-${shifts}</sup></span>`;
-      document.getElementById('disp_micro').innerHTML = html;
-
-      const msgBox = document.getElementById('msg_micro');
+      let feedback;
       if (shifts === 4) {
-        msgBox.innerHTML = "¡Correcto! 4,7 · 10⁻⁴ (Un solo dígito del 1 al 9 a la izquierda)";
+        feedback = '¡Correcto! 0,00047 = 4,7 · 10⁻⁴. El coeficiente ya está entre 1 y 10.';
       } else if (shifts === 5) {
-        msgBox.innerHTML = "<span style='color:var(--accent-op);'>Te pasaste. '47' es mayor que 9.</span>";
+        feedback = 'Te has pasado: 47 es mayor que 10. La igualdad 0,00047 = 47 · 10⁻⁵ sigue siendo correcta, pero no está en notación científica normalizada.';
       } else {
-        msgBox.innerHTML = "";
+        const movement = shifts === 0 ? 'Aún no has movido la coma.' :
+          'Has movido la coma ' + shifts + (shifts === 1 ? ' lugar' : ' lugares') + ' hacia la derecha.';
+        feedback = 'Paso ' + shifts + ' de 4. ' + movement + ' 0,00047 = ' + mantissa + ' · 10⁻' + shifts + '.';
       }
+      document.getElementById('msg_micro').textContent = feedback;
+    }
+
+    function checkQuickAnswer(button, isCorrect) {
+      document.querySelectorAll('.quick-check-options button').forEach(option => option.setAttribute('aria-pressed', String(option === button)));
+      const feedback = document.getElementById('quick-check-feedback');
+      feedback.textContent = isCorrect
+        ? '¡Correcto! La coma avanza 4 lugares a la derecha al convertir 0,00032; por eso el exponente es −4.'
+        : 'Aún no. Comprueba cuántos lugares debe avanzar la coma para dejar un solo dígito distinto de cero a su izquierda y vuelve a intentarlo.';
     }
 
     updateMacro();

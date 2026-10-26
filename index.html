@@ -910,7 +910,7 @@
         <div class="branch-subheading">🔤 Álgebra Básica</div>
         <div class="topics-grid">
           
-          <a href="algebra/monomios.html" class="topic-card card-c1" data-title="monomios letras grados">
+          <a href="algebra/monomios.html" class="topic-card card-c1" data-title="monomios letras grados" data-keywords="monomio termino algebraico coeficiente parte literal expresion algebraica suma resta multiplicacion">
             <div class="card-top"><span class="branch-tag tag-algebra">Álgebra</span></div>
             <div class="topic-name">Introducción Monomios</div>
             <div class="topic-desc">El lenguaje de las letras, coeficientes y grado.</div>
@@ -1058,7 +1058,7 @@
             <div class="mini-preview"><span>x = (-b ± √Δ)/2a</span></div>
           </a>
 
-          <a href="algebra/polinomios_avanzados.html" class="topic-card card-c2" data-title="polinomios division factor comun">
+          <a href="algebra/polinomios_avanzados.html" class="topic-card card-c2" data-title="polinomios division factor comun" data-keywords="polinomio polinomios regla de ruffini teorema del resto division sintetica raices grado coeficientes factorizacion">
             <div class="card-top"><span class="branch-tag tag-algebra">Álgebra</span></div>
             <div class="topic-name">Polinomios Avanzados</div>
             <div class="topic-desc">División por caja, factor común y fracciones algebraicas.</div>
@@ -1462,12 +1462,22 @@
       if (!groups.length) return true;
       const corpus = normalizeSearchText([
         card.getAttribute('data-title'),
+        card.getAttribute('data-keywords'),
         card.querySelector('.topic-name')?.textContent,
         card.querySelector('.topic-desc')?.textContent,
         card.textContent
       ].join(' '));
-      const paddedCorpus = ' ' + corpus + ' ';
-      return groups.every(group => group.some(term => paddedCorpus.includes(' ' + term + ' ')));
+      const corpusWords = corpus.split(' ');
+      const termMatches = term => {
+        const queryWords = normalizeSearchText(term).split(' ').filter(Boolean);
+        if (!queryWords.length || queryWords.length > corpusWords.length) return false;
+        return corpusWords.some((_, start) => queryWords.every((word, offset) => {
+          const candidate = corpusWords[start + offset];
+          if (!candidate) return false;
+          return word.length >= 3 ? candidate.startsWith(word) : candidate === word;
+        }));
+      };
+      return groups.every(group => group.some(termMatches));
     }
 
     function cardMatchesScope(card) {

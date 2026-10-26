@@ -494,10 +494,9 @@
       const movement = shifts === 0 ? 'Aún no has movido la coma.' :
         'Has movido la coma ' + shifts + (shifts === 1 ? ' lugar' : ' lugares') + ' hacia la izquierda.';
       const feedback = shifts === 7
-        ? '¡Correcto! 28.500.000 = 2,85 · 10⁷. El coeficiente ya está entre 1 y 10.'
-        : 'Paso ' + shifts + ' de 7. ' + movement + ' 28.500.000 = ' + mantissa + ' · 10⁰?';
-      document.getElementById('msg_macro').textContent =
-        shifts === 7 ? feedback : feedback.replace(mantissa + ' · 10⁰?', mantissa + ' · 10' + (shifts ? '⁽' + shifts + '⁾' : '⁰'));
+        ? '¡Correcto! 28.500.000 = 2,85 · 10^7. El coeficiente ya está entre 1 y 10.'
+        : 'Paso ' + shifts + ' de 7. ' + movement + ' 28.500.000 = ' + mantissa + ' · 10^' + shifts + '.';
+      document.getElementById('msg_macro').textContent = feedback;
     }
 
     function updateMicro() {

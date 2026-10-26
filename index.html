@@ -151,10 +151,12 @@
       flex-direction: column;
       gap: 1.2rem;
     }
+    .search-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .6rem; align-items: start; }
+    .search-shortcut { display: block; margin: .35rem .25rem 0; color: var(--text-muted); font-size: .78rem; text-align: right; }
     .search-bar-wrap { position: relative; width: 100%; }
     .search-input {
       width: 100%;
-      padding: 0.85rem 2.8rem;
+      padding: 0.85rem 3rem 0.85rem 2.8rem;
       background: var(--bg-primary);
       border: 1px solid var(--border-color);
       border-radius: 10px;
@@ -167,6 +169,7 @@
       border-color: var(--accent-blue);
       box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
     }
+    .search-input::-webkit-search-cancel-button { display: none; }
     .search-icon {
       position: absolute;
       left: 1rem;
@@ -194,6 +197,34 @@
       cursor: pointer;
       line-height: 1;
     }
+    .search-scope {
+      min-height: 3.25rem; padding: .6rem .8rem; border: 1px solid var(--border-color);
+      border-radius: 10px; background: var(--bg-card); color: var(--text-main);
+      font: inherit; font-weight: 700;
+    }
+    .search-suggestions {
+      position: absolute; z-index: 120; top: calc(100% + .35rem); left: 0; right: 0;
+      max-height: 24rem; overflow-y: auto; border: 1px solid var(--border-color);
+      border-radius: 10px; background: var(--bg-card); box-shadow: 0 12px 28px rgba(0,0,0,.28);
+    }
+    .search-suggestion {
+      display: flex; width: 100%; flex-direction: column; align-items: flex-start; gap: .15rem;
+      padding: .7rem 1rem; border: 0; border-bottom: 1px solid var(--border-color);
+      background: transparent; color: var(--text-main); text-align: left; cursor: pointer; font: inherit;
+    }
+    .search-suggestion:last-child { border-bottom: 0; }
+    .search-suggestion:hover, .search-suggestion[aria-selected="true"] { background: var(--bg-plate); }
+    .search-suggestion-title { font-weight: 800; }
+    .search-suggestion-course { color: var(--text-muted); font-size: .82rem; }
+    .search-summary {
+      width: 100%; padding: .9rem 1rem; border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-blue); border-radius: 8px;
+      background: var(--bg-card); color: var(--text-main); line-height: 1.5;
+    }
+    .home-intro .filter-section { max-width: none; margin: 1.25rem 0 0; padding: 0; }
+    .filter-section.home-idle .pill-filters { display: none; }
+    .home-hub.is-searching > section[aria-labelledby="courseHeading"],
+    .home-hub.is-searching > section[aria-labelledby="quickHeading"] { display: none; }
     .clear-search-btn:hover {
       background: var(--accent-op);
       color: #fff;
@@ -515,6 +546,13 @@
       .hub-section-heading { align-items: flex-start; flex-direction: column; gap: .2rem; }
       .heading-note { display: none; }
     }
+    @media (max-width: 520px) {
+      .search-toolbar { grid-template-columns: minmax(0, 1fr); }
+      .search-scope { justify-self: end; min-height: 2.75rem; }
+      .filter-section { padding: 0 1rem; }
+      .pill-filters { gap: .4rem; }
+      .filter-chip { padding: .45rem .8rem; }
+    }
 
   </style>
   <link rel="stylesheet" href="tema.css">
@@ -573,6 +611,32 @@
       <span class="home-eyebrow">MATH LAB · APRENDER PASO A PASO</span>
       <h1 id="homeTitle">¿Qué necesitas hoy?</h1>
       <p>Elige tu curso para encontrar las lecciones adecuadas. También puedes ir directamente a una fórmula o practicar.</p>
+      <!-- BUSCADOR GLOBAL: se traslada al encabezado del curso al abrirlo. -->
+      <div class="filter-section home-idle" id="filterSection" role="search" aria-label="Buscar en MathLab">
+        <div class="search-toolbar">
+          <div class="search-bar-wrap">
+            <span class="search-icon" aria-hidden="true">🔍</span>
+            <input type="search" id="searchInput" class="search-input" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="searchSuggestions" aria-label="Buscar lecciones" aria-keyshortcuts="Control+K Meta+K" placeholder="Busca una lección: potencias, π, MCM..." oninput="handleSearchInput()" onkeydown="handleSearchKeydown(event)" onfocus="handleSearchFocus()">
+            <button type="button" id="clearSearch" class="clear-search-btn" onclick="clearSearchInput()" aria-label="Limpiar búsqueda" title="Limpiar búsqueda">✕</button>
+            <div id="searchSuggestions" class="search-suggestions" role="listbox" aria-label="Sugerencias de lecciones" hidden></div>
+          </div>
+          <select id="searchScope" class="search-scope" aria-label="Alcance de búsqueda" onchange="changeSearchScope()">
+            <option value="all">Todo MathLab</option>
+            <option value="course" disabled>Este curso</option>
+          </select>
+        </div>
+        <span class="search-shortcut">Atajo de teclado: Ctrl + K / ⌘ + K</span>
+        <div class="pill-filters">
+          <button class="filter-chip active" onclick="setFilter('all', this)">Todos los temas</button>
+          <button class="filter-chip filter-chip-fav" onclick="setFilter('favoritos', this)">⭐ Mis Favoritos (<span id="favCount">0</span>)</button>
+          <button class="filter-chip" onclick="setFilter('tablas', this)">📋 Tablas y Chuletas PDF</button>
+          <button class="filter-chip" onclick="setFilter('aritmetica', this)">Aritmética y Números</button>
+          <button class="filter-chip" onclick="setFilter('algebra', this)">Álgebra y Ecuaciones</button>
+          <button class="filter-chip" onclick="setFilter('geometria', this)">Geometría y Vectores</button>
+          <button class="filter-chip" onclick="setFilter('estadistica', this)">Estadística y Azar</button>
+          <button class="filter-chip" onclick="setFilter('funciones', this)">Funciones y Análisis</button>
+        </div>
+      </div>
     </div>
 
     <section aria-labelledby="courseHeading">
@@ -636,28 +700,9 @@
     <p id="courseViewNote"></p>
   </div>
 
-  <!-- BUSCADOR Y FILTROS POR TEMÁTICA -->
-  <div class="filter-section" id="filterSection" hidden>
-    <div class="search-bar-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" class="search-input" placeholder="Buscar cualquier tema: Derivadas, Pitágoras, Factorial, Fracciones..." oninput="handleSearchInput()">
-      <button id="clearSearch" class="clear-search-btn" onclick="clearSearchInput()" title="Limpiar búsqueda">✕</button>
-    </div>
-
-    <div class="pill-filters">
-      <button class="filter-chip active" onclick="setFilter('all', this)">Todos los temas</button>
-      <button class="filter-chip filter-chip-fav" onclick="setFilter('favoritos', this)">⭐ Mis Favoritos (<span id="favCount">0</span>)</button>
-      <button class="filter-chip" onclick="setFilter('tablas', this)">📋 Tablas y Chuletas PDF</button>
-      <button class="filter-chip" onclick="setFilter('aritmetica', this)">Aritmética y Números</button>
-      <button class="filter-chip" onclick="setFilter('algebra', this)">Álgebra y Ecuaciones</button>
-      <button class="filter-chip" onclick="setFilter('geometria', this)">Geometría y Vectores</button>
-      <button class="filter-chip" onclick="setFilter('estadistica', this)">Estadística y Azar</button>
-      <button class="filter-chip" onclick="setFilter('funciones', this)">Funciones y Análisis</button>
-    </div>
-  </div>
-
   <!-- CATÁLOGO GENERAL -->
   <main class="catalog-wrapper" id="catalogWrapper" hidden>
+    <div id="searchSummary" class="search-summary" role="status" aria-live="polite" hidden></div>
 
     <!-- TABLAS RÁPIDAS -->
     <section id="tablas-rapidas" class="cycle-block">
@@ -865,7 +910,7 @@
         <div class="branch-subheading">🔤 Álgebra Básica</div>
         <div class="topics-grid">
           
-          <a href="algebra/monomios.html" class="topic-card card-c1" data-title="monomios letras grados">
+          <a href="algebra/monomios.html" class="topic-card card-c1" data-title="monomios letras grados" data-keywords="monomio termino algebraico coeficiente parte literal expresion algebraica suma resta multiplicacion">
             <div class="card-top"><span class="branch-tag tag-algebra">Álgebra</span></div>
             <div class="topic-name">Introducción Monomios</div>
             <div class="topic-desc">El lenguaje de las letras, coeficientes y grado.</div>
@@ -1013,7 +1058,7 @@
             <div class="mini-preview"><span>x = (-b ± √Δ)/2a</span></div>
           </a>
 
-          <a href="algebra/polinomios_avanzados.html" class="topic-card card-c2" data-title="polinomios division factor comun">
+          <a href="algebra/polinomios_avanzados.html" class="topic-card card-c2" data-title="polinomios division factor comun" data-keywords="polinomio polinomios regla de ruffini teorema del resto division sintetica raices grado coeficientes factorizacion">
             <div class="card-top"><span class="branch-tag tag-algebra">Álgebra</span></div>
             <div class="topic-name">Polinomios Avanzados</div>
             <div class="topic-desc">División por caja, factor común y fracciones algebraicas.</div>
@@ -1381,24 +1426,169 @@
     // =========================================================================
     // 2. BUSCADOR Y BOTÓN LIMPIAR
     // =========================================================================
+    const SEARCH_SYNONYMS = [
+      ['pi', 'π', 'numero pi'],
+      ['mcm', 'minimo comun multiplo'],
+      ['mcd', 'maximo comun divisor'],
+      ['pitagoras', 'pitagorica', 'pitagoricas', 'teorema de pitagoras'],
+      ['vector', 'vectores', 'vectorial', 'vectoriales'],
+      ['raiz', 'raices', 'radical', 'radicales'],
+      ['fraccion', 'fracciones', 'quebrado', 'quebrados'],
+      ['ecuacion', 'ecuaciones'],
+      ['derivada', 'derivadas'],
+      ['integral', 'integrales', 'primitiva', 'primitivas'],
+      ['porcentaje', 'porcentajes', 'tanto por ciento']
+    ];
+
+    function normalizeSearchText(value) {
+      return String(value || '').toLowerCase().replace(/π/g, ' pi ')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, ' ').trim().replace(/\s+/g, ' ');
+    }
+
+    function queryGroups(query) {
+      const normalized = normalizeSearchText(query);
+      if (!normalized) return [];
+      const exactAlias = SEARCH_SYNONYMS.find(group => group.some(alias => normalizeSearchText(alias) === normalized));
+      if (exactAlias) return [exactAlias.map(normalizeSearchText)];
+      return normalized.split(' ').map(word => {
+        const group = SEARCH_SYNONYMS.find(aliases => aliases.some(alias => normalizeSearchText(alias) === word));
+        return group ? group.map(normalizeSearchText) : [word];
+      });
+    }
+
+    function cardMatchesQuery(card, query) {
+      const groups = queryGroups(query);
+      if (!groups.length) return true;
+      const corpus = normalizeSearchText([
+        card.getAttribute('data-title'),
+        card.getAttribute('data-keywords'),
+        card.querySelector('.topic-name')?.textContent,
+        card.querySelector('.topic-desc')?.textContent,
+        card.textContent
+      ].join(' '));
+      const corpusWords = corpus.split(' ');
+      const termMatches = term => {
+        const queryWords = normalizeSearchText(term).split(' ').filter(Boolean);
+        if (!queryWords.length || queryWords.length > corpusWords.length) return false;
+        return corpusWords.some((_, start) => queryWords.every((word, offset) => {
+          const candidate = corpusWords[start + offset];
+          if (!candidate) return false;
+          return word.length >= 3 ? candidate.startsWith(word) : candidate === word;
+        }));
+      };
+      return groups.every(group => group.some(termMatches));
+    }
+
+    function cardMatchesScope(card) {
+      return currentSearchScope !== 'course' || !currentCourseCardSet || currentCourseCardSet.has(card.getAttribute('href'));
+    }
+
+    function cardMatchesBranch(card, favorites = getFavorites()) {
+      if (currentFilterBranch === 'favoritos') return favorites.includes(card.getAttribute('href'));
+      if (currentFilterBranch === 'all') return true;
+      const branch = card.getAttribute('data-branch') || card.closest('.branch-group')?.getAttribute('data-branch');
+      return branch === currentFilterBranch;
+    }
+
     function handleSearchInput() {
       const input = document.getElementById('searchInput');
       const clearBtn = document.getElementById('clearSearch');
-      if (input.value.length > 0) {
-        clearBtn.style.display = 'inline-flex';
-      } else {
-        clearBtn.style.display = 'none';
-      }
+      const isHome = !document.getElementById('homeHub').hidden;
+      const hasQuery = input.value.trim().length > 0;
+      clearBtn.style.display = input.value.length > 0 ? 'inline-flex' : 'none';
+      document.getElementById('homeHub').classList.toggle('is-searching', isHome && hasQuery);
+      document.getElementById('filterSection').classList.toggle('home-idle', isHome && !hasQuery);
+      document.getElementById('catalogWrapper').hidden = isHome && !hasQuery;
+      renderSearchSuggestions();
       filterTopics();
     }
 
     function clearSearchInput() {
       const input = document.getElementById('searchInput');
-      input.value = "";
-      document.getElementById('clearSearch').style.display = 'none';
+      input.value = '';
+      handleSearchInput();
       input.focus();
+    }
+
+    function changeSearchScope() {
+      currentSearchScope = document.getElementById('searchScope').value;
+      renderSearchSuggestions();
       filterTopics();
     }
+
+    function handleSearchFocus() {
+      if (document.getElementById('searchInput').value.trim()) renderSearchSuggestions();
+    }
+
+    function hideSearchSuggestions() {
+      const list = document.getElementById('searchSuggestions');
+      list.hidden = true;
+      document.getElementById('searchInput').setAttribute('aria-expanded', 'false');
+      document.getElementById('searchInput').removeAttribute('aria-activedescendant');
+      activeSuggestionIndex = -1;
+    }
+
+    function renderSearchSuggestions() {
+      const input = document.getElementById('searchInput');
+      const list = document.getElementById('searchSuggestions');
+      const query = input.value.trim();
+      list.replaceChildren();
+      activeSuggestionIndex = -1;
+      if (!query) { hideSearchSuggestions(); return; }
+
+      const matches = [...document.querySelectorAll('.topic-card')]
+        .filter(card => cardMatchesScope(card) && cardMatchesBranch(card) && cardMatchesQuery(card, query))
+        .sort((a, b) => {
+          const q = normalizeSearchText(query);
+          const titleA = normalizeSearchText(a.querySelector('.topic-name')?.textContent);
+          const titleB = normalizeSearchText(b.querySelector('.topic-name')?.textContent);
+          const rank = title => title.startsWith(q) ? 0 : title.includes(q) ? 1 : 2;
+          return rank(titleA) - rank(titleB);
+        }).slice(0, 7);
+
+      matches.forEach((card, index) => {
+        const option = document.createElement('button');
+        option.type = 'button'; option.className = 'search-suggestion';
+        option.id = 'search-option-' + index; option.setAttribute('role', 'option');
+        option.setAttribute('aria-selected', 'false'); option.dataset.href = card.getAttribute('href');
+        const title = document.createElement('span'); title.className = 'search-suggestion-title';
+        title.textContent = card.querySelector('.topic-name')?.textContent.trim() || card.innerText.trim();
+        const course = document.createElement('span'); course.className = 'search-suggestion-course';
+        course.textContent = card.closest('.cycle-block')?.querySelector('.cycle-title')?.textContent.replace(/\s+/g, ' ').trim() || 'Recurso de consulta';
+        option.append(title, course); list.appendChild(option);
+      });
+      list.hidden = matches.length === 0;
+      input.setAttribute('aria-expanded', String(matches.length > 0));
+    }
+
+    function handleSearchKeydown(event) {
+      const list = document.getElementById('searchSuggestions');
+      const options = [...list.querySelectorAll('[role="option"]')];
+      if (event.key === 'Escape') { hideSearchSuggestions(); return; }
+      if (!options.length) return;
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        const delta = event.key === 'ArrowDown' ? 1 : -1;
+        activeSuggestionIndex = activeSuggestionIndex < 0
+          ? (delta > 0 ? 0 : options.length - 1)
+          : (activeSuggestionIndex + delta + options.length) % options.length;
+        options.forEach((option, index) => option.setAttribute('aria-selected', String(index === activeSuggestionIndex)));
+        document.getElementById('searchInput').setAttribute('aria-activedescendant', options[activeSuggestionIndex].id);
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        const selected = options[activeSuggestionIndex >= 0 ? activeSuggestionIndex : 0];
+        if (selected) window.location.href = selected.dataset.href;
+      }
+    }
+
+    document.getElementById('searchSuggestions').addEventListener('click', event => {
+      const option = event.target.closest('[data-href]');
+      if (option) window.location.href = option.dataset.href;
+    });
+    document.addEventListener('click', event => {
+      if (!event.target.closest('.search-toolbar')) hideSearchSuggestions();
+    });
 
     // =========================================================================
     // 3. FAVORITOS Y FILTRADO
@@ -1586,6 +1776,17 @@
       }
     };
     let currentCourseCardSet = null;
+    let currentCourseSection = null;
+    let currentSearchScope = 'all';
+    let activeSuggestionIndex = -1;
+
+    document.addEventListener('keydown', event => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k' && document.getElementById('favoritesOverlay').hidden) {
+        event.preventDefault();
+        const input = document.getElementById('searchInput');
+        input.focus(); input.select();
+      }
+    });
 
     function openCourse(courseId) {
       const home = document.getElementById('homeHub');
@@ -1598,7 +1799,7 @@
 
       home.hidden = true;
       controls.hidden = false;
-      filter.hidden = false;
+      controls.after(filter);
       catalog.hidden = false;
 
       document.querySelectorAll('.cycle-block').forEach(section => {
@@ -1612,6 +1813,12 @@
       currentCourseCardSet = bachCourse
         ? new Set(bachCourse.hrefs)
         : new Set([...courseSection.querySelectorAll('.topic-card')].map(card => card.getAttribute('href')));
+      currentCourseSection = courseSection;
+      currentSearchScope = 'course';
+      const scope = document.getElementById('searchScope');
+      scope.disabled = false; scope.value = 'course';
+      filter.classList.remove('home-idle');
+      hideSearchSuggestions();
 
       document.getElementById('courseViewTitle').textContent =
         bachCourse?.title || courseSection.querySelector('.cycle-title').innerText.replace(/\s+/g, ' ').trim();
@@ -1628,10 +1835,15 @@
 
     function returnToCourses() {
       currentCourseCardSet = null;
+      currentCourseSection = null;
+      currentSearchScope = 'all';
       document.getElementById('homeHub').hidden = false;
+      document.getElementById('homeHub').classList.remove('is-searching');
       document.getElementById('courseViewControls').hidden = true;
-      document.getElementById('filterSection').hidden = true;
+      document.querySelector('.home-intro').after(document.getElementById('filterSection'));
       document.getElementById('catalogWrapper').hidden = true;
+      document.getElementById('searchScope').disabled = true;
+      document.getElementById('searchScope').value = 'all';
       document.querySelectorAll('.cycle-block').forEach(section => {
         section.hidden = false;
         section.style.display = '';
@@ -1643,32 +1855,29 @@
       currentFilterBranch = 'all';
       document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
       document.querySelector('.filter-chip[onclick*="all"]').classList.add('active');
+      document.getElementById('filterSection').classList.add('home-idle');
+      hideSearchSuggestions();
+      filterTopics();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
 
 
     function filterTopics() {
-      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+      const input = document.getElementById('searchInput');
+      const query = input.value.trim();
       const cards = document.querySelectorAll('.topic-card');
       const favs = getFavorites();
+      let visibleCount = 0;
 
       cards.forEach(card => {
-        const title = (card.getAttribute('data-title') || "").toLowerCase();
-        const text = card.innerText.toLowerCase();
-        const href = card.getAttribute('href');
-        const matchesQuery = q === "" || title.includes(q) || text.includes(q);
-        const matchesCourse = !currentCourseCardSet || currentCourseCardSet.has(href);
+        const matchesQuery = cardMatchesQuery(card, query);
+        const matchesCourse = cardMatchesScope(card);
+        const matchesBranch = cardMatchesBranch(card, favs);
 
-        let matchesBranch = true;
-        if (currentFilterBranch === 'favoritos') {
-          matchesBranch = favs.includes(href);
-        } else if (currentFilterBranch !== 'all') {
-          const cardBranch = card.getAttribute('data-branch') || card.closest('.branch-group')?.getAttribute('data-branch');
-          matchesBranch = (cardBranch === currentFilterBranch);
-        }
-
-        card.style.display = (matchesCourse && matchesQuery && matchesBranch) ? 'flex' : 'none';
+        const visible = matchesCourse && matchesQuery && matchesBranch;
+        card.style.display = visible ? 'flex' : 'none';
+        if (visible) visibleCount++;
       });
 
       document.querySelectorAll('.branch-group').forEach(group => {
@@ -1677,9 +1886,22 @@
       });
 
       document.querySelectorAll('.cycle-block').forEach(section => {
+        section.hidden = currentSearchScope === 'course' && currentCourseSection !== null && section !== currentCourseSection;
         const visibleCards = section.querySelectorAll('.topic-card[style*="display: flex"]');
         section.style.display = (visibleCards.length > 0) ? 'block' : 'none';
       });
+
+      const summary = document.getElementById('searchSummary');
+      if (query) {
+        const scopeLabel = currentSearchScope === 'course' ? 'en este curso' : 'en todo MathLab';
+        summary.hidden = false;
+        summary.textContent = visibleCount === 0
+          ? 'No hay resultados para «' + query + '». Prueba otra palabra o cambia el filtro seleccionado.'
+          : visibleCount + (visibleCount === 1 ? ' resultado' : ' resultados') + ' para «' + query + '» ' + scopeLabel + '.';
+      } else {
+        summary.hidden = true;
+        summary.textContent = '';
+      }
     }
 
     function setFilter(branch, btn) {

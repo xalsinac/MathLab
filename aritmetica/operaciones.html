@@ -107,10 +107,74 @@
     /* CONTROLES */
     .controls { display: flex; gap: 1rem; justify-content: center; margin-top: 1rem; }
 
+    /* MODELOS VISUALES */
+    .visual-model { border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-primary); }
+    .visual-model summary { padding: 1rem 1.2rem; color: var(--accent-blue); font-weight: 800; cursor: pointer; }
+    .model-content { padding: 0 1.2rem 1.2rem; color: var(--text-main); }
+    .model-equation { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .55rem; margin: .5rem 0 1rem; font-size: clamp(1.25rem, 3vw, 2rem); font-weight: 900; }
+    .model-equation strong { color: var(--accent-success); }
+    .model-note { color: var(--text-muted); line-height: 1.55; text-align: center; margin-top: .8rem; }
+    .model-columns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem; }
+    .model-column { display: flex; min-height: 125px; flex-direction: column; align-items: center; justify-content: center; gap: .4rem; padding: .8rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-card); text-align: center; }
+    .model-column.active { border: 2px solid var(--accent-blue); box-shadow: 0 0 0 3px rgba(56,189,248,.12); }
+    .model-column strong { font-size: 1.05rem; }
+    .model-dots { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; max-width: 145px; }
+    .model-dot { width: 13px; height: 13px; border-radius: 50%; background: var(--accent-blue); }
+    .model-dot.gold { background: var(--accent-gold); }
+    .model-dot.success { background: var(--accent-success); }
+    .ten-frame { display: grid; grid-template-columns: repeat(5, 15px); gap: 4px; padding: 6px; border: 2px solid var(--accent-blue); border-radius: 8px; }
+    .ten-frame .model-dot { width: 13px; height: 13px; }
+    .difference-jumps { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .7rem; }
+    .difference-jump { padding: .9rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-card); text-align: center; transition: transform .2s, border-color .2s; }
+    .difference-jump.active { border: 2px solid var(--accent-op); transform: translateY(-3px); }
+    .difference-jump .jump-value { display: block; color: var(--accent-success); font-size: 1.7rem; font-weight: 900; }
+    .groups-visual { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .6rem; margin: .7rem auto; max-width: 560px; }
+    .equal-group { display: grid; grid-template-columns: repeat(4, 17px); justify-content: center; gap: 5px; padding: .8rem .4rem; border: 1px solid var(--border-color); border-radius: 9px; background: var(--bg-card); }
+    .area-model { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .7rem; max-width: 640px; margin: 1rem auto; }
+    .area-part { display: grid; min-height: 95px; place-content: center; gap: .3rem; border: 2px solid var(--accent-blue); border-radius: 10px; background: rgba(56,189,248,.08); text-align: center; font-weight: 800; }
+    .area-part.gold { border-color: var(--accent-gold); background: rgba(251,191,36,.08); }
+    .division-model { display: grid; gap: .7rem; }
+    .division-stage { padding: .85rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-card); }
+    .division-groups { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .45rem; margin: .55rem 0; text-align: center; }
+    .division-group { padding: .6rem .3rem; border: 1px solid var(--accent-success); border-radius: 8px; color: var(--accent-success); font-weight: 800; }
+    .exchange-label { color: var(--accent-gold); font-weight: 800; }
+
+    /* PRÁCTICA */
+    .practice-intro { color: var(--text-muted); line-height: 1.6; }
+    .practice-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-primary); }
+    .practice-toolbar label { display: flex; align-items: center; gap: .6rem; color: var(--text-main); font-weight: 700; }
+    .practice-toolbar select { max-width: 100%; padding: .65rem .8rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-card); color: var(--text-main); font: inherit; }
+    .practice-operations { display: flex; gap: .5rem; overflow-x: auto; padding-bottom: .25rem; }
+    .practice-operation { flex: 1 0 auto; padding: .75rem 1rem; border: 1px solid var(--border-color); border-radius: 9px; background: var(--bg-card); color: var(--text-muted); font: inherit; font-weight: 800; cursor: pointer; }
+    .practice-operation[aria-pressed="true"] { border-color: var(--accent-blue); color: var(--accent-blue); box-shadow: inset 0 -3px var(--accent-blue); }
+    .practice-card { display: grid; grid-template-columns: minmax(0,1fr) minmax(250px,.85fr); gap: 1rem; align-items: stretch; padding: clamp(1rem,3vw,2rem); border: 1px solid var(--border-color); border-radius: 14px; background: var(--bg-primary); }
+    .practice-question { display: flex; flex-direction: column; justify-content: center; gap: 1rem; }
+    .practice-problem { color: var(--text-main); font-size: clamp(2.2rem,6vw,4.5rem); font-weight: 900; text-align: center; }
+    .practice-answer { display: flex; flex-wrap: wrap; justify-content: center; gap: .7rem; }
+    .practice-answer label { display: grid; gap: .3rem; color: var(--text-muted); font-size: .9rem; font-weight: 700; }
+    .practice-answer input { width: min(10rem,38vw); min-height: 3rem; padding: .6rem; border: 2px solid var(--border-color); border-radius: 9px; background: var(--bg-card); color: var(--text-main); font: inherit; font-size: 1.2rem; text-align: center; }
+    .practice-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; }
+    .practice-feedback { min-height: 1.6em; color: var(--text-main); font-weight: 800; text-align: center; }
+    .practice-hint, .practice-solution { padding: .8rem; border-radius: 8px; background: var(--bg-card); color: var(--text-main); line-height: 1.5; }
+    .practice-visual { display: flex; min-height: 230px; flex-direction: column; justify-content: center; gap: .7rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 12px; background: var(--bg-card); }
+    .practice-visual-title { color: var(--text-muted); font-size: .8rem; font-weight: 900; letter-spacing: .06em; text-align: center; text-transform: uppercase; }
+    .practice-bands { display: flex; justify-content: center; gap: .35rem; }
+    .practice-band { min-width: 3rem; padding: .75rem .45rem; border-radius: 8px; background: rgba(56,189,248,.12); color: var(--accent-blue); font-size: 1.2rem; font-weight: 900; text-align: center; }
+    .practice-band.gold { background: rgba(251,191,36,.12); color: var(--accent-gold); }
+    .practice-band.success { background: rgba(16,185,129,.12); color: var(--accent-success); }
+    .practice-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(55px,1fr)); gap: .35rem; }
+    .practice-group { padding: .5rem .2rem; border: 1px solid var(--accent-blue); border-radius: 7px; color: var(--accent-blue); font-size: .85rem; font-weight: 800; text-align: center; }
+    button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid var(--accent-gold); outline-offset: 2px; }
+
     @media (max-width: 600px) {
       .vertical-sum { font-size: 2.2rem; }
       .tab-content { padding: 1.5rem 1rem; }
+      .model-columns, .difference-jumps, .practice-card { grid-template-columns: 1fr; }
+      .practice-visual { min-height: 170px; }
+      .practice-toolbar { align-items: stretch; }
+      .practice-toolbar label { align-items: flex-start; flex-direction: column; }
     }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
   </style>
   <link rel="stylesheet" href="../tema.css">
   <script src="../tema.js"></script>
@@ -128,15 +192,16 @@
 
   <main class="app-container">
     
-    <nav class="tabs-container">
-      <button class="tab-btn active" onclick="switchTab('suma', this)">➕ Suma</button>
-      <button class="tab-btn" onclick="switchTab('resta', this)">➖ Resta</button>
-      <button class="tab-btn" onclick="switchTab('multi', this)">✖️ Multiplicación</button>
-      <button class="tab-btn" onclick="switchTab('divi', this)">➗ División Larga</button>
+    <nav class="tabs-container" role="tablist" aria-label="Operaciones">
+      <button id="tab-suma" type="button" class="tab-btn active" role="tab" aria-selected="true" aria-controls="suma" tabindex="0" onclick="switchTab('suma', this)">➕ Suma</button>
+      <button id="tab-resta" type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="resta" tabindex="-1" onclick="switchTab('resta', this)">➖ Resta</button>
+      <button id="tab-multi" type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="multi" tabindex="-1" onclick="switchTab('multi', this)">✖️ Multiplicación</button>
+      <button id="tab-divi" type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="divi" tabindex="-1" onclick="switchTab('divi', this)">➗ División Larga</button>
+      <button id="tab-practica" type="button" class="tab-btn" role="tab" aria-selected="false" aria-controls="practica" tabindex="-1" onclick="switchTab('practica', this)">🎯 Practicar</button>
     </nav>
 
     <!-- ================= PESTAÑA 1: SUMA ================= -->
-    <div id="suma" class="tab-content active">
+    <div id="suma" class="tab-content active" role="tabpanel" aria-labelledby="tab-suma">
       <div class="math-board">
         <div class="vertical-sum" style="grid-template-columns: 40px repeat(3, 70px);">
           <div class="cell carry-row"></div>
@@ -164,6 +229,10 @@
         <div class="badge" id="stepIndicator">Paso 0</div>
         <div class="content-text" id="pedagogicalText"></div>
       </div>
+      <details class="visual-model">
+        <summary>Verlo con fichas: formar una decena</summary>
+        <div id="sumVisual" class="model-content" aria-live="polite"></div>
+      </details>
       <div class="controls">
         <button class="btn btn-secondary" id="btnPrev" disabled>← Paso Anterior</button>
         <button class="btn btn-primary" id="btnNext">Siguiente Paso →</button>
@@ -172,7 +241,7 @@
     </div>
 
     <!-- ================= PESTAÑA 2: RESTA ================= -->
-    <div id="resta" class="tab-content">
+    <div id="resta" class="tab-content" role="tabpanel" aria-labelledby="tab-resta" aria-hidden="true">
       <div class="math-board">
         <div class="vertical-sum" style="grid-template-columns: 40px repeat(3, 70px);">
           <div class="cell carry-row"></div>
@@ -200,6 +269,10 @@
         <div class="badge" style="color: var(--accent-op);" id="stepIndicatorResta">Paso 0</div>
         <div class="content-text" id="pedagogicalTextResta"></div>
       </div>
+      <details class="visual-model">
+        <summary>Verlo como diferencia: completar cada columna</summary>
+        <div id="subtractVisual" class="model-content" aria-live="polite"></div>
+      </details>
       <div class="controls">
         <button class="btn btn-secondary" id="btnPrevResta" disabled>← Paso Anterior</button>
         <button class="btn btn-primary" id="btnNextResta" style="background: var(--accent-op); color: white;">Siguiente Paso →</button>
@@ -208,7 +281,7 @@
     </div>
 
     <!-- ================= PESTAÑA 3: MULTIPLICACIÓN ================= -->
-    <div id="multi" class="tab-content">
+    <div id="multi" class="tab-content" role="tabpanel" aria-labelledby="tab-multi" aria-hidden="true">
       <div class="math-board">
         <div class="vertical-sum" style="grid-template-columns: 40px repeat(4, minmax(45px, 60px));">
           <div class="cell carry-row"></div>
@@ -246,6 +319,23 @@
         <div class="badge" style="color: var(--accent-gold);" id="stepIndicatorMulti">Paso 0</div>
         <div class="content-text" id="pedagogicalTextMulti"></div>
       </div>
+      <details class="visual-model">
+        <summary>Ver la multiplicación como grupos y como área</summary>
+        <div class="model-content">
+          <div class="model-equation"><span>3 grupos de 4</span><span>=</span><strong>12</strong></div>
+          <div class="groups-visual" aria-label="Tres grupos con cuatro fichas cada uno">
+            <div class="equal-group"><span class="model-dot"></span><span class="model-dot"></span><span class="model-dot"></span><span class="model-dot"></span></div>
+            <div class="equal-group"><span class="model-dot"></span><span class="model-dot"></span><span class="model-dot"></span><span class="model-dot"></span></div>
+            <div class="equal-group"><span class="model-dot"></span><span class="model-dot"></span><span class="model-dot"></span><span class="model-dot"></span></div>
+          </div>
+          <p class="model-note">Multiplicar es sumar grupos iguales. En el ejemplo, 345 × 26 significa 345 × 20 más 345 × 6:</p>
+          <div class="area-model">
+            <div class="area-part"><span>345 × 20</span><strong>6.900</strong></div>
+            <div class="area-part gold"><span>345 × 6</span><strong>2.070</strong></div>
+          </div>
+          <div class="model-equation"><span>6.900 + 2.070</span><span>=</span><strong>8.970</strong></div>
+        </div>
+      </details>
       <div class="controls">
         <button class="btn btn-secondary" id="btnPrevMulti" disabled>← Paso Anterior</button>
         <button class="btn btn-primary" id="btnNextMulti" style="background: var(--accent-gold); color: #000;">Siguiente Paso →</button>
@@ -254,7 +344,7 @@
     </div>
 
     <!-- ================= PESTAÑA 4: DIVISIÓN LARGA ================= -->
-    <div id="divi" class="tab-content">
+    <div id="divi" class="tab-content" role="tabpanel" aria-labelledby="tab-divi" aria-hidden="true">
       <div class="math-board">
         <div class="vertical-sum" style="grid-template-columns: 40px repeat(3, 50px) 20px 140px; grid-template-rows: repeat(7, 55px);">
 
@@ -320,6 +410,14 @@
         <div class="badge" style="color: var(--accent-success);" id="stepIndicatorDivi">Paso 0</div>
         <div class="content-text" id="pedagogicalTextDivi"></div>
       </div>
+      <details class="visual-model">
+        <summary>Ver el reparto por centenas, decenas y unidades</summary>
+        <div class="model-content division-model">
+          <div class="division-stage"><strong>1. Repartimos las 8 centenas entre 3</strong><div class="division-groups"><div class="division-group">2 centenas</div><div class="division-group">2 centenas</div><div class="division-group">2 centenas</div></div><span class="exchange-label">Sobran 2 centenas = 20 decenas; con las 5 decenas forman 25 decenas.</span></div>
+          <div class="division-stage"><strong>2. Repartimos 25 decenas entre 3</strong><div class="division-groups"><div class="division-group">8 decenas</div><div class="division-group">8 decenas</div><div class="division-group">8 decenas</div></div><span class="exchange-label">Sobra 1 decena = 10 unidades; con las 2 unidades forman 12.</span></div>
+          <div class="division-stage"><strong>3. Repartimos 12 unidades entre 3</strong><div class="division-groups"><div class="division-group">4 unidades</div><div class="division-group">4 unidades</div><div class="division-group">4 unidades</div></div><div class="model-equation"><span>284 para cada grupo</span><span>·</span><span>3 grupos</span><span>=</span><strong>852</strong></div></div>
+        </div>
+      </details>
 
       <div class="controls">
         <button class="btn btn-secondary" id="btnPrevDivi" disabled>← Paso Anterior</button>
@@ -328,15 +426,62 @@
       </div>
     </div>
 
+    <!-- ================= PESTAÑA 5: PRÁCTICA ================= -->
+    <section id="practica" class="tab-content" role="tabpanel" aria-labelledby="tab-practica" aria-hidden="true">
+      <h2>Tu turno: practica las operaciones</h2>
+      <p class="practice-intro">Elige una operación y un nivel. Puedes pedir una pista, comprobar tu respuesta y ver una solución explicada. Cada ejercicio nuevo cambia los números.</p>
+      <div class="practice-operations" role="group" aria-label="Elige la operación">
+        <button class="practice-operation" type="button" aria-pressed="true" onclick="selectPracticeOperation('suma', this)">➕ Suma</button>
+        <button class="practice-operation" type="button" aria-pressed="false" onclick="selectPracticeOperation('resta', this)">➖ Resta</button>
+        <button class="practice-operation" type="button" aria-pressed="false" onclick="selectPracticeOperation('multi', this)">✖️ Multiplicación</button>
+        <button class="practice-operation" type="button" aria-pressed="false" onclick="selectPracticeOperation('divi', this)">➗ División</button>
+      </div>
+      <div class="practice-toolbar">
+        <label for="practiceLevel">Nivel
+          <select id="practiceLevel" onchange="generatePracticeExercise()">
+            <option value="easy">Sencillo · sin llevadas</option>
+            <option value="medium">Con llevadas o cambios</option>
+            <option value="challenge">Reto · dos cifras o resto</option>
+          </select>
+        </label>
+        <button class="btn btn-secondary" type="button" onclick="generatePracticeExercise()">🔄 Nuevo ejercicio</button>
+      </div>
+      <div class="practice-card">
+        <div class="practice-question">
+          <div id="practiceProblem" class="practice-problem" aria-live="polite"></div>
+          <div class="practice-answer">
+            <label>Tu respuesta<input id="practiceAnswer" type="number" inputmode="numeric" autocomplete="off" onkeydown="if(event.key==='Enter') checkPracticeAnswer()"></label>
+            <label id="remainderLabel" hidden>Resto<input id="practiceRemainder" type="number" inputmode="numeric" autocomplete="off" onkeydown="if(event.key==='Enter') checkPracticeAnswer()"></label>
+          </div>
+          <div class="practice-actions">
+            <button class="btn btn-primary" type="button" onclick="checkPracticeAnswer()">Comprobar</button>
+            <button class="btn btn-secondary" type="button" onclick="togglePracticeHint()">💡 Pista</button>
+            <button class="btn btn-secondary" type="button" onclick="showPracticeSolution()">Ver solución</button>
+          </div>
+          <div id="practiceFeedback" class="practice-feedback" aria-live="polite"></div>
+          <div id="practiceHint" class="practice-hint" hidden></div>
+          <div id="practiceSolution" class="practice-solution" hidden></div>
+        </div>
+        <div id="practiceVisual" class="practice-visual" aria-label="Representación visual del ejercicio"></div>
+      </div>
+    </section>
+
   </main>
 
   <script>
     function switchTab(tabId, btn) {
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => { c.classList.remove('active'); c.setAttribute('aria-hidden', 'true'); });
+      document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); b.tabIndex = -1; });
       document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
+      document.getElementById(tabId).setAttribute('aria-hidden', 'false');
+      btn.classList.add('active'); btn.setAttribute('aria-selected', 'true'); btn.tabIndex = 0;
     }
+    document.querySelectorAll('[role="tab"]').forEach((tab, index, tabs) => tab.addEventListener('keydown', event => {
+      if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length;
+      tabs[next].focus(); switchTab(tabs[next].getAttribute('aria-controls'), tabs[next]);
+    }));
 
     // ================= SUMA =================
     const sumaSteps = [
@@ -363,6 +508,18 @@
       document.getElementById('btnPrev').disabled = currentStep === 0;
       document.getElementById('btnNext').disabled = currentStep === sumaSteps.length - 1;
       document.getElementById('btnNext').innerHTML = currentStep === sumaSteps.length - 1 ? "Completado ✓" : "Siguiente Paso →";
+      updateSumVisual();
+    }
+    function updateSumVisual() {
+      const steps = [
+        '<div class="model-equation"><span>6 unidades</span><span>+</span><span>7 unidades</span><span>=</span><strong>13 unidades</strong></div><div class="ten-frame" aria-label="Diez fichas forman una decena"><span class="model-dot"></span>'.repeat(0) + '',
+        '<div class="model-equation"><span>6 + 7</span><span>=</span><strong>13 = 10 + 3</strong></div><div class="model-note">Agrupamos diez unidades (azules): se cambian por una decena. Quedan 3 unidades.</div><div class="model-equation"><span>8 + 5 + 1 decena</span><span>=</span><strong>14 decenas</strong></div>',
+        '<div class="model-equation"><span>8 + 5 + 1</span><span>=</span><strong>14 decenas = 1 centena y 4 decenas</strong></div>',
+        '<div class="model-equation"><span>4 + 2 + 1</span><span>=</span><strong>7 centenas</strong></div><div class="model-note">Por eso 486 + 257 = 7 centenas + 4 decenas + 3 unidades = 743.</div>'
+      ];
+      const active = currentStep === 0 ? '<p class="model-note">Empezaremos por las unidades: junta las 6 fichas azules y las 7 doradas.</p>' : steps[currentStep];
+      const dots = '<span class="model-dot"></span>'.repeat(6) + '<span class="model-dot gold"></span>'.repeat(7);
+      document.getElementById('sumVisual').innerHTML = `${active}<div class="model-dots" aria-label="13 fichas: seis azules y siete doradas">${dots}</div>${currentStep > 0 ? '<div class="model-equation"><span>10 fichas</span><span>→</span><strong>1 decena</strong><span>+</span><span>3 unidades</span></div>' : ''}`;
     }
     document.getElementById('btnNext').addEventListener('click', () => { if (currentStep < sumaSteps.length - 1) { currentStep++; updateSumaView(); } });
     document.getElementById('btnPrev').addEventListener('click', () => { if (currentStep > 0) { currentStep--; updateSumaView(); } });
@@ -372,8 +529,8 @@
     // ================= RESTA =================
     const restaSteps = [
       { col: null, top1: "", top10: "", bot10: "", bot100: "", res1: "", res10: "", res100: "", text: "Colocamos el minuendo (el mayor) arriba y el sustraendo abajo. ¡Recuerda! Siempre restamos desde abajo hacia arriba (¿cuánto falta para llegar?)." },
-      { col: "u", top1: "1", top10: "", bot10: "+1", bot100: "", res1: "5", res10: "", res100: "", text: "<strong>1. Unidades:</strong> A 2 no le puedo quitar 7. Le sumamos 10 al de arriba (se lee 12). Del 7 al 12 van <strong>5</strong>. Nos <strong>llevamos 1</strong> al de abajo en la columna siguiente." },
-      { col: "d", top1: "1", top10: "1", bot10: "+1", bot100: "+1", res1: "5", res10: "7", res100: "", text: "<strong>2. Decenas:</strong> El 5 de abajo más la llevada se convierte en 6. A 3 no le puedo quitar 6. Le prestamos un 1 (13). Del 6 al 13 van <strong>7</strong>. Nos <strong>llevamos 1</strong> a la siguiente columna." },
+      { col: "u", top1: "1", top10: "", bot10: "+1", bot100: "", res1: "5", res10: "", res100: "", text: "<strong>1. Unidades:</strong> Completamos desde 7 hasta 12: faltan <strong>5</strong>. Para mostrar 12, añadimos una decena a las 2 unidades de arriba; esa misma decena se suma al 5 de abajo en la columna de decenas." },
+      { col: "d", top1: "1", top10: "1", bot10: "+1", bot100: "+1", res1: "5", res10: "7", res100: "", text: "<strong>2. Decenas:</strong> El 5 de abajo más la decena que llevamos es 6. Completamos desde 6 hasta 13: faltan <strong>7</strong>. La decena añadida a las 3 decenas de arriba también se suma a las centenas de abajo." },
       { col: "c", top1: "1", top10: "1", bot10: "+1", bot100: "+1", res1: "5", res10: "7", res100: "3", text: "<strong>3. Centenas:</strong> El 4 de abajo más la llevada se convierte en 5. A 8 sí le puedo quitar 5. Del 5 al 8 van <strong>3</strong>. ¡Resta completada! (375)." }
     ];
     let currentStepResta = 0;
@@ -395,6 +552,14 @@
       document.getElementById('btnPrevResta').disabled = currentStepResta === 0;
       document.getElementById('btnNextResta').disabled = currentStepResta === restaSteps.length - 1;
       document.getElementById('btnNextResta').innerHTML = currentStepResta === restaSteps.length - 1 ? "Completado ✓" : "Siguiente Paso →";
+      updateSubtractVisual();
+    }
+    function updateSubtractVisual() {
+      const cols = [
+        ['Unidades', '7 → 12', '+5'], ['Decenas', '6 → 13', '+7'], ['Centenas', '5 → 8', '+3']
+      ];
+      const active = currentStepResta === 0 ? -1 : Math.min(currentStepResta - 1, 2);
+      document.getElementById('subtractVisual').innerHTML = `<div class="difference-jumps">${cols.map(([name, jump, value], i) => `<div class="difference-jump ${i === active ? 'active' : ''}"><strong>${name}</strong><div>${jump}</div><span class="jump-value">${value}</span></div>`).join('')}</div><div class="model-note">Completamos desde cada cifra de abajo hasta la de arriba. Cada +1 que aparece al completar una columna se suma a la cifra inferior de la columna siguiente.</div><div class="model-equation"><span>300</span><span>+</span><span>70</span><span>+</span><span>5</span><span>=</span><strong>375</strong></div>`;
     }
     document.getElementById('btnNextResta').addEventListener('click', () => { if (currentStepResta < restaSteps.length - 1) { currentStepResta++; updateRestaView(); } });
     document.getElementById('btnPrevResta').addEventListener('click', () => { if (currentStepResta > 0) { currentStepResta--; updateRestaView(); } });
@@ -504,6 +669,73 @@
     document.getElementById('btnResetDivi').addEventListener('click', () => { currentStepDivi = 0; updateDiviView(); });
 
     updateDiviView();
+
+    // ================= PRÁCTICA INTERACTIVA =================
+    let currentPracticeOperation = 'suma';
+    let currentExercise;
+    const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    function selectPracticeOperation(operation, button) {
+      currentPracticeOperation = operation;
+      document.querySelectorAll('.practice-operation').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+      generatePracticeExercise();
+    }
+    function generatePracticeExercise() {
+      const level = document.getElementById('practiceLevel').value;
+      const easy = level === 'easy', challenge = level === 'challenge';
+      let a, b, answer, remainder = 0, hint, solution, symbol;
+      if (currentPracticeOperation === 'suma') {
+        do { a = randomInt(easy ? 11 : 100, easy ? 44 : 599); b = randomInt(easy ? 11 : 100, easy ? 44 : 399); } while (easy ? (a % 10 + b % 10 >= 10 || Math.floor(a / 10) % 10 + Math.floor(b / 10) % 10 >= 10) : (a % 10 + b % 10 < 10));
+        answer = a + b; symbol = '+'; hint = 'Empieza por las unidades. Si suman 10 o más, escribe las unidades y lleva una decena.'; solution = `${a} + ${b} = ${answer}. Suma cada columna de derecha a izquierda y añade las llevadas.`;
+      } else if (currentPracticeOperation === 'resta') {
+        do { a = randomInt(easy ? 30 : 120, easy ? 99 : 899); b = randomInt(easy ? 10 : 40, a - 1); } while (easy ? (a % 10 < b % 10 || Math.floor(a / 10) % 10 < Math.floor(b / 10) % 10) : a % 10 >= b % 10);
+        answer = a - b; symbol = '−'; hint = 'Resta de derecha a izquierda. Si una cifra de arriba es menor, piensa cuánto falta para llegar a ella y completa la siguiente columna.'; solution = `${a} − ${b} = ${answer}. Puedes comprobarlo sumando la diferencia al sustraendo.`;
+      } else if (currentPracticeOperation === 'multi') {
+        a = challenge ? randomInt(12, 48) : randomInt(12, 99); b = easy ? randomInt(2, 5) : challenge ? randomInt(12, 19) : randomInt(6, 9);
+        answer = a * b; symbol = '×'; hint = challenge ? 'Descompón el multiplicador en decenas y unidades; calcula dos productos parciales y súmalos.' : `Piensa en ${b} grupos de ${a}. Puedes descomponer ${a} en decenas y unidades.`; solution = `${a} × ${b} = ${answer}. ${challenge ? `Descompón ${b} y suma los productos parciales.` : `Suma ${b} grupos iguales de ${a}.`}`;
+      } else {
+        b = randomInt(2, 9); const q = randomInt(easy ? 10 : 20, challenge ? 60 : 99); remainder = challenge ? randomInt(1, b - 1) : 0; a = b * q + remainder; answer = q; symbol = '÷'; hint = `Busca cuántas veces cabe ${b} en ${a}. En el reto, indica también lo que sobra.`; solution = `${a} ÷ ${b} = ${q}${remainder ? ` y sobran ${remainder}` : ''}, porque ${b} × ${q}${remainder ? ` + ${remainder}` : ''} = ${a}.`;
+      }
+      currentExercise = { a, b, answer, remainder, hint, solution, symbol };
+      document.getElementById('practiceProblem').textContent = `${a} ${symbol} ${b} = ?`;
+      document.getElementById('practiceAnswer').value = '';
+      document.getElementById('practiceRemainder').value = '';
+      document.getElementById('remainderLabel').hidden = currentPracticeOperation !== 'divi' || !challenge;
+      document.getElementById('practiceFeedback').textContent = '';
+      document.getElementById('practiceHint').hidden = true;
+      document.getElementById('practiceSolution').hidden = true;
+      renderPracticeVisual();
+    }
+    function renderPracticeVisual() {
+      const { a, b } = currentExercise;
+      let content;
+      if (currentPracticeOperation === 'suma' || currentPracticeOperation === 'resta') {
+        const tensA = Math.floor(a / 10) * 10, tensB = Math.floor(b / 10) * 10;
+        content = `<div class="practice-visual-title">${currentPracticeOperation === 'suma' ? 'Juntamos dos cantidades' : 'Comparamos y completamos'}</div><div class="practice-bands"><span class="practice-band">${tensA}</span><span class="practice-band gold">${a % 10}</span><span>${currentExercise.symbol}</span><span class="practice-band">${tensB}</span><span class="practice-band gold">${b % 10}</span></div><div class="model-note">Azul: decenas · dorado: unidades</div>`;
+      } else if (currentPracticeOperation === 'multi') {
+        if (b <= 9) content = `<div class="practice-visual-title">${b} grupos iguales de ${a}</div><div class="practice-groups">${Array.from({length: b}, (_, i) => `<div class="practice-group">Grupo ${i + 1}<br>× ${a}</div>`).join('')}</div><div class="model-note">Multiplicar reúne grupos iguales.</div>`;
+        else content = `<div class="practice-visual-title">Descomponemos el producto</div><div class="area-model"><div class="area-part">${a} × ${Math.floor(b / 10) * 10}</div><div class="area-part gold">${a} × ${b % 10}</div></div><div class="model-note">Calcula cada parte y suma los productos parciales.</div>`;
+      } else {
+        const q = currentExercise.answer;
+        content = `<div class="practice-visual-title">Repartimos ${a} en ${b} grupos</div><div class="practice-groups">${Array.from({length: b}, (_, i) => `<div class="practice-group">Grupo ${i + 1}<br>${q} cada uno</div>`).join('')}</div><div class="model-note">${currentExercise.remainder ? `Quedan ${currentExercise.remainder} sin repartir.` : 'Comprueba: grupos × cantidad en cada grupo = total.'}</div>`;
+      }
+      document.getElementById('practiceVisual').innerHTML = content;
+    }
+    function checkPracticeAnswer() {
+      const answer = Number(document.getElementById('practiceAnswer').value);
+      const remainderField = document.getElementById('practiceRemainder');
+      const remainderOK = document.getElementById('remainderLabel').hidden || Number(remainderField.value) === currentExercise.remainder;
+      const correct = document.getElementById('practiceAnswer').value !== '' && answer === currentExercise.answer && remainderOK;
+      const feedback = document.getElementById('practiceFeedback');
+      feedback.textContent = correct ? '¡Correcto! 🎉' : 'Aún no. Revisa las columnas o usa la pista y vuelve a intentarlo.';
+      feedback.style.color = correct ? 'var(--accent-success)' : 'var(--accent-op)';
+    }
+    function togglePracticeHint() {
+      const hint = document.getElementById('practiceHint'); hint.textContent = `💡 ${currentExercise.hint}`; hint.hidden = !hint.hidden;
+    }
+    function showPracticeSolution() {
+      const solution = document.getElementById('practiceSolution'); solution.textContent = `Solución: ${currentExercise.solution}`; solution.hidden = false;
+    }
+    generatePracticeExercise();
   </script>
 </body>
 </html>

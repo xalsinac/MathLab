@@ -513,7 +513,7 @@
       E("practice-feedback").textContent=correct?"¡Correcto! Resultado: ("+exercise.answer.join(", ")+").":"Todavía no. Compara tu cuenta con el dibujo y prueba la pista.";
     }
 
-    [["concept-graph",7,1],["magnitude-graph",7,1],["sum-graph",10,2],["scale-graph",9,1],["dot-graph",7,1],["practice-graph",10,2]].forEach(([id,limit,every])=>drawGrid(id,limit,every));
+    [["concept-grid",7,1],["magnitude-grid",7,1],["sum-grid",10,2],["scale-grid",9,1],["dot-grid",7,1],["practice-grid",10,2]].forEach(([id,limit,every])=>drawGrid(id,limit,every));
     drawGrid("projection-grid",7,1);
     updateConcept(); updateMagnitude(); updateSum(); updateScale(); updateDot(); generatePractice();
   </script>

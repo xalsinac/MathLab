@@ -529,8 +529,8 @@
     // ================= RESTA =================
     const restaSteps = [
       { col: null, top1: "", top10: "", bot10: "", bot100: "", res1: "", res10: "", res100: "", text: "Colocamos el minuendo (el mayor) arriba y el sustraendo abajo. ¡Recuerda! Siempre restamos desde abajo hacia arriba (¿cuánto falta para llegar?)." },
-      { col: "u", top1: "1", top10: "", bot10: "+1", bot100: "", res1: "5", res10: "", res100: "", text: "<strong>1. Unidades:</strong> A 2 no le puedo quitar 7. Le sumamos 10 al de arriba (se lee 12). Del 7 al 12 van <strong>5</strong>. Nos <strong>llevamos 1</strong> al de abajo en la columna siguiente." },
-      { col: "d", top1: "1", top10: "1", bot10: "+1", bot100: "+1", res1: "5", res10: "7", res100: "", text: "<strong>2. Decenas:</strong> El 5 de abajo más la llevada se convierte en 6. A 3 no le puedo quitar 6. Le prestamos un 1 (13). Del 6 al 13 van <strong>7</strong>. Nos <strong>llevamos 1</strong> a la siguiente columna." },
+      { col: "u", top1: "1", top10: "", bot10: "+1", bot100: "", res1: "5", res10: "", res100: "", text: "<strong>1. Unidades:</strong> Completamos desde 7 hasta 12: faltan <strong>5</strong>. Para mostrar 12, añadimos una decena a las 2 unidades de arriba; esa misma decena se suma al 5 de abajo en la columna de decenas." },
+      { col: "d", top1: "1", top10: "1", bot10: "+1", bot100: "+1", res1: "5", res10: "7", res100: "", text: "<strong>2. Decenas:</strong> El 5 de abajo más la decena que llevamos es 6. Completamos desde 6 hasta 13: faltan <strong>7</strong>. La decena añadida a las 3 decenas de arriba también se suma a las centenas de abajo." },
       { col: "c", top1: "1", top10: "1", bot10: "+1", bot100: "+1", res1: "5", res10: "7", res100: "3", text: "<strong>3. Centenas:</strong> El 4 de abajo más la llevada se convierte en 5. A 8 sí le puedo quitar 5. Del 5 al 8 van <strong>3</strong>. ¡Resta completada! (375)." }
     ];
     let currentStepResta = 0;

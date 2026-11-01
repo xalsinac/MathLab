@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Los Centros del Triángulo | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: var(--accent-success);
+      color: #022c22;
+      border-color: var(--accent-success);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* TARJETAS DE PASO A PASO */
+    .step-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-success);
+      border-radius: 8px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .step-num {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-success);
+    }
+    .step-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .math-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem 1.3rem;
+      font-family: monospace;
+      font-size: 1.05rem;
+      color: #fff;
+      line-height: 2.2;
+    }
+    [data-theme="light"] .math-block {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    /* MINI CANVASES PARA EXPLICACIONES */
+    .visual-explain-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 1rem 0;
+    }
+    .mini-canvas {
+      background: #060911;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+      max-width: 100%;
+    }
+    [data-theme="light"] .mini-canvas {
+      background: #ffffff !important;
+    }
+
+    /* TABLAS COMPARATIVAS */
+    .mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+      text-align: left;
+      margin: 0.5rem 0;
+    }
+    .mini-table th {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 0.8rem;
+      color: var(--accent-success);
+    }
+    .mini-table td {
+      border: 1px solid var(--border-color);
+      padding: 0.8rem;
+    }
+
+    /* CONTENEDORES DE LIENZOS LABORATORIO */
+    .sim-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      gap: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .sim-canvas {
+      background: #060911;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-width: 100%;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+      cursor: crosshair;
+      touch-action: none;
+    }
+    [data-theme="light"] .sim-canvas {
+      background: #ffffff !important;
+    }
+
+    /* CONTROLES DEL LABORATORIO */
+    .lab-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      width: 100%;
+    }
+    .checkbox-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .checkbox-btn:hover { border-color: var(--text-muted); }
+    .checkbox-btn.active-baricentro { border-color: #38bdf8; color: #38bdf8; background: rgba(56, 189, 248, 0.1); }
+    .checkbox-btn.active-ortocentro { border-color: #f59e0b; color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
+    .checkbox-btn.active-circuncentro { border-color: #c084fc; color: #c084fc; background: rgba(192, 132, 252, 0.1); }
+    .checkbox-btn.active-incentro { border-color: #10b981; color: #10b981; background: rgba(16, 185, 129, 0.1); }
+    .checkbox-btn.active-euler { border-color: #f43f5e; color: #f43f5e; background: rgba(244, 63, 94, 0.1); }
+
+    .checkbox-btn input { display: none; }
+  </style>
+
+  <link rel="stylesheet" href="../tema.css">
+  <script src="../tema.js"></script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Los Centros del Triángulo 🔺</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-success);">
+      <span class="badge" style="color: var(--accent-success);">Geometría Visual</span>
+      <div class="content-text">
+        El triángulo es el polígono más simple y, sin embargo, esconde una simetría matemática fascinante. Dependiendo de qué líneas tracemos (alturas, medianas, mediatrices o bisectrices), siempre encontraremos que <strong>se cruzan mágicamente en un único punto</strong>. Hoy vamos a dominar los cuatro centros fundamentales.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('intro', this)">1. Visión General</button>
+      <button class="tab-btn" onclick="switchTab('baricentro', this)">2. Baricentro y Ortocentro</button>
+      <button class="tab-btn" onclick="switchTab('circuncentro', this)">3. Circuncentro e Incentro</button>
+      <button class="tab-btn" onclick="switchTab('euler', this)">4. La Recta de Euler</button>
+      <button class="tab-btn" onclick="switchTab('laboratorio', this)">5. 🎯 Laboratorio Interactivo</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: INTRODUCCIÓN -->
+    <!-- ===================================================================== -->
+    <div id="tab-intro" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem;">La Magia de la Concurrencia</h2>
+      
+      <div class="step-card">
+        <span class="step-num">¿Qué es un "Centro" geométrico?</span>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Si dibujas un círculo o un cuadrado, su centro es obvio. Pero un triángulo escaleno (lados irregulares) no tiene un centro único, ¡tiene cuatro! Cada uno responde a una necesidad geométrica y física distinta. En matemáticas, cuando tres o más líneas se cruzan exactamente en el mismo punto, decimos que son <strong>concurrentes</strong>.
+        </p>
+      </div>
+
+      <table class="mini-table">
+        <thead>
+          <tr>
+            <th>Rectas notables</th>
+            <th>Punto de intersección (Centro)</th>
+            <th>Propiedad Principal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Medianas</strong> (de Vértice a Medio)</td>
+            <td style="color:#38bdf8; font-weight:bold;">Baricentro (G)</td>
+            <td>Centro de Gravedad o masa.</td>
+          </tr>
+          <tr>
+            <td><strong>Alturas</strong> (Perpendiculares al lado opuesto)</td>
+            <td style="color:#f59e0b; font-weight:bold;">Ortocentro (H)</td>
+            <td>Intersección de las alturas.</td>
+          </tr>
+          <tr>
+            <td><strong>Mediatrices</strong> (Cortan lados por la mitad)</td>
+            <td style="color:#c084fc; font-weight:bold;">Circuncentro (O)</td>
+            <td>Centro de la circunferencia exterior.</td>
+          </tr>
+          <tr>
+            <td><strong>Bisectrices</strong> (Cortan ángulos por la mitad)</td>
+            <td style="color:#10b981; font-weight:bold;">Incentro (I)</td>
+            <td>Centro de la circunferencia interior.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: BARICENTRO Y ORTOCENTRO -->
+    <!-- ===================================================================== -->
+    <div id="tab-baricentro" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Baricentro y Ortocentro</h2>
+
+      <!-- BARICENTRO -->
+      <div class="step-card" style="border-left-color: #38bdf8;">
+        <span class="step-num" style="color:#38bdf8;">1. El Baricentro (G) - El equilibrio perfecto</span>
+        <div class="step-title">La intersección de las Medianas</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Una <strong>mediana</strong> es el segmento que une un vértice con el punto medio del lado opuesto. El Baricentro es el punto donde se cruzan las tres medianas.
+        </p>
+        
+        <div class="visual-explain-wrap">
+          <canvas id="canvas_bari" class="mini-canvas" width="340" height="200"></canvas>
+          <span style="font-size:0.85rem; color:#38bdf8; margin-top:0.4rem; font-weight:bold;">Medianas trazadas desde cada vértice a la mitad del lado opuesto.</span>
+        </div>
+
+        <div class="math-block" style="line-height:2;">
+          • <strong>Física:</strong> Es el centro de gravedad. Si recortas un triángulo de cartón, podrías mantenerlo en equilibrio sobre la punta de un lápiz apoyado exactamente en G.<br>
+          • <strong>Propiedad del 2:1:</strong> El baricentro siempre divide cada mediana en dos partes: la distancia del vértice al baricentro es exactamente <strong>el doble</strong> que la del baricentro al lado opuesto.<br>
+          • <strong>Cálculo:</strong> Es el promedio exacto de las coordenadas de los tres vértices: <strong>G = ((x₁+x₂+x₃)/3 , (y₁+y₂+y₃)/3)</strong>.
+        </div>
+      </div>
+
+      <!-- ORTOCENTRO -->
+      <div class="step-card" style="border-left-color: #f59e0b;">
+        <span class="step-num" style="color:#f59e0b;">2. El Ortocentro (H) - La rectitud extrema</span>
+        <div class="step-title">La intersección de las Alturas</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Una <strong>altura</strong> es la recta que pasa por un vértice y cae de forma perpendicular (a 90º) sobre la línea del lado opuesto. El punto donde chocan las tres alturas es el Ortocentro.
+        </p>
+        
+        <div class="visual-explain-wrap">
+          <canvas id="canvas_orto" class="mini-canvas" width="340" height="200"></canvas>
+          <span style="font-size:0.85rem; color:#f59e0b; margin-top:0.4rem; font-weight:bold;">Alturas cayendo a 90º sobre los lados opuestos.</span>
+        </div>
+
+        <div class="math-block" style="line-height:2;">
+          ¡Atención a la forma del triángulo!<br>
+          • Si el triángulo es <strong>Acutángulo</strong> (ángulos &lt; 90º), el Ortocentro queda DENTRO.<br>
+          • Si es <strong>Rectángulo</strong> (un ángulo = 90º), el Ortocentro coincide con el vértice del ángulo recto.<br>
+          • Si es <strong>Obtusángulo</strong> (un ángulo &gt; 90º), el Ortocentro queda FUERA del triángulo.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: CIRCUNCENTRO E INCENTRO (LAS CIRCUNFERENCIAS) -->
+    <!-- ===================================================================== -->
+    <div id="tab-circuncentro" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">Los Centros de las Circunferencias</h2>
+
+      <!-- CIRCUNCENTRO -->
+      <div class="step-card" style="border-left-color: #c084fc;">
+        <span class="step-num" style="color:#c084fc;">3. El Circuncentro (O) - El abrazo exterior</span>
+        <div class="step-title">La intersección de las Mediatrices</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Una <strong>mediatriz</strong> es la línea perpendicular que corta a un lado exactamente por su mitad. El punto donde se cortan las tres mediatrices es el Circuncentro.
+        </p>
+
+        <div class="visual-explain-wrap">
+          <canvas id="canvas_circun" class="mini-canvas" width="340" height="200"></canvas>
+          <span style="font-size:0.85rem; color:#c084fc; margin-top:0.4rem; font-weight:bold;">Circunferencia Circunscrita tocando los 3 vértices.</span>
+        </div>
+
+        <div class="math-block">
+          Al ser el cruce de mediatrices, este punto se encuentra exactamente a la misma distancia de los <strong>tres vértices</strong>. Por tanto, actúa como el centro de la <strong>Circunferencia Circunscrita</strong> (la circunferencia exterior perfecta).
+        </div>
+      </div>
+
+      <!-- INCENTRO -->
+      <div class="step-card" style="border-left-color: #10b981;">
+        <span class="step-num" style="color:#10b981;">4. El Incentro (I) - El núcleo interior</span>
+        <div class="step-title">La intersección de las Bisectrices</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Una <strong>bisectriz</strong> es la línea que parte un ángulo exactamente en dos mitades iguales. El punto donde colisionan las tres bisectrices de los vértices es el Incentro.
+        </p>
+
+        <div class="visual-explain-wrap">
+          <canvas id="canvas_in" class="mini-canvas" width="340" height="200"></canvas>
+          <span style="font-size:0.85rem; color:#10b981; margin-top:0.4rem; font-weight:bold;">Circunferencia Inscrita contenida en el triángulo.</span>
+        </div>
+
+        <div class="math-block">
+          Cualquier punto de una bisectriz equidista de los lados. Por tanto, el Incentro está exactamente a la misma distancia de los <strong>tres lados</strong> del triángulo. Es el centro de la <strong>Circunferencia Inscrita</strong>.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 4: LA RECTA DE EULER -->
+    <!-- ===================================================================== -->
+    <div id="tab-euler" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">La Profundidad: La Recta de Euler</h2>
+
+      <div class="step-card" style="border-left-color: #f43f5e;">
+        <span class="step-num" style="color:#f43f5e;">Leonhard Euler ataca de nuevo</span>
+        <div class="step-title">Una alineación cósmica en cualquier triángulo</div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          En 1765, el genio matemático suizo Leonhard Euler demostró que si calculas el <strong>Ortocentro (H)</strong>, el <strong>Baricentro (G)</strong> y el <strong>Circuncentro (O)</strong> de cualquier triángulo y los dibujas... <strong>¡Siempre caen sobre la misma línea recta!</strong>
+        </p>
+
+        <div class="visual-explain-wrap">
+          <canvas id="canvas_euler" class="mini-canvas" width="340" height="200"></canvas>
+          <span style="font-size:0.85rem; color:#f43f5e; margin-top:0.4rem; font-weight:bold;">H, G y O perfectamente alineados en la Recta de Euler.</span>
+        </div>
+
+        <div class="math-block" style="margin-top:0.8rem; line-height:1.8;">
+          Además, existe una proporción inquebrantable entre ellos:<br>
+          La distancia del Ortocentro al Baricentro es siempre exactamente <strong>el doble</strong> que la distancia del Baricentro al Circuncentro.<br><br>
+          <strong style="color:var(--accent-gold); font-size:1.2rem;">HG = 2 · GO</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 5: LABORATORIO INTERACTIVO (CANVAS JS) -->
+    <!-- ===================================================================== -->
+    <div id="tab-laboratorio" class="tab-content">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; font-size:1.3rem;">Laboratorio Libre</h2>
+        <button class="btn btn-secondary" onclick="resetTriangle()" style="padding:0.4rem 0.8rem; font-size:0.85rem;">
+          🔄 Reiniciar
+        </button>
+      </div>
+      <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">
+        Arrastra los vértices A, B y C del triángulo libremente. Activa los interruptores para ver las líneas de construcción y cómo se cruzan.
+      </p>
+
+      <div class="sim-container">
+        
+        <!-- CANVAS -->
+        <canvas id="geometryCanvas" class="sim-canvas" width="600" height="400"></canvas>
+
+        <!-- CONTROLES -->
+        <div class="lab-controls">
+          <label id="lbl_bari" class="checkbox-btn">
+            <input type="checkbox" id="chk_bari" onchange="updateCanvasState()">
+            <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#38bdf8;"></span> Baricentro (Medianas)
+          </label>
+
+          <label id="lbl_orto" class="checkbox-btn">
+            <input type="checkbox" id="chk_orto" onchange="updateCanvasState()">
+            <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#f59e0b;"></span> Ortocentro (Alturas)
+          </label>
+
+          <label id="lbl_circun" class="checkbox-btn">
+            <input type="checkbox" id="chk_circun" onchange="updateCanvasState()">
+            <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#c084fc;"></span> Circuncentro (Mediatrices)
+          </label>
+
+          <label id="lbl_in" class="checkbox-btn">
+            <input type="checkbox" id="chk_in" onchange="updateCanvasState()">
+            <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#10b981;"></span> Incentro (Bisectrices)
+          </label>
+
+          <label id="lbl_euler" class="checkbox-btn" style="width:100%; justify-content:center;">
+            <input type="checkbox" id="chk_euler" onchange="updateCanvasState()">
+            📏 Recta de Euler
+          </label>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      if (tabId === 'laboratorio') {
+        resizeCanvas();
+        drawAll();
+      }
+    }
+
+    // =========================================================================
+    // LIBRERÍA MATEMÁTICA GEOMÉTRICA
+    // =========================================================================
+    function dist(p1, p2) {
+      return Math.hypot(p2.x - p1.x, p2.y - p1.y);
+    }
+    function mid(p1, p2) {
+      return { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+    }
+    function projectPointOnLine(p, a, b) {
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      if (dx === 0 && dy === 0) return a;
+      const t = ((p.x - a.x) * dx + (p.y - a.y) * dy) / (dx * dx + dy * dy);
+      return { x: a.x + t * dx, y: a.y + t * dy };
+    }
+    function getBaricentro(A, B, C) {
+      return { x: (A.x + B.x + C.x) / 3, y: (A.y + B.y + C.y) / 3 };
+    }
+    function getCircuncentro(A, B, C) {
+      const D = 2 * (A.x*(B.y - C.y) + B.x*(C.y - A.y) + C.x*(A.y - B.y));
+      if (Math.abs(D) < 0.001) return getBaricentro(A,B,C); 
+      const A2 = A.x*A.x + A.y*A.y, B2 = B.x*B.x + B.y*B.y, C2 = C.x*C.x + C.y*C.y;
+      return {
+        x: (A2*(B.y - C.y) + B2*(C.y - A.y) + C2*(A.y - B.y)) / D,
+        y: (A2*(C.x - B.x) + B2*(A.x - C.x) + C2*(B.x - A.x)) / D
+      };
+    }
+    function getOrtocentro(A, B, C) {
+      const G = getBaricentro(A, B, C), O = getCircuncentro(A, B, C);
+      return { x: 3 * G.x - 2 * O.x, y: 3 * G.y - 2 * O.y };
+    }
+    function getIncentro(A, B, C) {
+      const a = dist(B, C), b = dist(A, C), c = dist(A, B), P = a + b + c;
+      if (P === 0) return A;
+      return {
+        x: (a * A.x + b * B.x + c * C.x) / P,
+        y: (a * A.y + b * B.y + c * C.y) / P
+      };
+    }
+    function distPointLine(P, A, B) {
+      const num = Math.abs((B.x - A.x)*(A.y - P.y) - (A.x - P.x)*(B.y - A.y));
+      const den = dist(A, B);
+      return den === 0 ? 0 : num / den;
+    }
+    function extendLine(p1, p2, lengthMultiplier) {
+      const dx = p2.x - p1.x, dy = p2.y - p1.y;
+      return { x: p1.x + dx * lengthMultiplier, y: p1.y + dy * lengthMultiplier };
+    }
+
+    // --- FUNCIONES DE DIBUJO BASE ---
+    function drawLineCtx(ctx, p1, p2, color, width = 1, dashed = false) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.setLineDash(dashed ? [4, 4] : []);
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    function drawPointCtx(ctx, p, color, label = '', isLight = false) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      if (label) {
+        ctx.fillStyle = isLight ? '#0f172a' : '#ffffff';
+        ctx.font = 'bold 13px monospace';
+        ctx.fillText(label, p.x + 8, p.y - 8);
+      }
+    }
+    function drawBaseTriangleCtx(ctx, A, B, C, isLight) {
+      ctx.fillStyle = isLight ? 'rgba(100, 116, 139, 0.05)' : 'rgba(255, 255, 255, 0.03)';
+      ctx.beginPath();
+      ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y); ctx.lineTo(C.x, C.y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = isLight ? '#64748b' : '#94a3b8';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    // =========================================================================
+    // DIBUJO DE LOS MINI CANVASES ESTÁTICOS
+    // =========================================================================
+    function drawStaticVisuals() {
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      const staticPts = [
+        { x: 50,  y: 160, id: 'A' },
+        { x: 280, y: 160, id: 'B' },
+        { x: 120, y: 40,  id: 'C' }
+      ];
+      const [A, B, C] = staticPts;
+
+      // 1. BARICENTRO
+      const cBari = document.getElementById('canvas_bari');
+      if (cBari) {
+        const ctx = cBari.getContext('2d');
+        ctx.clearRect(0,0,cBari.width, cBari.height);
+        drawBaseTriangleCtx(ctx, A, B, C, isLight);
+        drawLineCtx(ctx, A, mid(B, C), '#38bdf8', 1.5);
+        drawLineCtx(ctx, B, mid(A, C), '#38bdf8', 1.5);
+        drawLineCtx(ctx, C, mid(A, B), '#38bdf8', 1.5);
+        drawPointCtx(ctx, getBaricentro(A, B, C), '#38bdf8', 'G', isLight);
+        staticPts.forEach(p => drawPointCtx(ctx, p, '#fff', p.id, isLight));
+      }
+
+      // 2. ORTOCENTRO
+      const cOrto = document.getElementById('canvas_orto');
+      if (cOrto) {
+        const ctx = cOrto.getContext('2d');
+        ctx.clearRect(0,0,cOrto.width, cOrto.height);
+        drawBaseTriangleCtx(ctx, A, B, C, isLight);
+        const H = getOrtocentro(A, B, C);
+        drawLineCtx(ctx, A, projectPointOnLine(A, B, C), '#f59e0b', 1.5, true);
+        drawLineCtx(ctx, B, projectPointOnLine(B, A, C), '#f59e0b', 1.5, true);
+        drawLineCtx(ctx, C, projectPointOnLine(C, A, B), '#f59e0b', 1.5, true);
+        drawPointCtx(ctx, H, '#f59e0b', 'H', isLight);
+        staticPts.forEach(p => drawPointCtx(ctx, p, '#fff', p.id, isLight));
+      }
+
+      // 3. CIRCUNCENTRO
+      const cCircun = document.getElementById('canvas_circun');
+      if (cCircun) {
+        const ctx = cCircun.getContext('2d');
+        ctx.clearRect(0,0,cCircun.width, cCircun.height);
+        drawBaseTriangleCtx(ctx, A, B, C, isLight);
+        const O = getCircuncentro(A, B, C);
+        const r_circ = dist(O, A);
+        
+        ctx.strokeStyle = '#c084fc'; ctx.lineWidth = 1.5; ctx.beginPath();
+        ctx.arc(O.x, O.y, r_circ, 0, Math.PI*2); ctx.stroke();
+        
+        drawLineCtx(ctx, mid(B, C), O, '#c084fc', 1.5, true);
+        drawLineCtx(ctx, mid(A, C), O, '#c084fc', 1.5, true);
+        drawLineCtx(ctx, mid(A, B), O, '#c084fc', 1.5, true);
+
+        drawPointCtx(ctx, O, '#c084fc', 'O', isLight);
+        staticPts.forEach(p => drawPointCtx(ctx, p, '#fff', p.id, isLight));
+      }
+
+      // 4. INCENTRO
+      const cIn = document.getElementById('canvas_in');
+      if (cIn) {
+        const ctx = cIn.getContext('2d');
+        ctx.clearRect(0,0,cIn.width, cIn.height);
+        drawBaseTriangleCtx(ctx, A, B, C, isLight);
+        const I = getIncentro(A, B, C);
+        const r_in = distPointLine(I, B, C);
+        
+        ctx.strokeStyle = '#10b981'; ctx.lineWidth = 1.5; ctx.beginPath();
+        ctx.arc(I.x, I.y, r_in, 0, Math.PI*2); ctx.stroke();
+        
+        drawLineCtx(ctx, A, I, '#10b981', 1.5, true);
+        drawLineCtx(ctx, B, I, '#10b981', 1.5, true);
+        drawLineCtx(ctx, C, I, '#10b981', 1.5, true);
+
+        drawPointCtx(ctx, I, '#10b981', 'I', isLight);
+        staticPts.forEach(p => drawPointCtx(ctx, p, '#fff', p.id, isLight));
+      }
+
+      // 5. EULER
+      const cEuler = document.getElementById('canvas_euler');
+      if (cEuler) {
+        const ctx = cEuler.getContext('2d');
+        ctx.clearRect(0,0,cEuler.width, cEuler.height);
+        drawBaseTriangleCtx(ctx, A, B, C, isLight);
+        
+        const G = getBaricentro(A, B, C);
+        const O = getCircuncentro(A, B, C);
+        const H = getOrtocentro(A, B, C);
+        
+        const ext1 = extendLine(O, H, 3);
+        const ext2 = extendLine(H, O, 3);
+        drawLineCtx(ctx, ext1, ext2, '#f43f5e', 2, true);
+
+        drawPointCtx(ctx, O, '#c084fc', 'O', isLight);
+        drawPointCtx(ctx, G, '#38bdf8', 'G', isLight);
+        drawPointCtx(ctx, H, '#f59e0b', 'H', isLight);
+        
+        staticPts.forEach(p => drawPointCtx(ctx, p, '#fff', '', isLight)); // Sin labels para no recargar
+      }
+    }
+
+
+    // =========================================================================
+    // MOTOR LABORATORIO INTERACTIVO (TAB 5)
+    // =========================================================================
+    const canvas = document.getElementById('geometryCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    let pts = [
+      { x: 150, y: 300, id: 'A' },
+      { x: 450, y: 300, id: 'B' },
+      { x: 250, y: 100, id: 'C' }
+    ];
+
+    let draggingPoint = null;
+    let showBari = false, showOrto = false, showCircun = false, showIn = false, showEuler = false;
+
+    function resetTriangle() {
+      pts = [{ x: 150, y: 300, id: 'A' }, { x: 450, y: 300, id: 'B' }, { x: 300, y: 100, id: 'C' }];
+      drawAll();
+    }
+
+    function updateCanvasState() {
+      showBari = document.getElementById('chk_bari').checked;
+      showOrto = document.getElementById('chk_orto').checked;
+      showCircun = document.getElementById('chk_circun').checked;
+      showIn = document.getElementById('chk_in').checked;
+      showEuler = document.getElementById('chk_euler').checked;
+
+      document.getElementById('lbl_bari').classList.toggle('active-baricentro', showBari);
+      document.getElementById('lbl_orto').classList.toggle('active-ortocentro', showOrto);
+      document.getElementById('lbl_circun').classList.toggle('active-circuncentro', showCircun);
+      document.getElementById('lbl_in').classList.toggle('active-incentro', showIn);
+      document.getElementById('lbl_euler').classList.toggle('active-euler', showEuler);
+      drawAll();
+    }
+
+    function drawAll() {
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const [A, B, C] = pts;
+
+      drawBaseTriangleCtx(ctx, A, B, C, isLight);
+
+      const G = getBaricentro(A, B, C);
+      const O = getCircuncentro(A, B, C);
+      const H = getOrtocentro(A, B, C);
+      const I = getIncentro(A, B, C);
+
+      if (showEuler) {
+        const ext1 = extendLine(O, H, 10), ext2 = extendLine(H, O, 10);
+        drawLineCtx(ctx, ext1, ext2, '#f43f5e', 2, true);
+      }
+      if (showBari) {
+        drawLineCtx(ctx, A, mid(B, C), '#38bdf8', 1.5);
+        drawLineCtx(ctx, B, mid(A, C), '#38bdf8', 1.5);
+        drawLineCtx(ctx, C, mid(A, B), '#38bdf8', 1.5);
+        drawPointCtx(ctx, G, '#38bdf8', 'G', isLight);
+      }
+      if (showOrto) {
+        drawLineCtx(ctx, A, projectPointOnLine(A, B, C), '#f59e0b', 1.5, true);
+        drawLineCtx(ctx, B, projectPointOnLine(B, A, C), '#f59e0b', 1.5, true);
+        drawLineCtx(ctx, C, projectPointOnLine(C, A, B), '#f59e0b', 1.5, true);
+        drawLineCtx(ctx, A, H, 'rgba(245, 158, 11, 0.3)', 1);
+        drawLineCtx(ctx, B, H, 'rgba(245, 158, 11, 0.3)', 1);
+        drawLineCtx(ctx, C, H, 'rgba(245, 158, 11, 0.3)', 1);
+        drawPointCtx(ctx, H, '#f59e0b', 'H', isLight);
+      }
+      if (showCircun) {
+        const r_circ = dist(O, A);
+        drawLineCtx(ctx, mid(B, C), extendLine(mid(B, C), O, 1.5), '#c084fc', 1.5, true);
+        drawLineCtx(ctx, mid(A, C), extendLine(mid(A, C), O, 1.5), '#c084fc', 1.5, true);
+        drawLineCtx(ctx, mid(A, B), extendLine(mid(A, B), O, 1.5), '#c084fc', 1.5, true);
+        ctx.strokeStyle = '#c084fc'; ctx.lineWidth = 1.5; ctx.beginPath();
+        ctx.arc(O.x, O.y, r_circ, 0, Math.PI*2); ctx.stroke();
+        drawPointCtx(ctx, O, '#c084fc', 'O', isLight);
+      }
+      if (showIn) {
+        drawLineCtx(ctx, A, I, '#10b981', 1.5, true);
+        drawLineCtx(ctx, B, I, '#10b981', 1.5, true);
+        drawLineCtx(ctx, C, I, '#10b981', 1.5, true);
+        const r_in = distPointLine(I, B, C);
+        ctx.strokeStyle = '#10b981'; ctx.lineWidth = 1.5; ctx.beginPath();
+        ctx.arc(I.x, I.y, r_in, 0, Math.PI*2); ctx.stroke();
+        drawPointCtx(ctx, I, '#10b981', 'I', isLight);
+      }
+
+      pts.forEach(p => {
+        drawPointCtx(ctx, p, '#fff', p.id, isLight);
+        ctx.fillStyle = '#1e293b'; ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill();
+      });
+    }
+
+    // --- EVENTOS INTERACTIVOS ---
+    function getMousePos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+    function handleStart(e) {
+      e.preventDefault();
+      const pos = getMousePos(e);
+      for (let p of pts) {
+        if (dist(pos, p) < 15) { draggingPoint = p; canvas.style.cursor = 'grabbing'; break; }
+      }
+    }
+    function handleMove(e) {
+      if (!draggingPoint) return;
+      e.preventDefault();
+      const pos = getMousePos(e);
+      draggingPoint.x = Math.max(10, Math.min(canvas.width - 10, pos.x));
+      draggingPoint.y = Math.max(10, Math.min(canvas.height - 10, pos.y));
+      drawAll();
+      drawStaticVisuals(); // Refrescar los pequeños si el usuario mueve cosas (aunque estén ocultos)
+    }
+    function handleEnd(e) { draggingPoint = null; canvas.style.cursor = 'crosshair'; }
+
+    canvas.addEventListener('mousedown', handleStart);
+    canvas.addEventListener('mousemove', handleMove);
+    canvas.addEventListener('mouseup', handleEnd);
+    canvas.addEventListener('mouseleave', handleEnd);
+    canvas.addEventListener('touchstart', handleStart, {passive: false});
+    canvas.addEventListener('touchmove', handleMove, {passive: false});
+    canvas.addEventListener('touchend', handleEnd);
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+    }
+
+    // Observador para cambios de tema (claro/oscuro)
+    const observer = new MutationObserver(() => {
+      drawStaticVisuals();
+      drawAll();
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    window.addEventListener('resize', () => {
+      drawStaticVisuals();
+      drawAll();
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      drawStaticVisuals();
+      drawAll();
+    });
+  </script>
+</body>
+</html>

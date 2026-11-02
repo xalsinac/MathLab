@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Reglas de Divisibilidad | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .btn-print {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: var(--color-tablas, #2dd4bf);
+      color: #042f2e;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-print:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(45, 212, 191, 0.4);
+    }
+
+    /* ESTILOS DE LA TABLA */
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .divisibility-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    .divisibility-table th, .divisibility-table td {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .divisibility-table th {
+      background: rgba(45, 212, 191, 0.1);
+      color: var(--color-tablas, #2dd4bf);
+      font-weight: 800;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .divisibility-table tr:last-child td {
+      border-bottom: none;
+    }
+    .divisibility-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    [data-theme="light"] .divisibility-table tbody tr:hover {
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    .num-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background: var(--color-tablas, #2dd4bf);
+      color: #042f2e;
+      border-radius: 8px;
+      font-weight: 900;
+      font-size: 1.2rem;
+    }
+    .rule-text {
+      font-size: 1.05rem;
+      line-height: 1.5;
+    }
+
+    /* EJEMPLOS */
+    .examples-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.2rem;
+      margin-top: 1rem;
+    }
+    .example-card {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--color-tablas, #2dd4bf);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+    [data-theme="light"] .example-card {
+      background: #f8fafc !important;
+    }
+    .example-title {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--color-tablas, #2dd4bf);
+      margin-bottom: 0.8rem;
+    }
+    .example-math {
+      font-family: monospace;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+    .example-math strong {
+      color: var(--accent-gold);
+    }
+
+    /* CSS PARA LA IMPRESORA */
+    @media print {
+      body {
+        background: #fff !important;
+        color: #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .lesson-header, .btn-print, .explanation-card {
+        display: none !important;
+      }
+      .main-wrap {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+      }
+      .table-container {
+        border: 2px solid #000;
+        box-shadow: none;
+      }
+      .divisibility-table th {
+        background: #e5e7eb !important;
+        color: #000 !important;
+        border-bottom: 2px solid #000;
+      }
+      .divisibility-table td {
+        border-bottom: 1px solid #ccc;
+      }
+      .num-badge {
+        background: #e5e7eb !important;
+        border: 1px solid #000;
+      }
+      .example-card {
+        background: #fff !important;
+        border: 1px solid #000 !important;
+        page-break-inside: avoid;
+      }
+      .example-title {
+        color: #000 !important;
+      }
+      .print-title {
+        display: block !important;
+        text-align: center;
+        font-size: 24pt;
+        font-weight: 900;
+        margin-bottom: 20px;
+        border-bottom: 3px solid #000;
+        padding-bottom: 10px;
+      }
+    }
+    .print-title { display: none; }
+
+  </style>
+
+  <link rel="stylesheet" href="../tema.css">
+  <script src="../tema.js"></script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html#tablas-rapidas" class="nav-back-link"><span>&larr;</span> Volver a Tablas y Fórmulas</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Chuletas PDF 🖨️</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+      <h1 class="print-title">REGLAS DE DIVISIBILIDAD</h1>
+      <div class="explanation-card" style="border-left-color: var(--color-tablas, #2dd4bf); margin:0; flex-grow:1;">
+        <span class="badge" style="background: rgba(45, 212, 191, 0.15); color: var(--color-tablas, #2dd4bf);">Trucos de Cálculo Mental</span>
+        <div class="content-text" style="font-size: 1rem;">
+          Conocer los criterios de divisibilidad te ahorrará muchísimo tiempo al simplificar fracciones o calcular el m.c.m. y M.C.D. Imprime esta tabla y tenla a mano hasta que te la sepas de memoria.
+        </div>
+      </div>
+      <button class="btn-print" onclick="window.print()">🖨️ Imprimir Chuleta A4</button>
+    </div>
+
+    <!-- TABLA DE REGLAS -->
+    <div class="table-container">
+      <table class="divisibility-table">
+        <thead>
+          <tr>
+            <th style="width: 80px; text-align: center;">Número</th>
+            <th>Un número es divisible si...</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align: center;"><span class="num-badge">1</span></td>
+            <td class="rule-text">Todos los números enteros son divisibles por 1.</td>
+          </tr>
+          <tr>
+            <td style="text-align: center;"><span class="num-badge">2</span></td>
+            <td class="rule-text">Termina en <strong>0</strong> o en <strong>cifra par</strong> (2, 4, 6, 8).</td>
+          </tr>
+          <tr>
+            <td style="text-align: center;"><span class="num-badge">3</span></td>
+            <td class="rule-text">La <strong>suma de sus cifras</strong> es un múltiplo de 3.</td>
+          </tr>
+          <tr>
+            <td style="text-align: center;"><span class="num-badge">4</span></td>
+            <td class="rule-text">Sus dos últimas cifras son <strong>00</strong> o forman un <strong>múltiplo de 4</strong>.</td>
+          </tr>
+          <tr>
+            <td style="text-align: center;"><span class="num-badge">5</span></td>
+            <td class="rule-text">Termina en <strong>0</strong> o en <strong>5</strong>.</td>
+          </tr>
+          <tr>
+            <td style="text-align: center;"><span class="num-badge">6</span></td>
+            <td class="rule-text">Cumple las reglas del 2 y del 3 a la vez (es <strong>par</strong> y la <strong>suma de sus cifras</strong> es múltiplo de 3).</td>
+          </tr>
+          <tr>
+            <td style="text-align: center;"><span class="num-badge">9</span></td>
+            <td class="rule-text">La <strong>suma de sus cifras</strong> es múltiplo de 9.</td>
+          </tr>
+          <tr>
+            <td style="text-align: center;"><span class="num-badge">10</span></td>
+            <td class="rule-text">Termina exactamente en <strong>0</strong>.</td>
+          </tr>
+          <tr>
+            <td style="text-align: center;"><span class="num-badge">11</span></td>
+            <td class="rule-text">Sumas las cifras en posiciones impares por un lado, las de posiciones pares por otro, y restas ambos resultados. Si da <strong>0</strong> o <strong>múltiplo de 11</strong>, sí lo es.</td>
+          </tr>
+          <tr>
+            <td style="text-align: center;"><span class="num-badge">13</span></td>
+            <td class="rule-text">Separamos la última cifra, la multiplicamos por 9 y la restamos del número que nos queda. Si el resultado es <strong>0</strong> o <strong>múltiplo de 13</strong>, sí lo es.</td>
+          </tr>
+          <tr>
+            <td style="text-align: center;"><span class="num-badge">100</span></td>
+            <td class="rule-text">Termina exactamente en <strong>00</strong>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- EJEMPLOS EXPLICADOS -->
+    <h2 style="margin: 1rem 0 0 0; font-size:1.4rem; text-align:center;">Ejemplos Paso a Paso</h2>
+    
+    <div class="examples-section">
+      
+      <div class="example-card">
+        <div class="example-title">Divisibilidad por 3 (Ej: 3.456)</div>
+        <div class="example-math">
+          Sumamos todas las cifras:<br>
+          3 + 4 + 5 + 6 = <strong>18</strong><br><br>
+          ¿18 está en la tabla del 3?<br>
+          Sí (3 × 6 = 18).<br>
+          Por tanto, 3.456 <strong>SÍ</strong> es divisible por 3.
+        </div>
+      </div>
+
+      <div class="example-card">
+        <div class="example-title">Divisibilidad por 11 (Ej: 8.162)</div>
+        <div class="example-math">
+          Alternamos sumas y restas con las cifras de izquierda a derecha:<br>
+          <strong>+</strong> 8 <strong>-</strong> 1 <strong>+</strong> 6 <strong>-</strong> 2 = <br>
+          14 - 3 = <strong>11</strong><br><br>
+          Como da 11 (múltiplo de 11), 8.162 <strong>SÍ</strong> es divisible por 11.
+        </div>
+      </div>
+
+      <div class="example-card">
+        <div class="example-title">Divisibilidad por 13 (Ej: 325)</div>
+        <div class="example-math">
+          1. Separamos el último número (5) y nos queda el 32.<br>
+          2. Multiplicamos el último por 9: (5 × 9 = 45)<br>
+          3. Restamos: 32 - 45 = <strong>-13</strong><br><br>
+          Ignoramos el signo negativo. Como da 13, 325 <strong>SÍ</strong> es divisible por 13.
+        </div>
+      </div>
+
+    </div>
+
+    <div style="text-align:right; font-size:0.8rem; margin-top:2rem; font-family:monospace; display:none;" class="only-print">MATH LAB - Tablas Rápidas</div>
+
+  </main>
+
+</body>
+</html>

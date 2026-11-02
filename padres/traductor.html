@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Traductor Generacional | MATH LAB para Familias</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: rgba(244, 63, 94, 0.1);
+      color: #f43f5e;
+      border-color: #f43f5e;
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* COMPARADOR GENERACIONAL (DOS COLUMNAS) */
+    .vs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 768px) {
+      .vs-grid { grid-template-columns: 1fr; }
+    }
+
+    .card-old, .card-new {
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-primary);
+    }
+
+    .card-old {
+      border-top: 4px solid var(--accent-gold);
+    }
+    .card-new {
+      border-top: 4px solid var(--accent-blue);
+    }
+
+    .vs-title-old {
+      color: var(--accent-gold);
+      font-weight: 800;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .vs-title-new {
+      color: var(--accent-blue);
+      font-weight: 800;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .math-block {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.2rem;
+      font-family: monospace;
+      font-size: 1.25rem;
+      color: #fff;
+      line-height: 1.8;
+      text-align: center;
+      margin: 1rem 0;
+    }
+    [data-theme="light"] .math-block {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    .reasoning-box {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid var(--accent-success);
+      border-radius: 8px;
+      padding: 1.2rem;
+      margin-top: 1rem;
+      line-height: 1.6;
+    }
+
+    /* FORMATO VERTICAL DE FRACCIONES */
+    .frac-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 0.25rem;
+      line-height: 1.15;
+      font-size: 0.95em;
+    }
+    .frac-num { border-bottom: 1.8px solid currentColor; padding: 0 0.2rem 2px 0.2rem; display: block; }
+    .frac-den { padding: 2px 0.2rem 0 0.2rem; display: block; }
+
+    /* CONTROLES DESLIZANTES PARA PADRES */
+    .slider-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 600px;
+      gap: 1rem;
+      flex-wrap: wrap;
+      background: var(--bg-card);
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      margin: 1rem auto;
+    }
+    .slider-row input[type="range"] {
+      flex: 1;
+      min-width: 180px;
+      accent-color: #f43f5e;
+      cursor: pointer;
+    }
+
+    /* CAJA DE DIVISIÓN ESPAÑOLA CLÁSICA */
+    .caja-division {
+      margin: 0 auto;
+      font-family: monospace;
+      font-size: 1.4rem;
+      border-collapse: collapse;
+      color: var(--text-main);
+    }
+    .caja-division td {
+      padding: 0.2rem 0.5rem;
+    }
+    .caja-izq {
+      text-align: right;
+    }
+    .caja-der-top {
+      border-left: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      text-align: left;
+    }
+    .caja-der-bot {
+      border-left: 2px solid currentColor;
+      text-align: left;
+    }
+
+    /* ESTILOS ENRIQUECIDOS PARA CONSEJOS DE ORO */
+    .consejo-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .consejo-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: #f43f5e;
+      color: #fff;
+      border-radius: 50%;
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+    .consejo-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .consejo-quote {
+      background: rgba(255, 255, 255, 0.04);
+      border-left: 4px solid var(--accent-blue);
+      padding: 1rem;
+      font-style: italic;
+      color: var(--text-muted);
+      border-radius: 0 8px 8px 0;
+      margin: 0.5rem 0;
+    }
+    [data-theme="light"] .consejo-quote {
+      background: rgba(0, 0, 0, 0.03);
+    }
+    .highlight-text {
+      color: var(--accent-gold);
+      font-weight: 700;
+    }
+
+  </style>
+
+  <link rel="stylesheet" href="../tema.css">
+  <script src="../tema.js"></script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Zona Familias ☕</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: #f43f5e;">
+      <span class="badge" style="background: rgba(244, 63, 94, 0.15); color: #f43f5e;">El Traductor Generacional</span>
+      <div class="content-text">
+        "Yo sé hacerlo, pero no entiendo cómo se lo explican ahora". Si has dicho esta frase ayudando a tus hijos, respira, no estás solo. Las matemáticas no han cambiado, <strong>ha cambiado la pedagogía</strong>. Antes aprendíamos trucos de memoria para ir rápido; ahora se busca que entiendan visualmente <em>por qué</em> funciona la operación antes de mecanizarla.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('restas', this)">1. Restas (Slider)</button>
+      <button class="tab-btn" onclick="switchTab('divisiones', this)">2. La Caja de Dividir</button>
+      <button class="tab-btn" onclick="switchTab('reglatres', this)">3. La Regla de Tres</button>
+      <button class="tab-btn" onclick="switchTab('consejo', this)">💡 3 Consejos de Oro</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: RESTAS CON LLEVADAS (CON SLIDER INTERACTIVO) -->
+    <!-- ===================================================================== -->
+    <div id="tab-restas" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem;">El misterio de "Me llevo una"</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Desliza paso a paso para comparar la receta mental que tú aprendiste frente al método de préstamo (descomposición) que tu hijo está intentando dominar.
+      </p>
+
+      <!-- CONTROLADOR DEL SLIDER -->
+      <div class="slider-row">
+        <label style="font-weight:700; color:#f43f5e; display:flex; align-items:center; gap:0.5rem;">
+          ▶ Avanzar Paso: <span id="lbl_resta_paso" style="display:inline-block; width:20px; text-align:center;">0</span>
+        </label>
+        <input type="range" id="sl_resta" min="0" max="2" step="1" value="0" oninput="updateRestaLab()">
+      </div>
+
+      <div class="vs-grid">
+        
+        <!-- CÓMO LO APRENDISTE TÚ -->
+        <div class="card-old">
+          <div class="vs-title-old">🕰️ Cómo lo aprendiste tú</div>
+          <div class="step-title">El Algoritmo Memorístico</div>
+          
+          <div class="math-block" style="text-align:right; width: 120px; margin: 1rem auto; padding-right:2rem; min-height:100px;" id="math_old_resta">
+            <!-- Rellenado por JS -->
+          </div>
+          
+          <div id="text_old_resta" style="font-size:0.9rem; line-height:1.6; margin:0; min-height:60px;">
+            <!-- Rellenado por JS -->
+          </div>
+        </div>
+
+        <!-- CÓMO LO APRENDEN AHORA -->
+        <div class="card-new">
+          <div class="vs-title-new">🚀 Cómo lo aprenden hoy</div>
+          <div class="step-title">Descomposición / Préstamo</div>
+          
+          <div class="math-block" style="text-align:right; width: 160px; margin: 1rem auto; padding-right:2rem; min-height:100px;" id="math_new_resta">
+            <!-- Rellenado por JS -->
+          </div>
+          
+          <div id="text_new_resta" style="font-size:0.9rem; line-height:1.6; margin:0; min-height:60px;">
+            <!-- Rellenado por JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="reasoning-box">
+        <strong>¿Por qué lo han cambiado?</strong><br>
+        Matemáticamente, es ilógico "llevarse una decena" arriba y devolverla sumando abajo por arte de magia. El método moderno descompone números: rompemos un billete de 10 (las decenas) para tener 10 monedas sueltas (las unidades) y poder restar con lógica pura. Cuando el cerebro del niño hace "clic" en esto, su cálculo mental se vuelve infinitamente superior.
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: LA DIVISIÓN (CAJA TRADICIONAL) -->
+    <!-- ===================================================================== -->
+    <div id="tab-divisiones" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">La batalla de la División por dos cifras</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Si ves a tu hijo escribir restas larguísimas dentro de la caja de división, no te asustes. No lo está haciendo mal, simplemente está "vaciando" su memoria de trabajo al papel.
+      </p>
+
+      <div class="vs-grid">
+        
+        <!-- CÓMO LO APRENDISTE TÚ -->
+        <div class="card-old">
+          <div class="vs-title-old">🕰️ Cómo lo aprendiste tú</div>
+          <div class="step-title">Cálculo mental oculto</div>
+          
+          <div class="math-block">
+            <table class="caja-division">
+              <tr>
+                <td class="caja-izq">846</td>
+                <td class="caja-der-top">12</td>
+              </tr>
+              <tr>
+                <td class="caja-izq">06</td>
+                <td class="caja-der-bot">70</td>
+              </tr>
+            </table>
+          </div>
+          
+          <p style="font-size:0.9rem; line-height:1.6; margin:0;">
+            <strong>Tu método ninja:</strong> Buscabas el número mentalmente. <em>"Siete por dos 14, al 14 cero y me llevo una. Siete por una siete y una que me llevo ocho, al ocho cero"</em>. Escribías directamente el resto y bajabas el 6. Todo ocurría en tu cabeza.
+          </p>
+        </div>
+
+        <!-- CÓMO LO APRENDEN AHORA -->
+        <div class="card-new">
+          <div class="vs-title-new">🚀 Cómo lo aprenden hoy</div>
+          <div class="step-title">División Extendida (Resta explícita)</div>
+          
+          <div class="math-block">
+            <table class="caja-division">
+              <tr>
+                <td class="caja-izq">846</td>
+                <td class="caja-der-top">12</td>
+              </tr>
+              <tr>
+                <td class="caja-izq" style="color:var(--accent-op); border-bottom:1px solid currentColor; padding-bottom:0;">-84↓</td>
+                <td class="caja-der-bot">70</td>
+              </tr>
+              <tr>
+                <td class="caja-izq">006</td>
+                <td class="caja-der-bot"></td>
+              </tr>
+            </table>
+          </div>
+          
+          <p style="font-size:0.9rem; line-height:1.6; margin:0;">
+            <strong>Su método de papel:</strong> En lugar de guardar el número multiplicado y las llevadas en la memoria, el alumno escribe literalmente "84" y ejecuta la resta de forma visible en el papel. Luego baja el 6 con toda la tranquilidad del mundo.
+          </p>
+        </div>
+      </div>
+
+      <div class="reasoning-box">
+        <strong>¿Por qué lo han cambiado?</strong><br>
+        Dividir directamente por dos cifras provocaba una tasa altísima de fracaso. Exigía multiplicar, calcular complementarios y retener llevadas simultáneamente en la memoria de trabajo de un niño. Al escribir la resta explícita, se descarga la memoria temporal y se reduce la ansiedad matemática casi a cero. 
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: LA REGLA DE TRES (FRACCIONES VERTICALES) -->
+    <!-- ===================================================================== -->
+    <div id="tab-reglatres" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">La "Muerte" de la Regla de Tres</h2>
+      <p style="margin:0; color:var(--text-muted); font-size:0.95rem;">
+        Es la herramienta favorita de cualquier adulto para resolver la vida diaria, pero a tu hijo (especialmente en Secundaria y Bachillerato) le pueden prohibir usarla.
+      </p>
+
+      <div class="vs-grid">
+        
+        <!-- CÓMO LO APRENDISTE TÚ -->
+        <div class="card-old">
+          <div class="vs-title-old">🕰️ Cómo lo aprendiste tú</div>
+          <div class="step-title">El cruce mágico</div>
+          <p style="margin:0.5rem 0; font-size:0.9rem;"><em>"Si 3 kg de naranjas cuestan 6€, ¿cuánto cuestan 5 kg?"</em></p>
+          
+          <div class="math-block" style="text-align:center;">
+            3 kg &nbsp; ➔ &nbsp; 6 €<br>
+            5 kg &nbsp; ➔ &nbsp; x €<br><br>
+            <span style="color:var(--accent-gold);">x = <span class="frac-wrap"><span class="frac-num">5 · 6</span><span class="frac-den">3</span></span> = 10 €</span>
+          </div>
+          
+          <p style="font-size:0.9rem; line-height:1.6; margin:0;">
+            Te enseñaron a plantar las variables, multiplicar en cruz y dividir por el número suelto. Una receta de cocina infalible que no requiere entender lo que haces.
+          </p>
+        </div>
+
+        <!-- CÓMO LO APRENDEN AHORA -->
+        <div class="card-new">
+          <div class="vs-title-new">🚀 Cómo lo aprenden hoy</div>
+          <div class="step-title">Reducción a la unidad / Factores</div>
+          <p style="margin:0.5rem 0; font-size:0.9rem;"><em>"Si 3 kg de naranjas cuestan 6€, ¿cuánto cuestan 5 kg?"</em></p>
+          
+          <div class="math-block" style="text-align:center;">
+            1) ¿Cuánto vale 1 kg (la unidad)?<br>
+            <span class="frac-wrap"><span class="frac-num">6 €</span><span class="frac-den">3 kg</span></span> = <strong>2 €/kg</strong><br><br>
+            2) Multiplico por los kg que deseo:<br>
+            5 kg · 2 €/kg = <strong style="color:var(--accent-blue);">10 €</strong>
+          </div>
+          
+          <p style="font-size:0.9rem; line-height:1.6; margin:0;">
+            Le obligan a averiguar primero el <strong>valor unitario constante</strong>, entendiendo la proporción real, y luego aplicar un factor algebraico.
+          </p>
+        </div>
+      </div>
+
+      <div class="reasoning-box">
+        <strong>¿Por qué prohíben la "Cruz" en Secundaria?</strong><br>
+        La Regla de Tres tradicional es un "truco ciego". Cuando los alumnos llegan a física, química, o a problemas de proporcionalidad inversa, intentan hacer la cruz automática y fracasan estrepitosamente. Al forzarles a buscar la constante de proporcionalidad (reducir a 1), se están preparando para despejar y entender fórmulas científicas reales.
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 4: CONSEJOS DE ORO -->
+    <!-- ===================================================================== -->
+    <div id="tab-consejo" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">3 Consejos de Oro para sobrevivir a las tardes de estudio</h2>
+      
+      <div class="consejo-card" style="border-left: 4px solid var(--accent-success);">
+        <div class="consejo-title">
+          <span class="consejo-num" style="background:var(--accent-success);">1</span>
+          Nunca digas "Tu profe lo hace mal"
+        </div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Crear un conflicto entre <span class="highlight-text">"el método de casa"</span> y <span class="highlight-text">"el método del cole"</span> solo genera caos en la cabeza del niño. Si ves que operan distinto a ti, cambia la narrativa.
+        </p>
+        <div class="consejo-quote">
+          "¡Ah, qué curioso! Yo aprendí un camino distinto para llegar al mismo sitio, enséñame cómo funciona el tuyo."
+        </div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Al forzar al niño a explicártelo, él mismo asienta el conocimiento y refuerza su aprendizaje. Tú te conviertes en el alumno y él en el maestro.
+        </p>
+      </div>
+
+      <div class="consejo-card" style="border-left: 4px solid #f59e0b;">
+        <div class="consejo-title">
+          <span class="consejo-num" style="background:#f59e0b;">2</span>
+          Cuidado con la "Ansiedad Heredada"
+        </div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Es muy tentador empatizar con su sufrimiento soltando frases como <span class="highlight-text">"Yo también era fatal en matemáticas"</span> o <span class="highlight-text">"Tranquilo, nosotros somos de letras"</span>. Sin querer, les estás dando permiso para rendirse y justificando el fracaso como un gen inamovible de la familia.
+        </p>
+        <div class="consejo-quote">
+          "Esto parece un reto difícil, pero vamos a investigar juntos cómo resolverlo apoyándonos en dibujos."
+        </div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          Alaba siempre el <strong>esfuerzo</strong> y la estrategia utilizada, nunca la inteligencia innata.
+        </p>
+      </div>
+
+      <div class="consejo-card" style="border-left: 4px solid var(--accent-blue);">
+        <div class="consejo-title">
+          <span class="consejo-num" style="background:var(--accent-blue);">3</span>
+          Usa MATH LAB como tu aliado pacificador
+        </div>
+        <p style="margin:0; font-size:0.95rem; line-height:1.6;">
+          En lugar de enfadaros mutuamente frente a un libro de texto plano e incomprensible, utilizad esta web juntos. Cuando no entiendan las <strong>Fracciones</strong>, id a la pestaña de la "Pizza Interactiva". Si se atascan en el <strong>Teorema de Pitágoras</strong>, dejad que muevan los deslizadores del laboratorio hasta que el cerebro haga "clic" visualmente. Convertid la tensión en un juego de pantallas.
+        </p>
+      </div>
+      
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      if(tabId === 'restas') updateRestaLab();
+    }
+
+    // =========================================================================
+    // SLIDER DE RESTAS (TAB 1)
+    // =========================================================================
+    function updateRestaLab() {
+      const step = parseInt(document.getElementById('sl_resta').value);
+      document.getElementById('lbl_resta_paso').textContent = step;
+      
+      const oldMath = document.getElementById('math_old_resta');
+      const oldText = document.getElementById('text_old_resta');
+      const newMath = document.getElementById('math_new_resta');
+      const newText = document.getElementById('text_new_resta');
+
+      if (step === 0) {
+        // PASO 0: Inicio
+        oldMath.innerHTML = `
+          &nbsp;5 2<br>
+          - 1 8<br>
+          -----<br>
+          <br>
+        `;
+        oldText.innerHTML = "<strong>Paso 0 (El Planteamiento):</strong> Colocamos el minuendo (52) y el sustraendo (18).";
+
+        newMath.innerHTML = `
+          <br>
+          &nbsp;5 &nbsp; 2<br>
+          - 1 &nbsp; 8<br>
+          -------<br>
+          <br>
+        `;
+        newText.innerHTML = "<strong>Paso 0 (El Planteamiento):</strong> Tenemos 5 decenas y 2 unidades sueltas.";
+      } 
+      else if (step === 1) {
+        // PASO 1: Unidades
+        oldMath.innerHTML = `
+          &nbsp;5 2<br>
+          - 1 8<br>
+          -----<br>
+          &nbsp;&nbsp;<span style="color:var(--accent-gold); font-weight:bold;">4</span>
+        `;
+        oldText.innerHTML = "<strong>Paso 1 (Unidades):</strong> A 2 no le puedo quitar 8. Así que digo <em>'del 8 al 12 van <span style='color:var(--accent-gold);'>4</span>'</em>. Y mágicamente, <strong>me llevo 1</strong> en mi cabeza.";
+
+        newMath.innerHTML = `
+          <span style="color:var(--accent-blue); font-size:0.8rem; font-weight:bold;">(4) (12)</span><br>
+          &nbsp;<s>5</s> &nbsp;<s>2</s><br>
+          - 1 &nbsp; 8<br>
+          -------<br>
+          &nbsp;&nbsp; &nbsp; <span style="color:var(--accent-blue); font-weight:bold;">4</span>
+        `;
+        newText.innerHTML = "<strong>Paso 1 (Unidades):</strong> A 2 no le puedo quitar 8. Rompo una decena del 5. El 5 se queda en 40 y el 2 se convierte en 12. <strong><span style='color:var(--accent-blue);'>12 - 8 = 4</span></strong>.";
+      } 
+      else if (step === 2) {
+        // PASO 2: Decenas
+        oldMath.innerHTML = `
+          &nbsp;5 2<br>
+          - 1 8<br>
+          -----<br>
+          &nbsp;<span style="color:var(--accent-success); font-weight:bold;">3</span> <span style="color:var(--accent-gold); font-weight:bold;">4</span>
+        `;
+        oldText.innerHTML = "<strong>Paso 2 (Decenas):</strong> Ese '1' que me llevaba se lo sumo al de abajo (1+1=2). Ahora digo <em>'del 2 al 5 van <span style='color:var(--accent-success);'>3</span>'</em>. Resultado final 34.";
+
+        newMath.innerHTML = `
+          <span style="color:var(--accent-blue); font-size:0.8rem; font-weight:bold;">(4) (12)</span><br>
+          &nbsp;<s>5</s> &nbsp;<s>2</s><br>
+          - 1 &nbsp; 8<br>
+          -------<br>
+          &nbsp;<span style="color:var(--accent-success); font-weight:bold;">3</span> &nbsp; <span style="color:var(--accent-blue); font-weight:bold;">4</span>
+        `;
+        newText.innerHTML = "<strong>Paso 2 (Decenas):</strong> Como el 5 ahora es un 4, simplemente resto las decenas normales: <strong><span style='color:var(--accent-success);'>4 - 1 = 3</span></strong>. Resultado final 34.";
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateRestaLab();
+    });
+  </script>
+</body>
+</html>

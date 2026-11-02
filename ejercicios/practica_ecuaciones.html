@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Práctica: Ecuaciones de 1er Grado | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent-blue);
+      border-color: var(--accent-blue);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+    .tab-content.active { display: flex; }
+
+    /* ESTILOS DE MATES */
+    .ejercicio-card {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    [data-theme="light"] .ejercicio-card {
+      background: #f8fafc !important;
+    }
+    .ej-numero {
+      color: var(--accent-blue);
+      font-weight: 800;
+      font-size: 1.1rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
+    
+    .paso-explicado {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 0.2rem;
+      line-height: 1.5;
+    }
+    .math-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      font-family: monospace;
+      font-size: 1.25rem;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    [data-theme="light"] .math-row {
+      background: rgba(0, 0, 0, 0.03);
+    }
+
+    /* COLORES DIDÁCTICOS */
+    .term-x { color: #38bdf8; font-weight: bold; } /* Azul para las X */
+    .term-n { color: var(--accent-gold); font-weight: bold; } /* Dorado para los números */
+    .term-op { color: #c084fc; font-weight: bold; } /* Morado para la Operación en ambos lados */
+    .term-ok { color: var(--accent-success); font-weight: bold; } /* Verde para resultado */
+    .f-sign { color: var(--text-muted); margin: 0 0.2rem; font-weight: bold; }
+
+    /* FORMATO VERTICAL DE FRACCIONES */
+    .frac-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 0.25rem;
+      line-height: 1.15;
+      font-size: 0.95em;
+    }
+    .frac-num { border-bottom: 2px solid currentColor; padding: 0 0.2rem 2px 0.2rem; display: block; }
+    .frac-den { padding: 2px 0.2rem 0 0.2rem; display: block; }
+
+    .btn-print {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: var(--accent-blue);
+      color: #042f2e;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin: 1rem auto;
+    }
+    .btn-print:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+    }
+
+    /* CHECKER CUSTOM (TAB 3) */
+    .checker-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: center;
+      background: var(--bg-primary);
+      padding: 2rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+    .input-group {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+    .input-group input {
+      padding: 0.8rem;
+      font-size: 1.2rem;
+      font-weight: 800;
+      font-family: monospace;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-card);
+      color: var(--text-main);
+      outline: none;
+      text-align: center;
+    }
+    .input-group input.eq-side { width: 140px; }
+    .input-group input.eq-sol { width: 70px; border-color: var(--accent-blue); }
+    .input-group input:focus { border-color: var(--accent-gold); }
+    
+    .btn-calc {
+      background: var(--accent-blue);
+      color: #0f172a;
+      padding: 0.8rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: 800;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      max-width: 300px;
+    }
+    
+    .checker-results {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .res-box {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: monospace;
+      font-size: 1.1rem;
+      color: #fff;
+    }
+    [data-theme="light"] .res-box { background: #f8fafc !important; color: #0f172a !important; }
+
+    /* CSS ESPECÍFICO PARA LA IMPRESORA */
+    @media print {
+      body { background: #fff !important; color: #000 !important; }
+      .lesson-header, .tabs-wrap, .explanation-card, #tab-resueltos, #tab-checker, .btn-print { display: none !important; }
+      .main-wrap, .tab-content { padding: 0 !important; margin: 0 !important; box-shadow: none !important; border: none !important; max-width: 100% !important; }
+      #tab-practica { display: block !important; }
+      .print-area h2 { color: #000 !important; text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 30px; }
+      .ejercicio-print { page-break-inside: avoid; margin-bottom: 20px; font-size: 14pt; display: flex; align-items: center; }
+      .ejercicio-print span.num { font-weight: bold; margin-right: 15px; color: #000; }
+      .espacio-blanco { height: 160px; }
+      .frac-wrap { color: #000 !important; }
+    }
+  </style>
+
+  <link rel="stylesheet" href="../tema.css">
+  <script src="../tema.js"></script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="index.html" class="nav-back-link"><span>&larr;</span> Volver a Entrenamiento</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Práctica Guiada 🏋️</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+      <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-blue);">La lógica de la Balanza</span>
+      <div class="content-text" style="font-size: 1.05rem;">
+        Aquí no hay magia ni trucos de memoria. Lo que le haces a un lado de la balanza, tienes que hacérselo al otro. Fíjate en los colores: <span style="color:#38bdf8; font-weight:bold;">Azul para las "x"</span>, <span style="color:var(--accent-gold); font-weight:bold;">Naranja para los números</span>, y <span style="color:#c084fc; font-weight:bold;">Morado para la operación que hacemos a ambos lados</span>.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('resueltos', this)">1. 🧠 5 Ejercicios Resueltos</button>
+      <button class="tab-btn" onclick="switchTab('practica', this)">2. 📝 Tu Turno (Exportar PDF)</button>
+      <button class="tab-btn" onclick="switchTab('checker', this)">3. ⚖️ Verificador por Sustitución</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: EJERCICIOS RESUELTOS -->
+    <!-- ===================================================================== -->
+    <div id="tab-resueltos" class="tab-content active">
+      <h2 style="margin:0; font-size:1.3rem;">Desmontando el Álgebra paso a paso</h2>
+      
+      <!-- EJERCICIO 1 -->
+      <div class="ejercicio-card">
+        <div class="ej-numero">Ejercicio 1: Transposición básica</div>
+        <div class="math-row">
+          <span class="term-x">3x</span> <span class="f-sign">-</span> <span class="term-n">2</span> <span class="f-sign">=</span> <span class="term-n">10</span>
+        </div>
+        <div class="paso-explicado">1º Para anular el -2 de la izquierda y dejar el bloque de la "x" solo, <strong>sumamos 2 en ambos lados</strong> de la balanza.</div>
+        <div class="math-row">
+          <span class="term-x">3x</span> <span class="f-sign">-</span> <span class="term-n">2</span> <span class="term-op">+ 2</span> <span class="f-sign">=</span> <span class="term-n">10</span> <span class="term-op">+ 2</span>
+        </div>
+        <div class="paso-explicado">2º Operamos. El -2 y el +2 se anulan (es de ahí de donde sale el famoso truco de "lo paso al otro lado con el signo cambiado").</div>
+        <div class="math-row">
+          <span class="term-x">3x</span> <span class="f-sign">=</span> <span class="term-n">12</span>
+        </div>
+        <div class="paso-explicado">3º Para dejar a la "x" totalmente despejada, hay que anular el 3 que la multiplica. Así que <strong>dividimos entre 3 ambos lados</strong>.</div>
+        <div class="math-row">
+          <span class="frac-wrap"><span class="frac-num term-x">3x</span><span class="frac-den term-op">3</span></span> <span class="f-sign">=</span> <span class="frac-wrap"><span class="frac-num term-n">12</span><span class="frac-den term-op">3</span></span>
+          <span class="f-sign">➔</span> <strong class="term-ok">x = 4</strong>
+        </div>
+      </div>
+
+      <!-- EJERCICIO 2 -->
+      <div class="ejercicio-card">
+        <div class="ej-numero">Ejercicio 2: Agrupando en ambos lados</div>
+        <div class="math-row">
+          <span class="term-x">5x</span> <span class="f-sign">-</span> <span class="term-n">4</span> <span class="f-sign">=</span> <span class="term-x">2x</span> <span class="f-sign">+</span> <span class="term-n">11</span>
+        </div>
+        <div class="paso-explicado">1º Queremos las "x" a la izquierda y los números a la derecha. Para lograrlo legalmente, <strong>restamos 2x</strong> y <strong>sumamos 4</strong> en ambos lados a la vez.</div>
+        <div class="math-row">
+          <span class="term-x">5x</span> <span class="term-op">- 2x</span> <span class="f-sign">-</span> <span class="term-n">4</span> <span class="term-op">+ 4</span> <span class="f-sign">=</span> <span class="term-x">2x</span> <span class="term-op">- 2x</span> <span class="f-sign">+</span> <span class="term-n">11</span> <span class="term-op">+ 4</span>
+        </div>
+        <div class="paso-explicado">2º Al operar, la balanza se limpia (peras con peras, manzanas con manzanas).</div>
+        <div class="math-row">
+          <span class="term-x">3x</span> <span class="f-sign">=</span> <span class="term-n">15</span>
+        </div>
+        <div class="paso-explicado">3º <strong>Dividimos entre 3 ambos lados</strong> para despejar.</div>
+        <div class="math-row">
+          <span class="term-x">x</span> <span class="f-sign">=</span> <span class="frac-wrap"><span class="frac-num term-n">15</span><span class="frac-den term-op">3</span></span> <span class="f-sign">➔</span> <strong class="term-ok">x = 5</strong>
+        </div>
+      </div>
+
+      <!-- EJERCICIO 3 -->
+      <div class="ejercicio-card">
+        <div class="ej-numero">Ejercicio 3: Rompiendo los paréntesis</div>
+        <div class="math-row">
+          <span class="term-n">2</span>( <span class="term-x">x</span> <span class="f-sign">-</span> <span class="term-n">3</span> ) <span class="f-sign">=</span> <span class="term-n">4</span>( <span class="term-x">x</span> <span class="f-sign">+</span> <span class="term-n">1</span> )
+        </div>
+        <div class="paso-explicado">1º El número de fuera multiplica a <strong>todo</strong> lo de dentro (Propiedad Distributiva).</div>
+        <div class="math-row">
+          <span class="term-x">2x</span> <span class="f-sign">-</span> <span class="term-n">6</span> <span class="f-sign">=</span> <span class="term-x">4x</span> <span class="f-sign">+</span> <span class="term-n">4</span>
+        </div>
+        <div class="paso-explicado">2º <strong>Restamos 4x</strong> y <strong>sumamos 6</strong> en ambos lados para agrupar.</div>
+        <div class="math-row">
+          <span class="term-x">2x</span> <span class="term-op">- 4x</span> <span class="f-sign">=</span> <span class="term-n">4</span> <span class="term-op">+ 6</span> 
+          <span class="f-sign">➔</span> <span class="term-x">-2x</span> <span class="f-sign">=</span> <span class="term-n">10</span>
+        </div>
+        <div class="paso-explicado">3º Para anular el -2 que multiplica, <strong>dividimos ambos lados entre -2</strong>. ¡El signo forma parte del número, viaja con él!</div>
+        <div class="math-row">
+          <span class="term-x">x</span> <span class="f-sign">=</span> <span class="frac-wrap"><span class="frac-num term-n">10</span><span class="frac-den term-op">-2</span></span> <span class="f-sign">➔</span> <strong class="term-ok">x = -5</strong>
+        </div>
+      </div>
+
+      <!-- EJERCICIO 4 -->
+      <div class="ejercicio-card">
+        <div class="ej-numero">Ejercicio 4: Denominadores al rescate (m.c.m.)</div>
+        <div class="math-row">
+          <span class="frac-wrap"><span class="frac-num term-x">x</span><span class="frac-den">2</span></span> <span class="f-sign">+</span> <span class="term-n">1</span> <span class="f-sign">=</span> <span class="frac-wrap"><span class="frac-num term-x">x</span><span class="frac-den">3</span></span> <span class="f-sign">+</span> <span class="term-n">2</span>
+        </div>
+        <div class="paso-explicado">1º Buscamos el m.c.m. de los denominadores (2 y 3) = <strong style="color:var(--text-main);">6</strong>. Ahora, la clave es <strong>multiplicar TODOS los términos de ambos lados por 6</strong>.</div>
+        <div class="math-row">
+          <span class="term-op">6·</span><span class="frac-wrap"><span class="frac-num term-x">x</span><span class="frac-den">2</span></span> <span class="f-sign">+</span> <span class="term-op">6·</span><span class="term-n">1</span> <span class="f-sign">=</span> <span class="term-op">6·</span><span class="frac-wrap"><span class="frac-num term-x">x</span><span class="frac-den">3</span></span> <span class="f-sign">+</span> <span class="term-op">6·</span><span class="term-n">2</span>
+        </div>
+        <div class="paso-explicado">2º Efectuamos las divisiones (6÷2=3 y 6÷3=2) y las multiplicaciones normales. Ahora sí, ¡la magia aparece y los denominadores se esfuman!</div>
+        <div class="math-row">
+          <span class="term-x">3x</span> <span class="f-sign">+</span> <span class="term-n">6</span> <span class="f-sign">=</span> <span class="term-x">2x</span> <span class="f-sign">+</span> <span class="term-n">12</span>
+        </div>
+        <div class="paso-explicado">3º <strong>Restamos 2x</strong> y <strong>restamos 6</strong> en ambos lados.</div>
+        <div class="math-row">
+          <span class="term-x">3x</span> <span class="term-op">- 2x</span> <span class="f-sign">=</span> <span class="term-n">12</span> <span class="term-op">- 6</span>
+          <span class="f-sign">➔</span> <strong class="term-ok">x = 6</strong>
+        </div>
+      </div>
+
+      <!-- EJERCICIO 5 -->
+      <div class="ejercicio-card">
+        <div class="ej-numero">Ejercicio 5: Nivel Boss (Paréntesis + Denominador)</div>
+        <div class="math-row">
+          <span class="frac-wrap"><span class="frac-num">3(<span class="term-x">x</span> - <span class="term-n">1</span>)</span><span class="frac-den">2</span></span> <span class="f-sign">=</span> <span class="term-x">x</span> <span class="f-sign">+</span> <span class="term-n">1</span>
+        </div>
+        <div class="paso-explicado">1º Para anular el enorme "2" que divide a la izquierda, <strong>multiplicamos ambos lados enteros por 2</strong>.</div>
+        <div class="math-row">
+          <span class="term-n">3</span>( <span class="term-x">x</span> <span class="f-sign">-</span> <span class="term-n">1</span> ) <span class="f-sign">=</span> <span class="term-op">2·</span>( <span class="term-x">x</span> <span class="f-sign">+</span> <span class="term-n">1</span> )
+        </div>
+        <div class="paso-explicado">2º Rompemos los paréntesis multiplicando.</div>
+        <div class="math-row">
+          <span class="term-x">3x</span> <span class="f-sign">-</span> <span class="term-n">3</span> <span class="f-sign">=</span> <span class="term-x">2x</span> <span class="f-sign">+</span> <span class="term-n">2</span>
+        </div>
+        <div class="paso-explicado">3º <strong>Restamos 2x</strong> y <strong>sumamos 3</strong> en ambos lados.</div>
+        <div class="math-row">
+          <span class="term-x">3x</span> <span class="term-op">- 2x</span> <span class="f-sign">=</span> <span class="term-n">2</span> <span class="term-op">+ 3</span>
+          <span class="f-sign">➔</span> <strong class="term-ok">x = 5</strong>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: GENERADOR DE PDF PARA IMPRIMIR -->
+    <!-- ===================================================================== -->
+    <div id="tab-practica" class="tab-content print-area">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0;">Hoja de Práctica: Ecuaciones de 1er Grado</h2>
+        <button class="btn-print" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+      </div>
+      
+      <p style="margin:0 0 2rem 0; color:var(--text-muted); font-size:0.95rem;" class="no-print-text">
+        Coge papel y boli. Al terminar, verifica si tus soluciones son correctas usando el comprobador de la Pestaña 3.
+      </p>
+
+      <div class="ejercicio-print">
+        <span class="num">a)</span>
+        <span style="font-family:monospace; letter-spacing: 1px;">4x + 5 = 17</span>
+      </div>
+      <div class="espacio-blanco"></div>
+
+      <div class="ejercicio-print">
+        <span class="num">b)</span>
+        <span style="font-family:monospace; letter-spacing: 1px;">7x - 3 = 3x + 13</span>
+      </div>
+      <div class="espacio-blanco"></div>
+
+      <div class="ejercicio-print">
+        <span class="num">c)</span>
+        <span style="font-family:monospace; letter-spacing: 1px;">3(2x - 1) = 5x + 4</span>
+      </div>
+      <div class="espacio-blanco"></div>
+
+      <div class="ejercicio-print">
+        <span class="num">d)</span>
+        <span class="frac-wrap"><span class="frac-num">x</span><span class="frac-den">4</span></span>
+        <span class="f-sign" style="color:#000;">+</span> 2
+        <span class="f-sign" style="color:#000;">=</span>
+        <span class="frac-wrap"><span class="frac-num">x</span><span class="frac-den">2</span></span>
+        <span class="f-sign" style="color:#000;">-</span> 1
+      </div>
+      <div class="espacio-blanco"></div>
+
+      <div class="ejercicio-print">
+        <span class="num">e)</span>
+        <span class="frac-wrap"><span class="frac-num">2(x + 3)</span><span class="frac-den">5</span></span>
+        <span class="f-sign" style="color:#000;">=</span> x <span class="f-sign" style="color:#000;">-</span> 3
+      </div>
+
+      <div style="text-align:right; font-size:0.8rem; margin-top:2rem; font-family:monospace;" class="only-print">MATH LAB - Generado Automáticamente</div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: CHECKER Y COMPROBADOR (VERIFICADOR POR SUSTITUCIÓN) -->
+    <!-- ===================================================================== -->
+    <div id="tab-checker" class="tab-content">
+      <h2 style="margin:0; font-size:1.3rem;">El Verificador por Sustitución</h2>
+      <p style="margin:0 0 1rem 0; color:var(--text-muted); font-size:0.95rem;">
+        <strong>El secreto del 10 en un examen:</strong> En una ecuación nunca deberías preguntar si está bien. Si cambias la "x" por tu resultado en ambos lados de la ecuación original, y da el mismo número, ¡es correcta obligatoriamente!
+      </p>
+      
+      <div style="background: rgba(56, 189, 248, 0.1); padding: 1rem; border-radius: 8px; font-size: 0.9rem; margin-bottom: 1rem;">
+        <em>Instrucciones:</em> Escribe las expresiones usando <strong>*</strong> para multiplicar (ej: <code>3*x - 2</code>) y <strong>/</strong> para dividir (ej: <code>x/4 + 2</code>).
+      </div>
+
+      <div class="checker-container">
+        <div class="input-group">
+          <input type="text" id="eq_left" class="eq-side" placeholder="Lado Izq (Ej: 3*x-2)">
+          <span style="font-weight:bold; font-size:1.5rem; margin:0 0.5rem;">=</span>
+          <input type="text" id="eq_right" class="eq-side" placeholder="Lado Der (Ej: 10)">
+        </div>
+        <div class="input-group" style="margin-top:0.5rem;">
+          <span style="font-weight:bold; font-size:1.1rem; color:var(--accent-blue);">Mi solución: x = </span>
+          <input type="number" id="eq_xval" class="eq-sol" placeholder="4">
+        </div>
+        
+        <button class="btn-calc" onclick="runEquationChecker()">Sustituir y Comprobar ⚖️</button>
+
+        <div class="checker-results" id="eq_results" style="display:none;">
+          <div class="res-box" id="res_left">
+            <!-- Left Result -->
+          </div>
+          <div class="res-box" id="res_right">
+            <!-- Right Result -->
+          </div>
+          <div class="res-box" id="res_veredicto" style="text-align:center; font-size:1.3rem; border-left: 4px solid var(--border-color);">
+            <!-- Veredicto -->
+          </div>
+        </div>
+      </div>
+      
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+    }
+
+    // =========================================================================
+    // LÓGICA DEL VERIFICADOR DE ECUACIONES
+    // =========================================================================
+
+    function runEquationChecker() {
+      const leftStr = document.getElementById('eq_left').value.toLowerCase();
+      const rightStr = document.getElementById('eq_right').value.toLowerCase();
+      const xValStr = document.getElementById('eq_xval').value;
+
+      if (!leftStr || !rightStr || xValStr === "") {
+        alert("Rellena la ecuación (los dos lados) y tu solución de 'x'.");
+        return;
+      }
+
+      const xVal = parseFloat(xValStr);
+
+      try {
+        // Reemplazar la 'x' por el valor (con paréntesis por si es negativo)
+        const safeX = `(${xVal})`;
+        
+        // Función rudimentaria para evaluar expresiones matemáticas de forma segura
+        // Se usa Function en lugar de eval directo por limpieza, pero es similar.
+        const leftParsed = leftStr.replace(/x/g, safeX);
+        const rightParsed = rightStr.replace(/x/g, safeX);
+
+        const leftResult = new Function('return ' + leftParsed)();
+        const rightResult = new Function('return ' + rightParsed)();
+
+        // Mostrar proceso
+        document.getElementById('res_left').innerHTML = `Lado Izquierdo: <br><span style="color:var(--text-muted); font-size:0.9rem;">${leftParsed}</span> = <strong style="color:#38bdf8; font-size:1.3rem;">${leftResult}</strong>`;
+        
+        document.getElementById('res_right').innerHTML = `Lado Derecho: <br><span style="color:var(--text-muted); font-size:0.9rem;">${rightParsed}</span> = <strong style="color:var(--accent-gold); font-size:1.3rem;">${rightResult}</strong>`;
+
+        const veredictoBox = document.getElementById('res_veredicto');
+        if (Math.abs(leftResult - rightResult) < 0.0001) {
+          veredictoBox.innerHTML = `¡La Balanza está Equilibrada!<br><span style="color:var(--accent-success); font-weight:bold; font-size:1.5rem;">${leftResult} = ${rightResult} ➔ ¡CORRECTO!</span>`;
+          veredictoBox.style.borderLeftColor = 'var(--accent-success)';
+        } else {
+          veredictoBox.innerHTML = `¡La Balanza se inclina!<br><span style="color:#f43f5e; font-weight:bold; font-size:1.2rem;">${leftResult} ≠ ${rightResult} ➔ Hay un error en tu cálculo.</span>`;
+          veredictoBox.style.borderLeftColor = '#f43f5e';
+        }
+
+        document.getElementById('eq_results').style.display = 'flex';
+
+      } catch (e) {
+        alert("Error de sintaxis en la ecuación. Asegúrate de usar '*' para multiplicar (ej: 3*x).");
+      }
+    }
+
+  </script>
+</body>
+</html>

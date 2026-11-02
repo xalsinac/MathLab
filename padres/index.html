@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Zona Familias | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1100px;
+      width: 100%;
+      padding: 2rem 1.5rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* HERO SECTION FAMILIAS */
+    .fam-hero {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      background: linear-gradient(180deg, rgba(244, 63, 94, 0.08) 0%, rgba(244, 63, 94, 0) 100%);
+      border-radius: 16px;
+      border: 1px solid rgba(244, 63, 94, 0.2);
+      margin-bottom: 1rem;
+    }
+    .fam-hero h1 {
+      font-size: 2.2rem;
+      color: var(--text-main);
+      margin: 0 0 1rem 0;
+    }
+    .fam-hero p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    .fam-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    /* GRID DE TARJETAS */
+    .topics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .topic-card {
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-decoration: none !important;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      height: 100%;
+      box-sizing: border-box;
+    }
+    .topic-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    /* ESTILOS ESPECÍFICOS DE TARJETAS FAMILIARES */
+    .card-traductor {
+      border-left: 5px solid #f43f5e;
+      background: rgba(244, 63, 94, 0.03);
+    }
+    .card-traductor:hover { border-color: #f43f5e; }
+    .tag-traductor { background: rgba(244, 63, 94, 0.15); color: #f43f5e; }
+
+    .card-guia {
+      border-left: 5px solid var(--accent-gold);
+      background: rgba(251, 191, 36, 0.03);
+    }
+    .card-guia:hover { border-color: var(--accent-gold); }
+    .tag-guia { background: rgba(251, 191, 36, 0.15); color: var(--accent-gold); }
+
+    .card-soon {
+      border-left: 5px solid var(--text-muted);
+      opacity: 0.7;
+      cursor: default;
+    }
+    .card-soon:hover { transform: none; box-shadow: none; border-color: var(--text-muted); }
+    .tag-soon { background: rgba(100, 116, 139, 0.15); color: var(--text-muted); }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    .branch-tag {
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .topic-name {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 0.6rem;
+    }
+    .topic-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
+    }
+    .card-action {
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .action-traductor { color: #f43f5e; }
+    .action-guia { color: var(--accent-gold); }
+
+  </style>
+
+  <link rel="stylesheet" href="../tema.css">
+  <script src="../tema.js"></script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="../index.html" class="nav-back-link"><span>&larr;</span> Volver al Menú Principal</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">MATH LAB Familias</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="fam-hero">
+      <div class="fam-icon">☕</div>
+      <h1>Botiquín de Supervivencia para Padres</h1>
+      <p>Sabemos que las tardes de deberes pueden ser un campo de batalla. Esta sección está diseñada para darte las herramientas necesarias para ayudar a tus hijos sin frustrarte, entendiendo cómo se enseña hoy la matemática.</p>
+    </div>
+
+    <div class="topics-grid">
+      
+      <!-- TRADUCTOR GENERACIONAL -->
+      <a href="traductor.html" class="topic-card card-traductor">
+        <div class="card-top">
+          <span class="branch-tag tag-traductor">Pedagogía</span>
+          <span style="font-size: 1.5rem;">🔄</span>
+        </div>
+        <div class="topic-name">El Traductor Generacional</div>
+        <div class="topic-desc">"Yo no lo aprendí así". Compara frente a frente cómo te enseñaron a ti (restas, divisiones, regla de tres) y cómo se lo exigen hoy en día, con simuladores interactivos.</div>
+        <div class="card-action action-traductor">
+          Abrir Traductor →
+        </div>
+      </a>
+
+      <!-- GUÍA: FRACCIONES -->
+      <a href="guia_fracciones.html" class="topic-card card-guia">
+        <div class="card-top">
+          <span class="branch-tag tag-guia">Guía de 5 Minutos</span>
+          <span style="font-size: 1.5rem;">🍕</span>
+        </div>
+        <div class="topic-name">Misión: Fracciones</div>
+        <div class="topic-desc">Léelo en el pasillo antes de entrar a su habitación. De qué va el tema, las 3 trampas mortales donde siempre se equivocan y las preguntas para saber si lo han entendido.</div>
+        <div class="card-action action-guia">
+          Leer Botiquín →
+        </div>
+      </a>
+
+      <!-- PRÓXIMAMENTE: SIMULACROS -->
+      <div class="topic-card card-soon">
+        <div class="card-top">
+          <span class="branch-tag tag-soon">Próximamente</span>
+          <span style="font-size: 1.5rem;">📝</span>
+        </div>
+        <div class="topic-name">Generador de Simulacros</div>
+        <div class="topic-desc">Crea exámenes de prueba a medida para que repasen antes del examen real, con una hoja de soluciones paso a paso exclusiva para ti.</div>
+        <div class="card-action" style="color: var(--text-muted);">
+          En construcción...
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+</body>
+</html>

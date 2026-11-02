@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script>
+    if (localStorage.getItem('mathlab_theme') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Práctica: Problemas de Ecuaciones | MATH LAB</title>
+  
+  <link rel="stylesheet" href="../estilos.css">
+
+  <style>
+    /* COMPORTAMIENTO DE SCROLL SUAVE */
+    html { scroll-behavior: smooth; }
+
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .lesson-header {
+      width: 100%;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .lesson-nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .main-wrap {
+      max-width: 1000px;
+      width: 100%;
+      padding: 2rem 1.25rem 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* PESTAÑAS */
+    .tabs-wrap {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    .tab-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px 8px 0 0;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text-main); }
+    .tab-btn.active {
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent-blue);
+      border-color: var(--accent-blue);
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      position: relative;
+    }
+    .tab-content.active { display: flex; }
+
+    /* NAVEGADOR DE PROBLEMAS (SELECTOR) */
+    .problem-navigator {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding: 1rem;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      position: sticky;
+      top: 60px; /* Debajo de la cabecera principal */
+      z-index: 90;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .nav-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-weight: 800;
+      text-decoration: none;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .nav-chip:hover {
+      background: var(--accent-blue);
+      color: #0f172a;
+      border-color: var(--accent-blue);
+      transform: translateY(-2px);
+    }
+
+    /* ESTILOS DE LOS PROBLEMAS */
+    .problem-card {
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      scroll-margin-top: 140px; /* Margen para que el sticky nav no lo tape al saltar */
+    }
+    [data-theme="light"] .problem-card {
+      background: #f8fafc !important;
+    }
+
+    /* COLORES CÍCLICOS PARA DIFERENCIAR PROBLEMAS */
+    .c-blue { border-left: 5px solid #38bdf8; }
+    .c-blue .ej-numero { color: #38bdf8; }
+    
+    .c-gold { border-left: 5px solid #fbbf24; }
+    .c-gold .ej-numero { color: #fbbf24; }
+    
+    .c-green { border-left: 5px solid #10b981; }
+    .c-green .ej-numero { color: #10b981; }
+    
+    .c-purple { border-left: 5px solid #c084fc; }
+    .c-purple .ej-numero { color: #c084fc; }
+    
+    .c-rose { border-left: 5px solid #f43f5e; }
+    .c-rose .ej-numero { color: #f43f5e; }
+
+    .c-indigo { border-left: 5px solid #818cf8; }
+    .c-indigo .ej-numero { color: #818cf8; }
+
+    .ej-numero {
+      font-weight: 800;
+      font-size: 1.2rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+    }
+    .enunciado {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      font-style: italic;
+    }
+    [data-theme="light"] .enunciado { background: rgba(0,0,0,0.03); }
+
+    .step-box {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .step-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 800;
+    }
+    .math-row {
+      font-family: monospace;
+      font-size: 1.15rem;
+      line-height: 1.6;
+    }
+    .solucion-final {
+      margin-top: 0.5rem;
+      padding: 0.8rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid var(--accent-success);
+      border-radius: 6px;
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    /* FORMATO DE FRACCIONES */
+    .frac-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 0.2rem;
+      line-height: 1.1;
+      font-size: 0.95em;
+    }
+    .frac-num { border-bottom: 1.8px solid currentColor; padding: 0 0.2rem 2px 0.2rem; display: block; }
+    .frac-den { padding: 2px 0.2rem 0 0.2rem; display: block; }
+
+    .btn-print {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: var(--accent-blue);
+      color: #042f2e;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin: 1rem auto;
+    }
+    .btn-print:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4); }
+
+    /* CSS ESPECÍFICO PARA LA IMPRESORA */
+    @media print {
+      body { background: #fff !important; color: #000 !important; }
+      .lesson-header, .tabs-wrap, .explanation-card, #tab-resueltos, .btn-print, .problem-navigator { display: none !important; }
+      .main-wrap, .tab-content { padding: 0 !important; margin: 0 !important; box-shadow: none !important; border: none !important; max-width: 100% !important; }
+      #tab-practica { display: block !important; }
+      .print-area h2 { color: #000 !important; text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 30px; }
+      
+      .ejercicio-print {
+        page-break-inside: avoid;
+        margin-bottom: 15px;
+        font-size: 12pt;
+        display: flex;
+        align-items: flex-start;
+      }
+      .ejercicio-print span.num { font-weight: bold; margin-right: 15px; color: #000; font-size: 14pt; }
+      .enunciado-print { font-style: italic; line-height: 1.5; }
+      .espacio-blanco { height: 180px; }
+    }
+  </style>
+
+  <link rel="stylesheet" href="../tema.css">
+  <script src="../tema.js"></script>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="lesson-header">
+    <div class="lesson-nav">
+      <a href="index.html" class="nav-back-link"><span>&larr;</span> Volver a Entrenamiento</a>
+      <span style="font-weight: 800; font-size: 1.15rem; color: #fff;">Práctica Guiada 🏋️</span>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <div class="explanation-card" style="border-left-color: var(--accent-blue);">
+      <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-blue);">Del Lenguaje al Álgebra</span>
+      <div class="content-text" style="font-size: 1.05rem;">
+        El verdadero reto de las matemáticas no es despejar la "x", es saber <strong>quién es la "x"</strong>. Aquí tienes 12 problemas resueltos desglosados en: Planteamiento (Traducción), Ecuación y Solución.
+      </div>
+    </div>
+
+    <!-- PESTAÑAS -->
+    <div class="tabs-wrap">
+      <button class="tab-btn active" onclick="switchTab('resueltos', this)">1. 🧠 12 Problemas Resueltos</button>
+      <button class="tab-btn" onclick="switchTab('practica', this)">2. 📝 Tu Turno (Exportar PDF)</button>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: PROBLEMAS RESUELTOS -->
+    <!-- ===================================================================== -->
+    <div id="tab-resueltos" class="tab-content active">
+      
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; font-size:1.3rem;">Problemas Clásicos de Examen</h2>
+      </div>
+
+      <!-- NAVEGADOR PEGADIZO -->
+      <div class="problem-navigator">
+        <span style="font-size:0.8rem; color:var(--text-muted); align-self:center; font-weight:bold; margin-right:0.5rem;">IR A:</span>
+        <a href="#p1" class="nav-chip">1</a>
+        <a href="#p2" class="nav-chip">2</a>
+        <a href="#p3" class="nav-chip">3</a>
+        <a href="#p4" class="nav-chip">4</a>
+        <a href="#p5" class="nav-chip">5</a>
+        <a href="#p6" class="nav-chip">6</a>
+        <a href="#p7" class="nav-chip">7</a>
+        <a href="#p8" class="nav-chip">8</a>
+        <a href="#p9" class="nav-chip">9</a>
+        <a href="#p10" class="nav-chip">10</a>
+        <a href="#p11" class="nav-chip">11</a>
+        <a href="#p12" class="nav-chip">12</a>
+      </div>
+
+      <!-- PROBLEMA 1 (Azul) -->
+      <div class="problem-card c-blue" id="p1">
+        <div class="ej-numero">Problema 1: Números Consecutivos <span style="font-size:1rem;">#1</span></div>
+        <div class="enunciado">"La suma de dos números enteros consecutivos es 55. ¿De qué números se trata?"</div>
+        
+        <div class="step-box">
+          <span class="step-label">1. Planteamiento (Traducción)</span>
+          <div class="math-row">Primer número = x <br> Siguiente número consecutivo = x + 1</div>
+        </div>
+        <div class="step-box">
+          <span class="step-label">2. Ecuación y Resolución</span>
+          <div class="math-row">
+            x + (x + 1) = 55 <br>
+            2x + 1 = 55 <br>
+            2x = 54 <br>
+            x = 27
+          </div>
+        </div>
+        <div class="solucion-final">
+          Solución: Los números son el 27 y el 28 (ya que 27 + 1 = 28).
+        </div>
+      </div>
+
+      <!-- PROBLEMA 2 (Dorado) -->
+      <div class="problem-card c-gold" id="p2">
+        <div class="ej-numero">Problema 2: Dobles y Mitades <span style="font-size:1rem;">#2</span></div>
+        <div class="enunciado">"El doble de un número menos su mitad es igual a 27. ¿Qué número es?"</div>
+        
+        <div class="step-box">
+          <span class="step-label">1. Planteamiento</span>
+          <div class="math-row">El número = x <br> Su doble = 2x <br> Su mitad = x/2</div>
+        </div>
+        <div class="step-box">
+          <span class="step-label">2. Ecuación y Resolución</span>
+          <div class="math-row">
+            2x - <span class="frac-wrap"><span class="frac-num">x</span><span class="frac-den">2</span></span> = 27 <br>
+            Multiplicamos todo por 2 para quitar el denominador:<br>
+            4x - x = 54 <br>
+            3x = 54 <br>
+            x = 54 / 3 = 18
+          </div>
+        </div>
+        <div class="solucion-final">Solución: El número buscado es el 18.</div>
+      </div>
+
+      <!-- PROBLEMA 3 (Verde) -->
+      <div class="problem-card c-green" id="p3">
+        <div class="ej-numero">Problema 3: Edades (Suma Actual) <span style="font-size:1rem;">#3</span></div>
+        <div class="enunciado">"Juan tiene 5 años más que su hermana Ana. Si entre los dos suman 23 años, ¿qué edad tiene cada uno?"</div>
+        
+        <div class="step-box">
+          <span class="step-label">1. Planteamiento</span>
+          <div class="math-row">Edad de Ana (la más pequeña) = x <br> Edad de Juan = x + 5</div>
+        </div>
+        <div class="step-box">
+          <span class="step-label">2. Ecuación y Resolución</span>
+          <div class="math-row">
+            x + (x + 5) = 23 <br>
+            2x + 5 = 23 <br>
+            2x = 18 <br>
+            x = 9
+          </div>
+        </div>
+        <div class="solucion-final">Solución: Ana tiene 9 años y Juan tiene 14 años (9 + 5).</div>
+      </div>
+
+      <!-- PROBLEMA 4 (Morado) -->
+      <div class="problem-card c-purple" id="p4">
+        <div class="ej-numero">Problema 4: Edades (El paso del tiempo) <span style="font-size:1rem;">#4</span></div>
+        <div class="enunciado">"Un padre tiene 40 años y su hijo 10. ¿Cuántos años deben pasar para que la edad del padre sea exactamente el doble que la del hijo?"</div>
+        
+        <div class="step-box">
+          <span class="step-label">1. Planteamiento</span>
+          <div class="math-row">Años que deben pasar = x <br> Edad futura del padre = 40 + x <br> Edad futura del hijo = 10 + x</div>
+        </div>
+        <div class="step-box">
+          <span class="step-label">2. Ecuación y Resolución</span>
+          <div class="math-row">
+            40 + x = 2 · (10 + x) <br>
+            40 + x = 20 + 2x <br>
+            40 - 20 = 2x - x <br>
+            20 = x
+          </div>
+        </div>
+        <div class="solucion-final">Solución: Deben pasar 20 años. (El padre tendrá 60 y el hijo 30).</div>
+      </div>
+
+      <!-- PROBLEMA 5 (Rosa) -->
+      <div class="problem-card c-rose" id="p5">
+        <div class="ej-numero">Problema 5: Geometría Perimetral <span style="font-size:1rem;">#5</span></div>
+        <div class="enunciado">"El perímetro de un rectángulo es de 40 cm. Si sabemos que la base mide 4 cm más que la altura, ¿cuánto miden sus lados?"</div>
+        
+        <div class="step-box">
+          <span class="step-label">1. Planteamiento</span>
+          <div class="math-row">Altura = x <br> Base = x + 4 <br> Perímetro = Suma de los 4 lados = 2(base) + 2(altura)</div>
+        </div>
+        <div class="step-box">
+          <span class="step-label">2. Ecuación y Resolución</span>
+          <div class="math-row">
+            2(x + 4) + 2(x) = 40 <br>
+            2x + 8 + 2x = 40 <br>
+            4x = 32 <br>
+            x = 8
+          </div>
+        </div>
+        <div class="solucion-final">Solución: La altura mide 8 cm y la base mide 12 cm.</div>
+      </div>
+
+      <!-- PROBLEMA 6 (Índigo) -->
+      <div class="problem-card c-indigo" id="p6">
+        <div class="ej-numero">Problema 6: Compras Cotidianas <span style="font-size:1rem;">#6</span></div>
+        <div class="enunciado">"He comprado un cuaderno y un bolígrafo por 5€. Si el cuaderno cuesta 3€ más que el bolígrafo, ¿cuánto cuesta cada artículo?"</div>
+        
+        <div class="step-box">
+          <span class="step-label">1. Planteamiento</span>
+          <div class="math-row">Precio del bolígrafo = x <br> Precio del cuaderno = x + 3</div>
+        </div>
+        <div class="step-box">
+          <span class="step-label">2. Ecuación y Resolución</span>
+          <div class="math-row">
+            x + (x + 3) = 5 <br>
+            2x + 3 = 5 <br>
+            2x = 2 <br>
+            x = 1
+          </div>
+        </div>
+        <div class="solucion-final">Solución: El bolígrafo cuesta 1€ y el cuaderno cuesta 4€.</div>
+      </div>
+
+      <!-- PROBLEMA 7 (Azul) -->
+      <div class="problem-card c-blue" id="p7">
+        <div class="ej-numero">Problema 7: Números Pares Consecutivos <span style="font-size:1rem;">#7</span></div>
+        <div class="enunciado">"La suma de tres números pares consecutivos es 42. ¿De qué números se trata?"</div>
+        
+        <div class="step-box">
+          <span class="step-label">1. Planteamiento</span>
+          <div class="math-row">Primer número par = x <br> Segundo número par = x + 2 <br> Tercer número par = x + 4</div>
+        </div>
+        <div class="step-box">
+          <span class="step-label">2. Ecuación y Resolución</span>
+          <div class="math-row">
+            x + (x + 2) + (x + 4) = 42 <br>
+            3x + 6 = 42 <br>
+            3x = 36 <br>
+            x = 12
+          </div>
+        </div>
+        <div class="solucion-final">Solución: Los números pares consecutivos son el 12, 14 y 16.</div>
+      </div>
+
+      <!-- PROBLEMA 8 (Dorado) -->
+      <div class="problem-card c-gold" id="p8">
+        <div class="ej-numero">Problema 8: Monedas y Valores <span style="font-size:1rem;">#8</span></div>
+        <div class="enunciado">"En una hucha hay 12 monedas en total, algunas de 1€ y otras de 2€. Si en total hay 19€ ahorrados, ¿cuántas monedas hay de cada tipo?"</div>
+        
+        <div class="step-box">
+          <span class="step-label">1. Planteamiento</span>
+          <div class="math-row">Monedas de 1€ = x <br> Monedas de 2€ = 12 - x (El total menos las de 1€) <br> Valor total = 1(x) + 2(12-x)</div>
+        </div>
+        <div class="step-box">
+          <span class="step-label">2. Ecuación y Resolución</span>
+          <div class="math-row">
+            1(x) + 2(12 - x) = 19 <br>
+            x + 24 - 2x = 19 <br>
+            -x = 19 - 24 <br>
+            -x = -5 ➔ x = 5
+          </div>
+        </div>
+        <div class="solucion-final">Solución: Hay 5 monedas de 1€ y 7 monedas de 2€.</div>
+      </div>
+
+      <!-- PROBLEMA 9 (Verde) -->
+      <div class="problem-card c-green" id="p9">
+        <div class="ej-numero">Problema 9: Fracciones de un Total <span style="font-size:1rem;">#9</span></div>
+        <div class="enunciado">"Los 2/3 de los ahorros de Pablo equivalen a 120€. ¿Cuánto dinero tiene ahorrado en total?"</div>
+        
+        <div class="step-box">
+          <span class="step-label">1. Planteamiento</span>
+          <div class="math-row">Ahorro total = x <br> Dos tercios de x = (2/3)x</div>
+        </div>
+        <div class="step-box">
+          <span class="step-label">2. Ecuación y Resolución</span>
+          <div class="math-row">
+            <span class="frac-wrap"><span class="frac-num">2x</span><span class="frac-den">3</span></span> = 120 <br>
+            2x = 120 · 3 <br>
+            2x = 360 <br>
+            x = 180
+          </div>
+        </div>
+        <div class="solucion-final">Solución: Pablo tiene ahorrados 180€ en total.</div>
+      </div>
+
+      <!-- PROBLEMA 10 (Morado) -->
+      <div class="problem-card c-purple" id="p10">
+        <div class="ej-numero">Problema 10: Edades Complejas <span style="font-size:1rem;">#10</span></div>
+        <div class="enunciado">"Hace 5 años, la edad de Ana era exactamente la mitad de la edad que tendrá dentro de 5 años. ¿Qué edad tiene Ana hoy?"</div>
+        
+        <div class="step-box">
+          <span class="step-label">1. Planteamiento</span>
+          <div class="math-row">Edad de Ana HOY = x <br> Edad hace 5 años = x - 5 <br> Edad dentro de 5 años = x + 5</div>
+        </div>
+        <div class="step-box">
+          <span class="step-label">2. Ecuación y Resolución</span>
+          <div class="math-row">
+            (x - 5) = <span class="frac-wrap"><span class="frac-num">x + 5</span><span class="frac-den">2</span></span> <br>
+            2(x - 5) = x + 5 <br>
+            2x - 10 = x + 5 <br>
+            2x - x = 5 + 10 <br>
+            x = 15
+          </div>
+        </div>
+        <div class="solucion-final">Solución: Ana tiene hoy 15 años.</div>
+      </div>
+
+      <!-- PROBLEMA 11 (Rosa) -->
+      <div class="problem-card c-rose" id="p11">
+        <div class="ej-numero">Problema 11: Adivinanzas Numéricas <span style="font-size:1rem;">#11</span></div>
+        <div class="enunciado">"Si a un número le sumas 15 y el resultado lo divides entre 3, obtienes exactamente 10. ¿Cuál es ese número?"</div>
+        
+        <div class="step-box">
+          <span class="step-label">1. Planteamiento</span>
+          <div class="math-row">El número = x <br> Sumarle 15 y dividir todo entre 3 = (x + 15) / 3</div>
+        </div>
+        <div class="step-box">
+          <span class="step-label">2. Ecuación y Resolución</span>
+          <div class="math-row">
+            <span class="frac-wrap"><span class="frac-num">x + 15</span><span class="frac-den">3</span></span> = 10 <br>
+            x + 15 = 10 · 3 <br>
+            x + 15 = 30 <br>
+            x = 30 - 15 = 15
+          </div>
+        </div>
+        <div class="solucion-final">Solución: El misterioso número es el 15.</div>
+      </div>
+
+      <!-- PROBLEMA 12 (Índigo) -->
+      <div class="problem-card c-indigo" id="p12">
+        <div class="ej-numero">Problema 12: Patas y Cabezas (La Granja) <span style="font-size:1rem;">#12</span></div>
+        <div class="enunciado">"En una granja hay cerdos y gallinas. Si contamos las cabezas hay 30, y si contamos las patas hay 84. ¿Cuántos animales hay de cada tipo?"</div>
+        
+        <div class="step-box">
+          <span class="step-label">1. Planteamiento</span>
+          <div class="math-row">Cerdos = x (tienen 4 patas) <br> Gallinas = 30 - x (tienen 2 patas) <br> Total de patas = 4(x) + 2(30 - x)</div>
+        </div>
+        <div class="step-box">
+          <span class="step-label">2. Ecuación y Resolución</span>
+          <div class="math-row">
+            4x + 2(30 - x) = 84 <br>
+            4x + 60 - 2x = 84 <br>
+            2x = 84 - 60 <br>
+            2x = 24 ➔ x = 12
+          </div>
+        </div>
+        <div class="solucion-final">Solución: Hay 12 cerdos y 18 gallinas (30 - 12).</div>
+      </div>
+
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: GENERADOR DE PDF PARA IMPRIMIR -->
+    <!-- ===================================================================== -->
+    <div id="tab-practica" class="tab-content print-area">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0;">Hoja de Práctica: Problemas de Ecuaciones</h2>
+        <button class="btn-print" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+      </div>
+      
+      <p style="margin:0 0 2rem 0; color:var(--text-muted); font-size:0.95rem;" class="no-print-text">
+        Genera tu propio cuaderno de ejercicios. Las soluciones y ayudas visuales desaparecerán en la versión impresa.
+      </p>
+
+      <!-- Los 12 problemas listos para imprimir con espacio en blanco -->
+      <div class="ejercicio-print"><span class="num">1.</span><span class="enunciado-print">La suma de dos números enteros consecutivos es 55. ¿De qué números se trata?</span></div><div class="espacio-blanco"></div>
+      
+      <div class="ejercicio-print"><span class="num">2.</span><span class="enunciado-print">El doble de un número menos su mitad es igual a 27. ¿Qué número es?</span></div><div class="espacio-blanco"></div>
+      
+      <div class="ejercicio-print"><span class="num">3.</span><span class="enunciado-print">Juan tiene 5 años más que su hermana Ana. Si entre los dos suman 23 años, ¿qué edad tiene cada uno?</span></div><div class="espacio-blanco"></div>
+      
+      <div class="ejercicio-print" style="page-break-before: always;"><span class="num">4.</span><span class="enunciado-print">Un padre tiene 40 años y su hijo 10. ¿Cuántos años deben pasar para que la edad del padre sea el doble que la del hijo?</span></div><div class="espacio-blanco"></div>
+      
+      <div class="ejercicio-print"><span class="num">5.</span><span class="enunciado-print">El perímetro de un rectángulo es de 40 cm. Si la base mide 4 cm más que la altura, ¿cuánto miden sus lados?</span></div><div class="espacio-blanco"></div>
+      
+      <div class="ejercicio-print"><span class="num">6.</span><span class="enunciado-print">He comprado un cuaderno y un bolígrafo por 5€. Si el cuaderno cuesta 3€ más que el bolígrafo, ¿cuánto cuesta cada artículo?</span></div><div class="espacio-blanco"></div>
+      
+      <div class="ejercicio-print" style="page-break-before: always;"><span class="num">7.</span><span class="enunciado-print">La suma de tres números pares consecutivos es 42. ¿De qué números se trata?</span></div><div class="espacio-blanco"></div>
+      
+      <div class="ejercicio-print"><span class="num">8.</span><span class="enunciado-print">En una hucha hay 12 monedas, unas de 1€ y otras de 2€. Si en total hay 19€, ¿cuántas monedas hay de cada tipo?</span></div><div class="espacio-blanco"></div>
+      
+      <div class="ejercicio-print"><span class="num">9.</span><span class="enunciado-print">Los 2/3 de los ahorros de Pablo equivalen a 120€. ¿Cuánto dinero tiene ahorrado en total?</span></div><div class="espacio-blanco"></div>
+      
+      <div class="ejercicio-print" style="page-break-before: always;"><span class="num">10.</span><span class="enunciado-print">Hace 5 años, la edad de Ana era exactamente la mitad de la que tendrá dentro de 5 años. ¿Qué edad tiene Ana hoy?</span></div><div class="espacio-blanco"></div>
+      
+      <div class="ejercicio-print"><span class="num">11.</span><span class="enunciado-print">Si a un número le sumas 15 y el resultado lo divides entre 3, obtienes exactamente 10. ¿Cuál es ese número?</span></div><div class="espacio-blanco"></div>
+      
+      <div class="ejercicio-print"><span class="num">12.</span><span class="enunciado-print">En una granja de cerdos y gallinas hay 30 cabezas y 84 patas. ¿Cuántos animales hay de cada tipo?</span></div><div class="espacio-blanco"></div>
+
+      <div style="text-align:right; font-size:0.8rem; margin-top:2rem; font-family:monospace;" class="only-print">MATH LAB - Generado Automáticamente</div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+    }
+  </script>
+</body>
+</html>

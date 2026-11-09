@@ -2,12 +2,13 @@
 <html lang="es">
 <head>
   <script>
-    // Recuperar tema previo al cargar (evita el parpadeo blanco/negro) sincronizado con Math Universe
     try {
-      const u = localStorage.getItem('math-universe-theme');
-      const l = localStorage.getItem('mathlab_theme');
-      if (u === 'light' || (!u && l === 'light')) {
+      const p = new URLSearchParams(window.location.search).get('theme');
+      const s = p || localStorage.getItem('math-universe-theme') || localStorage.getItem('mathlab_theme') || localStorage.getItem('mathdojo_theme');
+      if (s === 'light') {
         document.documentElement.setAttribute('data-theme', 'light');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
       }
     } catch (_) {}
   </script>
@@ -1602,8 +1603,9 @@
         if (icon) icon.textContent = '☀️';
       }
       try {
-        localStorage.setItem('mathlab_theme', next);
         localStorage.setItem('math-universe-theme', next);
+        localStorage.setItem('mathlab_theme', next);
+        localStorage.setItem('mathdojo_theme', next);
       } catch (_) {}
     }
 

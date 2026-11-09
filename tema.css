@@ -80,7 +80,7 @@ html[data-theme="light"] body {
 html[data-theme="light"] :is(.app-container, .panel-box, .panel, .card, .tab-content,
   .tabs-container, .subtabs-container, .control-panel, .slider-group,
   .equation-display, .values-table, .explanation-card, .lesson-header,
-  .lesson-nav, .topic-card, .search-input, .filter-chip) {
+  .lesson-nav, .search-input) {
   background-color: var(--bg-card) !important;
   border-color: var(--border-color);
   color: var(--text-main);
@@ -291,6 +291,263 @@ html[data-theme="light"] .quick-practice {
   background: linear-gradient(145deg, rgba(217, 119, 6, 0.12) 0%, rgba(255, 255, 255, 0.94) 75%) !important;
   border: 1px solid rgba(217, 119, 6, 0.35) !important;
   border-top: 3px solid var(--accent-gold) !important;
+}
+
+/* ==========================================================================
+   TARJETAS Y PÍLDORAS DENTRO DE LOS CURSOS (LECCIONES, TEMAS Y FILTROS)
+   ========================================================================== */
+
+/* Tarjetas de temas en Modo Oscuro (Rellenos luminosos y bordes de cristal) */
+:root:not([data-theme="light"]) .topic-card {
+  border-radius: 14px !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28) !important;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease !important;
+}
+
+:root:not([data-theme="light"]) .topic-card.card-c1 {
+  background: linear-gradient(145deg, rgba(56, 189, 248, 0.14) 0%, rgba(22, 24, 32, 0.88) 65%) !important;
+  border: 1px solid rgba(56, 189, 248, 0.35) !important;
+  border-left: 5px solid #38bdf8 !important;
+}
+:root:not([data-theme="light"]) .topic-card.card-c1:hover {
+  transform: translateY(-4px) !important;
+  border-color: #38bdf8 !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.45), 0 0 20px rgba(56, 189, 248, 0.22) !important;
+}
+
+:root:not([data-theme="light"]) .topic-card.card-c2 {
+  background: linear-gradient(145deg, rgba(16, 185, 129, 0.14) 0%, rgba(22, 24, 32, 0.88) 65%) !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+  border-left: 5px solid #10b981 !important;
+}
+:root:not([data-theme="light"]) .topic-card.card-c2:hover {
+  transform: translateY(-4px) !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.45), 0 0 20px rgba(16, 185, 129, 0.22) !important;
+}
+
+:root:not([data-theme="light"]) .topic-card.card-bach {
+  background: linear-gradient(145deg, rgba(245, 158, 11, 0.14) 0%, rgba(22, 24, 32, 0.88) 65%) !important;
+  border: 1px solid rgba(245, 158, 11, 0.35) !important;
+  border-left: 5px solid #f59e0b !important;
+}
+:root:not([data-theme="light"]) .topic-card.card-bach:hover {
+  transform: translateY(-4px) !important;
+  border-color: #f59e0b !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.45), 0 0 20px rgba(245, 158, 11, 0.22) !important;
+}
+
+:root:not([data-theme="light"]) .topic-card.card-tablas {
+  background: linear-gradient(145deg, rgba(45, 212, 191, 0.14) 0%, rgba(22, 24, 32, 0.88) 65%) !important;
+  border: 1px solid rgba(45, 212, 191, 0.35) !important;
+  border-left: 5px solid var(--color-tablas) !important;
+}
+:root:not([data-theme="light"]) .topic-card.card-tablas:hover {
+  transform: translateY(-4px) !important;
+  border-color: var(--color-tablas) !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.45), 0 0 20px rgba(45, 212, 191, 0.22) !important;
+}
+
+/* Tarjetas de temas en Modo Claro */
+html[data-theme="light"] .topic-card {
+  border-radius: 14px !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06) !important;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease !important;
+}
+
+html[data-theme="light"] .topic-card.card-c1 {
+  background: linear-gradient(145deg, rgba(2, 132, 199, 0.10) 0%, rgba(255, 255, 255, 0.94) 75%) !important;
+  border: 1px solid rgba(2, 132, 199, 0.35) !important;
+  border-left: 5px solid #0284c7 !important;
+}
+html[data-theme="light"] .topic-card.card-c1:hover {
+  transform: translateY(-4px) !important;
+  border-color: #0284c7 !important;
+  box-shadow: 0 12px 26px rgba(2, 132, 199, 0.16) !important;
+}
+
+html[data-theme="light"] .topic-card.card-c2 {
+  background: linear-gradient(145deg, rgba(5, 150, 105, 0.10) 0%, rgba(255, 255, 255, 0.94) 75%) !important;
+  border: 1px solid rgba(5, 150, 105, 0.35) !important;
+  border-left: 5px solid #059669 !important;
+}
+html[data-theme="light"] .topic-card.card-c2:hover {
+  transform: translateY(-4px) !important;
+  border-color: #059669 !important;
+  box-shadow: 0 12px 26px rgba(5, 150, 105, 0.16) !important;
+}
+
+html[data-theme="light"] .topic-card.card-bach {
+  background: linear-gradient(145deg, rgba(217, 119, 6, 0.10) 0%, rgba(255, 255, 255, 0.94) 75%) !important;
+  border: 1px solid rgba(217, 119, 6, 0.35) !important;
+  border-left: 5px solid #d97706 !important;
+}
+html[data-theme="light"] .topic-card.card-bach:hover {
+  transform: translateY(-4px) !important;
+  border-color: #d97706 !important;
+  box-shadow: 0 12px 26px rgba(217, 119, 6, 0.16) !important;
+}
+
+html[data-theme="light"] .topic-card.card-tablas {
+  background: linear-gradient(145deg, rgba(13, 148, 136, 0.10) 0%, rgba(255, 255, 255, 0.94) 75%) !important;
+  border: 1px solid rgba(13, 148, 136, 0.35) !important;
+  border-left: 5px solid #0d9488 !important;
+}
+html[data-theme="light"] .topic-card.card-tablas:hover {
+  transform: translateY(-4px) !important;
+  border-color: #0d9488 !important;
+  box-shadow: 0 12px 26px rgba(13, 148, 136, 0.16) !important;
+}
+
+/* Píldoras de rama / etiqueta (.branch-tag) en formato cápsula elegante */
+.branch-tag {
+  font-size: 0.72rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.06em !important;
+  padding: 0.22rem 0.65rem !important;
+  border-radius: 20px !important;
+  text-transform: uppercase !important;
+  border: 1px solid transparent !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1.2 !important;
+}
+
+:root:not([data-theme="light"]) .tag-tablas { background: rgba(45, 212, 191, 0.16) !important; color: #2dd4bf !important; border-color: rgba(45, 212, 191, 0.35) !important; }
+:root:not([data-theme="light"]) .tag-aritmetica { background: rgba(251, 191, 36, 0.16) !important; color: #fbbf24 !important; border-color: rgba(251, 191, 36, 0.35) !important; }
+:root:not([data-theme="light"]) .tag-algebra { background: rgba(56, 189, 248, 0.16) !important; color: #38bdf8 !important; border-color: rgba(56, 189, 248, 0.35) !important; }
+:root:not([data-theme="light"]) .tag-geometria { background: rgba(16, 185, 129, 0.16) !important; color: #10b981 !important; border-color: rgba(16, 185, 129, 0.35) !important; }
+:root:not([data-theme="light"]) .tag-estadistica { background: rgba(192, 132, 252, 0.16) !important; color: #c084fc !important; border-color: rgba(192, 132, 252, 0.35) !important; }
+:root:not([data-theme="light"]) .tag-funciones { background: rgba(52, 211, 153, 0.16) !important; color: #34d399 !important; border-color: rgba(52, 211, 153, 0.35) !important; }
+:root:not([data-theme="light"]) .tag-probabilidad { background: rgba(244, 63, 94, 0.16) !important; color: #f43f5e !important; border-color: rgba(244, 63, 94, 0.35) !important; }
+
+html[data-theme="light"] .tag-tablas { background: rgba(13, 148, 136, 0.12) !important; color: #0f766e !important; border-color: rgba(13, 148, 136, 0.28) !important; }
+html[data-theme="light"] .tag-aritmetica { background: rgba(217, 119, 6, 0.12) !important; color: #b45309 !important; border-color: rgba(217, 119, 6, 0.28) !important; }
+html[data-theme="light"] .tag-algebra { background: rgba(2, 132, 199, 0.12) !important; color: #0369a1 !important; border-color: rgba(2, 132, 199, 0.28) !important; }
+html[data-theme="light"] .tag-geometria { background: rgba(5, 150, 105, 0.12) !important; color: #047857 !important; border-color: rgba(5, 150, 105, 0.28) !important; }
+html[data-theme="light"] .tag-estadistica { background: rgba(124, 58, 237, 0.12) !important; color: #6d28d9 !important; border-color: rgba(124, 58, 237, 0.28) !important; }
+html[data-theme="light"] .tag-funciones { background: rgba(13, 148, 136, 0.12) !important; color: #0f766e !important; border-color: rgba(13, 148, 136, 0.28) !important; }
+html[data-theme="light"] .tag-probabilidad { background: rgba(225, 29, 72, 0.12) !important; color: #be123c !important; border-color: rgba(225, 29, 72, 0.28) !important; }
+
+/* Caja de previsualización de fórmulas (.mini-preview) estilo pantalla OLED / Lab */
+.mini-preview {
+  background: rgba(11, 15, 25, 0.65) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 8px !important;
+  padding: 0.5rem 0.8rem !important;
+  font-family: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace !important;
+  font-size: 0.82rem !important;
+  color: var(--text-main) !important;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25) !important;
+}
+
+html[data-theme="light"] .mini-preview {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #1e293b !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Píldoras de filtro temático (.filter-chip) */
+.pill-filters {
+  padding-bottom: 0.75rem !important;
+}
+.filter-chip {
+  padding: 0.48rem 1.05rem !important;
+  border-radius: 20px !important;
+  font-weight: 700 !important;
+  font-size: 0.85rem !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  transition: all 0.2s ease !important;
+}
+
+:root:not([data-theme="light"]) .filter-chip {
+  background: rgba(22, 24, 32, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: var(--text-muted) !important;
+}
+:root:not([data-theme="light"]) .filter-chip:hover {
+  color: var(--text-main) !important;
+  border-color: var(--accent-blue) !important;
+  background: rgba(56, 189, 248, 0.14) !important;
+  transform: translateY(-1px) !important;
+}
+:root:not([data-theme="light"]) .filter-chip.active {
+  background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
+  color: #ffffff !important;
+  border-color: #38bdf8 !important;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.38) !important;
+}
+:root:not([data-theme="light"]) .filter-chip-fav {
+  border-color: rgba(251, 191, 36, 0.4) !important;
+  color: var(--accent-gold) !important;
+}
+:root:not([data-theme="light"]) .filter-chip-fav.active {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+  color: #ffffff !important;
+  border-color: #fbbf24 !important;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.38) !important;
+}
+
+html[data-theme="light"] .filter-chip {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  color: #475569 !important;
+}
+html[data-theme="light"] .filter-chip:hover {
+  background: rgba(2, 132, 199, 0.08) !important;
+  color: #0f172a !important;
+  border-color: #0284c7 !important;
+  transform: translateY(-1px) !important;
+}
+html[data-theme="light"] .filter-chip.active {
+  background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
+  color: #ffffff !important;
+  border-color: #0284c7 !important;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28) !important;
+}
+
+/* Botón interactivo de retorno a cursos (.back-to-courses) */
+.back-to-courses {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  background: rgba(56, 189, 248, 0.1) !important;
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  padding: 0.45rem 1rem !important;
+  border-radius: 20px !important;
+  color: var(--accent-blue) !important;
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+.back-to-courses:hover {
+  background: rgba(56, 189, 248, 0.2) !important;
+  transform: translateX(-3px) !important;
+  border-color: var(--accent-blue) !important;
+}
+html[data-theme="light"] .back-to-courses {
+  background: rgba(2, 132, 199, 0.08) !important;
+  border-color: rgba(2, 132, 199, 0.28) !important;
+  color: #0284c7 !important;
+}
+
+/* Insignias de ciclo (.cycle-badge) */
+.cycle-badge {
+  font-size: 0.74rem !important;
+  padding: 0.25rem 0.75rem !important;
+  border-radius: 20px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  border: 1px solid !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
 }
 
 /* ==========================================================================

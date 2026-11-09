@@ -1,13 +1,31 @@
-/* Tema compartido: mantiene la preferencia entre páginas y dispositivos. */
+/* Tema compartido: mantiene la preferencia entre páginas y sincronizado con Math Universe. */
 (() => {
-  const storageKey = 'mathlab_theme';
+  const LAB_KEY = 'mathlab_theme';
+  const UNIVERSE_KEY = 'math-universe-theme';
+
   const getTheme = () => {
-    try { return localStorage.getItem(storageKey) === 'light' ? 'light' : 'dark'; }
-    catch (_) { return 'dark'; }
+    try {
+      const u = localStorage.getItem(UNIVERSE_KEY);
+      if (u === 'light' || u === 'dark') return u;
+      const l = localStorage.getItem(LAB_KEY);
+      if (l === 'light' || l === 'dark') return l;
+    } catch (_) {}
+    return 'dark';
   };
+
+  const saveTheme = (theme) => {
+    try {
+      localStorage.setItem(LAB_KEY, theme);
+      localStorage.setItem(UNIVERSE_KEY, theme);
+    } catch (_) {}
+  };
+
   const applyTheme = (theme) => {
-    if (theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
-    else document.documentElement.removeAttribute('data-theme');
+    if (theme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
     const icon = document.getElementById('theme-icon');
     const button = document.getElementById('theme-toggle');
     if (icon) icon.textContent = theme === 'light' ? '🌙' : '☀️';
@@ -15,6 +33,8 @@
       button.setAttribute('aria-label', theme === 'light' ? 'Activar modo oscuro' : 'Activar modo claro');
       button.setAttribute('title', theme === 'light' ? 'Activar modo oscuro' : 'Activar modo claro');
     }
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'light' ? '#f2f0ea' : '#101116');
   };
 
   applyTheme(getTheme());
@@ -29,15 +49,20 @@
       button.innerHTML = '<span id="theme-icon" aria-hidden="true">☀️</span>';
       document.body.appendChild(button);
     }
-    // El controlador compartido evita depender de una función definida en index.html.
     button.removeAttribute('onclick');
     button.addEventListener('click', () => {
       const next = getTheme() === 'light' ? 'dark' : 'light';
-      try { localStorage.setItem(storageKey, next); } catch (_) {}
+      saveTheme(next);
       applyTheme(next);
     });
     applyTheme(getTheme());
   };
+
+  window.addEventListener('storage', (e) => {
+    if (e.key === LAB_KEY || e.key === UNIVERSE_KEY) {
+      applyTheme(getTheme());
+    }
+  });
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', setupToggle, { once: true });

@@ -3,15 +3,16 @@
    ======================================================== */
 
 :root {
-  /* Paleta cromática principal (Modo Oscuro por defecto) */
-  --bg-primary: #0f172a;       /* Fondo general oscuro */
-  --bg-card: #1e293b;          /* Fondo de tarjetas y paneles */
-  --bg-plate: #334155;         /* Elementos interactivos / bandejas */
-  --border-color: #475569;     /* Líneas divisorias */
+  /* Paleta cromática principal (Modo Oscuro por defecto: Obsidiana Espacial de Math Universe) */
+  --bg-primary: #101116;       /* Fondo general obsidiana cósmica */
+  --bg-card: rgba(22, 24, 32, 0.88); /* Fondo de tarjetas con sutil translucidez */
+  --bg-plate: #161820;         /* Elementos interactivos / bandejas */
+  --border-color: #272932;     /* Líneas finas arquitectónicas */
+  --grid-line: rgba(255, 255, 255, 0.024); /* Cuadrícula técnica sutil */
 
   /* Colores de texto */
-  --text-main: #f8fafc;        /* Texto blanco principal */
-  --text-muted: #94a3b8;       /* Texto secundario / gris */
+  --text-main: #f3f2ec;        /* Texto blanco editorial */
+  --text-muted: #8e919e;       /* Texto secundario atenuado */
 
   /* Acentos pedagógicos */
   --accent-blue: #38bdf8;      /* Títulos, pasos activos, enlaces */
@@ -22,18 +23,19 @@
 }
 
 /* ==========================================================================
-   TEMA CLARO (LIGHT THEME)
+   TEMA CLARO (LIGHT THEME: Papel editorial cálido Archival Warm Stone)
    ========================================================================== */
 [data-theme="light"] {
   /* Fondos principales */
-  --bg-primary: #f8fafc;
-  --bg-card: #ffffff;
-  --bg-plate: #e2e8f0;
-  --border-color: #cbd5e1;
+  --bg-primary: #f2f0ea;
+  --bg-card: rgba(248, 246, 241, 0.92);
+  --bg-plate: #e6e3db;
+  --border-color: #d6d3c9;
+  --grid-line: rgba(20, 21, 26, 0.038);
 
   /* Textos */
-  --text-main: #0f172a;
-  --text-muted: #64748b;
+  --text-main: #14151a;
+  --text-muted: #626573;
 
   /* Ajuste de contraste para fondo blanco */
   --accent-blue: #0284c7;

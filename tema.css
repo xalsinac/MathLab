@@ -93,13 +93,53 @@ html[data-theme="light"] :is(.canvas-container, .mini-preview, .expression-box,
   color: var(--text-main);
 }
 
-/* Cajas oscuras forzadas en línea en lecciones */
-html[data-theme="light"] [style*="#0b1120"],
-html[data-theme="light"] [style*="#0f172a"],
-html[data-theme="light"] [style*="#1e293b"],
-html[data-theme="light"] [style*="#090d16"] {
-  background-color: var(--bg-plate) !important;
-  color: var(--text-main);
+/* Cajas oscuras forzadas en línea en lecciones y cajas de fórmulas */
+html[data-theme="light"] :is([style*="#0b1120"], [style*="#0f172a"], [style*="#1e293b"], [style*="#090d16"], .quad-formula-box, .math-example-box) {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  border-color: rgba(0, 0, 0, 0.12) !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05) !important;
+}
+
+html[data-theme="light"] :is([style*="#0b1120"], [style*="#0f172a"], [style*="#1e293b"], [style*="#090d16"], .quad-formula-box, .math-example-box) :is(div, p, span, li):not([class*="c-"]):not([style*="color"]) {
+  color: #0f172a;
+}
+
+html[data-theme="light"] :is([style*="#0b1120"], [style*="#0f172a"], [style*="#1e293b"], [style*="#090d16"], .quad-formula-box, .math-example-box) .c-a {
+  color: #0284c7 !important;
+}
+
+html[data-theme="light"] :is([style*="#0b1120"], [style*="#0f172a"], [style*="#1e293b"], [style*="#090d16"], .quad-formula-box, .math-example-box) .c-b {
+  color: #d97706 !important;
+}
+
+html[data-theme="light"] :is([style*="#0b1120"], [style*="#0f172a"], [style*="#1e293b"], [style*="#090d16"], .quad-formula-box, .math-example-box) .c-c {
+  color: #e11d48 !important;
+}
+
+html[data-theme="light"] :is([style*="#0b1120"], [style*="#0f172a"], [style*="#1e293b"], [style*="#090d16"], .quad-formula-box, .math-example-box) [style*="color:var(--text-muted)"],
+html[data-theme="light"] :is([style*="#0b1120"], [style*="#0f172a"], [style*="#1e293b"], [style*="#090d16"], .quad-formula-box, .math-example-box) [style*="color: var(--text-muted)"] {
+  color: #475569 !important;
+}
+
+html[data-theme="light"] :is([style*="#0b1120"], [style*="#0f172a"], [style*="#1e293b"], [style*="#090d16"], .quad-formula-box, .math-example-box) [style*="color:var(--accent-success)"],
+html[data-theme="light"] :is([style*="#0b1120"], [style*="#0f172a"], [style*="#1e293b"], [style*="#090d16"], .quad-formula-box, .math-example-box) [style*="color: var(--accent-success)"] {
+  color: #059669 !important;
+}
+
+html[data-theme="light"] :is([style*="#0b1120"], [style*="#0f172a"], [style*="#1e293b"], [style*="#090d16"], .quad-formula-box, .math-example-box) [style*="color:var(--accent-op)"],
+html[data-theme="light"] :is([style*="#0b1120"], [style*="#0f172a"], [style*="#1e293b"], [style*="#090d16"], .quad-formula-box, .math-example-box) [style*="color: var(--accent-op)"] {
+  color: #e11d48 !important;
+}
+
+html[data-theme="light"] :is([style*="#0b1120"], [style*="#0f172a"], [style*="#1e293b"], [style*="#090d16"], .quad-formula-box, .math-example-box) [style*="color:var(--accent-gold)"],
+html[data-theme="light"] :is([style*="#0b1120"], [style*="#0f172a"], [style*="#1e293b"], [style*="#090d16"], .quad-formula-box, .math-example-box) [style*="color: var(--accent-gold)"] {
+  color: #d97706 !important;
+}
+
+html[data-theme="light"] :is([style*="#0b1120"], [style*="#0f172a"], [style*="#1e293b"], [style*="#090d16"], .quad-formula-box, .math-example-box) [style*="color:var(--accent-blue)"],
+html[data-theme="light"] :is([style*="#0b1120"], [style*="#0f172a"], [style*="#1e293b"], [style*="#090d16"], .quad-formula-box, .math-example-box) [style*="color: var(--accent-blue)"] {
+  color: #0284c7 !important;
 }
 
 html[data-theme="light"] :is(h1, h2, h3, .topic-name, .cycle-title) {

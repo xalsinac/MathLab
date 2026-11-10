@@ -3,9 +3,15 @@
 <head>
   <script>
   // Aplica el tema guardado al cargar la página antes de dibujar el DOM
-  if (localStorage.getItem('mathlab_theme') === 'light') {
-    document.documentElement.setAttribute('data-theme', 'light');
-  }
+  try {
+      const p = new URLSearchParams(window.location.search).get("theme");
+      const s = p || localStorage.getItem("math-universe-theme") || localStorage.getItem("mathlab_theme") || localStorage.getItem("mathdojo_theme");
+      if (s === "light") {
+        document.documentElement.setAttribute("data-theme", "light");
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+      }
+    } catch (_) {}
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,61 +20,121 @@
   <link rel="stylesheet" href="../estilos.css">
 
   <style>
-    /* NAVEGACIÓN Y PESTAÑAS */
+    /* NAVEGACIÓN Y PESTAÑAS (LOOK OFICIAL SEMITRANSPARENTE) */
     .tabs-container {
-      background: #0b1120;
+      background: rgba(11, 17, 32, 0.7);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
       overflow-x: auto;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     .tab-btn {
       flex: 1; padding: 1.2rem 1rem; background: transparent; border: none;
       color: var(--text-muted); font-size: 1.05rem; font-weight: 700; cursor: pointer;
-      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.3s ease;
+      border-bottom: 3px solid transparent; white-space: nowrap; transition: all 0.25s ease;
     }
-    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.03); }
-    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.05); }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.04); }
+    .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(56, 189, 248, 0.08); }
     .tab-content { display: none; width: 100%; flex-direction: column; gap: 1.5rem; padding: 2rem; }
     .tab-content.active { display: flex; animation: fadeIn 0.4s ease; }
     
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+    [data-theme="light"] .tabs-container {
+      background: rgba(241, 245, 249, 0.9);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.09);
+    }
+    [data-theme="light"] .tab-btn {
+      color: #475569;
+    }
+    [data-theme="light"] .tab-btn:hover {
+      color: #0f172a;
+      background: rgba(0, 0, 0, 0.04);
+    }
+    [data-theme="light"] .tab-btn.active {
+      color: #0284c7;
+      border-bottom-color: #0284c7;
+      background: rgba(2, 132, 199, 0.08);
+    }
+
     /* SUBPESTAÑAS */
     .subtabs-container {
       display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;
-      background: var(--bg-card); padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);
+      background: rgba(11, 17, 32, 0.65); padding: 0.6rem; border-radius: 10px; border: 1px solid var(--border-color);
       margin-bottom: 1rem;
     }
+    [data-theme="light"] .subtabs-container {
+      background: rgba(241, 245, 249, 0.88);
+      border: 1px solid rgba(0, 0, 0, 0.09);
+    }
     .subtab-btn {
-      padding: 0.5rem 1.2rem; background: var(--bg-primary); border: 1px solid var(--border-color);
+      padding: 0.5rem 1.2rem; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-color);
       color: var(--text-muted); border-radius: 20px; font-weight: 600; cursor: pointer; transition: all 0.2s;
     }
     .subtab-btn:hover { border-color: var(--accent-blue); color: var(--text-main); }
     .subtab-btn.active { background: var(--accent-blue); color: #042f2e; border-color: var(--accent-blue); font-weight: bold; }
+    [data-theme="light"] .subtab-btn {
+      background: #ffffff; border: 1.5px solid #cbd5e1; color: #475569;
+    }
+    [data-theme="light"] .subtab-btn:hover {
+      border-color: #0284c7; color: #0f172a; background: #f8fafc;
+    }
+    [data-theme="light"] .subtab-btn.active {
+      background: #0284c7 !important; color: #ffffff !important; border-color: #0284c7 !important;
+    }
     .subtab-content { display: none; flex-direction: column; gap: 1.2rem; animation: fadeIn 0.3s forwards; }
     .subtab-content.active { display: flex; }
 
     /* PANELES Y ESTRUCTURA */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
     .panel-box {
-      background: var(--bg-primary); border: 1px solid var(--border-color);
-      border-radius: 10px; padding: 1.5rem; display: flex; flex-direction: column;
+      background: rgba(16, 20, 30, 0.78); border: 1px solid var(--border-color);
+      border-radius: 12px; padding: 1.5rem; display: flex; flex-direction: column;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     }
-    .panel-title { color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+    [data-theme="light"] .panel-box {
+      background: rgba(248, 250, 252, 0.94) !important;
+      border: 1px solid rgba(0, 0, 0, 0.09) !important;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+      color: #0f172a !important;
+    }
+    .panel-title {
+      color: var(--text-muted); font-size: 0.95rem; text-transform: uppercase;
+      letter-spacing: 1px; margin-bottom: 1rem; font-weight: 700;
+      border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;
+    }
+    [data-theme="light"] .panel-title {
+      color: #334155;
+      border-bottom-color: rgba(0, 0, 0, 0.08);
+    }
 
-    /* RESALTADO DE COEFICIENTES CROMÁTICOS */
+    /* RESALTADO DE COEFICIENTES CROMÁTICOS (WCAG AAA) */
     .c-a { color: var(--accent-blue); font-weight: bold; }
     .c-b { color: var(--accent-gold); font-weight: bold; }
     .c-c { color: var(--accent-op); font-weight: bold; }
+    [data-theme="light"] .c-a { color: #0284c7 !important; }
+    [data-theme="light"] .c-b { color: #d97706 !important; }
+    [data-theme="light"] .c-c { color: #e11d48 !important; }
 
     /* FÓRMULA CUADRÁTICA Y FRACCIONES VERTICALES */
     .quad-formula-box {
       display: inline-flex; align-items: center; justify-content: center;
       font-family: 'Courier New', Courier, monospace; font-size: 1.6rem; font-weight: bold;
-      background: #090d16; padding: 1.2rem; border-radius: 10px; border: 1px solid var(--border-color);
+      background: rgba(9, 13, 22, 0.85); padding: 1.2rem 1.8rem; border-radius: 12px;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.45), 0 4px 16px rgba(0, 0, 0, 0.25);
       margin: 1rem 0;
+      color: var(--text-main);
     }
+    [data-theme="light"] .quad-formula-box {
+      background: rgba(255, 255, 255, 0.96) !important;
+      border: 1.5px solid rgba(0, 0, 0, 0.12) !important;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06), inset 0 1px 2px rgba(255, 255, 255, 0.9) !important;
+      color: #0f172a !important;
+    }
+
     .fraction-vertical {
       display: inline-flex; flex-direction: column; vertical-align: middle;
       text-align: center; margin: 0 0.4rem; line-height: 1.2; font-family: monospace;
@@ -80,6 +146,22 @@
       padding: 2px 0.3rem 0 0.3rem;
     }
 
+    /* CAJAS DE EJEMPLOS Y OPERACIONES */
+    .math-example-box {
+      background: rgba(9, 13, 22, 0.85);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      color: var(--text-main);
+      box-shadow: inset 0 1px 4px rgba(0,0,0,0.3);
+    }
+    [data-theme="light"] .math-example-box {
+      background: rgba(255, 255, 255, 0.96) !important;
+      border: 1.5px solid rgba(0, 0, 0, 0.12) !important;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05) !important;
+      color: #0f172a !important;
+    }
+
     /* RAÍZ CUADRADA RIGUROSA ALINEADA CON FLEXBOX */
     .radical-box {
       display: inline-flex;
@@ -87,18 +169,18 @@
       vertical-align: middle;
     }
     .radical-box .rad-symbol {
-      font-family: Arial, sans-serif; /* Fuente estable para el símbolo */
+      font-family: Arial, sans-serif;
       font-size: 1.3em;
-      line-height: 0.7; /* Ajusta la caja del carácter */
-      margin-top: 2px; /* Baja el pico para conectar con el borde */
+      line-height: 0.7;
+      margin-top: 2px;
       margin-right: -1px;
       font-weight: normal;
     }
     .radical-box .rad-content {
-      border-top: 2px solid currentColor; /* Grosor de la línea superior */
+      border-top: 2px solid currentColor;
       padding: 3px 4px 0 2px;
-      margin-top: 2px; /* Alinea con la punta del símbolo */
-      font-family: monospace; /* Mantiene la fuente del texto interior */
+      margin-top: 2px;
+      font-family: monospace;
     }
 
     /* TARJETAS INFORMATIVAS */
@@ -106,11 +188,16 @@
       background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
       border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.3rem;
     }
+    [data-theme="light"] .info-card-item {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(0, 0, 0, 0.09);
+      color: #0f172a;
+    }
 
     /* TARJETAS DE CASOS DEL DISCRIMINANTE */
     .disc-card {
-      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
-      border-radius: 8px; padding: 1rem; transition: all 0.3s;
+      background: rgba(16, 20, 30, 0.75); border: 1px solid var(--border-color);
+      border-radius: 10px; padding: 1.2rem; transition: all 0.3s;
     }
     .disc-card.active {
       transform: translateY(-4px); box-shadow: 0 6px 16px rgba(0,0,0,0.4);
@@ -119,6 +206,19 @@
     .disc-card.c-zero.active { border-color: var(--accent-gold); background: rgba(251, 191, 36, 0.08); }
     .disc-card.c-neg.active { border-color: var(--accent-op); background: rgba(244, 63, 94, 0.08); }
 
+    [data-theme="light"] .disc-card {
+      background: rgba(255, 255, 255, 0.94) !important;
+      border: 1.5px solid rgba(0, 0, 0, 0.1) !important;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+      color: #0f172a !important;
+    }
+    [data-theme="light"] .disc-card p {
+      color: #334155 !important;
+    }
+    [data-theme="light"] .disc-card.c-pos.active { border-color: #059669 !important; background: rgba(5, 150, 105, 0.08) !important; }
+    [data-theme="light"] .disc-card.c-zero.active { border-color: #d97706 !important; background: rgba(217, 119, 6, 0.08) !important; }
+    [data-theme="light"] .disc-card.c-neg.active { border-color: #e11d48 !important; background: rgba(225, 29, 72, 0.08) !important; }
+
     /* CONTROLES DESLIZANTES */
     .slider-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem; }
     .slider-row label { width: 140px; font-weight: 600; font-family: monospace; }
@@ -126,8 +226,22 @@
 
     /* SVG CANVAS PARA PARÁBOLA */
     .svg-canvas {
-      width: 100%; height: 320px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 320px; background: rgba(9, 13, 22, 0.85); border-radius: 10px;
       border: 1px solid var(--border-color); display: block;
+    }
+    [data-theme="light"] .svg-canvas {
+      background: #ffffff !important;
+      border: 1.5px solid rgba(0, 0, 0, 0.12) !important;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+    }
+    [data-theme="light"] .svg-canvas line {
+      stroke: #64748b !important;
+    }
+    [data-theme="light"] .svg-canvas text {
+      fill: #334155 !important;
+    }
+    [data-theme="light"] .svg-canvas pattern path {
+      stroke: rgba(0, 0, 0, 0.06) !important;
     }
 
     @media (max-width: 800px) {
@@ -194,14 +308,14 @@
             </p>
 
             <div style="display:flex; flex-direction:column; gap:0.8rem;">
-              <div style="background:#090d16; padding:0.8rem 1rem; border-radius:8px; border:1px solid var(--border-color);">
+              <div class="math-example-box" style="padding:0.8rem 1rem;">
                 <span style="color:var(--text-muted); font-size:0.85rem;">Desordenada:</span>
                 <div style="font-family:monospace; font-size:1.15rem; font-weight:bold;">3x - 5 + 2x² = 0</div>
                 <span style="color:var(--accent-success); font-size:0.85rem;">Ordenada canónica:</span>
                 <div style="font-family:monospace; font-size:1.15rem; font-weight:bold;"><span class="c-a">2</span>x² + <span class="c-b">3</span>x - <span class="c-c">5</span> = 0 &nbsp;➔ <span class="c-a">a=2</span>, <span class="c-b">b=3</span>, <span class="c-c">c=-5</span></div>
               </div>
 
-              <div style="background:#090d16; padding:0.8rem 1rem; border-radius:8px; border:1px solid var(--border-color);">
+              <div class="math-example-box" style="padding:0.8rem 1rem;">
                 <span style="color:var(--text-muted); font-size:0.85rem;">Con términos a ambos lados:</span>
                 <div style="font-family:monospace; font-size:1.15rem; font-weight:bold;">x² = 7x - 10</div>
                 <span style="color:var(--accent-success); font-size:0.85rem;">Pasamos todo a la izquierda cambiando signos:</span>
@@ -220,7 +334,7 @@
             <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
               No hay término con x sola. Se resuelve despejando directamente la x² como si fuera una ecuación normal y aplicando la raíz cuadrada al final.
             </p>
-            <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.9;">
+            <div class="math-example-box" style="line-height:1.9;">
               <div style="color:var(--accent-op); font-weight:bold; font-size:1.2rem;">2x² - 18 = 0</div>
               <div>1. Pasamos el número: 2x² = 18</div>
               <div>2. Pasamos dividiendo: x² = 18 / 2 = 9</div>
@@ -238,7 +352,7 @@
             <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
               No hay número suelto. Se resuelve <strong>sacando factor común la x</strong>. Este tipo de ecuación siempre tendrá x=0 como una de sus soluciones.
             </p>
-            <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.9;">
+            <div class="math-example-box" style="line-height:1.9;">
               <div style="color:var(--accent-gold); font-weight:bold; font-size:1.2rem;">3x² - 12x = 0</div>
               <div>1. Sacamos factor común x:</div>
               <div style="color:var(--accent-blue); font-weight:bold;">x · (3x - 12) = 0</div>
@@ -300,7 +414,7 @@
             <span class="val-badge c-c" id="vf_c">6</span>
           </div>
 
-          <div style="margin-top: 1rem; text-align: center; background: #090d16; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+          <div class="math-example-box" style="margin-top: 1rem; text-align: center;">
             <span style="color: var(--text-muted); font-size: 0.85rem;">Ecuación a resolver:</span>
             <div id="f_eq_display" style="font-family: monospace; font-size: 1.5rem; font-weight: bold; margin-top: 0.3rem;"></div>
           </div>
@@ -342,7 +456,7 @@
           <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
             La raíz de un número positivo tiene dos resultados posibles (+ y -). Al sumar y restar esa raíz en el numerador, obtenemos dos valores diferentes: <em>x₁</em> y <em>x₂</em>.
           </p>
-          <div style="margin-top: 0.8rem; font-family: monospace; font-size: 1rem; background: #090d16; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border-color);">
+          <div class="math-example-box" style="margin-top: 0.8rem; font-family: monospace; font-size: 1rem; padding: 0.6rem;">
             Ej: ±<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">16</span></span> = ±4 ➔ x₁ ≠ x₂
           </div>
         </div>
@@ -360,7 +474,7 @@
               x = <span class="fraction-vertical" style="font-size:0.9em;"><span class="num">-b</span><span class="den">2a</span></span>
             </span>
           </p>
-          <div style="margin-top: 0.8rem; font-family: monospace; font-size: 1rem; background: #090d16; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border-color);">
+          <div class="math-example-box" style="margin-top: 0.8rem; font-family: monospace; font-size: 1rem; padding: 0.6rem;">
             Ej: ±<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">0</span></span> = 0 ➔ x₁ = x₂
           </div>
         </div>
@@ -374,7 +488,7 @@
           <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
             No existe ningún número real que al elevarlo al cuadrado dé un número negativo. La raíz no se puede calcular en los números reales y el proceso se detiene ahí.
           </p>
-          <div style="margin-top: 0.8rem; font-family: monospace; font-size: 1rem; background: #090d16; padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border-color);">
+          <div class="math-example-box" style="margin-top: 0.8rem; font-family: monospace; font-size: 1rem; padding: 0.6rem;">
             Ej: <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">-25</span></span> = No existe en ℝ
           </div>
         </div>
@@ -410,7 +524,11 @@
             <span class="val-badge c-c" id="vg_c">-3</span>
           </div>
 
-          <div style="background: #090d16; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 1rem;">
+          <div class="math-example-box" style="margin-top: 1rem;">
+            <div style="font-family: monospace; font-size: 1.15rem; font-weight: bold;" id="g_eq_text"></div>
+            <div style="margin-top: 0.5rem; font-size: 1rem; font-family: monospace;" id="g_disc_text"></div>
+            <div style="margin-top: 0.5rem; font-size: 1.05rem; font-weight: bold;" id="g_sol_text"></div>
+          </div>
             <div style="font-family: monospace; font-size: 1.15rem; font-weight: bold;" id="g_eq_text"></div>
             <div style="margin-top: 0.5rem; font-size: 1rem; font-family: monospace;" id="g_disc_text"></div>
             <div style="margin-top: 0.5rem; font-size: 1.05rem; font-weight: bold;" id="g_sol_text"></div>

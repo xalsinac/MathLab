@@ -121,8 +121,10 @@
     /* FÓRMULA CUADRÁTICA Y FRACCIONES VERTICALES */
     .quad-formula-box {
       display: inline-flex; align-items: center; justify-content: center;
-      font-family: 'Courier New', Courier, monospace; font-size: 1.6rem; font-weight: bold;
-      background: rgba(9, 13, 22, 0.85); padding: 1.2rem 1.8rem; border-radius: 12px;
+      gap: 0.5rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace;
+      font-size: 1.6rem; font-weight: bold;
+      background: rgba(9, 13, 22, 0.85); padding: 1.2rem 2.2rem; border-radius: 12px;
       border: 1px solid rgba(56, 189, 248, 0.25);
       box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.45), 0 4px 16px rgba(0, 0, 0, 0.25);
       margin: 1rem 0;
@@ -135,15 +137,45 @@
       color: #0f172a !important;
     }
 
+    /* FRACCIÓN VERTICAL SIMÉTRICA (CENTRO MATEMÁTICO EXACTO) */
     .fraction-vertical {
-      display: inline-flex; flex-direction: column; vertical-align: middle;
-      text-align: center; margin: 0 0.4rem; line-height: 1.2; font-family: monospace;
+      display: inline-grid;
+      grid-template-rows: 1fr 1fr;
+      align-items: center;
+      text-align: center;
+      margin: 0 0.35rem;
+      line-height: 1;
+      font-family: inherit;
+      vertical-align: middle;
     }
     .fraction-vertical .num {
-      border-bottom: 2px solid currentColor; padding: 0 0.3rem 2px 0.3rem;
+      grid-row: 1;
+      display: inline-flex;
+      align-items: flex-end;
+      justify-content: center;
+      border-bottom: 2px solid currentColor;
+      padding: 0 0.4rem 4px 0.4rem;
+      gap: 0.25rem;
+      box-sizing: border-box;
+      height: 100%;
     }
     .fraction-vertical .den {
-      padding: 2px 0.3rem 0 0.3rem;
+      grid-row: 2;
+      display: inline-flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 4px 0.4rem 0 0.4rem;
+      box-sizing: border-box;
+      height: 100%;
+    }
+
+    /* FILA DE PASOS MATEMÁTICOS CENTRADA CON FRACCIÓN */
+    .math-step-row {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-top: 0.6rem;
+      font-family: inherit;
     }
 
     /* CAJAS DE EJEMPLOS Y OPERACIONES */
@@ -162,25 +194,34 @@
       color: #0f172a !important;
     }
 
-    /* RAÍZ CUADRADA RIGUROSA ALINEADA CON FLEXBOX */
+    /* RAÍZ CUADRADA RIGUROSA ALINEADA CON VECTOR SVG */
     .radical-box {
       display: inline-flex;
-      align-items: flex-start;
-      vertical-align: middle;
+      align-items: stretch;
+      vertical-align: baseline;
+      position: relative;
+      margin-left: 0.15rem;
     }
     .radical-box .rad-symbol {
-      font-family: Arial, sans-serif;
-      font-size: 1.3em;
-      line-height: 0.7;
-      margin-top: 2px;
-      margin-right: -1px;
-      font-weight: normal;
+      display: flex;
+      align-items: stretch;
+      width: 0.62em;
+      flex-shrink: 0;
+    }
+    .radical-box .rad-symbol svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
     }
     .radical-box .rad-content {
-      border-top: 2px solid currentColor;
-      padding: 3px 4px 0 2px;
-      margin-top: 2px;
-      font-family: monospace;
+      border-top: 2.2px solid currentColor;
+      padding: 2px 4px 1px 2px;
+      display: inline-flex;
+      align-items: baseline;
+      line-height: 1.15;
+      margin-left: -0.5px;
+      font-family: inherit;
     }
 
     /* TARJETAS INFORMATIVAS */
@@ -338,7 +379,7 @@
               <div style="color:var(--accent-op); font-weight:bold; font-size:1.2rem;">2x² - 18 = 0</div>
               <div>1. Pasamos el número: 2x² = 18</div>
               <div>2. Pasamos dividiendo: x² = 18 / 2 = 9</div>
-              <div>3. Raíz cuadrada: x = ± <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">9</span></span></div>
+              <div>3. Raíz cuadrada: x = ± <span class="radical-box"><span class="rad-symbol"><svg viewBox="0 0 12 32" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M 1.2 18 L 3.5 15.5 L 6.5 30 L 11.8 1.1" /></svg></span><span class="rad-content">9</span></span></div>
               <hr style="border:0; border-top:1px solid var(--border-color); margin:0.5rem 0;">
               <div style="color:var(--accent-success); font-weight:bold;">Soluciones: x₁ = 3 , x₂ = -3</div>
             </div>
@@ -377,17 +418,22 @@
 
       <div style="text-align: center;">
         <div class="quad-formula-box">
-          x = 
-          <div class="fraction-vertical">
+          <span>x =</span>
+          <span class="fraction-vertical">
             <span class="num">
-              -<span class="c-b">b</span> ± 
+              <span>-<span class="c-b">b</span></span>
+              <span>±</span>
               <span class="radical-box">
-                <span class="rad-symbol">√</span>
+                <span class="rad-symbol">
+                  <svg viewBox="0 0 12 32" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M 1.2 18 L 3.5 15.5 L 6.5 30 L 11.8 1.1" />
+                  </svg>
+                </span>
                 <span class="rad-content"><span class="c-b">b</span>² - 4<span class="c-a">a</span><span class="c-c">c</span></span>
               </span>
             </span>
             <span class="den">2<span class="c-a">a</span></span>
-          </div>
+          </span>
         </div>
       </div>
 
@@ -457,7 +503,7 @@
             La raíz de un número positivo tiene dos resultados posibles (+ y -). Al sumar y restar esa raíz en el numerador, obtenemos dos valores diferentes: <em>x₁</em> y <em>x₂</em>.
           </p>
           <div class="math-example-box" style="margin-top: 0.8rem; font-family: monospace; font-size: 1rem; padding: 0.6rem;">
-            Ej: ±<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">16</span></span> = ±4 ➔ x₁ ≠ x₂
+            Ej: ±<span class="radical-box"><span class="rad-symbol"><svg viewBox="0 0 12 32" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M 1.2 18 L 3.5 15.5 L 6.5 30 L 11.8 1.1" /></svg></span><span class="rad-content">16</span></span> = ±4 ➔ x₁ ≠ x₂
           </div>
         </div>
 
@@ -475,7 +521,7 @@
             </span>
           </p>
           <div class="math-example-box" style="margin-top: 0.8rem; font-family: monospace; font-size: 1rem; padding: 0.6rem;">
-            Ej: ±<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">0</span></span> = 0 ➔ x₁ = x₂
+            Ej: ±<span class="radical-box"><span class="rad-symbol"><svg viewBox="0 0 12 32" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M 1.2 18 L 3.5 15.5 L 6.5 30 L 11.8 1.1" /></svg></span><span class="rad-content">0</span></span> = 0 ➔ x₁ = x₂
           </div>
         </div>
 
@@ -489,7 +535,7 @@
             No existe ningún número real que al elevarlo al cuadrado dé un número negativo. La raíz no se puede calcular en los números reales y el proceso se detiene ahí.
           </p>
           <div class="math-example-box" style="margin-top: 0.8rem; font-family: monospace; font-size: 1rem; padding: 0.6rem;">
-            Ej: <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">-25</span></span> = No existe en ℝ
+            Ej: <span class="radical-box"><span class="rad-symbol"><svg viewBox="0 0 12 32" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M 1.2 18 L 3.5 15.5 L 6.5 30 L 11.8 1.1" /></svg></span><span class="rad-content">-25</span></span> = No existe en ℝ
           </div>
         </div>
 
@@ -525,10 +571,6 @@
           </div>
 
           <div class="math-example-box" style="margin-top: 1rem;">
-            <div style="font-family: monospace; font-size: 1.15rem; font-weight: bold;" id="g_eq_text"></div>
-            <div style="margin-top: 0.5rem; font-size: 1rem; font-family: monospace;" id="g_disc_text"></div>
-            <div style="margin-top: 0.5rem; font-size: 1.05rem; font-weight: bold;" id="g_sol_text"></div>
-          </div>
             <div style="font-family: monospace; font-size: 1.15rem; font-weight: bold;" id="g_eq_text"></div>
             <div style="margin-top: 0.5rem; font-size: 1rem; font-family: monospace;" id="g_disc_text"></div>
             <div style="margin-top: 0.5rem; font-size: 1.05rem; font-weight: bold;" id="g_sol_text"></div>
@@ -617,32 +659,37 @@
       const container = document.getElementById('f_steps_container');
       container.innerHTML = "";
 
-      const bParen = b < 0 ? `(${b})` : b;
-      const cParen = c < 0 ? `(${c})` : c;
+      const subB = b < 0 ? `-(${b})` : `-${b}`;
+      const subBSq = b < 0 ? `(${b})²` : `${b}²`;
+      const subA = a < 0 ? `(${a})` : `${a}`;
+      const subC = c < 0 ? `(${c})` : `${c}`;
       const sign4AC = -fourAC >= 0 ? '+' : '';
+
+      const makeRad = (content, style = '') =>
+        `<span class="radical-box"><span class="rad-symbol"><svg viewBox="0 0 12 32" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M 1.2 18 L 3.5 15.5 L 6.5 30 L 11.8 1.1" /></svg></span><span class="rad-content"${style ? ` style="${style}"` : ''}>${content}</span></span>`;
 
       // Paso 1: Sustitución
       const step1 = document.createElement('div');
       step1.innerHTML = `<strong>1. Sustituir coeficientes:</strong><br>` +
-        `<div style="margin-top:0.5rem;">x = ` +
+        `<div class="math-step-row"><span>x =</span>` +
         `<span class="fraction-vertical">` +
-          `<span class="num">-(${bParen}) ± <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">(${bParen})² - 4·${a}·${cParen}</span></span></span>` +
-          `<span class="den">2·${a}</span>` +
+          `<span class="num">${subB} ± ${makeRad(`${subBSq} - 4·${subA}·${subC}`)}</span>` +
+          `<span class="den">2·${subA}</span>` +
         `</span></div>`;
       container.appendChild(step1);
 
       // Paso 2: Calcular interior de la raíz
       const step2 = document.createElement('div');
       step2.innerHTML = `<strong>2. Calcular interior de la raíz:</strong><br>` +
-        `<span style="color:var(--text-muted); font-size:0.95rem;">b² = ${bCuadrado} , &nbsp; -4ac = ${sign4AC}${-fourAC}</span><br>` +
-        `<div style="margin-top:0.5rem;">x = ` +
+        `<div style="color:var(--text-muted); font-size:0.95rem; margin-top:0.2rem;">b² = ${bCuadrado} , &nbsp; -4ac = ${sign4AC}${-fourAC}</div>` +
+        `<div class="math-step-row"><span>x =</span>` +
         `<span class="fraction-vertical">` +
-          `<span class="num">${minusB} ± <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">${bCuadrado} ${sign4AC} ${-fourAC}</span></span></span>` +
+          `<span class="num">${minusB} ± ${makeRad(`${bCuadrado} ${sign4AC} ${-fourAC}`)}</span>` +
           `<span class="den">${dosA}</span>` +
         `</span></div>` +
-        `<div style="margin-top:0.6rem;">x = ` +
+        `<div class="math-step-row" style="margin-top:0.6rem;"><span>x =</span>` +
         `<span class="fraction-vertical">` +
-          `<span class="num">${minusB} ± <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content" style="color:var(--accent-gold);">${disc}</span></span></span>` +
+          `<span class="num">${minusB} ± ${makeRad(disc, 'color:var(--accent-gold);')}</span>` +
           `<span class="den">${dosA}</span>` +
         `</span></div>`;
       container.appendChild(step2);
@@ -651,15 +698,17 @@
       const step3 = document.createElement('div');
       if (disc < 0) {
         step3.innerHTML = `<strong>3. Resultado:</strong><br>` +
-          `<span style="color:var(--accent-op); font-weight:bold;">¡No tiene solución en números reales!</span><br>Como el discriminante (${disc}) es negativo, la raíz cuadrada no existe.`;
+          `<div style="color:var(--accent-op); font-weight:bold; margin-top:0.4rem;">¡No tiene solución en números reales!</div>` +
+          `<div style="color:var(--text-muted); font-size:0.95rem; margin-top:0.2rem;">Como el discriminante (${disc}) es negativo, la raíz cuadrada no existe en ℝ.</div>`;
       } else if (disc === 0) {
         const sol = (minusB / dosA).toFixed(2);
         step3.innerHTML = `<strong>3. Raíz de cero (Solución única doble):</strong><br>` +
-          `<div style="margin-top:0.5rem;">x = ` +
+          `<div class="math-step-row"><span>x =</span>` +
           `<span class="fraction-vertical">` +
             `<span class="num">${minusB} ± 0</span>` +
             `<span class="den">${dosA}</span>` +
-          `</span> = <span style="color:var(--accent-success); font-weight:bold;">${sol}</span></div>`;
+          `</span>` +
+          `<span> = <strong style="color:var(--accent-success);">${sol}</strong></span></div>`;
       } else {
         const raiz = Math.sqrt(disc);
         const raizTxt = Number.isInteger(raiz) ? raiz : raiz.toFixed(2);
@@ -667,16 +716,18 @@
         const x2 = ((minusB - raiz) / dosA).toFixed(2);
 
         step3.innerHTML = `<strong>3. Desdoblar en dos soluciones (±):</strong><br>` +
-          `<div style="margin-top:0.5rem; margin-bottom:0.8rem;">• x₁ = ` +
+          `<div class="math-step-row" style="margin-bottom:0.6rem;"><span>• x₁ =</span>` +
           `<span class="fraction-vertical">` +
             `<span class="num">${minusB} + ${raizTxt}</span>` +
             `<span class="den">${dosA}</span>` +
-          `</span> = <span style="color:var(--accent-success); font-weight:bold;">${x1}</span></div>` +
-          `<div>• x₂ = ` +
+          `</span>` +
+          `<span> = <strong style="color:var(--accent-success);">${x1}</strong></span></div>` +
+          `<div class="math-step-row"><span>• x₂ =</span>` +
           `<span class="fraction-vertical">` +
             `<span class="num">${minusB} - ${raizTxt}</span>` +
             `<span class="den">${dosA}</span>` +
-          `</span> = <span style="color:var(--accent-success); font-weight:bold;">${x2}</span></div>`;
+          `</span>` +
+          `<span> = <strong style="color:var(--accent-success);">${x2}</strong></span></div>`;
       }
       container.appendChild(step3);
     }

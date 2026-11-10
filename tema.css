@@ -181,7 +181,13 @@ html[data-theme="light"] .cosmic-nebula {
 .topics-grid,
 .footer-wrap,
 footer,
-main {
+main,
+.nav-bar,
+.app-header,
+.app-container,
+.table-page-wrap,
+.explanation-card,
+.controls {
   position: relative;
   z-index: 2;
 }
@@ -696,3 +702,225 @@ html[data-theme="light"] .constellation-hub-glow {
     justify-content: center;
   }
 }
+
+/* ==========================================================================
+   PRESET OFICIAL CÓSMICO PARA LECCIONES DE MATH LAB (GLASSMORPHISM & CONTRAST)
+   ========================================================================== */
+
+/* 1. Contenedor Maestro de Lecciones */
+.app-container {
+  background: rgba(22, 24, 32, 0.82) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+  position: relative;
+  z-index: 2;
+}
+
+html[data-theme="light"] .app-container {
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(0, 0, 0, 0.09) !important;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.07) !important;
+  color: #0f172a !important;
+}
+
+/* 2. Pestañas de Lecciones */
+.tabs-container {
+  background: rgba(11, 17, 32, 0.7) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.tab-btn {
+  color: var(--text-muted);
+  transition: all 0.25s ease;
+}
+
+.tab-btn:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.tab-btn.active {
+  color: var(--accent-blue) !important;
+  border-bottom-color: var(--accent-blue) !important;
+  background: rgba(56, 189, 248, 0.08) !important;
+}
+
+html[data-theme="light"] .tabs-container {
+  background: rgba(241, 245, 249, 0.9) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.09) !important;
+}
+
+html[data-theme="light"] .tab-btn {
+  color: #475569 !important;
+}
+
+html[data-theme="light"] .tab-btn:hover {
+  color: #0f172a !important;
+  background: rgba(0, 0, 0, 0.04) !important;
+}
+
+html[data-theme="light"] .tab-btn.active {
+  color: #0284c7 !important;
+  border-bottom-color: #0284c7 !important;
+  background: rgba(2, 132, 199, 0.08) !important;
+}
+
+/* 3. Pizarras, Bloques y Fórmulas Matemáticas (Máximo Contraste) */
+.math-board,
+.math-block,
+.math-formula,
+.math-expr,
+.step-box,
+.formula-box,
+.expression-box {
+  background: rgba(9, 13, 22, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5), 0 4px 20px rgba(0, 0, 0, 0.3);
+  color: var(--text-main);
+}
+
+html[data-theme="light"] :is(.math-board, .math-block, .math-formula, .math-expr, .step-box, .formula-box, .expression-box) {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1.5px solid rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06), inset 0 1px 2px rgba(255, 255, 255, 0.9) !important;
+  color: #0f172a !important;
+}
+
+/* 4. Operaciones en Pizarra (Suma, Resta, Multiplicación, División) */
+.vertical-sum {
+  color: var(--text-main);
+}
+
+.vertical-sum .col-u { color: var(--accent-blue) !important; }
+.vertical-sum .col-d { color: var(--accent-op) !important; }
+.vertical-sum .col-c { color: var(--accent-gold) !important; }
+.vertical-sum .col-m { color: var(--accent-purple) !important; }
+.vertical-sum .carry-row { color: var(--accent-success) !important; font-weight: 800; }
+.vertical-sum .carry-bot { color: var(--accent-op) !important; font-weight: 900; }
+
+html[data-theme="light"] .vertical-sum {
+  color: #0f172a;
+}
+
+/* Colores Pedagógicos Vivos en Modo Claro (Unidades, Decenas, Centenas, Millares) */
+html[data-theme="light"] .vertical-sum .col-u { color: #0284c7 !important; }
+html[data-theme="light"] .vertical-sum .col-d { color: #e11d48 !important; }
+html[data-theme="light"] .vertical-sum .col-c { color: #d97706 !important; }
+html[data-theme="light"] .vertical-sum .col-m { color: #9333ea !important; }
+
+/* Llevadas y Préstamos Superclaros para el Aprendizaje de los Niños */
+html[data-theme="light"] .vertical-sum .carry-row {
+  color: #059669 !important;
+  font-weight: 900 !important;
+}
+html[data-theme="light"] .vertical-sum .carry-row.col-u { color: #0284c7 !important; }
+html[data-theme="light"] .vertical-sum .carry-row.col-d { color: #e11d48 !important; }
+html[data-theme="light"] .vertical-sum .carry-row.col-c { color: #d97706 !important; }
+html[data-theme="light"] .vertical-sum .carry-row.col-m { color: #9333ea !important; }
+
+html[data-theme="light"] .vertical-sum .carry-bot {
+  color: #e11d48 !important;
+  font-weight: 900 !important;
+}
+
+/* Cifras neutras estándar (cuerpo de operación) */
+html[data-theme="light"] .vertical-sum .cell:not([class*="col-"]):not(.signo):not(.carry-row):not(.carry-bot) {
+  color: #0f172a;
+}
+
+html[data-theme="light"] .vertical-sum .signo {
+  color: #334155 !important;
+  font-weight: 800 !important;
+}
+
+html[data-theme="light"] .vertical-sum .result-row {
+  border-top-color: #0f172a !important;
+}
+
+html[data-theme="light"] .vertical-sum [style*="border-left"] {
+  border-left-color: #0f172a !important;
+}
+
+html[data-theme="light"] .vertical-sum [style*="border-bottom"] {
+  border-bottom-color: #0f172a !important;
+}
+
+html[data-theme="light"] .highlight-col {
+  background: rgba(2, 132, 199, 0.12) !important;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.35) !important;
+}
+
+/* 5. Tarjetas de Explicación Pedagógica */
+.explanation-card {
+  background: rgba(16, 20, 30, 0.78) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-left: 4px solid var(--accent-blue) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
+}
+
+html[data-theme="light"] .explanation-card {
+  background: rgba(248, 250, 252, 0.94) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-left: 4px solid var(--accent-blue) !important;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05) !important;
+}
+
+html[data-theme="light"] .explanation-card :is(.content-text, p) {
+  color: #0f172a !important;
+}
+
+/* 6. Botones de Control en Lecciones */
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-main) !important;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14) !important;
+}
+
+html[data-theme="light"] .btn-secondary {
+  background: #ffffff !important;
+  border: 1.5px solid #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05) !important;
+}
+
+html[data-theme="light"] .btn-secondary:hover:not(:disabled) {
+  background: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+}
+
+.btn:disabled {
+  opacity: 0.45 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+/* 7. Navegación y Enlaces de Retorno */
+.nav-back-link {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.nav-back-link:hover {
+  transform: translateX(-3px);
+}
+
+html[data-theme="light"] .nav-back-link {
+  color: #0284c7 !important;
+  font-weight: 700 !important;
+}
+

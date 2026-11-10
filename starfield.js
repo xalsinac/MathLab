@@ -172,7 +172,8 @@
   };
 
   const setup = () => {
-    if (document.getElementById('cosmicStarfield')) return;
+    if (window.__cosmicStarfieldActive || document.getElementById('cosmicStarfield')) return;
+    window.__cosmicStarfieldActive = true;
 
     // Inyectar nebulosa suave en modo claro
     if (!document.querySelector('.cosmic-nebula')) {

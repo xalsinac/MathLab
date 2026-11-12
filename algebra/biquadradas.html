@@ -2,9 +2,15 @@
 <html lang="es">
 <head>
   <script>
-    if (localStorage.getItem('mathlab_theme') === 'light') {
-      document.documentElement.setAttribute('data-theme', 'light');
-    }
+    try {
+      const p = new URLSearchParams(window.location.search).get("theme");
+      const s = p || localStorage.getItem("math-universe-theme") || localStorage.getItem("mathlab_theme") || localStorage.getItem("mathdojo_theme");
+      if (s === "light") {
+        document.documentElement.setAttribute("data-theme", "light");
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+      }
+    } catch (_) {}
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -114,7 +120,7 @@
       color: var(--text-main);
     }
     .math-block {
-      background: #090d16;
+      background: var(--bg-primary);
       border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 0.9rem 1.2rem;

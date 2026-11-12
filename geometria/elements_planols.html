@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓ I PESTANYES PRINCIPALS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -59,7 +59,7 @@
 
     /* SVG CANVAS */
     .svg-canvas {
-      width: 100%; height: 260px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 260px; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block;
     }
 
@@ -173,7 +173,7 @@
               <span class="val-badge" id="v_ang_deg" style="color:var(--accent-gold);">65º</span>
             </div>
 
-            <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); margin-top:1rem;">
+            <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); margin-top:1rem;">
               <span style="color:var(--text-muted); font-size:0.85rem;">Classificació de l'angle:</span>
               <div id="txt_ang_class" style="font-size:1.4rem; font-weight:bold; color:var(--accent-success); margin-top:0.3rem;">Angle Agut</div>
               <p id="txt_ang_desc" style="font-size:0.95rem; color:var(--text-muted); margin-top:0.5rem; line-height:1.5;">

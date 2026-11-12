@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -47,7 +47,7 @@
 
     /* SVG CANVAS DEL PLANO */
     .svg-canvas {
-      width: 100%; height: 320px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 320px; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block;
     }
 
@@ -64,7 +64,7 @@
     /* CAJA DE PUNTO MATEMÁTICO */
     .point-display {
       font-family: 'Courier New', Courier, monospace; font-size: 2.2rem; font-weight: bold;
-      text-align: center; background: #090d16; padding: 1rem; border-radius: 10px;
+      text-align: center; background: var(--bg-primary); padding: 1rem; border-radius: 10px;
       border: 1px solid var(--border-color); margin: 1rem 0;
     }
 
@@ -228,7 +228,7 @@
             P(<span class="c-x">3</span>, <span class="c-y">2</span>)
           </div>
 
-          <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem; line-height:1.7;">
+          <div style="background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem; line-height:1.7;">
             <div>• <strong>Ubicación:</strong> <span id="txt_quad_location" style="font-weight:bold; color:var(--accent-success);">I Cuadrante</span></div>
             <div>• <strong>Instrucciones:</strong> <span id="txt_steps_travel" style="color:var(--text-muted);">Camina 3 hacia la derecha y sube 2.</span></div>
           </div>
@@ -278,7 +278,7 @@
           <p style="color: var(--text-muted); margin-bottom: 0.8rem;">
             Tienen la forma <strong>(<span class="c-x">número</span>, <span class="c-y">0</span>)</strong>. La segunda coordenada es cero porque <strong>no subes ni bajas nada</strong>: te quedas sobre la línea horizontal.
           </p>
-          <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.7;">
+          <div style="background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.7;">
             <div>• <strong>A(4, 0):</strong> Avanzas 4 a la derecha y no subes. Está sobre el <strong>eje X</strong>.</div>
             <div>• <strong>B(-2, 0):</strong> Retrocedes 2 a la izquierda y no subes. Está sobre el <strong>eje X</strong>.</div>
           </div>
@@ -292,7 +292,7 @@
           <p style="color: var(--text-muted); margin-bottom: 0.8rem;">
             Tienen la forma <strong>(<span class="c-x">0</span>, <span class="c-y">número</span>)</strong>. La primera coordenada es cero porque <strong>no te mueves en horizontal</strong>: vas directo al ascensor vertical.
           </p>
-          <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.7;">
+          <div style="background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.7;">
             <div>• <strong>C(0, 3):</strong> No te mueves en horizontal y subes 3. Está sobre el <strong>eje Y</strong>.</div>
             <div>• <strong>D(0, -4):</strong> No te mueves en horizontal y bajas 4. Está sobre el <strong>eje Y</strong>.</div>
           </div>
@@ -404,7 +404,7 @@
             <!-- Rellenado por JS -->
           </div>
 
-          <div style="background:#090d16; padding:0.8rem 1rem; border-radius:8px; border:1px solid var(--border-color); margin-top:1rem; text-align:center;">
+          <div style="background:var(--bg-primary); padding:0.8rem 1rem; border-radius:8px; border:1px solid var(--border-color); margin-top:1rem; text-align:center;">
             <span id="draw_status_msg" style="font-weight:bold; color:var(--accent-blue); font-size:1.05rem;">Colocando el primer punto...</span>
           </div>
         </div>

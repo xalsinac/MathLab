@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -39,7 +39,7 @@
     /* VISUALIZADOR DE POBLACIÓN Y MUESTRA */
     .crowd-container {
       display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.8rem;
-      background: #090d16; border: 1px solid var(--border-color); border-radius: 10px;
+      background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 10px;
       padding: 1.2rem; text-align: center; margin: 1rem 0;
     }
     .person-icon {
@@ -79,7 +79,7 @@
 
     /* SVG CANVAS */
     .svg-canvas {
-      width: 100%; height: 260px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 260px; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block;
     }
 
@@ -170,7 +170,7 @@
             <!-- Rellenado por JS -->
           </div>
 
-          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:0.9rem; min-height:75px;">
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:0.9rem; min-height:75px;">
             <div id="crowd_desc_title" style="font-weight:bold; font-size:1.05rem; color:var(--accent-blue); margin-bottom:0.3rem;">Población (N = 25)</div>
             <div id="crowd_desc_text" style="font-size:0.9rem; color:var(--text-muted); line-height:1.5;">
               Es el conjunto total y completo de todos los elementos que forman parte de la investigación.
@@ -463,7 +463,7 @@
           </div>
 
           <!-- SUSTITUCIÓN Y FRACCIÓN EN VIVO -->
-          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; margin-top:0.8rem;">
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; margin-top:0.8rem;">
             
             <!-- Sustitución matemática de la media con fracción vertical real -->
             <div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.4rem;">Cálculo de la Media Aritmética (x̄):</div>

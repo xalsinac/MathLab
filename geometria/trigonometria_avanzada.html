@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -44,7 +44,7 @@
     /* FÓRMULAS MATEMÁTICAS */
     .math-formula {
       font-family: 'Courier New', Courier, monospace; font-size: 1.25rem; font-weight: bold;
-      background: #090d16; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
+      background: var(--bg-primary); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
       text-align: center; display: inline-block; margin: 0.5rem auto; color: #fff; width: 100%;
     }
 
@@ -57,7 +57,7 @@
 
     /* SVG CANVAS */
     .svg-canvas {
-      width: 100%; height: 350px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 350px; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block;
     }
 
@@ -120,7 +120,7 @@
             <strong style="color:var(--accent-gold);" id="txt_sen_cte">10.4</strong>
           </div>
 
-          <div style="background:#090d16; padding:1.1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.92rem; line-height:1.9;">
+          <div style="background:var(--bg-primary); padding:1.1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.92rem; line-height:1.9;">
             <div>• a / sen(A) = <span id="sen_val_a">6.3</span> / sen(<span id="sen_ang_A">37.4º</span>) = <strong id="sen_res_a" style="color:var(--accent-gold);">10.4</strong></div>
             <div>• b / sen(B) = <span id="sen_val_b">8.2</span> / sen(<span id="sen_ang_B">51.9º</span>) = <strong id="sen_res_b" style="color:var(--accent-gold);">10.4</strong></div>
             <div>• c / sen(C) = <span id="sen_val_c">10.0</span> / sen(<span id="sen_ang_C">90.7º</span>) = <strong id="sen_res_c" style="color:var(--accent-gold);">10.4</strong></div>
@@ -170,7 +170,7 @@
             a² = b² + c² − 2bc·cos(A)
           </div>
 
-          <div style="background:#090d16; padding:1.1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.95rem; line-height:1.9;">
+          <div style="background:var(--bg-primary); padding:1.1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.95rem; line-height:1.9;">
             <div>b² + c² = <span id="cos_b2">36</span> + <span id="cos_c2">64</span> = <strong id="cos_sum2">100</strong></div>
             <div>Corrector: −2·(<span id="cos_val_b">6</span>)·(<span id="cos_val_c">8</span>)·cos(<span id="cos_val_A">90</span>º) = <strong id="cos_corr" style="color:var(--accent-op);">0.00</strong></div>
             <div style="margin-top:0.4rem; padding-top:0.4rem; border-top:1px dashed var(--border-color); font-size:1.1rem;">
@@ -212,7 +212,7 @@
             <span class="val-badge" id="v_sl_asoc_ang" style="color:var(--accent-gold);">30º</span>
           </div>
 
-          <div id="asoc_formulas" style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.05rem; line-height:2;">
+          <div id="asoc_formulas" style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.05rem; line-height:2;">
             <!-- Fórmulas y valores calculados dinámicamente -->
           </div>
         </div>
@@ -256,7 +256,7 @@
             <span class="val-badge" id="v_sl_dob_a2" style="color:var(--accent-success);">56º</span>
           </div>
 
-          <div style="background:#090d16; padding:1.1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.92rem; line-height:1.9;">
+          <div style="background:var(--bg-primary); padding:1.1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.92rem; line-height:1.9;">
             <div><strong>Sistema Planteado:</strong></div>
             <div>1) tg(<span id="dob_txt_a2">56</span>º) = h / x &nbsp;➔&nbsp; h = x · tg(β)</div>
             <div>2) tg(<span id="dob_txt_a1">28</span>º) = h / (x + <span id="dob_txt_d">25</span>)</div>

@@ -22,7 +22,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS (LOOK OFICIAL SEMITRANSPARENTE) */
     .tabs-container {
-      background: rgba(11, 17, 32, 0.7);
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -62,7 +62,7 @@
     /* SUBPESTAÑAS */
     .subtabs-container {
       display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;
-      background: rgba(11, 17, 32, 0.65); padding: 0.6rem; border-radius: 10px; border: 1px solid var(--border-color);
+      background: var(--bg-plate); padding: 0.6rem; border-radius: 10px; border: 1px solid var(--border-color);
       margin-bottom: 1rem;
     }
     [data-theme="light"] .subtabs-container {
@@ -124,7 +124,7 @@
       gap: 0.5rem;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace;
       font-size: 1.6rem; font-weight: bold;
-      background: rgba(9, 13, 22, 0.85); padding: 1.2rem 2.2rem; border-radius: 12px;
+      background: var(--bg-primary); padding: 1.2rem 2.2rem; border-radius: 12px;
       border: 1px solid rgba(56, 189, 248, 0.25);
       box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.45), 0 4px 16px rgba(0, 0, 0, 0.25);
       margin: 1rem 0;
@@ -180,7 +180,7 @@
 
     /* CAJAS DE EJEMPLOS Y OPERACIONES */
     .math-example-box {
-      background: rgba(9, 13, 22, 0.85);
+      background: var(--bg-primary);
       border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 1rem 1.2rem;
@@ -267,7 +267,7 @@
 
     /* SVG CANVAS PARA PARÁBOLA */
     .svg-canvas {
-      width: 100%; height: 320px; background: rgba(9, 13, 22, 0.85); border-radius: 10px;
+      width: 100%; height: 320px; background: var(--bg-primary); border-radius: 10px;
       border: 1px solid var(--border-color); display: block;
     }
     [data-theme="light"] .svg-canvas {

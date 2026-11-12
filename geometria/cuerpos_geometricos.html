@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -44,7 +44,7 @@
 
     /* SVG CANVAS */
     .svg-canvas {
-      width: 100%; height: 280px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 280px; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block;
     }
 
@@ -129,7 +129,7 @@
             </div>
           </div>
 
-          <div style="background:#090d16; border:1px solid var(--accent-success); border-radius:8px; padding:1.1rem; margin-top:1rem; font-family:monospace;">
+          <div style="background:var(--bg-primary); border:1px solid var(--accent-success); border-radius:8px; padding:1.1rem; margin-top:1rem; font-family:monospace;">
             <div style="color:var(--accent-success); font-weight:bold; font-size:1.1rem;">Teorema de Euler para Poliedros Convexos:</div>
             <div style="font-size:1.5rem; text-align:center; margin:0.5rem 0; color:#fff;">
               C + V = A + 2
@@ -192,7 +192,7 @@
             <span class="val-badge" id="v_plat_name" style="color:var(--accent-gold);">Cubo (6)</span>
           </div>
 
-          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:1.9; margin-top:0.8rem;">
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:1.9; margin-top:0.8rem;">
             <div style="font-size:1.4rem; font-weight:bold; color:var(--accent-blue);" id="txt_plat_title">Hexaedro (Cubo)</div>
             <div style="color:var(--text-muted); font-size:0.95rem; margin-top:0.3rem;" id="txt_plat_faces_type">Caras: 6 cuadrados regulares</div>
             <hr style="border:0; border-top:1px solid var(--border-color); margin:0.6rem 0;">
@@ -294,7 +294,7 @@
             <span class="val-badge" id="v_net_pct" style="color:var(--accent-success); width:95px;">0%</span>
           </div>
 
-          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; margin-top:1rem; font-size:0.95rem; line-height:1.7;">
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; margin-top:1rem; font-size:0.95rem; line-height:1.7;">
             <div id="txt_net_desc" style="color:var(--text-main);">
               <strong>Estado:</strong> Poliedro 3D cerrado en perspectiva real.
             </div>
@@ -339,7 +339,7 @@
             <span class="val-badge" id="v_rev_deg" style="color:var(--accent-blue);">70º</span>
           </div>
 
-          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; margin-top:1rem; font-family:monospace; line-height:1.7;">
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; margin-top:1rem; font-family:monospace; line-height:1.7;">
             <div id="txt_rev_title" style="color:var(--accent-gold); font-weight:bold; font-size:1.15rem;">Cilindro</div>
             <div id="txt_rev_expl" style="color:var(--text-muted); font-size:0.9rem; margin-top:0.3rem;">
               Se genera al girar un rectángulo de base r y altura h alrededor de uno de sus lados.
@@ -375,7 +375,7 @@
           <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.5;">
             Tienen dos bases paralelas iguales. Imagina apilar lonchas de embutido o monedas del mismo tamaño:
           </p>
-          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:6px; padding:0.9rem; text-align:center; font-family:monospace; font-size:1.15rem; color:var(--accent-blue); margin-top:0.6rem;">
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:6px; padding:0.9rem; text-align:center; font-family:monospace; font-size:1.15rem; color:var(--accent-blue); margin-top:0.6rem;">
             V = Área base · h
           </div>
           <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.4rem;">
@@ -388,7 +388,7 @@
           <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.5;">
             Las capas se van encogiendo hasta un solo punto. Ocupan exactamente <strong>un tercio</strong> de la caja que los envuelve:
           </p>
-          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:6px; padding:0.9rem; text-align:center; font-family:monospace; font-size:1.15rem; color:var(--accent-gold); margin-top:0.6rem;">
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:6px; padding:0.9rem; text-align:center; font-family:monospace; font-size:1.15rem; color:var(--accent-gold); margin-top:0.6rem;">
             V = (Área base · h) / 3
           </div>
           <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.4rem;">
@@ -401,7 +401,7 @@
           <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.5;">
             Arquímedes demostró que una esfera ocupa exactamente 2/3 del cilindro en el que encaja ajustada:
           </p>
-          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:6px; padding:0.9rem; text-align:center; font-family:monospace; font-size:1.15rem; color:var(--accent-success); margin-top:0.6rem;">
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:6px; padding:0.9rem; text-align:center; font-family:monospace; font-size:1.15rem; color:var(--accent-success); margin-top:0.6rem;">
             V = (4/3) · π · r³
           </div>
           <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.4rem;">
@@ -412,7 +412,7 @@
 
       <div class="panel-box">
         <div class="panel-title" style="color:var(--accent-gold);">Unidades de Volumen y Capacidad</div>
-        <div style="display:flex; flex-wrap:wrap; justify-content:space-around; align-items:center; background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; font-size:1.1rem; gap:1rem;">
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-around; align-items:center; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; font-size:1.1rem; gap:1rem;">
           <div>1 m³ = <strong>1.000 dm³</strong> = <strong>1.000 Litros (1 kL)</strong></div>
           <div style="color:var(--accent-gold);">⭐ <strong>1 dm³ = 1 Litro</strong> ⭐</div>
           <div>1 cm³ = <strong>1 mililitro (1 mL)</strong> = <strong>1 gramo de agua</strong></div>

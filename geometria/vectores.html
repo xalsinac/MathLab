@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -79,7 +79,7 @@
     /* FÓRMULAS ELEGANTES */
     .math-formula {
       font-family: 'Courier New', Courier, monospace; font-size: 1.3rem; font-weight: bold;
-      background: #090d16; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
+      background: var(--bg-primary); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
       text-align: center; display: inline-block; margin: 0.5rem auto; color: #fff; width: 100%;
     }
     
@@ -90,7 +90,7 @@
 
     /* SVG CANVAS PARA LOS EJES */
     .svg-canvas {
-      width: 100%; height: 350px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 350px; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block;
     }
 
@@ -214,7 +214,7 @@
             </span>
           </div>
 
-          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.2rem; line-height:1.8; margin-top:1rem;">
+          <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.2rem; line-height:1.8; margin-top:1rem;">
             |<span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span>| = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">(<span class="c-x" id="calc_mx">3</span>)² + (<span class="c-y" id="calc_my">4</span>)²</span></span><br>
             |<span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span>| = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content"><span id="calc_mx2">9</span> + <span id="calc_my2">16</span></span></span><br>
             |<span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span>| = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content" id="calc_sum">25</span></span> = <strong style="color:var(--accent-success); font-size:1.4rem;" id="calc_res">5</strong>
@@ -273,7 +273,7 @@
               <input type="range" id="sl_sum_uy" min="-5" max="5" value="4" oninput="updateSuma()">
             </div>
 
-            <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.8; margin-top:1rem;">
+            <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.8; margin-top:1rem;">
               <span style="color:var(--text-muted); font-size:0.85rem; text-transform:uppercase;">Analíticamente: (X con X, Y con Y)</span><br>
               <span class="vec c-w"><span class="vec-arrow">→</span><span>w</span></span> = <span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span> + <span class="vec c-u"><span class="vec-arrow">→</span><span>u</span></span><br>
               <span class="vec c-w"><span class="vec-arrow">→</span><span>w</span></span> = ( <span id="txt_s_vx" class="c-v">3</span> + <span id="txt_s_ux" class="c-u">1</span> , <span id="txt_s_vy" class="c-v">1</span> + <span id="txt_s_uy" class="c-u">4</span> )<br>
@@ -330,7 +330,7 @@
               <span class="val-badge" id="v_sl_mul_k" style="color:#c084fc;">2</span>
             </div>
 
-            <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.8; margin-top:1rem;">
+            <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.8; margin-top:1rem;">
               <span class="vec c-w"><span class="vec-arrow">→</span><span>w</span></span> = <span style="color:#c084fc;" id="txt_m_k">2</span> · <span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span><br>
               <span class="vec c-w"><span class="vec-arrow">→</span><span>w</span></span> = <span style="color:#c084fc;" id="txt_m_k2">2</span> · ( <span id="txt_m_vx" class="c-v">2</span> , <span id="txt_m_vy" class="c-v">1</span> )<br>
               <span class="vec c-w"><span class="vec-arrow">→</span><span>w</span></span> = ( <strong class="c-w" id="txt_m_rx">4</strong> , <strong class="c-w" id="txt_m_ry">2</strong> )
@@ -375,7 +375,7 @@
               <input type="range" id="sl_dot_uy" min="-5" max="5" value="3" oninput="updateDot()">
             </div>
 
-            <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.8; margin-top:1rem;">
+            <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.8; margin-top:1rem;">
               <span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span> · <span class="vec c-u"><span class="vec-arrow">→</span><span>u</span></span> = (v<sub>x</sub> · u<sub>x</sub>) + (v<sub>y</sub> · u<sub>y</sub>)<br><br>
               <span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span> · <span class="vec c-u"><span class="vec-arrow">→</span><span>u</span></span> = (<span id="txt_d_vx" class="c-v">3</span> · <span id="txt_d_ux" class="c-u">-1</span>) + (<span id="txt_d_vy" class="c-v">1</span> · <span id="txt_d_uy" class="c-u">3</span>)<br>
               <span class="vec c-v"><span class="vec-arrow">→</span><span>v</span></span> · <span class="vec c-u"><span class="vec-arrow">→</span><span>u</span></span> = <span id="txt_d_p1">-3</span> + <span id="txt_d_p2">3</span> = <strong style="font-size:1.5rem; color:#fff;" id="txt_d_res">0</strong>

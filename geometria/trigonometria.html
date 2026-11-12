@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -55,7 +55,7 @@
       margin-top: 1rem;
     }
     .soh-card {
-      background: #090d16;
+      background: var(--bg-primary);
       border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 0.8rem 0.5rem;
@@ -68,7 +68,7 @@
     /* FÓRMULAS */
     .math-formula {
       font-family: 'Courier New', Courier, monospace; font-size: 1.3rem; font-weight: bold;
-      background: #090d16; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
+      background: var(--bg-primary); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
       text-align: center; display: inline-block; margin: 0.5rem auto; color: #fff; width: 100%;
     }
 
@@ -81,7 +81,7 @@
 
     /* SVG CANVAS */
     .svg-canvas {
-      width: 100%; height: 350px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 350px; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block;
     }
 
@@ -163,7 +163,7 @@
             </div>
           </div>
 
-          <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.95rem; line-height:1.8; margin-top:1rem;">
+          <div style="background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.95rem; line-height:1.8; margin-top:1rem;">
             <div><strong style="color:var(--accent-op);">sen(α)</strong> = <span id="txt_op">5.7</span> / <span id="txt_hip1">10</span> = <strong id="res_sen" style="color:var(--accent-op);">0.57</strong></div>
             <div><strong style="color:var(--accent-blue);">cos(α)</strong> = <span id="txt_cont">8.2</span> / <span id="txt_hip2">10</span> = <strong id="res_cos" style="color:var(--accent-blue);">0.82</strong></div>
             <div><strong style="color:var(--accent-success);">tg(α)</strong> = <span id="txt_op2">5.7</span> / <span id="txt_cont2">8.2</span> = <strong id="res_tg" style="color:var(--accent-success);">0.70</strong></div>
@@ -259,7 +259,7 @@
             <button class="tool-btn" id="btn_q4" onclick="setQuadrant(4)" style="padding:0.8rem;">Cuadrante IV (270º a 360º)</button>
           </div>
 
-          <div id="quad_info" style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.05rem; line-height:2;">
+          <div id="quad_info" style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.05rem; line-height:2;">
             <!-- Dinámico -->
           </div>
         </div>
@@ -324,7 +324,7 @@
           </div>
 
           <!-- RESOLUCIÓN PASO A PASO -->
-          <div id="prob_steps" style="background:#090d16; padding:1.1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.98rem; line-height:1.9;">
+          <div id="prob_steps" style="background:var(--bg-primary); padding:1.1rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.98rem; line-height:1.9;">
             <!-- Pasos detallados por JS -->
           </div>
         </div>

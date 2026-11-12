@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -60,7 +60,7 @@
     .power-hero {
       display: inline-flex; align-items: flex-start; justify-content: center;
       font-family: monospace; font-weight: 800; line-height: 1; padding: 1rem 2rem;
-      background: #090d16; border: 2px solid var(--border-color); border-radius: 12px; margin: 1rem auto;
+      background: var(--bg-primary); border: 2px solid var(--border-color); border-radius: 12px; margin: 1rem auto;
     }
     .base-large { font-size: 4rem; color: var(--accent-blue); }
     .exp-large { font-size: 2.2rem; color: var(--accent-gold); margin-top: -0.5rem; margin-left: 2px; }
@@ -108,7 +108,7 @@
 
     /* SVG CANVAS */
     .svg-canvas {
-      width: 100%; height: 260px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 260px; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block;
     }
 
@@ -175,7 +175,7 @@
             </div>
           </div>
 
-          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; font-family:monospace; line-height:1.9; margin-top:0.5rem; text-align:center;">
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; font-family:monospace; line-height:1.9; margin-top:0.5rem; text-align:center;">
             <div style="color:var(--text-muted); font-size:0.9rem;">Desarrollo como multiplicación:</div>
             <div style="font-size:1.3rem; color:var(--text-main); margin:0.4rem 0;" id="txt_power_expanded">
               3 · 3 · 3 · 3
@@ -301,7 +301,7 @@
         <div class="panel-box">
           <div class="panel-title">Demostración Paso a Paso</div>
           
-          <div id="prop_demo_container" style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; min-height:360px; font-family:monospace; line-height:1.9;">
+          <div id="prop_demo_container" style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; min-height:360px; font-family:monospace; line-height:1.9;">
             <!-- Rellenado por JS -->
           </div>
         </div>
@@ -408,7 +408,7 @@
               Ejemplo típico de examen: Simplifica dejando una sola potencia:
             </p>
 
-            <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; font-size:1.15rem; line-height:2.1;">
+            <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; font-size:1.15rem; line-height:2.1;">
               <div>Operación inicial:</div>
               <div style="color:var(--accent-gold); font-size:1.3rem;">
                 <span class="fraction-vertical">
@@ -563,7 +563,7 @@
         <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
           Cualquier número elevado a 1 es el propio número. ¡Todo número sin exponente visible tiene un 1 oculto!
         </p>
-        <div style="background:#0b1120; padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
+        <div style="background:var(--bg-plate); padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
           • Con números: <strong>7¹ = 7</strong> &nbsp;|&nbsp; <strong>125¹ = 125</strong>
           <br><br>
           • <strong>¡Clave de examen!:</strong> Si ves una operación como <span style="color:var(--accent-gold);">2³ · 2</span>, recuerda que el segundo 2 tiene exponente 1:
@@ -578,7 +578,7 @@
         <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
           ¿Por qué no da cero? Demostración por cociente de potencias iguales:
         </p>
-        <div style="background:#0b1120; padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
+        <div style="background:var(--bg-plate); padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
           1. Aplicando la propiedad de la división: 
           <br>
           <span style="color:var(--accent-blue);">aⁿ / aⁿ = aⁿ⁻ⁿ = a⁰</span>
@@ -599,7 +599,7 @@
         <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
           El signo menos en el exponente NO significa que el número sea negativo: indica el <strong>inverso multiplicativo</strong> (le da la vuelta como fracción).
         </p>
-        <div style="background:#0b1120; padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
+        <div style="background:var(--bg-plate); padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
           • Demostración: 
           <br>
           2⁰ / 2³ = 2⁰⁻³ = <strong>2⁻³</strong>
@@ -620,7 +620,7 @@
         <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
           La propiedad "darle la vuelta a la tortilla". Para quitar el signo menos del exponente, simplemente se invierten numerador y denominador:
         </p>
-        <div style="background:#0b1120; padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
+        <div style="background:var(--bg-plate); padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
           • Ejemplo 1:
           <br>
           (2 / 3)⁻¹ = <strong>3 / 2</strong>
@@ -637,7 +637,7 @@
         <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
           ¿Por qué se suman los exponentes? Simplemente abre los factores y cuéntalos:
         </p>
-        <div style="background:#0b1120; padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
+        <div style="background:var(--bg-plate); padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
           • Con letras: a³ · a² = (a · a · a) · (a · a) = a · a · a · a · a = <strong>a⁵</strong> (3 + 2 = 5 factores)
           <br><br>
           • Con números: 2³ · 2⁴ = (2 · 2 · 2) · (2 · 2 · 2 · 2) = 2⁷ = <strong>128</strong>
@@ -650,7 +650,7 @@
         <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
           ¿Por qué se restan? Al ponerlos como fracción, los factores repetidos se cancelan:
         </p>
-        <div style="background:#0b1120; padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
+        <div style="background:var(--bg-plate); padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
           • Con letras: a⁵ / a² = (a · a · a · a · a) / (a · a)
           <br>
           Cancelamos dos 'a' arriba y abajo ➔ queda a · a · a = <strong>a³</strong> (5 - 2 = 3)
@@ -665,7 +665,7 @@
         <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
           ¿Por qué se multiplican? Es un paquete repetido varias veces:
         </p>
-        <div style="background:#0b1120; padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
+        <div style="background:var(--bg-plate); padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
           • (a²)³ significa repetir el paquete (a²) tres veces:
           <br>
           (a²)³ = (a²) · (a²) · (a²) = (a · a) · (a · a) · (a · a) = <strong>a⁶</strong> (2 · 3 = 6)
@@ -680,7 +680,7 @@
         <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
           Podemos emparejar las bases distintas gracias a la propiedad conmutativa:
         </p>
-        <div style="background:#0b1120; padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
+        <div style="background:var(--bg-plate); padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
           • Ejemplo: 2³ · 5³ = (2 · 2 · 2) · (5 · 5 · 5)
           <br>
           Emparejamos: (2 · 5) · (2 · 5) · (2 · 5) = 10 · 10 · 10 = <strong>10³ = 1.000</strong>
@@ -693,7 +693,7 @@
         <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.8rem;">
           Agrupamos la división en una sola fracción elevada al exponente común:
         </p>
-        <div style="background:#0b1120; padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
+        <div style="background:var(--bg-plate); padding:0.9rem; border-radius:6px; font-size:1.05rem; line-height:1.9;">
           • Ejemplo: 6³ / 2³ = (6 · 6 · 6) / (2 · 2 · 2)
           <br>
           Separamos: (6/2) · (6/2) · (6/2) = 3 · 3 · 3 = <strong>3³ = 27</strong>

@@ -3,9 +3,15 @@
 <head>
   <script>
   // Aplica el tema guardado al cargar la página antes de dibujar el DOM
-  if (localStorage.getItem('mathlab_theme') === 'light') {
-    document.documentElement.setAttribute('data-theme', 'light');
-  }
+  try {
+      const p = new URLSearchParams(window.location.search).get("theme");
+      const s = p || localStorage.getItem("math-universe-theme") || localStorage.getItem("mathlab_theme") || localStorage.getItem("mathdojo_theme");
+      if (s === "light") {
+        document.documentElement.setAttribute("data-theme", "light");
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+      }
+    } catch (_) {}
 </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +22,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -61,7 +67,7 @@
       flex-wrap: wrap;
       gap: 0.4rem;
       align-items: center;
-      background: #090d16;
+      background: var(--bg-primary);
       border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 1rem;
@@ -82,7 +88,7 @@
     .svg-canvas {
       width: 100%;
       height: 380px;
-      background: #090d16;
+      background: var(--bg-primary);
       border-radius: 8px;
       border: 1px solid var(--border-color);
       display: block;
@@ -148,7 +154,7 @@
         <p style="margin:0; font-size:0.95rem; line-height:1.6; color:#e2e8f0;">
           Un factorial es simplemente <strong>empezar en ese número y multiplicar hacia atrás todos los enteros hasta llegar al 1</strong>. Sin saltarse ninguno.
         </p>
-        <div style="margin-top:0.6rem; font-family:monospace; font-size:1.05rem; color:#fff; background:#090d16; padding:0.6rem 0.9rem; border-radius:6px; display:inline-block; border:1px solid var(--border-color);">
+        <div style="margin-top:0.6rem; font-family:monospace; font-size:1.05rem; color:var(--text-main); background:var(--bg-primary); padding:0.6rem 0.9rem; border-radius:6px; display:inline-block; border:1px solid var(--border-color);">
           • <strong>3!</strong> = 3 · 2 · 1 = <strong style="color:var(--accent-gold);">6</strong><br>
           • <strong>4!</strong> = 4 · 3 · 2 · 1 = <strong style="color:var(--accent-gold);">24</strong><br>
           • <strong>5!</strong> = 5 · 4 · 3 · 2 · 1 = <strong style="color:var(--accent-gold);">120</strong>
@@ -180,7 +186,7 @@
             <!-- Rellenado por JS -->
           </div>
 
-          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.15rem; line-height:1.8; margin-top:1rem;">
+          <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.15rem; line-height:1.8; margin-top:1rem;">
             Resultado: <strong style="color:var(--accent-gold); font-size:1.35rem;" id="txt_fact_result">24</strong>
             <div style="font-size:0.85rem; color:var(--text-muted); margin-top:0.3rem;" id="txt_num_digits">
               Tiene 2 dígitos
@@ -211,7 +217,7 @@
         <div class="panel-box">
           <div class="panel-title">El Patrón hacia Atrás (División Sucesiva)</div>
 
-          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.95rem; line-height:2.1;">
+          <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.95rem; line-height:2.1;">
             <div>• 4! = 24</div>
             <div>• 3! = 24 / 4 = <strong>6</strong></div>
             <div>• 2! = 6 / 3 = <strong>2</strong></div>
@@ -263,7 +269,7 @@
           </div>
 
           <!-- PASO A PASO ANALÍTICO -->
-          <div id="box_simpl_steps" style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1rem; line-height:2; margin-top:0.8rem;">
+          <div id="box_simpl_steps" style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1rem; line-height:2; margin-top:0.8rem;">
             <!-- Generado dinámicamente -->
           </div>
         </div>
@@ -274,7 +280,7 @@
             ¿Cómo se resuelve una fracción con incógnita <em>n</em>?
           </div>
 
-          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.02rem; line-height:2.2; margin-top:0.8rem;">
+          <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.02rem; line-height:2.2; margin-top:0.8rem;">
             <div style="color:var(--accent-gold);">
               <span class="fraction-vertical"><span class="num">(n + 2)!</span><span class="den">n!</span></span> = ?
             </div>
@@ -308,7 +314,7 @@
             Cada vez que barajas a fondo un mazo de 40 cartas, obtienes una ordenación que, con una certeza casi absoluta, <strong>jamás ha existido en la historia del universo</strong>:
           </div>
 
-          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.05rem; line-height:1.8; color:var(--accent-gold); word-break:break-all;">
+          <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.05rem; line-height:1.8; color:var(--accent-gold); word-break:break-all;">
             40! = 815.915.283.247.897.734.345.611.269.596.115.894.272.000.000.000
           </div>
 

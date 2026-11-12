@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -55,7 +55,7 @@
     /* FÓRMULAS Y SECUENCIAS */
     .math-formula {
       font-family: 'Courier New', Courier, monospace; font-size: 1.25rem; font-weight: bold;
-      background: #090d16; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
+      background: var(--bg-primary); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
       text-align: center; display: inline-flex; align-items: center; justify-content: center; margin: 0.3rem 0; color: #fff; width: 100%;
     }
     .fraction-vertical {
@@ -74,7 +74,7 @@
     .sequence-row { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin: 1rem 0; }
     .seq-term { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
     .seq-box {
-      background: #0b1120; border: 2px solid var(--border-color); border-radius: 8px;
+      background: var(--bg-plate); border: 2px solid var(--border-color); border-radius: 8px;
       width: 50px; height: 50px; display: flex; justify-content: center; align-items: center;
       font-family: monospace; font-size: 1.2rem; font-weight: bold; color: #fff; text-align: center;
     }
@@ -91,7 +91,7 @@
 
     /* SVG CANVAS */
     .svg-canvas {
-      width: 100%; height: 200px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 200px; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block;
     }
 
@@ -162,7 +162,7 @@
             </div>
           </div>
 
-          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem; line-height:1.6; margin-top:1rem;">
+          <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem; line-height:1.6; margin-top:1rem;">
             • <strong class="var-a1">a₁</strong>: Es el primer término (aquí vale 1).<br>
             • <strong class="var-n">n</strong>: Es el "DNI" del número, su posición en la fila.<br>
             • <strong>Término General (aₙ)</strong>: Es la fórmula mágica. Si sustituimos la <strong class="var-n">n</strong> por 100, nos escupe quién está en la posición número 100 sin calcular los 99 anteriores.
@@ -263,7 +263,7 @@
             <!-- Generado por JS -->
           </div>
 
-          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.6; margin-top:0.5rem;">
+          <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.6; margin-top:0.5rem;">
             <div style="color:var(--accent-blue);">➔ Posición a<sub id="calc_n_idx" style="font-size:0.7em;"></sub>:</div>
             <div id="arith_calc_an" style="font-weight:bold; font-size:1.3rem; margin-bottom:0.8rem; color:#fff;"></div>
             
@@ -345,7 +345,7 @@
             <!-- Generado por JS -->
           </div>
 
-          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.6; margin-top:0.5rem; overflow-x:auto;">
+          <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.1rem; line-height:1.6; margin-top:0.5rem; overflow-x:auto;">
             <div style="color:#c084fc;">➔ Posición a<sub id="calc_g_idx" style="font-size:0.7em;"></sub>:</div>
             <div id="geom_calc_an" style="font-weight:bold; font-size:1.3rem; margin-bottom:0.8rem; color:#fff;"></div>
             
@@ -402,7 +402,7 @@
             Si caminas hacia una pared dando pasos que son siempre la mitad del paso anterior (1/2 metro, luego 1/4, luego 1/8...), darás <strong>infinitos pasos</strong>, pero nunca te estrellarás, porque en total habrás avanzado exactamente <strong>1 metro</strong>.
           </p>
 
-          <svg class="svg-canvas" viewBox="0 0 300 80" style="height:120px; background:#0b1120;">
+          <svg class="svg-canvas" viewBox="0 0 300 80" style="height:120px; background:var(--bg-plate);">
             <!-- Barra completa = 1 -->
             <rect x="10" y="30" width="280" height="30" fill="none" stroke="#475569" stroke-width="2" />
             

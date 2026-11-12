@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -44,7 +44,7 @@
     /* FÓRMULAS */
     .math-formula {
       font-family: 'Courier New', Courier, monospace; font-size: 1.15rem; font-weight: bold;
-      background: #090d16; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
+      background: var(--bg-primary); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
       text-align: center; display: inline-block; margin: 0.5rem auto; color: #fff; width: 100%;
     }
 
@@ -57,7 +57,7 @@
 
     /* TARJETAS DE ECUACIONES */
     .eq-card {
-      background: #090d16;
+      background: var(--bg-primary);
       border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 0.75rem 1rem;
@@ -83,7 +83,7 @@
       gap: 1.2rem;
     }
     .step-block {
-      background: #090d16;
+      background: var(--bg-primary);
       border: 1px solid var(--border-color);
       border-left: 4px solid var(--accent-blue);
       border-radius: 8px;
@@ -105,7 +105,7 @@
     .svg-canvas {
       width: 100%;
       height: 380px;
-      background: #090d16;
+      background: var(--bg-primary);
       border-radius: 8px;
       border: 1px solid var(--border-color);
       display: block;
@@ -171,7 +171,7 @@
             <span class="val-badge" id="v_by">4</span>
           </div>
 
-          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.95rem; line-height:2; margin-top:1rem;">
+          <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.95rem; line-height:2; margin-top:1rem;">
             <div>
               • <strong>Punto Medio M:</strong> (<span class="fraction-vertical"><span class="num">x₁ + x₂</span><span class="den">2</span></span>, <span class="fraction-vertical"><span class="num">y₁ + y₂</span><span class="den">2</span></span>) = 
               <strong style="color:var(--accent-gold); font-size:1.1rem;" id="txt_m_coords">(0.0, 1.0)</strong>
@@ -224,7 +224,7 @@
             Pendiente: m = <span class="fraction-vertical"><span class="num" id="txt_v2_num">3</span><span class="den" id="txt_v1_den">4</span></span> = <span style="color:var(--accent-gold);" id="txt_m_val">0.75</span>
           </div>
 
-          <div id="box_pendiente_desc" style="background:#090d16; padding:1.1rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.92rem; line-height:1.7; color:var(--text-muted);">
+          <div id="box_pendiente_desc" style="background:var(--bg-primary); padding:1.1rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.92rem; line-height:1.7; color:var(--text-muted);">
             <!-- Explicación analítica dinámica -->
           </div>
         </div>
@@ -414,7 +414,7 @@
             <span class="val-badge" id="v_r2_n">3</span>
           </div>
 
-          <div id="pos_diagnostico" style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.95rem; line-height:1.9; margin-top:0.8rem;">
+          <div id="pos_diagnostico" style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:0.95rem; line-height:1.9; margin-top:0.8rem;">
             <!-- Diagnóstico algebraico dinámico -->
           </div>
         </div>

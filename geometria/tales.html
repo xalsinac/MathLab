@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -43,14 +43,14 @@
 
     /* ICONOS VISUALES */
     .icon-stream {
-      display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.8rem; background: #090d16;
+      display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.8rem; background: var(--bg-primary);
       border-radius: 8px; border: 1px dashed var(--border-color); min-height: 52px; align-items: center;
       font-size: 1.5rem;
     }
 
     /* ESQUEMA DE REGLA DE TRES */
     .rule-box {
-      background: #090d16; border: 1px solid var(--border-color); border-radius: 10px;
+      background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 10px;
       padding: 1.2rem; font-family: monospace;
     }
     .rule-grid {
@@ -60,7 +60,7 @@
 
     /* SVG CANVAS */
     .svg-canvas {
-      width: 100%; background: #090d16; border-radius: 8px;
+      width: 100%; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block;
     }
 
@@ -329,7 +329,7 @@
         <div class="panel-box" style="justify-content: center;">
           <div class="panel-title">Criterio Fundamental de Semejanza</div>
           
-          <div style="background: #090d16; padding: 1.2rem; border-radius: 8px; border: 1px solid var(--border-color); font-family: monospace; font-size: 1.15rem; line-height: 1.8;">
+          <div style="background: var(--bg-primary); padding: 1.2rem; border-radius: 8px; border: 1px solid var(--border-color); font-family: monospace; font-size: 1.15rem; line-height: 1.8;">
             <div>Lado pequeño / Lado grande = <span style="color:var(--accent-gold);" id="txt_ratio_k">0.55</span></div>
             <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 0.6rem 0;">
             <div>AB' / AB = <span style="color:var(--accent-blue);" id="txt_ab_ratio">0.55</span></div>

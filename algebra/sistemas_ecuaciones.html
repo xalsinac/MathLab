@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -60,7 +60,7 @@
     /* LLAVE DE SISTEMA */
     .system-box {
       display: inline-flex; align-items: center; font-family: monospace; font-size: 1.4rem;
-      background: #090d16; padding: 1.2rem; border-radius: 8px; border: 1px solid var(--border-color);
+      background: var(--bg-primary); padding: 1.2rem; border-radius: 8px; border: 1px solid var(--border-color);
     }
     .system-brace {
       font-size: 3.5rem; font-weight: 100; color: var(--text-muted); margin-right: 0.5rem; line-height: 1; display: flex; align-items: center;
@@ -86,7 +86,7 @@
     .slider-row label { width: 140px; font-weight: 600; font-family: monospace; }
     .val-badge { width: 45px; text-align: right; font-weight: bold; font-family: monospace; font-size: 1.2rem; }
     .svg-canvas {
-      width: 100%; height: 320px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 320px; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block;
     }
 
@@ -176,12 +176,12 @@
         <div class="panel-box">
           <div class="panel-title">El Enigma del Restaurante</div>
           
-          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); margin-bottom:1rem;">
+          <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); margin-bottom:1rem;">
             <div style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.5rem;">Ticket 1:</div>
             <div style="font-size:1.8rem;">🍔🍔 + 🍦 = <span class="val-c">7€</span></div>
           </div>
 
-          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color);">
+          <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color);">
             <div style="color:var(--text-muted); font-size:0.9rem; margin-bottom:0.5rem;">Ticket 2:</div>
             <div style="font-size:1.8rem;">🍔 + 🍦 = <span class="val-c">4€</span></div>
           </div>
@@ -258,7 +258,7 @@
             Consiste en <strong>despejar una letra</strong> en una ecuación y <strong>meterla (sustituirla)</strong> dentro de la otra. Es ideal cuando hay una letra sola sin números delante.
           </p>
 
-          <div style="display:flex; flex-direction:column; gap:0.6rem; font-family:monospace; font-size:1.1rem; background:#090d16; padding:1.5rem; border-radius:8px; border:1px solid var(--border-color); line-height:1.8;">
+          <div style="display:flex; flex-direction:column; gap:0.6rem; font-family:monospace; font-size:1.1rem; background:var(--bg-primary); padding:1.5rem; border-radius:8px; border:1px solid var(--border-color); line-height:1.8;">
             <div>
               <span style="color:var(--text-muted); font-size:0.85rem;">Paso 1: Despejamos la <span class="var-x">x</span> en la primera ecuación (es la más fácil).</span><br>
               <span class="var-x">x</span> + <span class="var-y">y</span> = 5 ➔ <strong style="color:var(--accent-blue);">x = 5 - y</strong>
@@ -292,7 +292,7 @@
             Consiste en <strong>despejar la MISMA letra en las dos ecuaciones</strong> y luego igualar los dos resultados (si A = B y A = C, entonces B = C).
           </p>
 
-          <div style="display:flex; flex-direction:column; gap:0.6rem; font-family:monospace; font-size:1.1rem; background:#090d16; padding:1.5rem; border-radius:8px; border:1px solid var(--border-color); line-height:1.8;">
+          <div style="display:flex; flex-direction:column; gap:0.6rem; font-family:monospace; font-size:1.1rem; background:var(--bg-primary); padding:1.5rem; border-radius:8px; border:1px solid var(--border-color); line-height:1.8;">
             <div>
               <span style="color:var(--text-muted); font-size:0.85rem;">Paso 1: Despejamos la <span class="var-x">x</span> en AMBAS ecuaciones.</span><br>
               Eq 1: <span class="var-x">x</span> + <span class="var-y">y</span> = 5 ➔ <strong style="color:var(--accent-blue);">x = 5 - y</strong><br>
@@ -324,7 +324,7 @@
             Es el más rápido y profesional. Consiste en <strong>sumar en vertical las dos ecuaciones</strong> para que una de las letras se aniquile (como hicimos restando las bandejas de hamburguesas).
           </p>
 
-          <div style="display:flex; flex-direction:column; gap:0.6rem; font-family:monospace; font-size:1.1rem; background:#090d16; padding:1.5rem; border-radius:8px; border:1px solid var(--border-color); line-height:1.8;">
+          <div style="display:flex; flex-direction:column; gap:0.6rem; font-family:monospace; font-size:1.1rem; background:var(--bg-primary); padding:1.5rem; border-radius:8px; border:1px solid var(--border-color); line-height:1.8;">
             <div>
               <span style="color:var(--text-muted); font-size:0.85rem;">Paso 1: Nos fijamos en la <span class="var-y">y</span>. En la primera suma (+y) y en la segunda resta (-y). Ya están listas para aniquilarse sin multiplicar nada. Sumamos en vertical:</span><br>
               <br>

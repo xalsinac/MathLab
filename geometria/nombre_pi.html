@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -43,13 +43,13 @@
 
     /* LIENZO SVG PANORÁMICO COMPLETO */
     .svg-canvas-wide {
-      width: 100%; height: 260px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 260px; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block;
     }
 
     /* CAJA DE CÁLCULO EN VIVO */
     .pi-calc-box {
-      background: #090d16; border: 1px solid var(--border-color); border-radius: 8px;
+      background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px;
       padding: 1.2rem; font-family: monospace; font-size: 1.2rem; text-align: center; line-height: 1.8;
       margin-top: 1rem;
     }
@@ -177,7 +177,7 @@
             Si coges una cinta métrica, mides el perímetro completo de cualquier objeto circular y lo divides por su diámetro (el ancho de lado a lado pasando por el centro):
           </p>
 
-          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; text-align:center; font-family:monospace; font-size:1.6rem; color:var(--accent-success); font-weight:bold;">
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; text-align:center; font-family:monospace; font-size:1.6rem; color:var(--accent-success); font-weight:bold;">
             π = Longitud / Diámetro ≈ 3,14159265...
           </div>
 
@@ -229,7 +229,7 @@
           <p style="color:var(--text-muted); font-size:0.95rem; line-height:1.6; margin-top:0.8rem;">
             Fue duplicando el número de lados: 6, 12, 24, 48 hasta llegar a polígonos de <strong>96 lados</strong>. Con ellos demostró que el valor de π estaba atrapado entre:
           </p>
-          <div style="background:#090d16; padding:0.8rem; border-radius:6px; font-family:monospace; font-size:1.15rem; text-align:center; color:var(--accent-gold); margin-top:0.5rem;">
+          <div style="background:var(--bg-primary); padding:0.8rem; border-radius:6px; font-family:monospace; font-size:1.15rem; text-align:center; color:var(--accent-gold); margin-top:0.5rem;">
             3 + 10/71 &lt; π &lt; 3 + 1/7 &nbsp; (3,1408 &lt; π &lt; 3,1428)
           </div>
         </div>

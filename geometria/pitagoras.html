@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -59,13 +59,13 @@
 
     /* SVG CANVAS */
     .svg-canvas {
-      width: 100%; height: 300px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 300px; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block;
     }
 
     /* CAJA DE FÓRMULA DESTACADA */
     .formula-hero {
-      background: #090d16; border: 2px solid var(--accent-gold); border-radius: 10px;
+      background: var(--bg-primary); border: 2px solid var(--accent-gold); border-radius: 10px;
       padding: 1.2rem; text-align: center; font-family: monospace; font-size: 1.6rem;
       font-weight: bold; color: var(--accent-gold); margin: 0.8rem 0;
     }
@@ -235,7 +235,7 @@
             <span class="val-badge" id="v_cat_b" style="color:var(--accent-op);">3 cm</span>
           </div>
 
-          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:1.9; margin-top:1rem;">
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:1.9; margin-top:1rem;">
             <div>• Área cuadrado a² = <strong style="color:var(--accent-gold);" id="txt_area_a">16 cm²</strong></div>
             <div>• Área cuadrado b² = <strong style="color:var(--accent-op);" id="txt_area_b">9 cm²</strong></div>
             <hr style="border:0; border-top:1px solid var(--border-color); margin:0.5rem 0;">
@@ -335,7 +335,7 @@
             El cuadrado de la altura relativa a la hipotenusa es igual al producto de las dos proyecciones de los catetos:
           </p>
 
-          <div style="background:#090d16; border:1px solid var(--accent-blue); border-radius:8px; padding:1.2rem; text-align:center; font-family:monospace; font-size:1.35rem; color:var(--accent-blue); font-weight:bold;">
+          <div style="background:var(--bg-primary); border:1px solid var(--accent-blue); border-radius:8px; padding:1.2rem; text-align:center; font-family:monospace; font-size:1.35rem; color:var(--accent-blue); font-weight:bold;">
             h² = m · n &nbsp; ➔ &nbsp; 
             h = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">m · n</span></span>
           </div>
@@ -345,7 +345,7 @@
             El cuadrado de un cateto es igual a la hipotenusa completa ($c$) multiplicada por su proyección adyacente:
           </p>
 
-          <div style="background:#090d16; border:1px solid var(--accent-gold); border-radius:8px; padding:1.2rem; text-align:center; font-family:monospace; font-size:1.25rem; color:var(--accent-gold); font-weight:bold; line-height:2;">
+          <div style="background:var(--bg-primary); border:1px solid var(--accent-gold); border-radius:8px; padding:1.2rem; text-align:center; font-family:monospace; font-size:1.25rem; color:var(--accent-gold); font-weight:bold; line-height:2;">
             <div>
               b² = c · m &nbsp; ➔ &nbsp; 
               b = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">c · m</span></span>
@@ -410,7 +410,7 @@
               Calcular el área de un triángulo isósceles de <strong>base 6 cm</strong> y <strong>lados iguales 5 cm</strong>.
             </p>
 
-            <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; font-family:monospace; font-size:1.05rem; line-height:1.9;">
+            <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; font-family:monospace; font-size:1.05rem; line-height:1.9;">
               <div>1. La altura divide la base en dos mitades de <strong>3 cm</strong>.</div>
               <div>2. Triángulo rectángulo: Cateto = 3 cm, Hipotenusa = 5 cm, Altura = h.</div>
               <div style="color:var(--accent-gold); margin-top:0.3rem;">3. Pitágoras: 3² + h² = 5² ➔ 9 + h² = 25</div>
@@ -453,7 +453,7 @@
               Trapecio con <strong>Base mayor = 10 cm</strong>, <strong>base menor = 4 cm</strong> y <strong>lados oblicuos = 5 cm</strong>.
             </p>
 
-            <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; font-family:monospace; font-size:1.05rem; line-height:1.9;">
+            <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; font-family:monospace; font-size:1.05rem; line-height:1.9;">
               <div>1. Base del triángulo lateral: (10 - 4) / 2 = <strong>3 cm</strong>.</div>
               <div>2. Triángulo lateral: Cateto = 3 cm, Hipotenusa = 5 cm.</div>
               <div style="color:var(--accent-gold); margin-top:0.3rem;">
@@ -493,7 +493,7 @@
               Las diagonales de un rombo se cruzan en su centro formando 4 triángulos rectángulos congruentes.
             </p>
 
-            <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; font-family:monospace; font-size:1.05rem; line-height:1.9;">
+            <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1.1rem; font-family:monospace; font-size:1.05rem; line-height:1.9;">
               <div>Si Diagonal mayor D = 8 cm y menor d = 6 cm:</div>
               <div>1. Los catetos son las semidiagonales: <strong>4 cm</strong> y <strong>3 cm</strong>.</div>
               <div>2. El lado del rombo (L) es la <strong>hipotenusa</strong>.</div>
@@ -552,7 +552,7 @@
 
         <div class="panel-box">
           <div class="panel-title">Resolución Paso a Paso</div>
-          <div id="calc_result_box" style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:2.2; font-size:1.1rem; min-height:180px;">
+          <div id="calc_result_box" style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:2.2; font-size:1.1rem; min-height:180px;">
             Pulsa en 'Calcular' para ver la resolución matemática.
           </div>
         </div>
@@ -644,22 +644,22 @@
         box.innerHTML = `
           <div class="slider-row">
             <label style="color:var(--accent-gold);">Cateto a:</label>
-            <input type="number" id="inp_val_a" value="6" style="padding:0.5rem; background:#090d16; border:1px solid var(--border-color); border-radius:6px; color:#fff; width:100px; font-family:monospace; font-size:1.1rem;">
+            <input type="number" id="inp_val_a" value="6" style="padding:0.5rem; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:6px; color:var(--text-main); width:100px; font-family:monospace; font-size:1.1rem;">
           </div>
           <div class="slider-row">
             <label style="color:var(--accent-op);">Cateto b:</label>
-            <input type="number" id="inp_val_b" value="8" style="padding:0.5rem; background:#090d16; border:1px solid var(--border-color); border-radius:6px; color:#fff; width:100px; font-family:monospace; font-size:1.1rem;">
+            <input type="number" id="inp_val_b" value="8" style="padding:0.5rem; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:6px; color:var(--text-main); width:100px; font-family:monospace; font-size:1.1rem;">
           </div>
         `;
       } else {
         box.innerHTML = `
           <div class="slider-row">
             <label style="color:var(--accent-success);">Hipotenusa (c):</label>
-            <input type="number" id="inp_val_c" value="10" style="padding:0.5rem; background:#090d16; border:1px solid var(--border-color); border-radius:6px; color:#fff; width:100px; font-family:monospace; font-size:1.1rem;">
+            <input type="number" id="inp_val_c" value="10" style="padding:0.5rem; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:6px; color:var(--text-main); width:100px; font-family:monospace; font-size:1.1rem;">
           </div>
           <div class="slider-row">
             <label style="color:var(--accent-gold);">Cateto conocido (a):</label>
-            <input type="number" id="inp_val_a" value="8" style="padding:0.5rem; background:#090d16; border:1px solid var(--border-color); border-radius:6px; color:#fff; width:100px; font-family:monospace; font-size:1.1rem;">
+            <input type="number" id="inp_val_a" value="8" style="padding:0.5rem; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:6px; color:var(--text-main); width:100px; font-family:monospace; font-size:1.1rem;">
           </div>
         `;
       }

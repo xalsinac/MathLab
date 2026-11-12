@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -54,7 +54,7 @@
     /* FÓRMULAS */
     .math-formula {
       font-family: 'Courier New', Courier, monospace; font-size: 1.3rem; font-weight: bold;
-      background: #090d16; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
+      background: var(--bg-primary); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
       text-align: center; display: inline-block; margin: 0.5rem auto; color: #fff; width: 100%;
     }
     
@@ -78,7 +78,7 @@
       border-radius: 12px; border: 2px solid; padding: 1.8rem 1rem 1rem 1rem; position: relative; width: 100%; transition: all 0.3s ease; margin-top: 1.2rem;
     }
     .bag-label {
-      position: absolute; top: -14px; left: 15px; background: #090d16; padding: 0 10px; font-weight: bold; font-family: monospace; font-size: 1.05rem; z-index: 2;
+      position: absolute; top: -14px; left: 15px; background: var(--bg-primary); padding: 0 10px; font-weight: bold; font-family: monospace; font-size: 1.05rem; z-index: 2;
     }
     .bag-content { font-family: monospace; font-size: 1.1rem; color: #fff; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
     
@@ -90,14 +90,14 @@
     .bag-q .bag-label { color: var(--accent-success); }
     .bag-i { border-color: #f472b6; background: rgba(244, 114, 182, 0.03); height: 100%; }
     .bag-i .bag-label { color: #f472b6; }
-    .bag-r { border-color: #c084fc; border-width: 3px; border-style: dashed; padding: 2rem 1.5rem 1.5rem 1.5rem; background: #090d16; margin-top:0;}
+    .bag-r { border-color: #c084fc; border-width: 3px; border-style: dashed; padding: 2rem 1.5rem 1.5rem 1.5rem; background: var(--bg-primary); margin-top:0;}
     .bag-r .bag-label { color: #c084fc; font-size: 1.2rem; background: var(--bg-primary); }
 
     .bag.highlight { background: rgba(255,255,255,0.08); box-shadow: 0 0 15px currentColor; border-width: 3px; }
 
     /* RECTA REAL SVG */
     .svg-canvas {
-      width: 100%; height: 120px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 120px; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block; margin-top: 1rem;
     }
 
@@ -153,7 +153,7 @@
             <button onclick="highlightSet('√2', 'i', 1.41)" style="padding:0.5rem 1rem; border-radius:6px; border:none; font-weight:bold; cursor:pointer; background:#f472b6; color:#fff;">√2</button>
           </div>
 
-          <div id="set_explanation" style="min-height: 80px; background:#090d16; padding:1rem; border-radius:8px; border:1px dashed var(--border-color); font-size:0.9rem; color:var(--text-muted); line-height:1.5;">
+          <div id="set_explanation" style="min-height: 80px; background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px dashed var(--border-color); font-size:0.9rem; color:var(--text-muted); line-height:1.5;">
             Selecciona un número arriba para analizar su ADN matemático.
           </div>
         </div>
@@ -259,7 +259,7 @@
             Para no perder precisión en los ejercicios, <strong>dejamos el símbolo intacto y lo tratamos como si fuera la letra 'x' del álgebra</strong>.
           </p>
 
-          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.15rem; line-height:1.8; margin-top:1rem;">
+          <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1.15rem; line-height:1.8; margin-top:1rem;">
             <div style="color:var(--text-muted); font-size:0.85rem; text-transform:uppercase;">Sumas: Solo si son idénticos</div>
             3π + 2π = <strong style="color:#f472b6;">5π</strong><br>
             7√2 - 3√2 = <strong style="color:#f472b6;">4√2</strong><br>
@@ -304,7 +304,7 @@
             </span>
           </div>
           
-          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem; line-height:1.6; margin-top:1rem;">
+          <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem; line-height:1.6; margin-top:1rem;">
             • <strong style="color:var(--text-main);">n (Índice):</strong> Va al denominador (abajo). Si no pone nada, es un 2 (raíz cuadrada).<br>
             • <strong style="color:var(--accent-gold);">m (Exponente):</strong> Va al numerador (arriba). Si no pone nada, es un 1.<br><br>
             <div style="display:flex; align-items:center;">
@@ -370,7 +370,7 @@
             <p style="color:var(--text-muted); font-size:0.9rem;">
               Solo puedes juntar raíces si son <strong>exactamente idénticas</strong> (mismo índice y mismo radicando). Actúan como "manzanas".
             </p>
-            <div style="font-family:monospace; font-size:1.15rem; color:#fff; background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
+            <div style="font-family:monospace; font-size:1.15rem; color:var(--text-main); background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
               <span style="color:var(--accent-blue);">3</span><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">2</span></span> + <span style="color:var(--accent-blue);">5</span><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">2</span></span> = <strong style="color:var(--accent-blue);">8</strong><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">2</span></span>
             </div>
           </div>
@@ -380,7 +380,7 @@
             <p style="color:var(--text-muted); font-size:0.9rem;">
               Para multiplicar, la única regla es que el <strong>Índice sea el mismo</strong>.
             </p>
-            <div style="font-family:monospace; font-size:1.15rem; color:#fff; background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
+            <div style="font-family:monospace; font-size:1.15rem; color:var(--text-main); background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
               <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">2</span></span> · <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">3</span></span> = <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">6</span></span>
             </div>
             <div style="font-size:0.85rem; color:var(--accent-gold); margin-top:0.8rem; font-weight:bold;">
@@ -405,7 +405,7 @@
             <span class="val-badge" id="v_sl_ext">7</span>
           </div>
 
-          <div style="background:#090d16; padding:1.5rem; border-radius:8px; border:1px dashed var(--accent-success); min-height:180px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:1rem;">
+          <div style="background:var(--bg-primary); padding:1.5rem; border-radius:8px; border:1px dashed var(--accent-success); min-height:180px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:1rem;">
             
             <div style="font-size:2rem; color:#fff; font-family:monospace;">
               <span class="radical-box">
@@ -449,7 +449,7 @@
             Si hay una raíz cuadrada solitaria abajo, multiplicamos numerador y denominador exactamente por esa misma raíz.
           </p>
 
-          <div style="font-family:monospace; font-size:1.1rem; color:#fff; background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); text-align:center; line-height:2;">
+          <div style="font-family:monospace; font-size:1.1rem; color:var(--text-main); background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px solid var(--border-color); text-align:center; line-height:2;">
             <span class="fraction-vertical"><span class="num">3</span><span class="den"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">5</span></span></span></span> 
             <br>↓<br>
             <span class="fraction-vertical"><span class="num">3 · <strong style="color:var(--accent-gold);"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">5</span></span></strong></span><span class="den"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">5</span></span> · <strong style="color:var(--accent-gold);"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">5</span></span></strong></span></span>
@@ -467,7 +467,7 @@
             Si el índice no es 2, no basta con copiarla. Debemos multiplicar por una raíz que tenga los <strong>exponentes que faltan</strong> para llegar al índice y poder escapar.
           </p>
 
-          <div style="font-family:monospace; font-size:1.1rem; color:#fff; background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); text-align:center; line-height:2;">
+          <div style="font-family:monospace; font-size:1.1rem; color:var(--text-main); background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px solid var(--border-color); text-align:center; line-height:2;">
             <span class="fraction-vertical"><span class="num">2</span><span class="den"><span class="radical-box"><span class="rad-index">5</span><span class="rad-symbol">√</span><span class="rad-content">x²</span></span></span></span> 
             <br><span style="color:var(--text-muted); font-size:0.8rem;">(Faltan 3 para llegar a 5)</span><br>
             <span class="fraction-vertical"><span class="num">2 · <strong style="color:var(--accent-blue);"><span class="radical-box"><span class="rad-index">5</span><span class="rad-symbol">√</span><span class="rad-content">x³</span></span></strong></span><span class="den"><span class="radical-box"><span class="rad-index">5</span><span class="rad-symbol">√</span><span class="rad-content">x²</span></span> · <strong style="color:var(--accent-blue);"><span class="radical-box"><span class="rad-index">5</span><span class="rad-symbol">√</span><span class="rad-content">x³</span></span></strong></span></span>
@@ -485,7 +485,7 @@
             Si hay una suma o resta con raíces en el sótano, multiplicamos por su <strong>conjugado</strong> (lo mismo pero con el signo central cambiado). Usamos la identidad: <span style="font-family:monospace;">(A+B)(A-B) = A² - B²</span>.
           </p>
 
-          <div style="font-family:monospace; font-size:1.1rem; color:#fff; background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); text-align:center; line-height:2;">
+          <div style="font-family:monospace; font-size:1.1rem; color:var(--text-main); background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px solid var(--border-color); text-align:center; line-height:2;">
             <span class="fraction-vertical"><span class="num">4</span><span class="den"><span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">7</span></span> - <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">3</span></span></span></span> 
             <br>↓<br>
             <span class="fraction-vertical"><span class="num">4 · <strong style="color:#f472b6;">(<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">7</span></span> + <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">3</span></span>)</strong></span><span class="den">(<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">7</span></span> - <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">3</span></span>) · <strong style="color:#f472b6;">(<span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">7</span></span> + <span class="radical-box"><span class="rad-symbol">√</span><span class="rad-content">3</span></span>)</strong></span></span>

@@ -9,7 +9,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS: conserva la paleta y el estilo de la web */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -71,7 +71,7 @@
 
     /* SVG CANVAS */
     .svg-canvas {
-      width: 100%; height: 320px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 320px; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block;
     }
     .svg-canvas.compact { height: 250px; }
@@ -367,7 +367,7 @@
           </div>
           <p id="limit-help" class="small-note">Puedes probar x = 1,9, 2,0 y 2,1 para comparar qué ocurre.</p>
 
-          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1rem; line-height:1.7;">
+          <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-family:monospace; font-size:1rem; line-height:1.7;">
             <div>La función del ejemplo es f(x) = x + 1, salvo en x = 2.</div>
             <div style="font-size:1.25rem; color:#c084fc; margin-top:0.4rem;">
               lim<sub>x→2</sub> f(x) = <strong>3</strong>

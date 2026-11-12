@@ -307,9 +307,124 @@
     });
   };
 
+  const ACADEMY_BASE = 'https://mathuniverse-beta.vercel.app';
+  const ACADEMY_BRIDGE_MAP = {
+    'algebra/notables': {
+      title: 'Deducción de las Identidades Notables',
+      path: '/academy/algebra/identidades-notables',
+    },
+    'algebra/segundo_grado': {
+      title: 'Deducción de la Fórmula Cuadrática',
+      path: '/academy/algebra/formula-cuadratica',
+    },
+    'algebra/ruffini_raices': {
+      title: 'El Teorema del Resto y la Regla de Ruffini',
+      path: '/academy/algebra/teorema-resto-ruffini',
+    },
+    'algebra/sistemas_lineales3': {
+      title: 'El Teorema de Rouché-Frobenius',
+      path: '/academy/algebra/rouche-frobenius',
+    },
+    'algebra/sucesiones': {
+      title: 'La Serie Geométrica Infinita y la Paradoja de Zenón',
+      path: '/academy/calculo/serie-geometrica-zenon',
+    },
+    'algebra/numeros_complejos': {
+      title: 'La Identidad de Euler (e^(iπ) + 1 = 0)',
+      path: '/academy/teoremas/identidad-euler',
+    },
+    'analisis/limites_continuidad': {
+      title: 'El Concepto Riguroso de Límite',
+      path: '/academy/calculo/concepto-limite',
+    },
+    'analisis/derivadas_intro': {
+      title: 'La Derivada por Definición Formal',
+      path: '/academy/calculo/derivada-definicion',
+    },
+    'analisis/derivadas_avanzadas': {
+      title: 'El Teorema de L’Hôpital (Indeterminaciones 0/0 e ∞/∞)',
+      path: '/academy/calculo/teorema-lhopital',
+    },
+    'analisis/integrales': {
+      title: 'El Teorema Fundamental del Cálculo (Regla de Barrow)',
+      path: '/academy/calculo/teorema-fundamental-calculo',
+    },
+    'geometria/pitagoras': {
+      title: 'El Teorema de Pitágoras y las Demostraciones Visuales',
+      path: '/academy/teoremas/teorema-pitagoras-diseccion',
+    },
+    'geometria/tales': {
+      title: 'El Teorema de Tales y la Semejanza de Triángulos',
+      path: '/academy/geometria/teorema-tales-semejanza',
+    },
+    'geometria/trigonometria_avanzada': {
+      title: 'Deducción de los Teoremas del Seno y del Coseno',
+      path: '/academy/geometria/teoremas-seno-coseno',
+    },
+    'geometria/cuerpos_geometricos': {
+      title: 'La Característica de Euler para Poliedros Convexos',
+      path: '/academy/teoremas/caracteristica-euler-poliedros',
+    },
+    'estadistica/probabilidad': {
+      title: 'Axiomática de Kolmogorov y Propiedades',
+      path: '/academy/probabilidad/axiomatica-kolmogorov',
+    },
+    'estadistica/probabilidad_batx': {
+      title: 'Probabilidad Condicionada y Teorema de Bayes',
+      path: '/academy/probabilidad/bayes-condicionada',
+    },
+    'estadistica/inferencia': {
+      title: 'La Ley de los Grandes Números y el Teorema Central del Límite',
+      path: '/academy/probabilidad/ley-grandes-numeros-tcl',
+    },
+    'aritmetica/reales_radicales': {
+      title: 'La Irracionalidad de √2 (Demostración de Euclides)',
+      path: '/academy/teoremas/irracionalidad-raiz-2',
+    },
+    'aritmetica/mcm_mcd': {
+      title: 'La Infinitud de los Números Primos',
+      path: '/academy/teoremas/infinitud-primos',
+    },
+  };
+
+  const setupAcademyBridge = () => {
+    if (document.querySelector('.academy-bridge-wrap')) return;
+    const cleanPath = window.location.pathname.replace(/\.html$/i, '').replace(/\/+$/, '');
+    const parts = cleanPath.split('/').filter(Boolean);
+    if (parts.length < 2) return;
+    const key = `${parts[parts.length - 2]}/${parts[parts.length - 1]}`;
+    const match = ACADEMY_BRIDGE_MAP[key];
+    if (!match) return;
+
+    const host = document.querySelector('main') || document.querySelector('.container') || document.body;
+    if (!host) return;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'academy-bridge-wrap';
+
+    const link = document.createElement('a');
+    link.className = 'academy-crystal-btn';
+    link.href = `${ACADEMY_BASE}${match.path}`;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.innerHTML = `
+      <span class="academy-crystal-badge">Math Academy</span>
+      <span class="academy-crystal-text">
+        <span class="academy-crystal-kicker">Ampliación y demostración formal</span>
+        <span class="academy-crystal-title">${match.title}</span>
+      </span>
+      <span class="academy-crystal-arrow" aria-hidden="true">→</span>
+    `;
+
+    wrap.appendChild(link);
+    host.appendChild(wrap);
+    updateCrossLinks(getTheme());
+  };
+
   const initAll = () => {
     setupToggle();
     setupStarfield();
+    setupAcademyBridge();
   };
 
   window.addEventListener('storage', (e) => {

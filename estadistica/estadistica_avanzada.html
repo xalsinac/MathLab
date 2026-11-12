@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -56,7 +56,7 @@
 
     /* SVG CANVAS */
     .svg-canvas {
-      width: 100%; height: 280px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 280px; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block;
     }
 
@@ -66,7 +66,7 @@
     }
     .array-box {
       width: 40px; height: 40px; display: flex; justify-content: center; align-items: center;
-      background: #0b1120; border: 2px solid var(--border-color); border-radius: 6px;
+      background: var(--bg-plate); border: 2px solid var(--border-color); border-radius: 6px;
       font-family: monospace; font-size: 1.2rem; font-weight: bold; color: #fff;
       position: relative;
     }
@@ -84,7 +84,7 @@
     /* FÓRMULAS ELEGANTES */
     .math-formula {
       font-family: 'Courier New', Courier, monospace; font-size: 1.3rem; font-weight: bold;
-      background: #090d16; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
+      background: var(--bg-primary); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
       text-align: center; display: inline-block; margin: 0.5rem auto;
     }
     .fraction-vertical {
@@ -152,7 +152,7 @@
           <div style="text-align:center; font-family:monospace; margin-bottom:1rem;">
             x̄ = <span class="fraction-vertical"><span class="num">Suma de datos</span><span class="den">Total de datos (N)</span></span>
           </div>
-          <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem;">
+          <div style="background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem;">
             <strong>Ejemplo:</strong> Notas [4, 6, 8]<br>
             x̄ = (4 + 6 + 8) / 3 = 18 / 3 = <strong style="color:var(--accent-blue);">6</strong>
           </div>
@@ -167,7 +167,7 @@
           <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
             El número que queda <strong>exactamente en el medio</strong> de la fila tras ordenar los datos de menor a mayor.
           </p>
-          <div style="display:flex; flex-direction:column; gap:0.5rem; background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem;">
+          <div style="display:flex; flex-direction:column; gap:0.5rem; background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem;">
             <div style="color:var(--text-muted); font-size:0.85rem;">Si hay cantidad IMPAR (ej: 5 datos):</div>
             <div style="font-family:monospace; letter-spacing:2px; text-align:center;">1 3 <strong style="color:var(--accent-gold); font-size:1.2rem;">5</strong> 8 9 ➔ Me = 5</div>
             <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1);">
@@ -183,7 +183,7 @@
           <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
             Lo que más se lleva. Es el valor que <strong>más veces se repite</strong> en toda la lista (el de mayor frecuencia).
           </p>
-          <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem;">
+          <div style="background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem;">
             <strong>Ejemplo:</strong> [3, 4, 4, <span style="color:var(--accent-success); font-weight:bold;">7, 7, 7</span>, 8, 9]<br>
             El 7 aparece tres veces.<br>
             Mo = <strong style="color:var(--accent-success);">7</strong>
@@ -234,7 +234,7 @@
             <div class="array-box">10</div>
           </div>
 
-          <div style="background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem; line-height:1.6;">
+          <div style="background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.95rem; line-height:1.6;">
             • <strong style="color:var(--accent-blue);">Q1 = 4</strong>: El 25% sacó un 4 o menos.<br>
             • <strong style="color:var(--accent-gold);">Q2 = 6 (Mediana)</strong>: La mitad exacta sacó un 6 o menos.<br>
             • <strong style="color:var(--accent-success);">Q3 = 9</strong>: El 75% sacó un 9 o menos.
@@ -390,16 +390,16 @@
         </table>
 
         <div style="display:flex; justify-content:space-around; flex-wrap:wrap; gap:1rem; margin-top:1rem; font-family:monospace; font-size:1.15rem;">
-          <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
+          <div style="background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
             <div style="color:var(--text-muted); font-size:0.85rem;">1. Media (x̄)</div>
             x̄ = 50 / 10 = <strong>5</strong>
           </div>
-          <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
+          <div style="background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
             <div style="color:var(--text-muted); font-size:0.85rem;">2. Varianza (σ²)</div>
             σ² = (254 / 10) - 5²<br>
             σ² = 25.4 - 25 = <strong style="color:var(--accent-op);">0.4</strong>
           </div>
-          <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--accent-success);">
+          <div style="background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px solid var(--accent-success);">
             <div style="color:var(--text-muted); font-size:0.85rem;">3. Desviación Típica (σ)</div>
             σ = √0.4 ≈ <strong style="color:var(--accent-success);">0.63</strong>
           </div>
@@ -532,19 +532,19 @@
 
         <div style="display:flex; flex-direction:column; gap:1.2rem; margin-top:1rem; font-family:monospace; font-size:1.1rem;">
           <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;">
-            <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
+            <div style="background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px solid var(--border-color);">
               <div style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.5rem;">1. Medias (N = 3)</div>
               x̄ = 9 / 3 = <strong>3</strong><br>
               ȳ = 12 / 3 = <strong>4</strong>
             </div>
             
-            <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--accent-gold);">
+            <div style="background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px solid var(--accent-gold);">
               <div style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.5rem;">2. Desviaciones Típicas (σx, σy)</div>
               σx = √[ (35/3) - 3² ] = √2.66 ≈ <strong style="color:var(--accent-gold);">1.63</strong><br>
               σy = √[ (56/3) - 4² ] = √2.66 ≈ <strong style="color:var(--accent-gold);">1.63</strong>
             </div>
             
-            <div style="background:#090d16; padding:1rem; border-radius:8px; border:1px solid var(--accent-success);">
+            <div style="background:var(--bg-primary); padding:1rem; border-radius:8px; border:1px solid var(--accent-success);">
               <div style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.5rem;">3. Covarianza (Sxy)</div>
               Sxy = <span class="fraction-vertical"><span class="num">Σ(X·Y)</span><span class="den">N</span></span> - (x̄ · ȳ)<br><br>
               Sxy = (40 / 3) - (3 · 4)<br>

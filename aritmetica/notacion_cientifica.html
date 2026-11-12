@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -43,14 +43,14 @@
 
     /* SVG CANVAS */
     .svg-canvas {
-      width: 100%; height: 200px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 200px; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block;
     }
 
     /* FÓRMULA HERO CORREGIDA (sin flex para no aplastar el sup) */
     .formula-hero {
       display: inline-block; text-align: center;
-      background: #090d16; border: 2px solid var(--accent-blue); border-radius: 10px;
+      background: var(--bg-primary); border: 2px solid var(--accent-blue); border-radius: 10px;
       padding: 1.2rem 2.5rem; font-family: monospace; font-size: 2.2rem;
       font-weight: bold; color: #fff; margin: 0.5rem auto;
     }
@@ -65,7 +65,7 @@
     .comma-display {
       font-family: monospace; font-size: 2.2rem; font-weight: bold; color: #fff;
       letter-spacing: 4px; text-align: center; margin: 1.5rem 0;
-      background: #0b1120; padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border-color);
+      background: var(--bg-plate); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border-color);
     }
     .digit { color: #fff; }
     .comma-active { color: var(--accent-gold); font-size: 2.8rem; position: relative; top: 4px; }
@@ -150,7 +150,7 @@
             <ellipse cx="150" cy="100" rx="70" ry="15" fill="none" stroke="var(--accent-blue)" stroke-width="2" transform="rotate(15 150 100)" />
           </svg>
 
-          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1rem; margin-top:1rem; font-family:monospace; line-height:1.6;">
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1rem; margin-top:1rem; font-family:monospace; line-height:1.6;">
             <div>Velocidad de la luz:</div>
             <div>300.000.000 m/s</div>
             <div style="color:var(--accent-blue); font-size:1.2rem; font-weight:bold; margin-top:0.3rem;">= 3 · 10⁸ m/s</div>
@@ -173,7 +173,7 @@
             <circle cx="170" cy="65" r="3" fill="var(--accent-gold)" />
           </svg>
 
-          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1rem; margin-top:1rem; font-family:monospace; line-height:1.6;">
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1rem; margin-top:1rem; font-family:monospace; line-height:1.6;">
             <div>Tamaño de un glóbulo rojo:</div>
             <div>0,000007 metros</div>
             <div style="color:var(--accent-gold); font-size:1.2rem; font-weight:bold; margin-top:0.3rem;">= 7 · 10⁻⁶ m</div>
@@ -250,7 +250,7 @@
             </p>
           </div>
 
-          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:1.9; margin-top:1rem; font-size:1.05rem;">
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:1.9; margin-top:1rem; font-size:1.05rem;">
             <div style="color:var(--text-muted); font-size:0.9rem;">Ejemplo Multiplicación:</div>
             <div>(3 · 10⁴) · (2 · 10⁵)</div>
             <div>= (3 · 2) · 10⁴⁺⁵</div>
@@ -314,7 +314,7 @@
             </tbody>
           </table>
 
-          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:1.9; margin-top:1rem; font-size:1.05rem;">
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; line-height:1.9; margin-top:1rem; font-size:1.05rem;">
             <div style="color:var(--text-muted); font-size:0.9rem;">Ejemplo de Suma:</div>
             <div>3,2 · 10⁵ + 4 · 10⁴</div>
             <div style="color:var(--accent-success); font-size:0.85rem; margin:0.3rem 0;">* Aumentamos el 10⁴ a 10⁵ (coma a la izquierda):</div>

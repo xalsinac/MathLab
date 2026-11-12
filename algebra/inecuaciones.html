@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -54,13 +54,13 @@
     /* FÓRMULAS */
     .math-formula {
       font-family: 'Courier New', Courier, monospace; font-size: 1.4rem; font-weight: bold;
-      background: #090d16; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
+      background: var(--bg-primary); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);
       text-align: center; display: inline-block; margin: 0.5rem auto; color: #fff; width: 100%;
     }
 
     /* SVG CANVAS */
     .svg-canvas {
-      width: 100%; height: 250px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 250px; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block;
     }
 
@@ -112,7 +112,7 @@
             Las letras van a un lado y los números al otro. Sumar, restar, multiplicar y dividir funciona exactamente igual... <strong>hasta que topamos con los números negativos.</strong>
           </p>
 
-          <div style="font-family:monospace; font-size:1.15rem; color:#fff; background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); line-height:2;">
+          <div style="font-family:monospace; font-size:1.15rem; color:var(--text-main); background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); line-height:2;">
             <div style="color:var(--text-muted); font-size:0.85rem; text-transform:uppercase;">Un ejemplo normal:</div>
             3x - 5 > 10<br>
             3x > 10 + 5<br>
@@ -131,7 +131,7 @@
             <strong>La Regla de Oro:</strong> Si pasas un número <strong>NEGATIVO multiplicando o dividiendo</strong> al otro lado, la flecha de la inecuación <strong>SE DA LA VUELTA OBLIGATORIAMENTE</strong>.
           </div>
 
-          <div style="font-family:monospace; font-size:1.15rem; color:#fff; background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--accent-op); margin-top:1rem; line-height:2;">
+          <div style="font-family:monospace; font-size:1.15rem; color:var(--text-main); background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--accent-op); margin-top:1rem; line-height:2;">
             <div style="color:var(--accent-op); font-size:0.85rem; font-weight:bold; text-transform:uppercase;">El Peligro:</div>
             -2x ≥ 8<br>
             <span style="color:var(--text-muted); font-size:0.9rem;">(El -2 pasa dividiendo... ¡Alerta! 🚨)</span><br>
@@ -164,7 +164,7 @@
 
           <div class="slider-row" style="margin-bottom:0.5rem;">
             <label>Condición:</label>
-            <select id="sl_signo" onchange="updateInterval()" style="background:#090d16; color:#fff; border:1px solid var(--border-color); padding:0.5rem; border-radius:6px; font-family:monospace; font-size:1.1rem; width:100px;">
+            <select id="sl_signo" onchange="updateInterval()" style="background:var(--bg-primary); color:var(--text-main); border:1px solid var(--border-color); padding:0.5rem; border-radius:6px; font-family:monospace; font-size:1.1rem; width:100px;">
               <option value=">"> > (Mayor)</option>
               <option value="<"> < (Menor)</option>
               <option value=">="> ≥ (Mayor/Igual)</option>
@@ -177,7 +177,7 @@
             <span class="val-badge" id="v_sl_num">2</span>
           </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:center; background:#090d16; padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); margin-top:1rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-primary); padding:1.2rem; border-radius:8px; border:1px solid var(--border-color); margin-top:1rem;">
             <div style="font-family:monospace; font-size:1.4rem; font-weight:bold; color:#fff;">
               x <span id="int_sign" style="color:var(--accent-gold);">></span> <span id="int_num">2</span>
             </div>

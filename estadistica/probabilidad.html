@@ -10,7 +10,7 @@
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
     .tabs-container {
-      background: #0b1120;
+      background: var(--bg-plate);
       border-bottom: 1px solid var(--border-color);
       display: flex;
       width: 100%;
@@ -53,7 +53,7 @@
 
     /* SVG CANVAS */
     .svg-canvas {
-      width: 100%; height: 260px; background: #090d16; border-radius: 8px;
+      width: 100%; height: 260px; background: var(--bg-primary); border-radius: 8px;
       border: 1px solid var(--border-color); display: block;
     }
 
@@ -92,7 +92,7 @@
 
     /* URNA DE BOLAS */
     .urn-box {
-      background: #090d16; border: 2px dashed var(--border-color); border-radius: 12px;
+      background: var(--bg-primary); border: 2px dashed var(--border-color); border-radius: 12px;
       padding: 1.2rem; min-height: 120px; display: flex; flex-wrap: wrap; gap: 0.6rem;
       align-items: center; justify-content: center; margin: 1rem 0;
     }
@@ -160,7 +160,7 @@
             Es el conjunto de <strong>todos los resultados posibles</strong> de un experimento aleatorio. Se denota con la letra <strong>E</strong> y se escribe entre llaves:
           </p>
 
-          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; font-size:1.15rem; line-height:1.9;">
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; font-size:1.15rem; line-height:1.9;">
             <div>• Tirar una moneda: <strong style="color:var(--accent-gold);">E = {Cara, Cruz}</strong></div>
             <div>• Tirar un dado tradicional: <strong style="color:var(--accent-blue);">E = {1, 2, 3, 4, 5, 6}</strong></div>
             <div>• Semáforo al llegar: <strong style="color:var(--accent-success);">E = {Verde, Ámbar, Rojo}</strong></div>
@@ -206,7 +206,7 @@
       </div>
 
       <div style="text-align:center; margin:0.5rem 0;">
-        <div style="display:inline-block; background:#090d16; border:1px solid var(--border-color); border-radius:10px; padding:1.2rem 2rem; font-size:1.35rem;">
+        <div style="display:inline-block; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:10px; padding:1.2rem 2rem; font-size:1.35rem;">
           P(A) = 
           <span class="fraction-vertical" style="color:var(--accent-gold);">
             <span class="num">Nº de Casos Favorables a A</span>
@@ -321,7 +321,7 @@
             Para calcular la probabilidad de un camino completo a lo largo del árbol, <strong>multiplicamos las probabilidades de cada una de sus ramas sucesivas</strong>:
           </p>
 
-          <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; font-size:1.15rem; line-height:2;">
+          <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:1.2rem; font-family:monospace; font-size:1.15rem; line-height:2;">
             <div>P(Sacar 2 Caras, CC) = 
               <span class="fraction-vertical"><span class="num">1</span><span class="den">2</span></span> · 
               <span class="fraction-vertical"><span class="num">1</span><span class="den">2</span></span> = 
@@ -368,7 +368,7 @@
               <button class="btn-sim" style="border-color:var(--accent-op); color:var(--accent-op);" onclick="resetDice1()">Reiniciar</button>
             </div>
 
-            <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:0.9rem; font-family:monospace; margin-bottom:1rem;">
+            <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:0.9rem; font-family:monospace; margin-bottom:1rem;">
               Tiradas acumuladas (N): <strong id="lbl_d1_total" style="color:var(--accent-gold); font-size:1.2rem;">0</strong> &nbsp;|&nbsp; 
               Último número: <strong id="lbl_d1_last" style="color:var(--accent-blue); font-size:1.4rem;">---</strong>
             </div>
@@ -444,7 +444,7 @@
               <button class="btn-sim" style="border-color:var(--accent-op); color:var(--accent-op);" onclick="resetDice2()">Reiniciar</button>
             </div>
 
-            <div style="background:#090d16; border:1px solid var(--border-color); border-radius:8px; padding:0.8rem; font-family:monospace; margin-bottom:0.8rem;">
+            <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:8px; padding:0.8rem; font-family:monospace; margin-bottom:0.8rem;">
               Lanzamientos totales (N): <strong id="lbl_d2_total" style="color:var(--accent-gold); font-size:1.2rem;">0</strong> &nbsp;|&nbsp; 
               Última suma: <strong id="lbl_d2_last" style="color:var(--accent-success); font-size:1.3rem;">---</strong>
             </div>

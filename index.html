@@ -1854,6 +1854,7 @@
       document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
       document.querySelector('.filter-chip[onclick*="all"]').classList.add('active');
       filterTopics();
+      try { history.replaceState(null, '', '#' + courseId); } catch (_) {}
       courseSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
@@ -1874,6 +1875,7 @@
       currentFilterBranch = 'all';
       document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
       document.querySelector('.filter-chip[onclick*="all"]').classList.add('active');
+      try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch (_) {}
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -1903,13 +1905,13 @@
       });
 
       document.querySelectorAll('.branch-group').forEach(group => {
-        const visibleCards = group.querySelectorAll('.topic-card[style*="display: flex"]');
-        group.style.display = (visibleCards.length > 0) ? 'block' : 'none';
+        const hasVisible = [...group.querySelectorAll('.topic-card')].some(c => c.style.display === 'flex');
+        group.style.display = hasVisible ? 'block' : 'none';
       });
 
       document.querySelectorAll('.cycle-block').forEach(section => {
-        const visibleCards = section.querySelectorAll('.topic-card[style*="display: flex"]');
-        section.style.display = (visibleCards.length > 0) ? 'block' : 'none';
+        const hasVisible = [...section.querySelectorAll('.topic-card')].some(c => c.style.display === 'flex');
+        section.style.display = hasVisible ? 'block' : 'none';
       });
     }
 
@@ -1925,9 +1927,13 @@
       const icon = document.getElementById('theme-icon');
       if (icon) icon.textContent = isLight ? '🌙' : '☀️';
       setupFavoriteButtons();
+      const hashCourse = (window.location.hash || '').replace('#', '');
+      if (['ciclo1', 'ciclo2', 'bach1', 'bach2'].includes(hashCourse)) {
+        openCourse(hashCourse);
+      }
     });
 
-    if ('serviceWorker' in navigator) {
+    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js').catch(() => {});
       });

@@ -1634,6 +1634,10 @@
     // =========================================================================
     // 3. FAVORITOS Y FILTRADO
     // =========================================================================
+    function normalizeCardHref(href) {
+      return (href || '').split('?')[0].split('#')[0];
+    }
+
     function getFavorites() {
       try {
         const saved = JSON.parse(localStorage.getItem('mathlab_favs')) || [];
@@ -1642,7 +1646,10 @@
           'geometria/conicas_circunferencia.html': 'geometria/conicas_circumferencia.html',
           'analisis/derivadas_aplicaciones.html': 'algebra/derivadas_aplicaciones.html'
         };
-        const normalized = [...new Set(saved.map(href => redirects[href] || href))];
+        const normalized = [...new Set(saved.map(h => {
+          const clean = normalizeCardHref(h);
+          return redirects[clean] || clean;
+        }))];
         if (normalized.length !== saved.length || normalized.some((href, index) => href !== saved[index])) {
           localStorage.setItem('mathlab_favs', JSON.stringify(normalized));
         }
@@ -1688,7 +1695,7 @@
       let shown = 0;
 
       favorites.forEach(href => {
-        const card = [...document.querySelectorAll('.topic-card')].find(item => item.getAttribute('href') === href);
+        const card = [...document.querySelectorAll('.topic-card')].find(item => normalizeCardHref(item.getAttribute('href')) === href);
         if (!card) return;
         const title = card.querySelector('.topic-name')?.innerText.trim() || href;
         const description = card.querySelector('.topic-desc')?.innerText.trim() || 'Abrir lección';
@@ -1750,7 +1757,7 @@
       const favs = getFavorites();
 
       cards.forEach(card => {
-        const href = card.getAttribute('href');
+        const href = normalizeCardHref(card.getAttribute('href'));
         const cardTop = card.querySelector('.card-top');
 
         if (cardTop && !cardTop.querySelector('.fav-btn')) {
@@ -1776,7 +1783,7 @@
       document.querySelectorAll('.topic-card').forEach(card => {
         const btn = card.querySelector('.fav-btn');
         if (btn) {
-          const isFav = favs.includes(card.getAttribute('href'));
+          const isFav = favs.includes(normalizeCardHref(card.getAttribute('href')));
           btn.textContent = isFav ? '★' : '☆';
           btn.classList.toggle('is-favorite', isFav);
           btn.title = isFav ? 'Quitar de favoritos' : 'Guardar en Favoritos';
@@ -1841,8 +1848,8 @@
 
       const bachCourse = BACHILLERATO_COURSES[courseId];
       currentCourseCardSet = bachCourse
-        ? new Set(bachCourse.hrefs)
-        : new Set([...courseSection.querySelectorAll('.topic-card')].map(card => card.getAttribute('href')));
+        ? new Set(bachCourse.hrefs.map(normalizeCardHref))
+        : new Set([...courseSection.querySelectorAll('.topic-card')].map(card => normalizeCardHref(card.getAttribute('href'))));
 
       document.getElementById('courseViewTitle').textContent =
         bachCourse?.title || courseSection.querySelector('.cycle-title').innerText.replace(/\s+/g, ' ').trim();
@@ -1889,7 +1896,7 @@
       cards.forEach(card => {
         const title = (card.getAttribute('data-title') || "").toLowerCase();
         const text = card.innerText.toLowerCase();
-        const href = card.getAttribute('href');
+        const href = normalizeCardHref(card.getAttribute('href'));
         const matchesQuery = q === "" || title.includes(q) || text.includes(q);
         const matchesCourse = !currentCourseCardSet || currentCourseCardSet.has(href);
 

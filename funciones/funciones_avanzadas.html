@@ -9,7 +9,8 @@
 
   <style>
     /* VARIABLES & TEMA */
-    :root {
+    :root,
+    html:not([data-theme="light"]) {
       --bg-main: #0b1120;
       --bg-panel: #0f172a;
       --bg-card: #090d16;
@@ -21,6 +22,20 @@
       --accent-purple: #c084fc;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
+    }
+
+    html[data-theme="light"] {
+      --bg-main: #f2f0ea;
+      --bg-panel: rgba(248, 246, 241, 0.95);
+      --bg-card: #ffffff;
+      --border-color: #d6d3c9;
+      --accent-blue: #0284c7;
+      --accent-gold: #d97706;
+      --accent-success: #059669;
+      --accent-op: #e11d48;
+      --accent-purple: #7c3aed;
+      --text-main: #14151a;
+      --text-muted: #626573;
     }
 
     body {

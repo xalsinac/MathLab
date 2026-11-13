@@ -8,7 +8,8 @@
     /* ========================================================
        SISTEMA DE DISEÑO MAESTRO (MODO OSCURO)
        ======================================================== */
-    :root {
+    :root,
+    html:not([data-theme="light"]) {
       --bg-primary: #0f172a;       /* Fondo general oscuro */
       --bg-card: #1e293b;          /* Fondo de la tarjeta principal */
       --bg-plate: #334155;         /* Superficie secundaria / botones */
@@ -21,6 +22,15 @@
       --accent-op: #f43f5e;        /* Pendiente m (rosa/rojo) */
       --accent-gold: #fbbf24;      /* Corte n (dorado/amarillo) */
       --accent-success: #10b981;   /* Indicadores positivos */
+    }
+
+    html[data-theme="light"] {
+      --bg-primary: #f2f0ea;
+      --bg-card: rgba(248, 246, 241, 0.95);
+      --bg-plate: #e6e3db;
+      --border-color: #d6d3c9;
+      --text-main: #14151a;
+      --text-muted: #626573;
     }
 
     * {
@@ -448,9 +458,10 @@
 
     function drawGrid() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
 
       // Rejilla de fondo
-      ctx.strokeStyle = '#1e293b';
+      ctx.strokeStyle = isLight ? '#cbd5e1' : '#1e293b';
       ctx.lineWidth = 1;
 
       for (let i = -range; i <= range; i++) {
@@ -466,7 +477,7 @@
       }
 
       // Ejes principales
-      ctx.strokeStyle = '#64748b';
+      ctx.strokeStyle = isLight ? '#475569' : '#64748b';
       ctx.lineWidth = 2;
 
       ctx.beginPath();
@@ -480,7 +491,7 @@
       ctx.stroke();
 
       // Números en los ejes
-      ctx.fillStyle = '#94a3b8';
+      ctx.fillStyle = isLight ? '#475569' : '#94a3b8';
       ctx.font = '11px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
@@ -615,6 +626,7 @@
 
     sliderM.addEventListener('input', draw);
     sliderN.addEventListener('input', draw);
+    window.addEventListener('themechange', draw);
 
     presetButtons.forEach(btn => {
       btn.addEventListener('click', () => {

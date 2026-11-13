@@ -70,6 +70,36 @@
     if (window.__cosmicRenderStarfield) {
       window.__cosmicRenderStarfield();
     }
+
+    // Notificar a toda la página y componentes del cambio de tema
+    try {
+      window.dispatchEvent(new CustomEvent('themechange', { detail: { theme, isLight: theme === 'light' } }));
+      document.dispatchEvent(new CustomEvent('themechange', { detail: { theme, isLight: theme === 'light' } }));
+    } catch (_) {}
+
+    // Re-dibujar gráficos o lienzos interactivos conocidos
+    setTimeout(() => {
+      try {
+        const redrawFns = [
+          'draw', 'drawAll', 'drawGrid', 'drawAxes', 'renderDemo', 'render',
+          'updateGrafica', 'drawAsymptotesGraph', 'drawExtremesGraph',
+          'drawCartesianGrid', 'drawCircleLab', 'drawCircleSystem',
+          'drawParabolaSystem', 'drawRiemann', 'drawRolleTheorem',
+          'drawSarrusExtended', 'drawSpiral', 'drawTree', 'drawArgandPlane',
+          'drawNormal', 'drawBinomial', 'drawPoint', 'drawAreaLab',
+          'updateUI', 'updateCanvasState', 'updateDrawFigure', 'updateView'
+        ];
+        for (const fnName of redrawFns) {
+          if (typeof window[fnName] === 'function') {
+            try { window[fnName](); } catch (_) {}
+          }
+        }
+        const sliders = document.querySelectorAll('input[type="range"]');
+        if (sliders.length > 0) {
+          sliders[0].dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      } catch (_) {}
+    }, 30);
   };
 
   const currentTheme = getTheme();

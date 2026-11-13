@@ -9,7 +9,8 @@
 
   <style>
     /* VARIABLES Y BASE */
-    :root {
+    :root,
+    html:not([data-theme="light"]) {
       --bg-main: #060913;
       --bg-primary: #0b1120;
       --bg-card: #0f172a;
@@ -21,6 +22,20 @@
       --accent-emerald: #10b981;
       --accent-rose: #f43f5e;
       --accent-purple: #c084fc;
+    }
+
+    html[data-theme="light"] {
+      --bg-main: #f2f0ea;
+      --bg-primary: #ffffff;
+      --bg-card: rgba(248, 246, 241, 0.95);
+      --border-color: #d6d3c9;
+      --text-main: #14151a;
+      --text-muted: #626573;
+      --accent-blue: #0284c7;
+      --accent-gold: #d97706;
+      --accent-emerald: #059669;
+      --accent-rose: #e11d48;
+      --accent-purple: #7c3aed;
     }
 
     body {

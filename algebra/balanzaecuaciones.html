@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>El Método de la Balanza - Resolución Rigurosa de Ecuaciones</title>
   <style>
-    :root {
+    :root,
+    html:not([data-theme="light"]) {
       --bg-primary: #0f172a;
       --bg-card: #1e293b;
       --bg-plate: #334155;
@@ -15,6 +16,18 @@
       --accent-op: #f43f5e;
       --accent-gold: #fbbf24;
       --border-color: #475569;
+    }
+
+    html[data-theme="light"] {
+      --bg-primary: #f2f0ea;
+      --bg-card: rgba(248, 246, 241, 0.95);
+      --bg-plate: #e6e3db;
+      --border-color: #d6d3c9;
+      --text-main: #14151a;
+      --text-muted: #626573;
+      --accent-blue: #0284c7;
+      --accent-op: #e11d48;
+      --accent-gold: #d97706;
     }
 
     * {

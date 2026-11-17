@@ -362,6 +362,11 @@
       border-color: var(--accent-op);
     }
 
+    .home-search-container {
+      width: 100%;
+      margin: 0.25rem 0 0.5rem;
+    }
+
     .pill-filters {
       display: flex;
       gap: 0.5rem;
@@ -761,60 +766,71 @@
       <p>Elige tu curso para encontrar las lecciones adecuadas. También puedes ir directamente a una fórmula o practicar.</p>
     </div>
 
-    <section aria-labelledby="courseHeading">
-      <div class="hub-section-heading">
-        <h2 id="courseHeading">Elige tu curso</h2>
-        <span class="heading-note">Lecciones organizadas por nivel</span>
+    <!-- BUSCADOR RÁPIDO EN PORTADA -->
+    <div class="home-search-container">
+      <div class="search-bar-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="homeSearchInput" class="search-input" placeholder="Buscar cualquier tema: Derivadas, Pitágoras, Factorial, Fracciones..." oninput="handleHomeSearchInput()">
+        <button id="clearHomeSearch" class="clear-search-btn" onclick="clearHomeSearchInput()" title="Limpiar búsqueda">✕</button>
       </div>
-      <div class="course-grid">
-        <button class="course-card course-c1" type="button" onclick="openCourse('ciclo1')">
-          <span class="course-icon" aria-hidden="true">🌱</span>
-          <span class="course-title">1.º–2.º ESO</span>
-          <span class="course-description">Números, fracciones, operaciones y primeros conceptos de álgebra.</span>
-          <span class="course-arrow" aria-hidden="true">Explorar curso →</span>
-        </button>
-        <button class="course-card course-c2" type="button" onclick="openCourse('ciclo2')">
-          <span class="course-icon" aria-hidden="true">📐</span>
-          <span class="course-title">3.º–4.º ESO</span>
-          <span class="course-description">Álgebra, funciones, geometría, estadística y probabilidad.</span>
-          <span class="course-arrow" aria-hidden="true">Explorar curso →</span>
-        </button>
-        <button class="course-card course-bach1" type="button" onclick="openCourse('bach1')">
-          <span class="course-icon" aria-hidden="true">📈</span>
-          <span class="course-title">1.º Bachillerato</span>
-          <span class="course-description">Trigonometría, geometría, límites y primeras derivadas.</span>
-          <span class="course-arrow" aria-hidden="true">Explorar curso →</span>
-        </button>
-        <button class="course-card course-bach2" type="button" onclick="openCourse('bach2')">
-          <span class="course-icon" aria-hidden="true">🎓</span>
-          <span class="course-title">2.º Bachillerato</span>
-          <span class="course-description">Matrices, cálculo, integrales, probabilidad e inferencia.</span>
-          <span class="course-arrow" aria-hidden="true">Explorar curso →</span>
-        </button>
-      </div>
-      <p class="course-note">La organización de Bachillerato es orientativa; el programa puede variar según el centro.</p>
-    </section>
+    </div>
 
-    <section class="quick-section" aria-labelledby="quickHeading">
-      <div class="hub-section-heading">
-        <h2 id="quickHeading">¿Solo necesitas repasar algo?</h2>
-        <span class="heading-note">Acceso directo</span>
-      </div>
-      <div class="quick-grid">
-        <a class="quick-card quick-formulas" href="tablas/index.html">
-          <span class="quick-icon" aria-hidden="true">▤</span>
-          <span class="quick-title">Tablas y chuletas</span>
-          <span class="quick-description">Encuentra e imprime una fórmula o ficha de consulta.</span>
-          <span class="course-arrow">Ver fórmulas →</span>
-        </a>
-        <a class="quick-card quick-practice" href="ejercicios/index.html">
-          <span class="quick-icon" aria-hidden="true">◎</span>
-          <span class="quick-title">Practicar</span>
-          <span class="quick-description">Resuelve un reto, pide una pista y revisa los pasos.</span>
-          <span class="course-arrow">Ir al entrenador →</span>
-        </a>
-      </div>
-    </section>
+    <div id="homeSectionsWrap">
+      <section aria-labelledby="courseHeading">
+        <div class="hub-section-heading">
+          <h2 id="courseHeading">Elige tu curso</h2>
+          <span class="heading-note">Lecciones organizadas por nivel</span>
+        </div>
+        <div class="course-grid">
+          <button class="course-card course-c1" type="button" onclick="openCourse('ciclo1')">
+            <span class="course-icon" aria-hidden="true">🌱</span>
+            <span class="course-title">1.º–2.º ESO</span>
+            <span class="course-description">Números, fracciones, operaciones y primeros conceptos de álgebra.</span>
+            <span class="course-arrow" aria-hidden="true">Explorar curso →</span>
+          </button>
+          <button class="course-card course-c2" type="button" onclick="openCourse('ciclo2')">
+            <span class="course-icon" aria-hidden="true">📐</span>
+            <span class="course-title">3.º–4.º ESO</span>
+            <span class="course-description">Álgebra, funciones, geometría, estadística y probabilidad.</span>
+            <span class="course-arrow" aria-hidden="true">Explorar curso →</span>
+          </button>
+          <button class="course-card course-bach1" type="button" onclick="openCourse('bach1')">
+            <span class="course-icon" aria-hidden="true">📈</span>
+            <span class="course-title">1.º Bachillerato</span>
+            <span class="course-description">Trigonometría, geometría, límites y primeras derivadas.</span>
+            <span class="course-arrow" aria-hidden="true">Explorar curso →</span>
+          </button>
+          <button class="course-card course-bach2" type="button" onclick="openCourse('bach2')">
+            <span class="course-icon" aria-hidden="true">🎓</span>
+            <span class="course-title">2.º Bachillerato</span>
+            <span class="course-description">Matrices, cálculo, integrales, probabilidad e inferencia.</span>
+            <span class="course-arrow" aria-hidden="true">Explorar curso →</span>
+          </button>
+        </div>
+        <p class="course-note">La organización de Bachillerato es orientativa; el programa puede variar según el centro.</p>
+      </section>
+
+      <section class="quick-section" aria-labelledby="quickHeading">
+        <div class="hub-section-heading">
+          <h2 id="quickHeading">¿Solo necesitas repasar algo?</h2>
+          <span class="heading-note">Acceso directo</span>
+        </div>
+        <div class="quick-grid">
+          <a class="quick-card quick-formulas" href="tablas/index.html">
+            <span class="quick-icon" aria-hidden="true">▤</span>
+            <span class="quick-title">Tablas y chuletas</span>
+            <span class="quick-description">Encuentra e imprime una fórmula o ficha de consulta.</span>
+            <span class="course-arrow">Ver fórmulas →</span>
+          </a>
+          <a class="quick-card quick-practice" href="ejercicios/index.html">
+            <span class="quick-icon" aria-hidden="true">◎</span>
+            <span class="quick-title">Practicar</span>
+            <span class="quick-description">Resuelve un reto, pide una pista y revisa los pasos.</span>
+            <span class="course-arrow">Ir al entrenador →</span>
+          </a>
+        </div>
+      </section>
+    </div>
   </section>
   <div class="course-view-controls" id="courseViewControls" hidden>
     <button type="button" class="back-to-courses" onclick="returnToCourses()">← Cambiar de curso</button>
@@ -1612,6 +1628,40 @@
     // =========================================================================
     // 2. BUSCADOR Y BOTÓN LIMPIAR
     // =========================================================================
+    function handleHomeSearchInput() {
+      const homeInput = document.getElementById('homeSearchInput');
+      const courseInput = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('clearHomeSearch');
+      const homeSections = document.getElementById('homeSectionsWrap');
+      const catalog = document.getElementById('catalogWrapper');
+      const q = homeInput ? homeInput.value.trim() : '';
+
+      if (courseInput) courseInput.value = homeInput ? homeInput.value : '';
+
+      if (q.length > 0) {
+        if (clearBtn) clearBtn.style.display = 'inline-flex';
+        if (homeSections) homeSections.hidden = true;
+        currentCourseCardSet = null;
+        currentFilterBranch = 'all';
+        document.querySelectorAll('.cycle-block').forEach(section => { section.hidden = false; });
+        if (catalog) catalog.hidden = false;
+        filterTopics();
+      } else {
+        if (clearBtn) clearBtn.style.display = 'none';
+        if (homeSections) homeSections.hidden = false;
+        if (catalog) catalog.hidden = true;
+      }
+    }
+
+    function clearHomeSearchInput() {
+      const homeInput = document.getElementById('homeSearchInput');
+      if (homeInput) {
+        homeInput.value = '';
+        homeInput.focus();
+      }
+      handleHomeSearchInput();
+    }
+
     function handleSearchInput() {
       const input = document.getElementById('searchInput');
       const clearBtn = document.getElementById('clearSearch');
@@ -1857,6 +1907,12 @@
         bachCourse?.note || 'Elige una lección o busca un tema dentro de este curso.';
       document.getElementById('searchInput').value = '';
       document.getElementById('clearSearch').style.display = 'none';
+      const homeInOpen = document.getElementById('homeSearchInput');
+      if (homeInOpen) homeInOpen.value = '';
+      const clearHomeOpen = document.getElementById('clearHomeSearch');
+      if (clearHomeOpen) clearHomeOpen.style.display = 'none';
+      const homeSecOpen = document.getElementById('homeSectionsWrap');
+      if (homeSecOpen) homeSecOpen.hidden = false;
       currentFilterBranch = 'all';
       document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
       document.querySelector('.filter-chip[onclick*="all"]').classList.add('active');
@@ -1868,6 +1924,12 @@
     function returnToCourses() {
       currentCourseCardSet = null;
       document.getElementById('homeHub').hidden = false;
+      const homeSec = document.getElementById('homeSectionsWrap');
+      if (homeSec) homeSec.hidden = false;
+      const homeIn = document.getElementById('homeSearchInput');
+      if (homeIn) homeIn.value = '';
+      const clearHome = document.getElementById('clearHomeSearch');
+      if (clearHome) clearHome.style.display = 'none';
       document.getElementById('courseViewControls').hidden = true;
       document.getElementById('filterSection').hidden = true;
       document.getElementById('catalogWrapper').hidden = true;

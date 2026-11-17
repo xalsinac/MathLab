@@ -451,10 +451,117 @@
     updateCrossLinks(getTheme());
   };
 
+  const SIMULATOR_BRIDGE_MAP = {
+    'algebra/numeros_complejos': {
+      title: 'La Esencia de i en 3D (Rotación 90°, Cardano y Matrices)',
+      path: '/simulator/esencia-de-i-3d',
+    },
+    'algebra/derivadas_aplicaciones': {
+      title: 'Cálculo Visual 3D: Secante → Tangente y Trazador de f\'(x)',
+      path: '/simulator/calculo-visual-3d?tab=deriv',
+    },
+    'analisis/derivadas_intro': {
+      title: 'Cálculo Visual 3D: Secante → Tangente y Trazador de f\'(x)',
+      path: '/simulator/calculo-visual-3d?tab=deriv',
+    },
+    'analisis/derivadas_avanzadas': {
+      title: 'La Esencia de e en 3D: Autoderivada y Crecimiento Continuo',
+      path: '/simulator/esencia-de-e-3d',
+    },
+    'analisis/integrales': {
+      title: 'Cálculo Visual 3D: Sumas de Riemann y Teorema Fundamental',
+      path: '/simulator/calculo-visual-3d?tab=riemann',
+    },
+    'analisis/aplicaciones_integrales': {
+      title: 'Cálculo Visual 3D: Sólidos de Revolución por Discos',
+      path: '/simulator/calculo-visual-3d?tab=solid',
+    },
+    'geometria/conicas_circumferencia': {
+      title: 'Secciones Cónicas en 3D: Cono de Apolonio & Esferas de Dandelin',
+      path: '/simulator/secciones-conicas-3d',
+    },
+    'geometria/nombre_pi': {
+      title: 'La Esencia de π en 3D: Arquímedes, Kepler y Buffon',
+      path: '/simulator/esencia-de-pi-3d',
+    },
+    'geometria/trigonometria': {
+      title: 'La Esencia de la Trigonometría en 3D (Círculo Unitario)',
+      path: '/simulator/trigonometria-3d',
+    },
+    'geometria/trigonometria_avanzada': {
+      title: 'Identidades Trigonométricas en 3D',
+      path: '/simulator/identidades-trigonometricas-3d',
+    },
+    'geometria/centros_triangulos': {
+      title: 'Puntos Notables del Triángulo & Recta de Euler',
+      path: '/simulator/puntos-notables-triangulo',
+    },
+    'estadistica/probabilidad': {
+      title: 'Tablero de Galton & Campana de Gauss en Vivo',
+      path: '/simulator/tablero-galton',
+    },
+    'estadistica/inferencia': {
+      title: 'Tablero de Galton & Campana de Gauss en Vivo',
+      path: '/simulator/tablero-galton',
+    },
+    'tablas/tabla_derivadas': {
+      title: 'Cálculo Visual 3D: Secante → Tangente',
+      path: '/simulator/calculo-visual-3d?tab=deriv',
+    },
+    'tablas/tabla_integrales': {
+      title: 'Cálculo Visual 3D: Sumas de Riemann',
+      path: '/simulator/calculo-visual-3d?tab=riemann',
+    },
+    'tablas/identidades_trigonometricas': {
+      title: 'Identidades Trigonométricas en 3D',
+      path: '/simulator/identidades-trigonometricas-3d',
+    },
+  };
+
+  const setupSimulatorBridge = () => {
+    if (document.querySelector('.simulator-bridge-wrap')) return;
+    const cleanPath = window.location.pathname.replace(/\.html$/i, '').replace(/\/+$/, '');
+    const parts = cleanPath.split('/').filter(Boolean);
+    if (parts.length < 2) return;
+    const key = `${parts[parts.length - 2]}/${parts[parts.length - 1]}`;
+    const match = SIMULATOR_BRIDGE_MAP[key];
+    if (!match) return;
+
+    const host = document.querySelector('main') || document.querySelector('.container') || document.body;
+    if (!host) return;
+
+    const existingBridge = document.querySelector('.academy-bridge-wrap');
+    const wrap = existingBridge || document.createElement('div');
+    if (!existingBridge) {
+      wrap.className = 'academy-bridge-wrap simulator-bridge-wrap';
+    } else {
+      wrap.classList.add('simulator-bridge-wrap');
+    }
+
+    const link = document.createElement('a');
+    link.className = 'simulator-crystal-btn';
+    link.href = `${ACADEMY_BASE}${match.path}`;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.innerHTML = `
+      <span class="simulator-crystal-badge">Math Simulator</span>
+      <span class="academy-crystal-text">
+        <span class="simulator-crystal-kicker">Experimentación interactiva en vivo</span>
+        <span class="simulator-crystal-title">${match.title}</span>
+      </span>
+      <span class="simulator-crystal-arrow" aria-hidden="true">↗</span>
+    `;
+
+    wrap.appendChild(link);
+    if (!existingBridge) host.appendChild(wrap);
+    updateCrossLinks(getTheme());
+  };
+
   const initAll = () => {
     setupToggle();
     setupStarfield();
     setupAcademyBridge();
+    setupSimulatorBridge();
   };
 
   window.addEventListener('storage', (e) => {

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Álgebra: Polinomios Avanzados</title>
   
-  <link rel="stylesheet" href="../estilos.css">
+  <link rel="stylesheet" href="../estilos.css?v=20261116b">
 
   <style>
     /* NAVEGACIÓN Y PESTAÑAS */
@@ -48,6 +48,17 @@
       padding: 2px 0.3rem 0 0.3rem;
     }
 
+    /* EXPRESIONES ALGEBRAICAS */
+    .math-expr {
+      font-family: monospace;
+      font-size: 1.4rem;
+      color: var(--text-main);
+    }
+    [data-theme="light"] .math-expr,
+    html[data-theme="light"] .math-expr {
+      color: #14151a !important;
+    }
+
     /* COLORES PEDAGÓGICOS */
     .c-poly { color: var(--accent-blue); font-weight: bold; }
     .c-term { color: var(--accent-gold); font-weight: bold; }
@@ -55,10 +66,68 @@
 
     /* LA CAJA DE DIVISIÓN Y PIZARRA */
     .pizarra-board {
-      background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px;
-      padding: 1.5rem; color: #fff; overflow-x: auto; display: flex; justify-content: center; align-items: center; min-height: 180px;
+      background: var(--bg-plate); border: 1px solid var(--border-color); border-radius: 8px;
+      padding: 1.5rem; color: var(--text-main); overflow-x: auto; display: flex; justify-content: center; align-items: center; min-height: 180px;
+    }
+    [data-theme="light"] .pizarra-board,
+    html[data-theme="light"] .pizarra-board {
+      background-color: #e6e3db !important;
+      border-color: #d6d3c9 !important;
+      color: #14151a !important;
     }
     
+    /* ESTRUCTURA DE LA GALERA */
+    .galera-table {
+      border-collapse: collapse;
+      font-family: monospace;
+      font-size: 1.25rem;
+      color: var(--text-main);
+    }
+    .galera-divi {
+      margin: 0;
+      font-family: monospace;
+      color: var(--text-main);
+    }
+    .galera-vline {
+      vertical-align: top;
+      border-left: 2px solid var(--text-main);
+    }
+    .galera-hline {
+      margin: 0;
+      font-family: monospace;
+      border-bottom: 2px solid var(--text-main);
+      padding: 0 15px 5px 15px;
+      color: var(--text-main);
+    }
+    .galera-coci {
+      margin: 0;
+      font-family: monospace;
+      padding: 5px 15px 0 15px;
+      color: var(--accent-success);
+      font-weight: bold;
+    }
+
+    [data-theme="light"] .galera-table,
+    html[data-theme="light"] .galera-table,
+    [data-theme="light"] .galera-divi,
+    html[data-theme="light"] .galera-divi,
+    [data-theme="light"] .galera-hline,
+    html[data-theme="light"] .galera-hline,
+    [data-theme="light"] .pizarra-board pre,
+    html[data-theme="light"] .pizarra-board pre,
+    [data-theme="light"] .pizarra-board td,
+    html[data-theme="light"] .pizarra-board td {
+      color: #14151a !important;
+    }
+    [data-theme="light"] .galera-vline,
+    html[data-theme="light"] .galera-vline {
+      border-left: 2px solid #14151a !important;
+    }
+    [data-theme="light"] .galera-hline,
+    html[data-theme="light"] .galera-hline {
+      border-bottom: 2px solid #14151a !important;
+    }
+
     /* COLORES PARA LA DIVISIÓN */
     .col-r { color: var(--accent-op); font-weight: bold; } /* Descontar/restar */
     .col-g { color: var(--accent-success); font-weight: bold; } /* Resultados */
@@ -79,13 +148,19 @@
       background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color);
       border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; gap: 0.3rem;
     }
+    [data-theme="light"] .info-card-item,
+    html[data-theme="light"] .info-card-item {
+      background: #ffffff !important;
+      border-color: #d6d3c9 !important;
+      color: #14151a !important;
+    }
 
     @media (max-width: 800px) {
       .grid-2 { grid-template-columns: 1fr; }
     }
   </style>
-  <link rel="stylesheet" href="../tema.css">
-  <script src="../tema.js"></script>
+  <link rel="stylesheet" href="../tema.css?v=20261116b">
+  <script src="../tema.js?v=20261116b"></script>
 </head>
 <body>
 
@@ -125,12 +200,12 @@
 
           <div style="display:flex; flex-direction:column; gap:0.8rem;">
             <div class="info-card-item" style="border-left:3px solid var(--accent-success);">
-              <span style="font-family:monospace; font-size:1.4rem; color:#fff;">3x² - 5x + 1</span>
+              <span class="math-expr">3x² - 5x + 1</span>
               <span style="color:var(--text-muted); font-size:0.85rem; margin-top:0.3rem;">✓ El exponente es 2 (natural), no hay divisiones por x.</span>
             </div>
 
             <div class="info-card-item" style="border-left:3px solid var(--accent-success);">
-              <span style="font-family:monospace; font-size:1.4rem; color:#fff;">
+              <span class="math-expr">
                 <span class="fraction-vertical"><span class="num">x³ - 4</span><span class="den">5</span></span> + 2x
               </span>
               <span style="color:var(--text-muted); font-size:0.85rem; margin-top:0.3rem;">✓ Ojo: que esté dividido por 5 (un número) es legal. No hay 'x' en el denominador.</span>
@@ -210,7 +285,7 @@
         <div class="panel-box">
           <div class="panel-title">Laboratorio Paso a Paso</div>
           <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1rem;">
-            Desliza para ver cómo se extrae el factor común del binomio: <strong style="color:#fff;">6x³ + 15x²</strong>.
+            Desliza para ver cómo se extrae el factor común del binomio: <strong style="color:var(--text-main);">6x³ + 15x²</strong>.
           </p>
 
           <div class="slider-row">
@@ -233,7 +308,7 @@
 
           <div class="warning-box" style="margin-top: 1.5rem;">
             💡 <strong>¡Aviso de examen!:</strong>
-            Si tienes <strong style="color:#fff;">x² + x</strong> y sacas factor común la <span class="c-term">x</span>, ¡el segundo término NO se convierte en 0! Al dividir x / x queda 1:
+            Si tienes <strong style="color:var(--text-main);">x² + x</strong> y sacas factor común la <span class="c-term">x</span>, ¡el segundo término NO se convierte en 0! Al dividir x / x queda 1:
             <div style="font-family:monospace; font-size:1.15rem; color:var(--accent-success); margin-top:0.4rem; text-align:center;">
               x² + x = <strong>x · (x + 1)</strong>
             </div>
@@ -287,7 +362,7 @@
               <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:0.4rem;">
                 Sustituimos y cancelamos el paquete (x - 4) que se multiplica en ambos lados:
               </p>
-              <div style="font-family:monospace; font-size:1.15rem; color:#fff;">
+              <div style="font-family:monospace; font-size:1.15rem; color:var(--text-main);">
                 <span class="fraction-vertical">
                   <span class="num">x · <del style="color:var(--accent-op); font-weight:bold;">(x - 4)</del></span>
                   <span class="den">(x + 4) · <del style="color:var(--accent-op); font-weight:bold;">(x - 4)</del></span>
@@ -381,14 +456,14 @@
       document.getElementById('div_explanation_text').innerHTML = divisionSteps[step].text;
       
       const boardHTML = `
-        <table style="border-collapse: collapse; font-family: monospace; font-size: 1.25rem;">
+        <table class="galera-table">
           <tr>
             <td style="vertical-align: top; padding-right: 15px;">
-              <pre style="margin:0; font-family: monospace;">${divisionSteps[step].divi}</pre>
+              <pre class="galera-divi">${divisionSteps[step].divi}</pre>
             </td>
-            <td style="vertical-align: top; border-left: 2px solid white;">
-              <pre style="margin:0; font-family: monospace; border-bottom: 2px solid white; padding: 0 15px 5px 15px;">${divisionSteps[step].divis}</pre>
-              <pre style="margin:0; font-family: monospace; padding: 5px 15px 0 15px; color: var(--accent-success);">${divisionSteps[step].coci}</pre>
+            <td class="galera-vline">
+              <pre class="galera-hline">${divisionSteps[step].divis}</pre>
+              <pre class="galera-coci">${divisionSteps[step].coci}</pre>
             </td>
           </tr>
         </table>

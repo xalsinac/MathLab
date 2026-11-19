@@ -51,7 +51,7 @@
     .section-title {
       font-size: 1.25rem;
       font-weight: 800;
-      color: #fff;
+      color: var(--text-main);
       display: flex;
       align-items: center;
       gap: 0.6rem;
@@ -210,7 +210,7 @@
       
       <!-- DEFINICIÓN EN EL TRIÁNGULO -->
       <div class="panel-card">
-        <div style="font-weight:bold; color:#fff; font-size:1.05rem; border-bottom:1px solid var(--border-color); padding-bottom:0.4rem;">
+        <div style="font-weight:bold; color: var(--text-main); font-size:1.05rem; border-bottom:1px solid var(--border-color); padding-bottom:0.4rem;">
           1. Triángulo Rectángulo
         </div>
         
@@ -225,10 +225,10 @@
             <!-- Etiquetas -->
             <text x="50" y="75" fill="#94a3b8" font-size="7" font-family="monospace" text-anchor="middle">Contiguo (c)</text>
             <text x="88" y="42" fill="#94a3b8" font-size="7" font-family="monospace">Opuesto (b)</text>
-            <text x="44" y="34" fill="#fff" font-size="8" font-family="monospace" font-weight="bold">Hip. (a)</text>
+            <text x="44" y="34" fill="var(--text-main)" font-size="8" font-family="monospace" font-weight="bold">Hip. (a)</text>
           </svg>
 
-          <div style="font-family:monospace; font-size:0.95rem; line-height:1.8; color:#fff;">
+          <div style="font-family:monospace; font-size:0.95rem; line-height:1.8; color: var(--text-main);">
             sen α = <span class="fraction-vertical"><span class="num">Opuesto</span><span class="den">Hipotenusa</span></span> = <span class="fraction-vertical"><span class="num">b</span><span class="den">a</span></span><br>
             cos α = <span class="fraction-vertical"><span class="num">Contiguo</span><span class="den">Hipotenusa</span></span> = <span class="fraction-vertical"><span class="num">c</span><span class="den">a</span></span><br>
             tg α = <span class="fraction-vertical"><span class="num">Opuesto</span><span class="den">Contiguo</span></span> = <span class="fraction-vertical"><span class="num">b</span><span class="den">c</span></span>
@@ -238,11 +238,11 @@
 
       <!-- RELACIONES FUNDAMENTALES -->
       <div class="panel-card">
-        <div style="font-weight:bold; color:#fff; font-size:1.05rem; border-bottom:1px solid var(--border-color); padding-bottom:0.4rem;">
+        <div style="font-weight:bold; color: var(--text-main); font-size:1.05rem; border-bottom:1px solid var(--border-color); padding-bottom:0.4rem;">
           2. Fórmulas Fundamentales
         </div>
 
-        <div style="font-family:monospace; font-size:1.05rem; line-height:2.2; color:#fff; padding:0.5rem 0;">
+        <div style="font-family:monospace; font-size:1.05rem; line-height:2.2; color: var(--text-main); padding:0.5rem 0;">
           • <strong style="color:var(--accent-gold);">sen² α + cos² α = 1</strong> &nbsp;<span style="color:var(--text-muted); font-size:0.85em;">(Identidad fundamental)</span><br>
           • <strong style="color:var(--accent-blue);">tg α = <span class="fraction-vertical"><span class="num">sen α</span><span class="den">cos α</span></span></strong><br>
           • <strong>1 + tg² α = <span class="fraction-vertical"><span class="num">1</span><span class="den">cos² α</span></span></strong> &nbsp;<span style="color:var(--text-muted); font-size:0.85em;">(= sec² α)</span>

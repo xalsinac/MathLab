@@ -48,7 +48,7 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    .tool-btn:hover { color: #fff; border-color: var(--accent-blue); }
+    .tool-btn:hover { color: var(--text-main); border-color: var(--accent-blue); }
     .tool-btn.active {
       background: rgba(56, 189, 248, 0.15);
       border-color: var(--accent-blue);
@@ -145,7 +145,7 @@
 
     .pythagoras-table td.hl-cross {
       background: rgba(56, 189, 248, 0.15);
-      color: #fff;
+      color: var(--text-main);
     }
 
     .pythagoras-table td.hl-target {
@@ -168,7 +168,7 @@
     .pythagoras-table td.pat-diagonal {
       background: rgba(16, 185, 129, 0.2);
       border-color: var(--accent-success);
-      color: #fff;
+      color: var(--text-main);
       font-weight: 800;
     }
     .pythagoras-table td.pat-even {
@@ -345,7 +345,7 @@
         </div>
 
         <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:8px; padding:0.8rem; font-size:0.88rem; line-height:1.5; color:var(--text-muted);">
-          <strong style="color:#fff;">Propiedad Conmutativa:</strong>
+          <strong style="color: var(--text-main);">Propiedad Conmutativa:</strong>
           <div style="font-family:monospace; font-size:0.95rem; margin-top:0.3rem; color:var(--accent-gold);" id="commuteText">
             6 × 7 = 7 × 6 = 42
           </div>
@@ -468,8 +468,8 @@
         </defs>
         <rect x="${x}" y="${y}" width="${rectW}" height="${rectH}" fill="rgba(56, 189, 248, 0.25)" stroke="var(--accent-blue)" stroke-width="2" rx="3" />
         <rect x="${x}" y="${y}" width="${rectW}" height="${rectH}" fill="url(#areaGrid)" rx="3" />
-        <text x="${x + rectW / 2}" y="${y - 4}" fill="#fff" font-size="7" font-family="monospace" text-anchor="middle">${c}</text>
-        <text x="${x - 4}" y="${y + rectH / 2 + 2}" fill="#fff" font-size="7" font-family="monospace" text-anchor="end">${r}</text>
+        <text x="${x + rectW / 2}" y="${y - 4}" fill="var(--text-main)" font-size="7" font-family="monospace" text-anchor="middle">${c}</text>
+        <text x="${x - 4}" y="${y + rectH / 2 + 2}" fill="var(--text-main)" font-size="7" font-family="monospace" text-anchor="end">${r}</text>
         <text x="${x + rectW / 2}" y="${y + rectH / 2 + 3}" fill="var(--accent-gold)" font-size="9" font-weight="bold" font-family="monospace" text-anchor="middle">${prod}</text>
       `;
     }
